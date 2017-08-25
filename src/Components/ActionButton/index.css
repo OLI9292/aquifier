@@ -3,13 +3,18 @@
   cursor: pointer;
   display: inline-block;
   width: 30%;
+  min-width: 350px;
   text-align: center;
   border-radius: 10px;
   height: 85%;
   margin: 10px;
+  transition: 0.2s
+}
+.action-button:hover {
+  background-color: #FF7575 !important;
 }
 
-.action-button p {
+.action-button {
   font-size: 1.75em;
   line-height: 100%;
 }
@@ -24,7 +29,7 @@ a {
 
 /* Screens below 640 px */
 @media (max-width: 640px) {
-  .action-button p {
+  .action-button {
     font-size: 1.25em;
   }
 }

@@ -52,13 +52,13 @@ class InfoForm extends Component {
       <div>
         <div className="form-container">
           <div className="form-header">
-            <p>WORDCRAFT teaches the building blocks of English so students can analyze and navigate advanced vocabulary.</p>
-            <p>To bring Wordcraft to your school, fill out the following  and we’ll be in touch as soon as possible.</p>
+            <p><span className="brand">WORDCRAFT</span> teaches the building blocks of English so students can analyze and navigate advanced vocabulary.</p>
+            <p>To bring <span className="brand">WORDCRAFT</span> to your school, fill out the following  and we’ll be in touch as soon as possible.</p>
           </div>
           <form>
             <div className="small-inputs">
               {smallInputs}
-              <input name="comments" placeholder="comments" />
+              <textarea name="comments" placeholder="comments" />
               <input type="submit" value="Submit" />
             </div>
           </form>

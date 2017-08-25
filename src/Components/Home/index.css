@@ -34,7 +34,7 @@ html, body, #root {
 
 .header h2 {
   color: rgb(245, 165, 14);
-  font-size: 3em;
+  font-size: 4em;
   margin: -20px;
   text-align: center;
 }
@@ -42,6 +42,7 @@ html, body, #root {
 .logo {
   height: 25%;
   width: 25%;
+  mind-width: 300px;
   display: block;
   margin: auto;
 }
@@ -57,11 +58,27 @@ html, body, #root {
   justify-content: center;
 }
 
+.brand {
+  color: rgb(245, 165, 14);
+}
+
 /* Screens below 640 px */
 @media (max-width: 640px) {
   .form-container, .demo-container {
     width: 100%;
     margin: 0px auto 20px;
     padding: 0px;
+  }
+  .pitch {
+    font-size: 1.5em;
+  }
+  .header h2 {
+    font-size: 3em;
+  }
+  .score p, .timer p {
+    font-size: 2em !important;
+  }
+  .timer p {
+    min-width: 70px;
   }
 }

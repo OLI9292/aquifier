@@ -1,7 +1,8 @@
 const ButtonType = {
   download: {
     color: 'rgb(0,0,0)',
-    text: 'Download Full Version (iOS)'
+    text: 'Download Full Version (iOS)',
+    cursor: 'Pointer'
   },
 
   play: {
@@ -11,7 +12,7 @@ const ButtonType = {
   },
 
   bringToSchool: {
-    color: 'rgb(111,207,151)',
+    color: '#34B269',
     text: 'Bring to My School',
     redirect: '/bringToMySchool'
   }

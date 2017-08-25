@@ -5,12 +5,12 @@
 }
 
 .score {
-  font-size: 4em;
   margin: 10px;
 }
 
 .score p {
   margin: 0px;
+  font-size: 4em;
 }
 
 .definition {
@@ -47,11 +47,17 @@
   margin: 10px;
   display: table-cell;
   vertical-align: middle;
+  transition: 0.2s;
 }
 
 .game-button p {
   font-size: 1.75em;
+  margin: 25px auto;
   text-align: center;
+}
+
+.game-button:hover {
+  color: black !important;
 }
 
 /* Screens below 640 px */

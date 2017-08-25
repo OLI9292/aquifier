@@ -26,19 +26,37 @@ form {
   flex-basis: 50%;
 }
 
-input {
+input, textarea {
   font-family: BrandonGrotesque;
   font-size: 1.5em;
+  transition: 0.2s;
   display: -ms-flexbox;
   display: flex;
   padding: 10px;
+  width: 100%;
   border: none;
   margin: 10px;
   background-color: #f1f1f1;
   border-radius: 5px;
 }
 
+input[type=submit] {
+    width: auto !important;
+}
+
+input[type=submit]:hover {
+    background-color: #FF7575;
+    color: white;
+}
+
 .checkmark {
-  height: 50px;
+  height: 40px;
+  margin: 18px auto;
   width: auto;
+}
+
+@media (max-width: 1070px) {
+input, textarea {
+ width: auto !important;
+ }
 }

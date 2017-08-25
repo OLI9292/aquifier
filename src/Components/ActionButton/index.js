@@ -25,7 +25,7 @@ class ActionButton extends Component {
 
     const buttonContent = () => {
       return this.state.isDownloadLink
-        ? <a href={downloadLink}><p>{buttonType.text}</p></a>
+        ? <a href={downloadLink} target="blank"><p>{buttonType.text}</p></a>
         : <p>{buttonType.text}</p>
     }
 
