@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './index.css';
 import lightGrayCheckmark from '../../assets/images/Checkmark-LightGray.png';
 import greenCheckmark from '../../assets/images/Checkmark-Green.png';
+import ActionButton from '../ActionButton/index';
 
 class InfoForm extends Component {
   constructor(props) {
@@ -61,6 +62,10 @@ class InfoForm extends Component {
           <input name="comments" placeholder="comments" />
           <input type="submit" value="Submit" />
         </form>
+        <div className="action-buttons">
+          <ActionButton type="play" />
+          <ActionButton type="download" />
+        </div>
       </div>
     );
   }

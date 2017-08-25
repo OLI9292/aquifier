@@ -6,7 +6,7 @@ const ButtonType = {
 
   play: {
     color: 'rgb(47,128,237)',
-    text: 'Play Demo',
+    text: 'Play Demo!',
     redirect: '/demo'
   },
 

@@ -33,7 +33,7 @@ class Demo extends Component {
 
   nextWord() {
     const word = this.randomItem(this.state.words);
-    const components = word.components.map((c) => { 
+    const components = word.components.map((c) => {
       return { value: c.value, display: c.type !== 'root' };
     });
     this.setState({ currentWord: word, wordComponents: components, choices: this.choicesFor(word) });
@@ -95,6 +95,7 @@ class Demo extends Component {
     }
 
     return (
+      <div>
       <div className="demo-container">
         <div className="scoreboard">
           <div className="score">
@@ -111,6 +112,7 @@ class Demo extends Component {
         <div className="game-buttons">
           {buttons()}
         </div>
+      </div>
         <div className="action-buttons">
           <ActionButton type="download" />
           <ActionButton type="bringToSchool" />

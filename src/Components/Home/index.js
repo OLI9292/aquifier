@@ -10,7 +10,7 @@ class Home extends Component {
         <div className="header">
           <img src={logo} className="logo" />
           <h2>WORDCRAFT</h2>
-          <p className="pitch">Understand, don't memorize, advanced<br />English  vocabulary.</p> 
+          <p className="pitch">Understand, don't memorize, advanced<br />English  vocabulary.</p>
         </div>
         <div className="action-buttons">
           <ActionButton type="play" />
