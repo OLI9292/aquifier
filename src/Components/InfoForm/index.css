@@ -1,11 +1,3 @@
-.form-container {
-    width: 60%;
-    margin: auto;
-    height: 70%;
-    background: white;
-    padding: 10px;
-}
-
 .form-header {
   width: 80%;
   margin: auto;
@@ -18,12 +10,11 @@
 
 form {
   height: 60%;
+  margin: 0px auto;
+  width: 65%;
 }
 
 .small-inputs {
-  height: 50%;
-  width: 80%;
-  margin: auto;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -32,16 +23,17 @@ form {
 .small-input {
   display:flex;
   flex-direction:row;
+  flex-basis: 50%;
 }
 
 input {
   font-family: BrandonGrotesque;
-  font-size: 1em;
+  font-size: 1.5em;
   display: -ms-flexbox;
   display: flex;
   padding: 10px;
   border: none;
-  margin: auto;
+  margin: 10px;
   background-color: #f1f1f1;
   border-radius: 5px;
 }

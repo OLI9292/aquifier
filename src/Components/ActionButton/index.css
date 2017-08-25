@@ -21,3 +21,10 @@ a {
   display: inline-block;
   text-decoration: none;
 }
+
+/* Screens below 640 px */
+@media (max-width: 640px) {
+  .action-button p {
+    font-size: 1.25em;
+  }
+}
