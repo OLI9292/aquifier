@@ -8,8 +8,6 @@ class Timer extends Component {
     this.state = {
       timeLeft: '3:00'
     }
-
-    this.trackTimer();
   }
 
   decrementSeconds(seconds) {
@@ -17,7 +15,7 @@ class Timer extends Component {
     return updated < 10 ? `0${updated}` : updated.toString()
   } 
 
-  trackTimer() {
+  track() {
     const minutes = this.state.timeLeft.split(':')[0];
     const seconds = this.state.timeLeft.split(':')[1];
 
@@ -27,13 +25,13 @@ class Timer extends Component {
       const time = seconds === '00'
         ? `${parseInt(minutes) - 1}:59`
         : `${minutes}:${this.decrementSeconds(seconds)}`
-      setTimeout(() => { this.updateTimer(time) }, 1000);
+      setTimeout(() => { this.update(time) }, 1000);
     }
   }
 
-  updateTimer(time) {
+  update(time) {
     this.setState({ timeLeft: time });
-    this.trackTimer();
+    this.track();
   }
 
   render() {
