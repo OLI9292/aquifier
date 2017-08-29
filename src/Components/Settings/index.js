@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
-import Header from '../Header/index';
+import { Redirect } from 'react-router';
 import styled from 'styled-components';
-import { color } from '../../Assets/Styles/index';
 import _ from 'underscore';
+
+import DefaultButton from '../Buttons/default';
+import Header from '../Header/index';
+import { color } from '../../Assets/Styles/index';
 
 class Settings extends Component {
   constructor(props) {
@@ -11,10 +14,16 @@ class Settings extends Component {
     this.state = { 
       timeIdx: 0,
       levelIdx: 0,
-      topicIndices: [0]
+      topicIndices: [0],
+      redirect: false
     };
 
     this.handleClick = this.handleClick.bind(this);
+    this.redirect = this.redirect.bind(this);
+  }
+
+  redirect() {
+    this.setState({ redirect: true });
   }
 
   handleClick(group, idx) {
@@ -35,30 +44,34 @@ class Settings extends Component {
   }
 
   render() {
+    if (this.state.redirect) {
+      const location = (this.props.players === 'single') ? '/match/single' : '/match/spectator';
+      return <Redirect push to={location} />;
+    }
 
     const TIMES = ['3 Minutes', '5 Minutes'];
     const LEVELS = ['Beginner', 'Intermediate', 'Advanced'];
     const TOPICS = ['Everything', 'Math', 'Nature', 'History', 'Science'];
 
     const timeButtons = TIMES.map((t, idx) => {
-      return <Button 
+      return <SelectionButton 
         onClick={() => this.handleClick('time', idx)} 
         selected={this.state.timeIdx === idx}
-      >{t}</Button>
+      >{t}</SelectionButton>
     });
 
     const levelButtons = LEVELS.map((l, idx) => {
-      return <Button 
+      return <SelectionButton 
         onClick={() => this.handleClick('level', idx)} 
         selected={this.state.levelIdx === idx}
-      >{l}</Button>
+      >{l}</SelectionButton>
     });
 
     const topicButtons = TOPICS.map((t, idx) => {
-      return <Button 
+      return <SelectionButton 
         onClick={() => this.handleClick('topic', idx)} 
         selected={_.contains(this.state.topicIndices, idx)}
-      >{t}</Button>
+      >{t}</SelectionButton>
     });
 
     return (
@@ -79,6 +92,9 @@ class Settings extends Component {
               {topicButtons}
             </Group>
           </Selection>
+          <ButtonContainer>
+            <AccessCodeButton onClick={this.redirect}>Generate Access Code for Match</AccessCodeButton>
+          </ButtonContainer>
         </InnerFrame>
       </OuterFrame>
     );
@@ -93,6 +109,7 @@ const OuterFrame = styled.div`
 
 const InnerFrame = styled.div`
   width: 80%;
+  max-width: 900px;
   margin: auto;
   margin-top: 25px;
   background-color: white;  
@@ -109,24 +126,30 @@ const Group = styled.div`
 
 const Text = styled.h4`
   font-size: 2em;
-  font-style: bold;
   display: inline-block;
   margin-right: 10px;
 `
 
-const Button = styled.button`
-  &:focus {
-    outline: 0;
-  }
-  border-radius: 10px;
-  border-width: 0px;
-  cursor: pointer;
-  font-family: BrandonGrotesque;
-  display: inline-block;
+const SelectionButton = DefaultButton.extend`
   background-color: ${props => props.selected ? color.red : color.lightestGray};
   color: ${props => props.selected ? 'white' : 'black'};
   font-size: 2em;
   margin-left: 20px;
+`
+
+const ButtonContainer = styled.div`
+  width: 100%;
+  text-align: center;
+  padding: 25px 0px 25px 0px;
+`
+
+const AccessCodeButton = DefaultButton.extend`
+  background-color: ${color.blue};
+  &:hover {
+    background-color: ${color.blue10l};
+  }
+  font-size: 2.5em;
+  width: 50%;
 `
 
 export default Settings;

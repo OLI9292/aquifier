@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import DefaultButton from './default';
 import styled from 'styled-components';
 import { color } from '../../Assets/Styles/index';
 
@@ -21,9 +22,11 @@ const ActionButton = (type, redirect) => {
   }
 }
 
-const Button = styled.button`
+const Button = DefaultButton.extend`
   width: 300px;
   height: 100px;
+  font-size: 3em;
+  margin: 2%;
 
   @media (max-width: 768px) {
     width: 180px;
@@ -35,19 +38,6 @@ const Button = styled.button`
   &:hover {
     background-color: ${props => props.colorHover};
   }
-  &:focus {
-    outline: 0;
-  }
-  border-radius: 10px;
-  border-width: 0px;
-  color: white;
-  cursor: pointer;
-  display: inline-block;
-  font-family: BrandonGrotesque;
-  font-size: 3em;
-  line-height: 100%;
-  margin: 2%;
-  transition: 0.2s
 `
 
 const Link = styled.a`

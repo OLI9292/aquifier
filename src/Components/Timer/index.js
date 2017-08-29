@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import './index.css';
+import styled from 'styled-components';
+import { color } from '../../Assets/Styles/index';
 
 class Timer extends Component {
   constructor(props) {
@@ -36,11 +37,14 @@ class Timer extends Component {
 
   render() {
     return (
-      <div className="timer">
-        <p>{this.state.timeLeft}</p>
-      </div>
+      <Text>{this.state.timeLeft}</Text>
     );
   }
 }
+
+const Text = styled.p`
+  font-size: 4em;
+  color: ${color.red};
+`
 
 export default Timer;

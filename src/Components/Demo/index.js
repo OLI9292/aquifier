@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './index.css';
 import Firebase from '../../Networking/Firebase';
-import ActionButton from '../ActionButton/index';
+import ActionButton from '../Buttons/action';
 import OnCorrectImage from '../OnCorrectImage/index';
 import Timer from '../Timer/index';
 import Word from '../../Models/Word';

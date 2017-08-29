@@ -1,5 +1,3 @@
-import css from 'styled-components';
-
 export const color = {
   blue: '#2f80ed',
   blue10l: '#438cee',

@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import logo from '../../Assets/Images/logo.png';
-import styled from 'styled-components';
-import { color } from '../../Assets/Styles/index';
-import ActionButton from '../ActionButton/index';
 import { Redirect } from 'react-router';
+import styled from 'styled-components';
+
+import ActionButton from '../Buttons/action';
+import { color } from '../../Assets/Styles/index';
+import logo from '../../Assets/Images/logo.png';
 
 class Home extends Component {
   constructor(props) {
