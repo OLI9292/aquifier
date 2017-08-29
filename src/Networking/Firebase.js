@@ -11,6 +11,7 @@ const firebaseApp = firebase.initializeApp(firebaseConfig);
 
 const Firebase = {
   words: firebaseApp.database().ref().child('mobile').child('words'),
+  matches: firebaseApp.database().ref().child('web').child('matches-multiplayer')
 }
 
 export default Firebase;

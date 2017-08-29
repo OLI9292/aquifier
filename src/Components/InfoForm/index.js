@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import './index.css';
-import lightGrayCheckmark from '../../assets/images/Checkmark-LightGray.png';
-import greenCheckmark from '../../assets/images/Checkmark-Green.png';
-import ActionButton from '../ActionButton/index';
+import lightGrayCheckmark from '../../Assets/Images/Checkmark-LightGray.png';
+import greenCheckmark from '../../Assets/Images/Checkmark-Green.png';
+import ActionButton from '../Buttons/action';
 
 class InfoForm extends Component {
   constructor(props) {

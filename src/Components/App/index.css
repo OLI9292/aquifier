@@ -1,0 +1,17 @@
+@font-face {
+  font-family: BrandonGrotesque;
+  src: url('../../Assets/Fonts/Brandon_reg.otf');
+}
+
+@font-face {
+  font-family: BrandonGrotesque;
+  src: url('../../Assets/Fonts/Brandon_bld.otf');
+  font-weight: bold;
+}
+
+html, body, #root {
+  width: 100%;
+  margin: 0;
+  font-family: BrandonGrotesque;
+  background-color: white;
+}
