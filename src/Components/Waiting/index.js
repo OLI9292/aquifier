@@ -39,11 +39,10 @@ class Waiting extends Component {
 }
 
 const Layout = styled.div`
+  padding-top: 5%;
   margin: auto;
-  padding: 50px 0px 50px 0px;
-  width: 80%;
-  height: 80%;
   text-align: center;
+  width: 65%;
 `
 
 const Text = styled.p`

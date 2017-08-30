@@ -10,7 +10,7 @@ import InfoForm from '../InfoForm/index';
 import Lobby from '../Lobby/index';
 import Join from '../Join/index';
 import Settings from '../Settings/index';
-import Spectator from '../Spectator/index';
+import Admin from '../Admin/index';
 import Waiting from '../Waiting/index';
 import { color } from '../../Assets/Styles/index';
 import './index.css';
@@ -23,10 +23,10 @@ class App extends Component {
           <Route exact path='/' component={Home} />
           <Route exact path='/lobby' component={() => <Container component='lobby' />} />
           <Route exact path='/join' component={() => <Container component='join' />} />
-          <Route exact path='/settings-single' component={() => <Container component='settings' players='single' />} />
-          <Route exact path='/settings-multi' component={() => <Container component='settings' players='multi' />} />
-          <Route exact path='/game/spectator' component={() => <Container component='spectator' />} />
-          <Route exact path='/game/:accessCode?/:status?' component={GameComponent} />
+          <Route exact path='/settings' component={() => <Container component='settings' />} />
+          <Route exact path='/settings/multiplayer' component={() => <Container component='settings' multiplayer={true} />} />
+          <Route exact path='/game/admin' component={() => <Container component='admin' />} />
+          <Route exact path='/game/:accessCode?/:notYetStarted?' component={GameComponent} />
         </Switch>
       </BrowserRouter>
     );
@@ -35,7 +35,11 @@ class App extends Component {
 
 const GameComponent = ({ match }) => {
   if (match.params.accessCode) {
-    return <Container component='game' accessCode={match.params.accessCode} status={match.params.status} />
+    if (match.params.notYetStarted) {
+      return <Container component='waiting' accessCode={match.params.accessCode} />
+    } else {
+      return <Container component='game' accessCode={match.params.accessCode} />
+    }
   } else {
     return <Container component='game' />
   }
@@ -50,11 +54,11 @@ class Container extends Component {
         case 'join':
           return <Join />
         case 'game':
-          return <Game late={this.props.late} accessCode={this.props.accessCode} status={this.props.status} />
+          return <Game late={this.props.late} accessCode={this.props.accessCode} />
         case 'settings':
-          return <Settings players={this.props.players} />
-        case 'spectator':
-          return <Spectator />
+          return <Settings multiplayer={this.props.multiplayer} />
+        case 'admin':
+          return <Admin />
         case 'waiting':
           return <Waiting accessCode={this.props.accessCode} status={this.props.status} />
       }
@@ -72,16 +76,22 @@ class Container extends Component {
 }
 
 const OuterFrame = styled.div`
-  background-color: ${color.lightestGray};
-  width: 100%;
   height: 100%;
+  width: 100%;
+  min-width: 600px;
+  background-color: ${color.lightestGray};
+  display: block;
+  overflow: auto;
 `
 
 const InnerFrame = styled.div`
   width: 80%;
   max-width: 900px;
-  margin: auto;
-  margin-top: 25px;
+  min-height: 80%;
+  margin-top: 2.5%;
+  margin-bottom: 2.5%;
+  margin-left: auto;
+  margin-right: auto;
   background-color: white;  
   border-radius: 10px;
 `
