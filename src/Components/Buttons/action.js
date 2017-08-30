@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import DefaultButton from './default';
+import Buttons from './default';
 import styled from 'styled-components';
 import { color } from '../../Assets/Styles/index';
 
@@ -8,9 +8,9 @@ const IOSURL = "https://itunes.apple.com/us/app/wordcraft-vocabulary-from-greek-
 const ActionButton = (type, redirect) => {
   switch (type) {
     case 'single':
-      return <Button color={color.blue} colorHover={color.blue10l} onClick={() => redirect(`/settings-${type}`)}>Single Player</Button>
+      return <Button color={color.blue} colorHover={color.blue10l} onClick={() => redirect('/settings-single')}>Single Player</Button>
     case 'multi':
-      return <Button color={color.yellow} colorHover={color.yellow10l} onClick={() => redirect(`/settings-${type}`)}>Multiplayer</Button>
+      return <Button color={color.yellow} colorHover={color.yellow10l} onClick={() => redirect('/lobby')}>Multiplayer</Button>
     case 'schools':
       return <Button color={color.green} colorHover={color.green10l}>For Schools</Button>
     case 'ios':
@@ -22,18 +22,8 @@ const ActionButton = (type, redirect) => {
   }
 }
 
-const Button = DefaultButton.extend`
-  width: 300px;
-  height: 100px;
-  font-size: 3em;
+const Button = Buttons.large.extend`
   margin: 2%;
-
-  @media (max-width: 768px) {
-    width: 180px;
-    height: 60px;
-    font-size: 2em;
-  }
-
   background-color: ${props => props.color};
   &:hover {
     background-color: ${props => props.colorHover};
