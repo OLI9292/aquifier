@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
+import { Redirect } from 'react-router';
 import styled from 'styled-components';
 import _ from 'underscore';
 
+import ActionButton from '../Buttons/action';
 import Buttons from '../Buttons/default';
 import Firebase from '../../Networking/Firebase';
 import OnCorrectImage from '../OnCorrectImage/index';
@@ -21,7 +23,9 @@ class Game extends Component {
       currentWord: null,
       dataLoaded: false,
       displayImage: false,
+      gameOver: false,
       questionCount: 0,
+      redirect: null,
       roots: [],
       score: 0,
       isSinglePlayer: isSinglePlayer,
@@ -34,7 +38,7 @@ class Game extends Component {
     if (this.state.isSinglePlayer) {
       const words = await Firebase.fetchWords();
       const roots = _.uniq(_.flatten(words.map((w) => w.roots)), 'value');
-      this.timer.track();
+      // this.timer.track();
       this.setState({ words: words, roots: roots, dataLoaded: true }, this.nextWord);
     }
   }
@@ -61,6 +65,7 @@ class Game extends Component {
   checkComplete() {
     if (_.contains(_.pluck(this.state.wordComponents, 'display'), false)) { return };
 
+    // TODO - remove || true
     if (this.wordImage.state.source || true) {
       this.setState({ displayImage: true });
     }
@@ -79,12 +84,12 @@ class Game extends Component {
     const updatedComponents = this.state.wordComponents.map((c) => {
       return c.value === choice ? { value: c.value, display: true } : c;
     });
+    
     const incorrect = _.isEqual(this.state.wordComponents, updatedComponents);
-    if (incorrect) {
-      this.setState({ correct: false });
-    } else {
-      this.setState({ wordComponents: updatedComponents }, this.checkComplete);
-    }
+
+    incorrect
+      ? this.setState({ correct: false })
+      : this.setState({ wordComponents: updatedComponents }, this.checkComplete);
   }
 
   randomItem(arr) {
@@ -100,7 +105,19 @@ class Game extends Component {
     return str.split('').map((c) => '_').join('')
   }
 
+  gameOver() {
+    this.setState({ gameOver: true });
+  }
+
+  redirect(location) {
+    this.setState({ redirect: location })
+  }
+
   render() {
+    if (this.state.redirect) {
+      return <Redirect push to={this.state.redirect} />;
+    }
+
     const definition = () => {
       if (_.isNull(this.state.currentWord)) { return };
       return this.state.currentWord.definition.map((p) => {
@@ -122,12 +139,8 @@ class Game extends Component {
       })
     }
 
-    return (
-      <Layout>
-        <Scoreboard>
-          <Score>{this.state.score}</Score>
-          <Timer ref={instance => { this.timer = instance }} />
-        </Scoreboard>
+    const question = () => {
+      return <Container>
         <Definition>{definition()}</Definition>
         <AnswerSpaces>{answerSpaces()}</AnswerSpaces>
         <GameButtons display={!this.state.displayImage}>{buttons()}</GameButtons>
@@ -135,6 +148,27 @@ class Game extends Component {
           display={this.state.displayImage} 
           ref={instance => { this.wordImage = instance }} 
           word={this.state.currentWord} />
+      </Container>
+    }
+
+    const gameOver = () => {
+      return <Container>
+        <Text>You scored {this.state.score}.</Text>
+        {ActionButton('singlePlayer', this.redirect.bind(this))}
+        {ActionButton('ios')}
+        {ActionButton('android')}
+      </Container>
+    }
+
+    return (
+      <Layout>
+        <Scoreboard>
+          <Score>{this.state.score}</Score>
+          <Timer 
+            ref={instance => { this.timer = instance }}
+            gameOver={this.gameOver.bind(this)} />
+        </Scoreboard>
+        {this.state.gameOver ? gameOver() : question()}
       </Layout>
     );
   }
@@ -152,6 +186,9 @@ const Scoreboard = styled.div`
 const Score = styled.p`
   font-size: 4em;
   margin-right: 10px;
+`
+
+const Container = styled.div`
 `
 
 const Definition = styled.div`
@@ -181,6 +218,10 @@ const GameButton = Buttons.large.extend`
   }
   margin: 10px;
   width: 250px;
+  font-size: 2em;
+`
+
+const Text = styled.h4`
   font-size: 2em;
 `
 

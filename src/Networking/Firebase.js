@@ -14,7 +14,7 @@ const firebaseApp = firebase.initializeApp(firebaseConfig);
 const refs = {
   words: firebaseApp.database().ref().child('mobile').child('words'),
   // TODO: - rename
-  games: firebaseApp.database().ref().child('web').child('matches-multiplayer')  
+  games: firebaseApp.database().ref().child('web').child('games-multiplayer')  
 }
 
 function validate(snapshot, name, accessCode) {

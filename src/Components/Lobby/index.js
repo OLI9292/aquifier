@@ -28,7 +28,7 @@ class Lobby extends Component {
         <Button onClick={() => this.handleClick('/join')}>Join a Game!</Button>
         <Text>Enter an access code to join a<br />multiplayer game.</Text>
         <br /><br />
-        <Button onClick={() => this.handleClick('/settings-multi')}>Create a Game!</Button>
+        <Button onClick={() => this.handleClick('/settings/multiplayer')}>Create a Game!</Button>
         <Text>Create a vocabulary game<br />for multiple players.</Text>
       </Layout>
     );
@@ -37,7 +37,7 @@ class Lobby extends Component {
 
 const Layout = styled.div`
   margin: auto;
-  padding: 50px 0px 50px 0px;
+  padding-top: 5%;
   text-align: center;
   width: 80%;
 `

@@ -44,7 +44,7 @@ class Settings extends Component {
 
   render() {
     if (this.state.redirect) {
-      const location = (this.props.players === 'single') ? '/game/single' : '/game/spectator';
+      const location = this.props.multiplayer ? '/game/admin' : '/game';
       return <Redirect push to={location} />;
     }
 
@@ -76,21 +76,23 @@ class Settings extends Component {
     return (
       <Layout>
         <Selection>
-          <Group>
-            <Text>Time</Text>
-            {timeButtons}
-          </Group>
-          <Group>
-            <Text>Level</Text>
-            {levelButtons}
-          </Group>
-          <Group>
-            <Text>Topic</Text>
-            {topicButtons}
-          </Group>
+          <tr>
+            <ShortCell><Text>Time</Text></ShortCell>
+            <LongCell>{timeButtons}</LongCell>
+          </tr>
+          <tr>
+            <ShortCell><Text>Level</Text></ShortCell>
+            <LongCell>{levelButtons}</LongCell>
+          </tr>
+          <tr>
+            <ShortCell><Text>Topic</Text></ShortCell>
+            <LongCell>{topicButtons}</LongCell>
+          </tr>
         </Selection>
         <ButtonContainer>
-          <AccessCodeButton onClick={this.redirect}>Generate Access Code for Match</AccessCodeButton>
+          <AccessCodeButton onClick={this.redirect}>
+            {this.props.multiplayer ? 'Generate Access Code for Match' : 'Play'}
+          </AccessCodeButton>
         </ButtonContainer>
       </Layout>
     );
@@ -98,39 +100,49 @@ class Settings extends Component {
 }
 
 const Layout = styled.div`
-  padding: 50px 0px 50px 0px;
+  padding: 5% 0 5% 0;
 `
 
 const Selection = styled.div`
   margin-left: 20px;
 `
 
-const Group = styled.div`
+const ShortCell = styled.td`
+  vertical-align: top;
+  width: 100px;
+  padding-right: 2em;
+`
+
+const LongCell = styled.td`
+  vertical-align: top;
+  width: 100%;
+  padding-bottom: 3em;
 `
 
 const Text = styled.h4`
+  display: inline;
   font-size: 2em;
-  display: inline-block;
   margin-right: 10px;
 `
 
 const SelectionButton = Buttons.medium.extend`
   background-color: ${props => props.selected ? color.red : color.lightestGray};
   color: ${props => props.selected ? 'white' : 'black'};
-  margin-left: 20px;
+  margin: 0 0.5em 0.5em 0;
 `
 
 const ButtonContainer = styled.div`
   width: 100%;
   text-align: center;
-  padding: 25px 0px 25px 0px;
 `
 
-const AccessCodeButton = Buttons.large.extend`
+const AccessCodeButton = Buttons.extraLarge.extend`
   background-color: ${color.blue};
   &:hover {
     background-color: ${color.blue10l};
   }
+  font-size: 2.5em;
+  height: 125px;
 `
 
 export default Settings;

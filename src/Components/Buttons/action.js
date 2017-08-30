@@ -7,9 +7,9 @@ const IOSURL = "https://itunes.apple.com/us/app/wordcraft-vocabulary-from-greek-
 
 const ActionButton = (type, redirect) => {
   switch (type) {
-    case 'single':
-      return <Button color={color.blue} colorHover={color.blue10l} onClick={() => redirect('/settings-single')}>Single Player</Button>
-    case 'multi':
+    case 'singlePlayer':
+      return <Button color={color.blue} colorHover={color.blue10l} onClick={() => redirect('/settings')}>Single Player</Button>
+    case 'multiplayer':
       return <Button color={color.yellow} colorHover={color.yellow10l} onClick={() => redirect('/lobby')}>Multiplayer</Button>
     case 'schools':
       return <Button color={color.green} colorHover={color.green10l}>For Schools</Button>

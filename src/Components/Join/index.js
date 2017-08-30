@@ -28,7 +28,7 @@ class Join extends Component {
         this.setState({ redirect: `/game/${accessCode}/waiting` });
       } else { // Game has started
         const time = game.startTime;
-        this.setState({ redirect: `/game/${accessCode}/` })
+        this.setState({ redirect: `/game/${accessCode}` })
       }
     } else {
       this.setState({ error: 'Unable to join game.', displayError: true });
@@ -52,7 +52,6 @@ class Join extends Component {
 
     return (
       <Layout>
-        <ErrorMessage display={this.state.displayError}>{this.state.error}</ErrorMessage>
         <tr>
           <ShortRow><Text>Name</Text></ShortRow>
           <LongRow>
@@ -70,6 +69,7 @@ class Join extends Component {
         </tr>
         <ButtonContainer>
           <Button onClick={this.handleClick}>Play!</Button>
+          <ErrorMessage display={this.state.displayError}>{this.state.error}</ErrorMessage>
         </ButtonContainer>
       </Layout>
     );
@@ -78,12 +78,14 @@ class Join extends Component {
 
 const Layout = styled.div`
   margin: auto;
-  padding: 50px 0px 50px 0px;
+  padding-top: 5%;
   width: 80%;
 `
 
 const ErrorMessage = styled.p`
-  color: ${color.red};
+  font-size: 1.25em;
+  position: absolute;
+  color: ${color.red};  
   visibility: ${props => props.display ? 'visible' : 'hidden'}
 `
 

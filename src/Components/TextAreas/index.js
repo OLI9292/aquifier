@@ -15,7 +15,7 @@ const DefaultTextArea = styled.textarea`
 `
 
 const MediumTextArea = DefaultTextArea.extend`
-  width: 300px;
+  width: 350px;
   height: 70px;
   line-height: 70px;
   font-size: 2em;

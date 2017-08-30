@@ -30,8 +30,8 @@ class Home extends Component {
         <Title>WORDCRAFT</Title>
         <Subtitle>Understand, don't memorize, advanced<br />English vocabulary.</Subtitle>
         <Buttons>
-          {ActionButton('single', this.redirect.bind(this))}
-          {ActionButton('multi', this.redirect.bind(this))}
+          {ActionButton('singlePlayer', this.redirect.bind(this))}
+          {ActionButton('multiplayer', this.redirect.bind(this))}
           {ActionButton('schools')}
         </Buttons>
         <Buttons>

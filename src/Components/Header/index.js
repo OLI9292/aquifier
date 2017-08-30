@@ -37,8 +37,7 @@ class Header extends Component {
 
 const Layout = styled.div`
   background-color: white;
-  height: 10vh;
-  max-height: 75px;
+  height: 10%;
   width: 100%;
   min-width: 400px;
 `

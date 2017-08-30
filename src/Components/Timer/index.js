@@ -21,12 +21,12 @@ class Timer extends Component {
     const seconds = this.state.timeLeft.split(':')[1];
 
     if ((seconds === '00') && (minutes === '0')) {
-      // handle game over
+      this.props.gameOver();
     } else {
       const time = seconds === '00'
         ? `${parseInt(minutes) - 1}:59`
         : `${minutes}:${this.decrementSeconds(seconds)}`
-      setTimeout(() => { this.update(time) }, 1000);
+      setTimeout(() => { this.update(time) }, 10);
     }
   }
 
