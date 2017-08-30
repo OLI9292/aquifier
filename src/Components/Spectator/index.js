@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import _ from 'underscore';
 
-import DefaultButton from '../Buttons/default';
+import Buttons from '../Buttons/default';
 import Header from '../Header/index';
 import Timer from '../Timer/index';
 import { color } from '../../Assets/Styles/index';
@@ -20,14 +20,14 @@ class Spectator extends Component {
   }
 
   componentDidMount() {
-    Firebase.matches.once('value', (snapshot) => {
+    Firebase.games.once('value', (snapshot) => {
       const accessCodes = _.keys(snapshot.val());
       const accessCode = this.generateAccessCode(accessCodes);
 
-      const match = {};
-      match[accessCode] = { status: 0 };
+      const game = {};
+      game[accessCode] = { status: 0 };
 
-      Firebase.matches.update(match, (e) => {
+      Firebase.games.update(game, (e) => {
         if (e) {
           console.log(e);
         } else {
@@ -45,7 +45,7 @@ class Spectator extends Component {
     const time = (new Date()).getTime();
     const startMatchUpdate = { status: 1, startTime: time };
 
-    Firebase.matches.child(this.state.accessCode).update(startMatchUpdate, (e) => {
+    Firebase.games.child(this.state.accessCode).update(startMatchUpdate, (e) => {
       if (e) {
         console.log(e);
       } else {
@@ -56,37 +56,17 @@ class Spectator extends Component {
 
   render() {
     return (
-      <OuterFrame>
-        <Header />
-        <InnerFrame>
-          <Content>
-            <Heading>Access Code</Heading>
-            <AccessCode>{this.state.accessCode}</AccessCode>
-            <Timer ref={instance => { this.timer = instance }} />
-            <StartButton onClick={this.startMatch}>Start Match</StartButton>
-          </Content>
-        </InnerFrame>
-      </OuterFrame>
+      <Layout>
+        <Heading>Access Code</Heading>
+        <AccessCode>{this.state.accessCode}</AccessCode>
+        <Timer ref={instance => { this.timer = instance }} />
+        <StartButton onClick={this.startMatch}>Start Match</StartButton>
+      </Layout>
     );
   }
 }
 
-const OuterFrame = styled.div`
-  background-color: ${color.lightestGray};
-  width: 100%;
-  height: 100%;
-`
-
-const InnerFrame = styled.div`
-  width: 80%;
-  max-width: 900px;
-  margin: auto;
-  margin-top: 25px;
-  background-color: white;  
-  border-radius: 10px;
-`
-
-const Content = styled.div`
+const Layout = styled.div`
   padding: 50px 0px 50px 0px;
   text-align: center;
 `
@@ -102,13 +82,12 @@ const AccessCode = styled.h1`
   color: ${color.red};
 `
 
-const StartButton = DefaultButton.extend`
+const StartButton = Buttons.large.extend`
   background-color: ${color.blue};
   &:hover {
     background-color: ${color.blue10l};
   }
   font-size: 2.5em;
-  width: 40%;
 `
 
 export default Spectator;

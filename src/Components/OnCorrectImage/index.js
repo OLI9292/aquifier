@@ -1,7 +1,8 @@
-import AWSs3 from '../../Networking/AWSs3.js';
 import React, { Component } from 'react';
-import './index.css';
+import styled from 'styled-components';
 import _ from 'underscore';
+
+import AWSs3 from '../../Networking/AWSs3.js';
 
 class OnCorrectImage extends Component {
   constructor(props) {
@@ -9,6 +10,7 @@ class OnCorrectImage extends Component {
 
     this.state = {
       data: [],
+      display: false,
       source: null
     }
   }
@@ -21,11 +23,11 @@ class OnCorrectImage extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log(nextProps.displayImage);
     if (_.isNull(nextProps.word)) { return };
 
     const image = _.find(this.state.data, (obj) => {
       let words = obj.Key.split('.')[0].split('-');
+      // TODO: - replace w/   return _.contains(words, this.nextProps.word.value)
       return _.contains(words, 'cephalopod'); // this.nextProps.word.value
     });
 
@@ -53,11 +55,21 @@ class OnCorrectImage extends Component {
 
   render() {
     return (
-      <div className={this.props.display ? 'on-correct-image' : 'hide'}>
-        <img src={this.state.source} />
-      </div>
+      <Layout display={this.props.display}>
+        <Image src={this.state.source} />
+      </Layout>
     );
   }
 }
+
+const Layout = styled.div`
+  display: ${props => props.display ? 'inline' : 'none'};
+  margin: auto;
+  width: 100%;
+`
+
+const Image = styled.img`
+  max-width: 100%;
+`
 
 export default OnCorrectImage;

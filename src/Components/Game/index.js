@@ -1,15 +1,19 @@
 import React, { Component } from 'react';
-import './index.css';
+import styled from 'styled-components';
+import _ from 'underscore';
+
+import Buttons from '../Buttons/default';
 import Firebase from '../../Networking/Firebase';
-import ActionButton from '../Buttons/action';
 import OnCorrectImage from '../OnCorrectImage/index';
 import Timer from '../Timer/index';
 import Word from '../../Models/Word';
-import _ from 'underscore';
+import { color } from '../../Assets/Styles/index';
 
-class Demo extends Component {
+class Game extends Component {
   constructor(props) {
     super(props);
+
+    const isSinglePlayer = this.props.accessCode === undefined;
 
     this.state = {
       choices: [],
@@ -20,19 +24,19 @@ class Demo extends Component {
       questionCount: 0,
       roots: [],
       score: 0,
+      isSinglePlayer: isSinglePlayer,
       wordComponents: [],
       words: []
     }
   }
 
-  componentDidMount() {
-    Firebase.words.on('value', (snapshot) => {
-      let wordObj = snapshot.val();
-      const words = _.keys(wordObj).map((val) => Word(val, wordObj[val]));
-      const roots = _.flatten(words.map((w) => w.roots));
-      this.setState({ words: words, roots: roots, dataLoaded: true }, this.nextWord);
+  async componentDidMount() {
+    if (this.state.isSinglePlayer) {
+      const words = await Firebase.fetchWords();
+      const roots = _.uniq(_.flatten(words.map((w) => w.roots)), 'value');
       this.timer.track();
-    });
+      this.setState({ words: words, roots: roots, dataLoaded: true }, this.nextWord);
+    }
   }
 
   nextWord() {
@@ -57,7 +61,7 @@ class Demo extends Component {
   checkComplete() {
     if (_.contains(_.pluck(this.state.wordComponents, 'display'), false)) { return };
 
-    if (this.wordImage.state.source) {
+    if (this.wordImage.state.source || true) {
       this.setState({ displayImage: true });
     }
 
@@ -106,43 +110,78 @@ class Demo extends Component {
 
     const answerSpaces = () => {
       return this.state.wordComponents.map((c) => {
-        return <span>{c.display ? c.value : this.toUnderscore(c.value)}</span>
+        return <AnswerSpace>{c.display ? c.value : this.toUnderscore(c.value)}</AnswerSpace>
       })
     }
 
     const buttons = () => {
       return this.state.choices.map((c) => {
-        return <div
-          className="game-button"
+        return <GameButton
           key={c.value}
-          onClick={() => {this.guessed(c.value)}}><p>{c.value.toUpperCase()}<br />{c.definition}</p></div>
+          onClick={() => {this.guessed(c.value)}}>{c.value.toUpperCase()}<br />{c.definition}</GameButton>
       })
     }
 
     return (
-      <div className="demo-container">
-        <div className="scoreboard">
-          <div className="score">
-            <p>{this.state.score}</p>
-          </div>
+      <Layout>
+        <Scoreboard>
+          <Score>{this.state.score}</Score>
           <Timer ref={instance => { this.timer = instance }} />
-        </div>
-        <div className="definition">
-          {definition()}
-        </div>
-        <div className="answer-spaces">
-          {answerSpaces()}
-        </div>
-        <div className={this.state.displayImage ? 'hide' : 'game-buttons'}>
-          {buttons()}
-        </div>
+        </Scoreboard>
+        <Definition>{definition()}</Definition>
+        <AnswerSpaces>{answerSpaces()}</AnswerSpaces>
+        <GameButtons display={!this.state.displayImage}>{buttons()}</GameButtons>
         <OnCorrectImage 
           display={this.state.displayImage} 
           ref={instance => { this.wordImage = instance }} 
           word={this.state.currentWord} />
-      </div>
+      </Layout>
     );
   }
 }
 
-export default Demo;
+const Layout = styled.div`
+  text-align: center;
+`
+
+const Scoreboard = styled.div`
+  display: flex;
+  justify-content: center;
+`
+
+const Score = styled.p`
+  font-size: 4em;
+  margin-right: 10px;
+`
+
+const Definition = styled.div`
+  font-size: 2.5em;
+`
+
+const AnswerSpaces = styled.div`
+  margin: 5% 0% 5% 0%;
+`
+
+const AnswerSpace = styled.p`
+  margin: 0% 1% 0% 1%;
+  font-size: 2.5em;
+  display: inline-block;
+`
+
+const GameButtons = styled.div`
+  display: ${props => props.display ? 'flex' : 'none'};;
+  flex-wrap: wrap;
+  justify-content: center;
+`
+
+const GameButton = Buttons.large.extend`
+  background-color: ${color.blue};
+  &:hover {
+    background-color: ${color.blue10l};
+  }
+  margin: 10px;
+  width: 250px;
+  font-size: 2em;
+`
+
+export default Game;
