@@ -27,7 +27,7 @@ class Waiting extends Component {
 
   render() {
     if (this.state.redirect) {
-      return <Redirect push to={`/game/${this.props.accessCode}/start`} />;
+      return <Redirect push to={`/game/${this.props.accessCode}/play`} />;
     }
 
     return (

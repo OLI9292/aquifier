@@ -28,13 +28,6 @@ function validate(snapshot, name, accessCode) {
   return [true, snapshot];
 }
 
-function verifyUpdate(e) {
-  if (e) {
-    return 'Could not join game.';
-  }
-  return null;
-}
-
 function mapWords(snapshot) {
   let wordObj = snapshot.val();
   return _.keys(wordObj).map((val) => Word(val, wordObj[val]));

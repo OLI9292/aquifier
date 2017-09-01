@@ -3,8 +3,8 @@ import { Redirect } from 'react-router';
 import styled from 'styled-components';
 
 import ActionButton from '../Buttons/action';
-import { color } from '../../Assets/Styles/index';
-import logo from '../../Assets/Images/logo.png';
+import { color } from '../../Library/Styles/index';
+import logo from '../../Library/Images/logo.png';
 
 class Home extends Component {
   constructor(props) {

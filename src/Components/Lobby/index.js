@@ -3,7 +3,7 @@ import { Redirect } from 'react-router';
 import styled from 'styled-components';
 
 import Buttons from '../Buttons/default';
-import { color } from '../../Assets/Styles/index';
+import { color } from '../../Library/Styles/index';
 
 class Lobby extends Component {
   constructor(props) {

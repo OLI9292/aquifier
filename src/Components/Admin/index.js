@@ -4,9 +4,8 @@ import styled from 'styled-components';
 import _ from 'underscore';
 
 import Buttons from '../Buttons/default';
-import Header from '../Header/index';
 import Timer from '../Timer/index';
-import { color } from '../../Assets/Styles/index';
+import { color } from '../../Library/Styles/index';
 
 class Admin extends Component {
   constructor(props) {
@@ -19,22 +18,35 @@ class Admin extends Component {
     this.startMatch = this.startMatch.bind(this);
   }
 
-  componentDidMount() {
+  async componentDidMount() {
+    let words = await Firebase.fetchWords();
+    words = _.shuffle(_.pluck(words.filter((w) => this.matchesCategory(w.categories, this.props.topics)), 'value')).join(',');
+
     Firebase.refs.games.once('value', (snapshot) => {
       const accessCodes = _.keys(snapshot.val());
       const accessCode = this.generateAccessCode(accessCodes);
 
       const game = {};
-      game[accessCode] = { status: 0 };
+
+      game[accessCode] = { 
+        level: this.props.level,
+        time: this.props.time,
+        status: 0,
+        words: words
+      };
 
       Firebase.refs.games.update(game, (e) => {
         if (e) {
           console.log(e);
         } else {
-          this.setState({ accessCode: accessCode });
+          this.setState({ accessCode: accessCode }, this.fetchWords);
         }
       });
     });
+  }
+
+  matchesCategory(a, b) {
+    return _.intersection(a.map((x) => x.toLowerCase()), b.map((y) => y.toLowerCase())).length > 0
   }
 
   generateAccessCode(exclude) {
@@ -45,7 +57,7 @@ class Admin extends Component {
     const time = (new Date()).getTime();
     const startMatchUpdate = { status: 1, startTime: time };
 
-    Firebase.games.child(this.state.accessCode).update(startMatchUpdate, (e) => {
+    Firebase.refs.games.child(this.state.accessCode).update(startMatchUpdate, (e) => {
       if (e) {
         // TODO: - handle / show error
         console.log(e);

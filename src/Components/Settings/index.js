@@ -4,7 +4,8 @@ import styled from 'styled-components';
 import _ from 'underscore';
 
 import Buttons from '../Buttons/default';
-import { color } from '../../Assets/Styles/index';
+import { color } from '../../Library/Styles/index';
+import GLOBAL from '../../Library/global';
 
 class Settings extends Component {
   constructor(props) {
@@ -39,35 +40,43 @@ class Settings extends Component {
           : this.state.topicIndices.concat([idx])
         this.setState({ topicIndices: indices });
         break;
+      default:
+        break;
     }
   }
 
   render() {
+    const times = GLOBAL.SETTINGS.TIME;
+    const levels = GLOBAL.SETTINGS.LEVEL;
+    const topics = GLOBAL.SETTINGS.TOPIC;
+
     if (this.state.redirect) {
-      const location = this.props.multiplayer ? '/game/admin' : '/game';
+      const params = `time=${times[this.state.timeIdx]}` +
+        `&level=${levels[this.state.levelIdx]}` +
+        `${this.state.topicIndices.map((idx) => `&topic=${topics[idx]}`).join('')}`;
+      const location = this.props.multiplayer ? `/game/admin/${params}` : `/game/sp/${params}`;
       return <Redirect push to={location} />;
     }
 
-    const TIMES = ['3 Minutes', '5 Minutes'];
-    const LEVELS = ['Beginner', 'Intermediate', 'Advanced'];
-    const TOPICS = ['Everything', 'Math', 'Nature', 'History', 'Science'];
-
-    const timeButtons = TIMES.map((t, idx) => {
+    const timeButtons = times.map((t, idx) => {
       return <SelectionButton 
+        key={idx}
         onClick={() => this.handleClick('time', idx)} 
         selected={this.state.timeIdx === idx}
-      >{t}</SelectionButton>
+      >{`${t} Minutes`}</SelectionButton>
     });
 
-    const levelButtons = LEVELS.map((l, idx) => {
+    const levelButtons = levels.map((l, idx) => {
       return <SelectionButton 
+        key={idx}
         onClick={() => this.handleClick('level', idx)} 
         selected={this.state.levelIdx === idx}
       >{l}</SelectionButton>
     });
 
-    const topicButtons = TOPICS.map((t, idx) => {
+    const topicButtons = topics.map((t, idx) => {
       return <SelectionButton 
+        key={idx}
         onClick={() => this.handleClick('topic', idx)} 
         selected={_.contains(this.state.topicIndices, idx)}
       >{t}</SelectionButton>

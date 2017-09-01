@@ -1,11 +1,11 @@
 @font-face {
   font-family: BrandonGrotesque;
-  src: url('../../Assets/Fonts/Brandon_reg.otf');
+  src: url('../../Library/Fonts/Brandon_reg.otf');
 }
 
 @font-face {
   font-family: BrandonGrotesque;
-  src: url('../../Assets/Fonts/Brandon_bld.otf');
+  src: url('../../Library/Fonts/Brandon_bld.otf');
   font-weight: bold;
 }
 

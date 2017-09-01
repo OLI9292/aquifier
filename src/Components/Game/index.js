@@ -4,105 +4,79 @@ import styled from 'styled-components';
 import _ from 'underscore';
 
 import ActionButton from '../Buttons/action';
-import Buttons from '../Buttons/default';
 import Firebase from '../../Networking/Firebase';
+
+import Question from '../Question/index';
+import Spell from '../Question/spell';
+
 import OnCorrectImage from '../OnCorrectImage/index';
 import Timer from '../Timer/index';
-import Word from '../../Models/Word';
-import { color } from '../../Assets/Styles/index';
+import { sleep } from '../../Library/helpers';
 
 class Game extends Component {
   constructor(props) {
     super(props);
 
     const isSinglePlayer = this.props.accessCode === undefined;
+    console.log(isSinglePlayer);
 
     this.state = {
       choices: [],
-      correct: true,
       currentWord: null,
       dataLoaded: false,
       displayImage: false,
       gameOver: false,
+      level: 'Beginner',
       questionCount: 0,
       redirect: null,
       roots: [],
       score: 0,
       isSinglePlayer: isSinglePlayer,
-      wordComponents: [],
-      words: []
+      words: [],
+      wordOrder: []
     }
   }
 
   async componentDidMount() {
+    let words = await Firebase.fetchWords();
+    const roots = _.uniq(_.flatten(words.map((w) => w.roots)), 'value');
+
     if (this.state.isSinglePlayer) {
-      const words = await Firebase.fetchWords();
-      const roots = _.uniq(_.flatten(words.map((w) => w.roots)), 'value');
-      // this.timer.track();
-      this.setState({ words: words, roots: roots, dataLoaded: true }, this.nextWord);
+      this.timer.track();
+      this.setState({ words: words, roots: roots, level: this.props.level }, this.nextQuestion);
+    } else {
+      Firebase.refs.games.child(this.props.accessCode).on('value', (snapshot) => {
+        const level = snapshot.val().level;
+        const wordOrder = snapshot.val().words.split(',');
+        this.timer.track();
+        this.setState({ words: words, roots: roots, level: level, wordOrder: wordOrder }, this.nextQuestion);
+      })
     }
   }
 
-  nextWord() {
-    const word = this.randomItem(this.state.words);
-    const components = word.components.map((c) => {
-      return { value: c.value, display: c.type !== 'root' };
-    });
-    const choices = this.choicesFor(word);
+  getWord() {
+    if (this.state.isSinglePlayer || _.isEmpty(this.state.wordOrder)) {
+      return this.randomItem(this.state.words);
+    } else {
+      const next = _.find(this.state.words, (w) => w.value === this.state.wordOrder[0]);
+      this.setState({ wordOrder: this.state.wordOrder.slice(1, this.state.wordOrder.length )});
+      return next !== undefined ? next : this.getWord();
+    }
+  }
+
+  nextQuestion = async () => {
+    // Display image for a second if it exists
+    this.setState({ displayImage: true });
+    await sleep(1000);
+    // Move onto the next question
+    const word = this.getWord();
     const score = this.state.score + (this.state.correct && (this.state.questionCount > 0) ? 1 : 0);
     const questionCount = this.state.questionCount + 1;
-    this.setState({
-      choices: choices,
-      correct: true,
-      currentWord: word,
-      displayImage: false,
-      questionCount: questionCount,
-      score: score,
-      wordComponents: components
-    });
-  }
-
-  checkComplete() {
-    if (_.contains(_.pluck(this.state.wordComponents, 'display'), false)) { return };
-
-    // TODO - remove || true
-    if (this.wordImage.state.source || true) {
-      this.setState({ displayImage: true });
-    }
-
-    _.delay(this.nextWord.bind(this), 1000);
-  }
-
-  choicesFor(word) {
-    const correct = word.roots;
-    const exclude = _.pluck(correct, 'value');
-    const redHerrings = this.redHerrings(exclude);
-    return _.shuffle(correct.concat(redHerrings));
-  }
-
-  guessed(choice) {
-    const updatedComponents = this.state.wordComponents.map((c) => {
-      return c.value === choice ? { value: c.value, display: true } : c;
-    });
-    
-    const incorrect = _.isEqual(this.state.wordComponents, updatedComponents);
-
-    incorrect
-      ? this.setState({ correct: false })
-      : this.setState({ wordComponents: updatedComponents }, this.checkComplete);
+    this.setState({ currentWord: word, displayImage: false, questionCount: questionCount, score: score });
   }
 
   randomItem(arr) {
     return arr[Math.floor(Math.random()*arr.length)];
-  }
-
-  redHerrings(exclude) {
-    const amount = 6 - exclude.length;
-    return _.shuffle(this.state.roots.filter((r) => !_.contains(exclude, r.value))).slice(0, amount);
-  }
-
-  toUnderscore(str) {
-    return str.split('').map((c) => '_').join('')
   }
 
   gameOver() {
@@ -118,57 +92,45 @@ class Game extends Component {
       return <Redirect push to={this.state.redirect} />;
     }
 
-    const definition = () => {
-      if (_.isNull(this.state.currentWord)) { return };
-      return this.state.currentWord.definition.map((p) => {
-        return <span style={{color: p.isRoot ? '#F5A50E' : 'black'}}>{p.value}</span>
-      })
-    }
-
-    const answerSpaces = () => {
-      return this.state.wordComponents.map((c) => {
-        return <AnswerSpace>{c.display ? c.value : this.toUnderscore(c.value)}</AnswerSpace>
-      })
-    }
-
-    const buttons = () => {
-      return this.state.choices.map((c) => {
-        return <GameButton
-          key={c.value}
-          onClick={() => {this.guessed(c.value)}}>{c.value.toUpperCase()}<br />{c.definition}</GameButton>
-      })
+    const gameOver = () => {
+      console.log(this.state.isSinglePlayer)
+      return this.state.isSinglePlayer
+        ? <Container>
+            <Text>You scored {this.state.score}.</Text>
+            {ActionButton('singlePlayer', this.redirect.bind(this))}
+            {ActionButton('ios')}
+            {ActionButton('android')}
+          </Container>
+        : <Redirect push to={`/game/${this.props.accessCode}/over`} />
     }
 
     const question = () => {
-      return <Container>
-        <Definition>{definition()}</Definition>
-        <AnswerSpaces>{answerSpaces()}</AnswerSpaces>
-        <GameButtons display={!this.state.displayImage}>{buttons()}</GameButtons>
-        <OnCorrectImage 
-          display={this.state.displayImage} 
-          ref={instance => { this.wordImage = instance }} 
-          word={this.state.currentWord} />
-      </Container>
-    }
-
-    const gameOver = () => {
-      return <Container>
-        <Text>You scored {this.state.score}.</Text>
-        {ActionButton('singlePlayer', this.redirect.bind(this))}
-        {ActionButton('ios')}
-        {ActionButton('android')}
-      </Container>
+      return <Question
+        level={this.props.level}
+        nextQuestion={this.nextQuestion.bind(this)}
+        isDisplayingImage={this.state.displayImage}
+        roots={this.state.roots}
+        word={this.state.currentWord} />
     }
 
     return (
       <Layout>
         <Scoreboard>
           <Score>{this.state.score}</Score>
-          <Timer 
+          <Timer
+            time={this.props.time}
             ref={instance => { this.timer = instance }}
             gameOver={this.gameOver.bind(this)} />
         </Scoreboard>
-        {this.state.gameOver ? gameOver() : question()}
+        {
+          this.state.gameOver 
+            ? gameOver()
+            : !_.isNull(this.state.currentWord) && question()
+        }
+        <OnCorrectImage 
+          display={this.state.displayImage} 
+          ref={instance => { this.wordImage = instance }} 
+          word={this.state.currentWord} />
       </Layout>
     );
   }
@@ -176,6 +138,9 @@ class Game extends Component {
 
 const Layout = styled.div`
   text-align: center;
+`
+
+const Container = styled.div`
 `
 
 const Scoreboard = styled.div`
@@ -186,39 +151,6 @@ const Scoreboard = styled.div`
 const Score = styled.p`
   font-size: 4em;
   margin-right: 10px;
-`
-
-const Container = styled.div`
-`
-
-const Definition = styled.div`
-  font-size: 2.5em;
-`
-
-const AnswerSpaces = styled.div`
-  margin: 5% 0% 5% 0%;
-`
-
-const AnswerSpace = styled.p`
-  margin: 0% 1% 0% 1%;
-  font-size: 2.5em;
-  display: inline-block;
-`
-
-const GameButtons = styled.div`
-  display: ${props => props.display ? 'flex' : 'none'};;
-  flex-wrap: wrap;
-  justify-content: center;
-`
-
-const GameButton = Buttons.large.extend`
-  background-color: ${color.blue};
-  &:hover {
-    background-color: ${color.blue10l};
-  }
-  margin: 10px;
-  width: 250px;
-  font-size: 2em;
 `
 
 const Text = styled.h4`
