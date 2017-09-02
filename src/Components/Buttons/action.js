@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Buttons from './default';
 import styled from 'styled-components';
-import { color } from '../../Assets/Styles/index';
+import { color } from '../../Library/Styles/index';
 
 const IOSURL = "https://itunes.apple.com/us/app/wordcraft-vocabulary-from-greek-and-latin-roots/id1247708707?mt=8";
 
@@ -19,6 +19,8 @@ const ActionButton = (type, redirect) => {
       </Button>
     case 'android':
       return <Button color={color.black} colorHover={color.black10l}>Android</Button>
+    default:
+      return
   }
 }
 

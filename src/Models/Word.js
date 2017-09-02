@@ -1,12 +1,12 @@
+import _ from 'underscore';
+
 const Word = (val, data) => {
   return {
     value: val,
+    categories: _.has(data, 'categories') ? data['categories'].split(',') : [],
     components: data['components'],
     definition: data['definition'],
-    
-    get roots () {
-      return this.components.filter((c) => c.type === 'root');
-    }
+    roots: data['components'].filter((c) => c.type === 'root')
   }
 }
 

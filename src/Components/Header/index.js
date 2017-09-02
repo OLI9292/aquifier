@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import logo from '../../Assets/Images/logo.png';
-import { color } from '../../Assets/Styles/index';
+import logo from '../../Library/Images/logo.png';
+import { color } from '../../Library/Styles/index';
 import { Redirect } from 'react-router';
 
 class Header extends Component {

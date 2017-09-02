@@ -5,7 +5,7 @@ import styled from 'styled-components';
 
 import Buttons from '../Buttons/default';
 import TextAreas from '../TextAreas/index';
-import { color } from '../../Assets/Styles/index';
+import { color } from '../../Library/Styles/index';
 
 class Join extends Component {
   constructor(props) {
@@ -27,8 +27,7 @@ class Join extends Component {
       if (status === 0) { // Game has not started
         this.setState({ redirect: `/game/${accessCode}/waiting` });
       } else { // Game has started
-        const time = game.startTime;
-        this.setState({ redirect: `/game/${accessCode}` })
+        this.setState({ redirect: `/game/${accessCode}/play` })
       }
     } else {
       this.setState({ error: 'Unable to join game.', displayError: true });

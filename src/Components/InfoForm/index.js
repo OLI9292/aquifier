@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './index.css';
-import lightGrayCheckmark from '../../Assets/Images/Checkmark-LightGray.png';
-import greenCheckmark from '../../Assets/Images/Checkmark-Green.png';
+import lightGrayCheckmark from '../../Library/Images/Checkmark-LightGray.png';
+import greenCheckmark from '../../Library/Images/Checkmark-Green.png';
 import ActionButton from '../Buttons/action';
 
 class InfoForm extends Component {

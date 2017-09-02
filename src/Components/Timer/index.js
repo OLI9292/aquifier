@@ -1,18 +1,20 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { color } from '../../Assets/Styles/index';
+import { color } from '../../Library/Styles/index';
 
 class Timer extends Component {
   constructor(props) {
     super(props);
 
+    const timeLeft = this.props.time === '5' ? '5:00' : '3:00';
+
     this.state = {
-      timeLeft: '3:00'
+      timeLeft: timeLeft
     }
   }
 
   decrementSeconds(seconds) {
-    const updated = parseInt(seconds) - 1;
+    const updated = parseInt(seconds, 10) - 1;
     return updated < 10 ? `0${updated}` : updated.toString()
   } 
 
@@ -24,7 +26,7 @@ class Timer extends Component {
       this.props.gameOver();
     } else {
       const time = seconds === '00'
-        ? `${parseInt(minutes) - 1}:59`
+        ? `${parseInt(minutes, 10) - 1}:59`
         : `${minutes}:${this.decrementSeconds(seconds)}`
       setTimeout(() => { this.update(time) }, 10);
     }
