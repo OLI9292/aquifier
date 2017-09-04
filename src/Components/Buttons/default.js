@@ -25,14 +25,20 @@ const ExtraLargeButton = DefaultButton.extend`
 `
 
 const LargeButton = DefaultButton.extend`
-  width: 300px;
-  height: 100px;
-  font-size: 3em;
+  width: 270px;
+  height: 90px;
+  font-size: 2.5em;
 
   @media (max-width: 768px) {
     width: 210px;
     height: 70px;
     font-size: 2em;
+  }
+
+  @media (max-width: 480px) {
+    width: 180px;
+    height: 60px;
+    font-size: 1.5em;
   }
 `
 

@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
-import './index.css';
+import styled from 'styled-components';
+
+import TextAreas from '../TextAreas/index';
 import lightGrayCheckmark from '../../Library/Images/Checkmark-LightGray.png';
 import greenCheckmark from '../../Library/Images/Checkmark-Green.png';
-import ActionButton from '../Buttons/action';
+import { color } from '../../Library/Styles/index';
 
 class InfoForm extends Component {
   constructor(props) {
@@ -41,35 +43,51 @@ class InfoForm extends Component {
   }
 
   render() {
-    const smallInputs = this.state.smallInputs.map((input) => {
-      return <div className="small-input">
+    const smallInputs = this.state.smallInputs.map((input, idx) => {
+      return <div key={idx} className="small-input">
         <img src={this.isValid(input) ? greenCheckmark : lightGrayCheckmark} className="checkmark" />
-        <input name={input.name} placeholder={input.placeholder} onChange={this.handleInputChange.bind(this)} />
+        <TextAreas.medium
+          name={input.name}
+          placeholder={input.placeholder}
+          onChange={this.handleInputChange.bind(this)} />
       </div>
     });
 
     return (
-      <div>
-        <div className="form-container">
-          <div className="form-header">
-            <p><span className="brand">WORDCRAFT</span> teaches the building blocks of English so students can analyze and navigate advanced vocabulary.</p>
-            <p>To bring <span className="brand">WORDCRAFT</span> to your school, fill out the following  and we’ll be in touch as soon as possible.</p>
-          </div>
+      <Layout>
+            <Text><Higlighted>WORDCRAFT</Higlighted> teaches the building blocks of English so students can analyze and navigate advanced vocabulary.</Text>
+            <Text>To bring the curriculum to your school, fill out the following and we’ll be in touch as soon as possible.</Text>
           <form>
-            <div className="small-inputs">
+            <InputsContainer>
               {smallInputs}
-              <textarea name="comments" placeholder="comments" />
+              <TextAreas.medium name="comments" placeholder="comments" />
               <input type="submit" value="Submit" />
-            </div>
+            </InputsContainer>
           </form>
-        </div>
-        <div className="action-buttons">
-          <ActionButton type="play" />
-          <ActionButton type="download" />
-        </div>
-      </div>
+      </Layout>
     );
   }
 }
+
+const Layout = styled.div`
+  margin: auto;
+  padding-top: 5%;
+  width: 80%;
+`
+
+const Text = styled.p`
+  font-size: 2em;
+  text-align: center;
+`
+
+const InputsContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+`
+
+const Higlighted = styled.span`
+  color: ${color.yellow};
+`
 
 export default InfoForm;

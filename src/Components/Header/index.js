@@ -26,9 +26,9 @@ class Header extends Component {
       <Layout>
         <Logo src={logo} />
         <Nav>
-          <Link color={color.green}>For Schools</Link>
+          <Link color={color.green} onClick={() => this.redirect('/education')}>For Schools</Link>
           <Link color={color.black}>iOS App</Link>
-          <Link color={color.blue} onClick={() => this.redirect(`/`)}>Home</Link>
+          <Link color={color.blue} onClick={() => this.redirect('/')}>Home</Link>
         </Nav>
       </Layout>
     );

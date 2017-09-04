@@ -18,7 +18,6 @@ class Game extends Component {
     super(props);
 
     const isSinglePlayer = this.props.accessCode === undefined;
-    console.log(isSinglePlayer);
 
     this.state = {
       choices: [],
@@ -93,7 +92,6 @@ class Game extends Component {
     }
 
     const gameOver = () => {
-      console.log(this.state.isSinglePlayer)
       return this.state.isSinglePlayer
         ? <Container>
             <Text>You scored {this.state.score}.</Text>

@@ -14,7 +14,7 @@ const firebaseApp = firebase.initializeApp(firebaseConfig);
 const refs = {
   words: firebaseApp.database().ref().child('mobile').child('words'),
   // TODO: - rename
-  games: firebaseApp.database().ref().child('web').child('games-multiplayer')  
+  games: firebaseApp.database().ref().child('web').child('games')  
 }
 
 function validate(snapshot, name, accessCode) {
@@ -49,7 +49,7 @@ const Firebase = {
   joinGame: async (name, accessCode) => {
     const player = {};
     player[name] = 0;
-    return refs.games.child(accessCode).child('scores').update(player).then(() => true).catch(() => false);
+    return refs.games.child(accessCode).child('players').update(player).then(() => true).catch(() => false);
   },
 
   waitingForGame: async (accessCode) => {
