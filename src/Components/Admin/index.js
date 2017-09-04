@@ -79,7 +79,7 @@ class Admin extends Component {
     return (
       <Layout>
         <Heading>Access Code</Heading>
-        {this.state.accessCode === null ? '' : content()}
+        {this.state.accessCode && content()}
       </Layout>
     );
   }

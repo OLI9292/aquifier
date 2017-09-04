@@ -9,6 +9,7 @@ import Admin from '../Admin/index';
 import Game from '../Game/index';
 import Header from '../Header/index';
 import Home from '../Home/index';
+import InfoForm from '../InfoForm/index';
 import Join from '../Join/index';
 import Leaderboard from '../Leaderboard/index';
 import Lobby from '../Lobby/index';
@@ -27,6 +28,7 @@ class App extends Component {
           <Route exact path='/lobby' component={() => <Container component='lobby' />} />
           <Route exact path='/join' component={() => <Container component='join' />} />
           <Route exact path='/settings' component={() => <Container component='settings' />} />
+          <Route exact path='/education' component={() => <Container component='education' />} />
           <Route exact path='/settings/multiplayer' component={() => <Container component='settings' multiplayer={true} />} />
           <Route exact path='/game/admin/:settings' component={({ match }) => {
             const settings = queryString.parse(match.params.settings);
@@ -61,6 +63,8 @@ class Container extends Component {
       switch (this.props.component) {
         case 'admin':
           return <Admin time={this.props.time} level={this.props.level} topics={this.props.topics} />
+        case 'education':
+          return <InfoForm />
         case 'game':
           return <Game accessCode={this.props.accessCode} time={this.props.time} level={this.props.level} topics={this.props.topics} />
         case 'join':

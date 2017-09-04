@@ -12,30 +12,53 @@ class Leaderboard extends Component {
     super(props);
 
     this.state = {
-      dataLoaded: false,
-      scores: []
+      dataLoaded: true,
+      players: []
     }
   }
 
   componentDidMount() {
     Firebase.refs.games.child(this.props.accessCode).on('value', (snapshot) => {
-      this.update(snapshot.val());
+      const snap = snapshot.val();
+
+      if (snap.players) {
+        const sorted = _.sortBy(_.keys(snap.players).map((p) => ({ 'name': p, 'score' : snap.players[p] })), 'score').reverse();
+        const updated = this.withPositions(sorted);
+
+        if (!_.isEqual(updated, this.state.players)) {
+          this.setState({ level: snap.level, time: snap.time, players: updated, dataLoaded: true });
+        };
+      }
     })
   }
 
-  update(snap) {
-    if (!_.isEqual(snap.scores, this.state.scores)) {
-      console.log(snap.scores);
-      this.setState({ level: snap.level, time: snap.time, scores: snap.scores, dataLoaded: true });
-    };
+  withPositions(players) {
+    let currentPosition = 1;
+    players.forEach((s, idx) => {
+      const tie = (idx === 0) || (players[idx].score === players[idx - 1].score);
+      if (tie === false) {
+        currentPosition++;
+      }
+      players[idx].position = currentPosition;
+    });
+    return players;
   }
 
   render() {
-    const top3 = this.state.scores.slice(0, 3);
-    const rest = this.state.scores.slice(3, this.state.scores.length);
+    const colors = {
+      1: color.gold,
+      2: color.silver,
+      3: color.bronze
+    };
 
-    const top3Table = () => {
-      
+    const rows = () => {
+      return this.state.players.map((p) => {
+        return <Row>
+          <LeftAlignCell style={{ color: colors[p.position] || 'black' }}>{p.position}.</LeftAlignCell>
+          <LeftAlignCell>{p.name}</LeftAlignCell>
+          <RightAlignCell>{p.score}</RightAlignCell>
+        </Row>
+      })
     }
 
     return (
@@ -43,18 +66,24 @@ class Leaderboard extends Component {
         <Header>Game Over!</Header>
         {
           this.state.dataLoaded && 
-          <div>
           <Container>
-            <GameSetting>{`${this.state.time} Minutes`}</GameSetting>
-            <GameSetting>{this.state.level}</GameSetting>
+            <ResultsHeader>Results</ResultsHeader>
+            <Table>
+              <col width="10%" />
+              <col width="20%" />
+              <col width="70%" />
+              {rows()}
+            </Table>
           </Container>
-          <ResultsHeader>Results</ResultsHeader>
-          </div>
         }
       </Layout>
     );
   }
 }
+
+const Row = styled.tr`
+  width: 100%;
+`
 
 const Layout = styled.div`
   padding-top: 1em;
@@ -69,17 +98,26 @@ const Header = styled.p`
 `
 
 const Container = styled.div`
-  display: inline-block;
-`
-
-const GameSetting = Buttons.medium.extend`
-  background-color: ${color.red};
-  float: left;
-  margin: 0em 1em 0em 1em;
+  margin: auto;
+  width: 100%;
 `
 
 const ResultsHeader = styled.h2`
   font-size: 2em;
+`
+
+const Table = styled.table`
+  width: 100%;
+`
+
+const LeftAlignCell = styled.td`
+  font-size: 1.5em;
+  text-align: left;
+`
+
+const RightAlignCell = styled.td`
+  font-size: 1.5em;
+  text-align: right;
 `
 
 export default Leaderboard;

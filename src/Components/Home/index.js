@@ -49,18 +49,17 @@ const Layout = styled.div`
 `
 
 const Logo = styled.img`
-  width: 30%;
-  height: auto;
-  min-width: 150px;
-  max-width: 300px;
+  height: 20%;
+  width: auto;
   display: block;
   margin: auto;
-  padding-top: 50px;
+  padding-top: 2.5%;
 `
 
 const Title = styled.h2`
   color: ${color.yellow};
-  font-size: 4em;
+  font-size: 3em;
+  height: 5%;
   text-align: center;
 `
 
