@@ -4,8 +4,9 @@ import _ from 'underscore';
 
 import Buttons from '../Buttons/default';
 import { color } from '../../Library/Styles/index';
+import { toUnderscore } from '../../Library/helpers';
 
-class Question extends Component {
+class ButtonQuestion extends Component {
   constructor(props) {
     super(props);
 
@@ -25,7 +26,6 @@ class Question extends Component {
   }
 
   reset(word) {
-    console.log(word)
     const components = word.components.map((c) => ({ value: c.value, display: c.type !== 'root' }) );
     const choices = this.choicesFor(word);
     this.setState({ components: components, choices: choices });    
@@ -60,10 +60,6 @@ class Question extends Component {
     return _.shuffle(this.props.roots.filter((r) => !_.contains(exclude, r.value))).slice(0, amount);
   }
 
-  toUnderscore(str) {
-    return str.split('').map((c) => '_').join('')
-  }
-
   render() {
     const definition = () => {
       return this.props.word.definition.map((p, idx) => {
@@ -73,7 +69,7 @@ class Question extends Component {
 
     const answerSpaces = () => {
       return this.state.components.map((c, idx) => {
-        return <AnswerSpace key={idx}>{c.display ? c.value : this.toUnderscore(c.value)}</AnswerSpace>
+        return <AnswerSpace key={idx}>{c.display ? c.value : toUnderscore(c.value)}</AnswerSpace>
       })
     }
 
@@ -132,4 +128,4 @@ const GameButton = Buttons.large.extend`
   font-size: 2em;
 `
 
-export default Question;
+export default ButtonQuestion;

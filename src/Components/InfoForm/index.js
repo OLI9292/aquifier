@@ -1,6 +1,9 @@
+import Firebase from '../../Networking/Firebase';
 import React, { Component } from 'react';
 import styled from 'styled-components';
+import _ from 'underscore';
 
+import Buttons from '../Buttons/default';
 import TextAreas from '../TextAreas/index';
 import lightGrayCheckmark from '../../Library/Images/Checkmark-LightGray.png';
 import greenCheckmark from '../../Library/Images/Checkmark-Green.png';
@@ -11,15 +14,29 @@ class InfoForm extends Component {
     super(props);
 
     const smallInputs = [
-      { name: "firstName", placeholder: "first name", value: "" },
-      { name: "lastName", placeholder: "last name", value: "" },
-      { name: "email", placeholder: "email address", value: "" },
-      { name: "school", placeholder: "school", value: "" }
+      { name: 'firstName', placeholder: 'first name', value: '' },
+      { name: 'lastName', placeholder: 'last name', value: '' },
+      { name: 'email', placeholder: 'email address', value: '' },
+      { name: 'school', placeholder: 'school', value: '' }
     ]
 
     this.state = {
-      smallInputs: smallInputs
+      allValid: false,
+      comments: '',
+      displayError: false,
+      errorMessage: null,
+      smallInputs: smallInputs,
+      success: false
     }
+
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  formInput() {
+    let obj = {};
+    this.state.smallInputs.forEach((i) => obj[i.name] = i.value );
+    obj.comments = this.state.comments;
+    return obj;
   }
 
   handleInputChange(event) {
@@ -28,7 +45,13 @@ class InfoForm extends Component {
         ? { name: i.name, placeholder: i.placeholder, value: event.target.value }
         : i
     });
-    this.setState({ smallInputs: updatedInputs });
+
+    const allValid = _.isUndefined(this.invalidField());
+    this.setState({ smallInputs: updatedInputs, allValid: allValid, displayError: !allValid });
+  }
+
+  invalidField() {
+    return _.find(this.state.smallInputs, (input) => !this.isValid(input));
   }
 
   isValid(input) {
@@ -42,27 +65,54 @@ class InfoForm extends Component {
     return re.test(email);
   }
 
+  handleSubmit = async (event) => {
+    event.preventDefault();
+
+    if (this.state.success) {
+      return;
+    }
+    
+    const invalid = this.invalidField();
+
+    if (invalid) {
+      const errorMessage = invalid.name === 'email'
+        ? 'Please enter a valid email'
+        : `${invalid.placeholder} must be longer than 4 characters`
+      this.setState({ displayError: true, errorMessage: errorMessage });
+      return;
+    }
+
+    const inputs = this.formInput();
+    const success = await Firebase.sendForm(inputs);
+    success
+      ? this.setState({ success: true })
+      : this.setState({ displayError: true, errorMessage: 'Could not process form' });
+  }
+
   render() {
     const smallInputs = this.state.smallInputs.map((input, idx) => {
-      return <div key={idx} className="small-input">
-        <img src={this.isValid(input) ? greenCheckmark : lightGrayCheckmark} className="checkmark" />
+      return <SmallInput key={idx}>
+        <Image src={this.isValid(input) ? greenCheckmark : lightGrayCheckmark} className="checkmark" />
         <TextAreas.medium
           name={input.name}
           placeholder={input.placeholder}
           onChange={this.handleInputChange.bind(this)} />
-      </div>
+      </SmallInput>
     });
 
     return (
       <Layout>
-            <Text><Higlighted>WORDCRAFT</Higlighted> teaches the building blocks of English so students can analyze and navigate advanced vocabulary.</Text>
-            <Text>To bring the curriculum to your school, fill out the following and we’ll be in touch as soon as possible.</Text>
-          <form>
+          <Text><Higlighted>WORDCRAFT</Higlighted> teaches the building blocks of English so students can analyze and navigate advanced vocabulary.</Text>
+          <Text>To bring the curriculum to your school, fill out the following and we’ll be in touch as soon as possible.</Text>
+          <form onSubmit={this.handleSubmit}>
             <InputsContainer>
               {smallInputs}
-              <TextAreas.medium name="comments" placeholder="comments" />
-              <input type="submit" value="Submit" />
             </InputsContainer>
+            <CommentsTextArea name="comments" placeholder="comments" onChange={(e) => this.setState({ comments: e.target.value })} />
+            <SubmitButton valid={this.state.allValid} type="submit" value="submit" />
+            <ErrorMessage success={this.state.success} display={this.state.displayError || this.state.success}>
+              {this.state.success ? 'Submitted.  We\'ll be in touch soon!' : this.state.errorMessage}
+            </ErrorMessage>
           </form>
       </Layout>
     );
@@ -71,13 +121,31 @@ class InfoForm extends Component {
 
 const Layout = styled.div`
   margin: auto;
-  padding-top: 5%;
-  width: 80%;
+  padding: 5% 0% 5% 0%;
+  width: 90%;
 `
 
 const Text = styled.p`
   font-size: 2em;
   text-align: center;
+`
+
+const Image = styled.img`
+  height: 40px;
+  padding: 10px 5px 10px 0px;
+  width: auto;
+
+  @media (max-width: 768px) {
+    height: 30px;
+  }
+
+  @media (max-width: 480px) {
+    height: 20px;
+  }
+`
+
+const SmallInput = styled.div`
+  margin: 2%;
 `
 
 const InputsContainer = styled.div`
@@ -86,8 +154,43 @@ const InputsContainer = styled.div`
   justify-content: center;
 `
 
+const CommentsTextArea = TextAreas.medium.extend`
+  width: 80%;
+  height: 200px;
+  margin-left: 10%;
+  margin-top: 3%;
+  line-height: 1.5;
+`
+
+const SubmitButton = styled.input`
+  &:focus {
+    outline: 0;
+  }
+  display: block;
+  background-color: ${props => props.valid ? color.green : '#f1f1f1'};
+  border: none;
+  border-radius: 5px;
+  font-family: BrandonGrotesque;
+  font-size: 1.5em;
+  color: ${props => props.valid ? 'white' : '#757575'};
+  padding: 0px 20px 0px 20px;
+  height: 60px;
+  cursor: pointer;
+  transition: 0.2s;
+  margin-left: 10%;
+  margin-top: 3%;
+`
+
 const Higlighted = styled.span`
   color: ${color.yellow};
+`
+
+const ErrorMessage = styled.p`
+  font-size: 1.25em;
+  position: relative;
+  padding-left: 10%;
+  color: ${props => props.success ? color.green : color.red};  
+  visibility: ${props => props.display ? 'visible' : 'hidden'}
 `
 
 export default InfoForm;

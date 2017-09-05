@@ -1,6 +1,8 @@
 import * as firebase from 'firebase';
-import Word from '../Models/Word';
 import _ from 'underscore';
+
+import Word from '../Models/Word';
+import { guid } from '../Library/helpers';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyDHQikqQ6e3q78jI9u5Us-uayAFBuFVTgM',
@@ -13,8 +15,8 @@ const firebaseApp = firebase.initializeApp(firebaseConfig);
 
 const refs = {
   words: firebaseApp.database().ref().child('mobile').child('words'),
-  // TODO: - rename
-  games: firebaseApp.database().ref().child('web').child('games')  
+  games: firebaseApp.database().ref().child('web').child('games'),
+  forms: firebaseApp.database().ref().child('web').child('forms')
 }
 
 function validate(snapshot, name, accessCode) {
@@ -50,6 +52,10 @@ const Firebase = {
     const player = {};
     player[name] = 0;
     return refs.games.child(accessCode).child('players').update(player).then(() => true).catch(() => false);
+  },
+
+  sendForm: async (inputs) => {
+    return refs.forms.child(guid()).set(inputs).then(() => true).catch(() => false);
   },
 
   waitingForGame: async (accessCode) => {

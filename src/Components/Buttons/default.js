@@ -34,12 +34,6 @@ const LargeButton = DefaultButton.extend`
     height: 70px;
     font-size: 2em;
   }
-
-  @media (max-width: 480px) {
-    width: 180px;
-    height: 60px;
-    font-size: 1.5em;
-  }
 `
 
 const MediumButton = DefaultButton.extend`

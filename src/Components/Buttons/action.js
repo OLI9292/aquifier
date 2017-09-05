@@ -13,8 +13,8 @@ const ActionButton = (type, redirect) => {
       return <Button color={color.blue} colorHover={color.blue10l} onClick={() => redirect('/settings')}>Single Player</Button>
     case 'multiplayer':
       return <Button color={color.yellow} colorHover={color.yellow10l} onClick={() => redirect('/lobby')}>Multiplayer</Button>
-    case 'schools':
-      return <Button color={color.green} colorHover={color.green10l}>For Schools</Button>
+    case 'education':
+      return <Button color={color.green} colorHover={color.green10l} onClick={() => redirect('/education')}>For Schools</Button>
     case 'ios':
       return <Button color={color.black} colorHover={color.black10l}>
         <Link href={IOSURL} target="blank">
@@ -25,7 +25,7 @@ const ActionButton = (type, redirect) => {
         </Link>
       </Button>
     case 'android':
-      return <Button color={color.black} colorHover={color.black10l}>
+      return <Button color={color.black} colorHover={color.black10l} onClick={() => alert('Wordcraft on Android is coming soon!')}>
         <Content>
           <Logo src={androidLogo} />
           <Text>Android</Text>

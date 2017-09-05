@@ -8,16 +8,24 @@ const DefaultTextArea = styled.textarea`
   &:focus {
     outline: 0;
   }
-  padding: 10px;
   resize: none;
   transition: 0.2s;
+  box-sizing: border-box;
+  padding-left: 10px;
 `
 
 const MediumTextArea = DefaultTextArea.extend`
-  width: 350px;
-  height: 70px;
-  line-height: 70px;
-  font-size: 2em;
+  width: 250px;
+  height: 60px;
+  font-size: 1.5em;
+  padding-top: 15px;
+
+  @media (max-width: 768px) {
+    width: 200px;
+    height: 50px;
+    line-height: 50px;
+    font-size: 1.25em;
+  }
 `
 
 const TextAreas = {

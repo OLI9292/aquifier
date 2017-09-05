@@ -6,7 +6,9 @@ import _ from 'underscore';
 import ActionButton from '../Buttons/action';
 import Firebase from '../../Networking/Firebase';
 
-import Question from '../Question/index';
+import ButtonQuestion from '../Question/button';
+import SpellQuestion from '../Question/spell';
+import Word from '../../Models/Word';
 import Spell from '../Question/spell';
 
 import OnCorrectImage from '../OnCorrectImage/index';
@@ -37,17 +39,19 @@ class Game extends Component {
   }
 
   async componentDidMount() {
-    let words = await Firebase.fetchWords();
-    const roots = _.uniq(_.flatten(words.map((w) => w.roots)), 'value');
+    const words = [Word()];
+    const roots = _.uniq(_.flatten(words.map((w) => w.roots)), 'value').concat([{ value: 'vor' }, { value: 'astr' }, { value: 'herb' }, { value: 'insect' }]);
+    // let words = await Firebase.fetchWords();
+    // const roots = _.uniq(_.flatten(words.map((w) => w.roots)), 'value');
 
     if (this.state.isSinglePlayer) {
-      this.timer.track();
+      // this.timer.track();
       this.setState({ words: words, roots: roots, level: this.props.level }, this.nextQuestion);
     } else {
       Firebase.refs.games.child(this.props.accessCode).on('value', (snapshot) => {
         const level = snapshot.val().level;
         const wordOrder = snapshot.val().words.split(',');
-        this.timer.track();
+        // this.timer.track();
         this.setState({ words: words, roots: roots, level: level, wordOrder: wordOrder }, this.nextQuestion);
       })
     }
@@ -103,12 +107,21 @@ class Game extends Component {
     }
 
     const question = () => {
-      return <Question
-        level={this.props.level}
-        nextQuestion={this.nextQuestion.bind(this)}
-        isDisplayingImage={this.state.displayImage}
-        roots={this.state.roots}
-        word={this.state.currentWord} />
+      if (this.state.level === 'Beginner') {
+        return <ButtonQuestion
+          level={this.props.level}
+          nextQuestion={this.nextQuestion.bind(this)}
+          isDisplayingImage={this.state.displayImage}
+          roots={this.state.roots}
+          word={this.state.currentWord} />
+      } else {
+        return <SpellQuestion
+          level={this.props.level}
+          nextQuestion={this.nextQuestion.bind(this)}
+          isDisplayingImage={this.state.displayImage}
+          roots={this.state.roots}
+          word={this.state.currentWord} />          
+      }
     }
 
     return (
