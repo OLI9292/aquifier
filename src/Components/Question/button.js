@@ -28,12 +28,14 @@ class ButtonQuestion extends Component {
   reset(word) {
     const components = word.components.map((c) => ({ value: c.value, display: c.type !== 'root' }) );
     const choices = this.choicesFor(word);
-    this.setState({ components: components, choices: choices });    
+    this.setState({ components: components, correct: true, choices: choices });    
   }
 
   checkComplete() {
     if (_.contains(_.pluck(this.state.components, 'display'), false)) { return };
-    this.props.nextQuestion();
+    if (this.state.correct) {
+      this.props.incrementScore();
+    }
   }
 
   choicesFor(word) {
@@ -69,7 +71,7 @@ class ButtonQuestion extends Component {
 
     const answerSpaces = () => {
       return this.state.components.map((c, idx) => {
-        return <AnswerSpace key={idx}>{c.display ? c.value : toUnderscore(c.value)}</AnswerSpace>
+        return <AnswerSpace key={idx}>{c.display ? c.value.toUpperCase() : toUnderscore(c.value)}</AnswerSpace>
       })
     }
 

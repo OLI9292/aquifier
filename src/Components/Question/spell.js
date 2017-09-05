@@ -11,7 +11,6 @@ class SpellQuestion extends Component {
   constructor(props) {
     super(props);
 
-
     this.state = {
       answer: '',
       answerComplete: false,
@@ -22,16 +21,23 @@ class SpellQuestion extends Component {
       cursor: 0,
       displayRootDefs: false,
       displayErrors: false,
-      guess: ''
+      guess: '',
+      word: null
     }
   }
 
   componentDidMount() {
     this.reset(this.props.word);
 
+    // TODO: - remove on unmount
     document.body.addEventListener('keydown', (event) => {
       this.handleInput(event);
     });
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (_.isEqual(this.props.word, nextProps.word)) { return };
+    this.reset(nextProps.word);
   }
 
   handleInput(e) {
@@ -46,6 +52,7 @@ class SpellQuestion extends Component {
     const pressedDelete = e.keyCode === 8;
 
     if (pressedEnter) {
+      e.preventDefault();
       this.checkAnswer(true);
     } else if (pressedLetter) {
       this.handleLetterPress(e.key)
@@ -67,9 +74,10 @@ class SpellQuestion extends Component {
   disableDisplayErrors = async () => {
     await sleep(1000);
     const answerComplete = _.isEmpty(this.state.components.filter(this.isIncorrect));
-    if (answerComplete) {
-      this.setState({ answerComplete: true });
+    if (answerComplete && !this.state.answerComplete) {
+      this.setState({ answerComplete: true }, () => this.props.nextQuestion());
     } else {
+      console.log("turn off")
       this.setState({ displayErrors: false });
     }
   }
@@ -102,37 +110,52 @@ class SpellQuestion extends Component {
   }
 
   reset(word) {
-    let components;
-    let answer;
-    let cursorEndpoints;
+    const params = this.props.level === 'Intermediate'
+      ? this.intermediateParams(word)
+      : this.advancedParams(word);
 
-    if (this.props.level === 'Intermediate') {
-      const randomRoot = _.shuffle(word.roots)[Math.floor(Math.random() * (word.roots.length - 1))];
-      answer = randomRoot.value;
-      components = _.flatten(word.components.map((c) => {
-        const display = c.value != randomRoot.value;
-        return c.value.split('').map((char) => ({ value: char, guess: display ? char : null }))
-      }));
-      cursorEndpoints = [_.findIndex(components, (c) => !c.guess), _.findLastIndex(components, (c) => !c.guess)];
-    } else { // Advanced
-      answer = word.components.map((c) => c.value).join('');
-      components = word.value.split('').map((char) => ({ value: char, guess: null }));
-      cursorEndpoints = [0, answer.length - 1];
-    }
+    this.setState({
+      answer: params.answer,
+      answerComplete: false,
+      components: params.components,
+      cursor: params.cursorEndpoints[0],
+      cursorEndpoints: params.cursorEndpoints,
+      displayErrors: false,
+      word: word
+    });
+  }
 
-    this.setState({ answer: answer, components: components, cursor: cursorEndpoints[0], cursorEndpoints: cursorEndpoints });
+  intermediateParams(word) {
+    const randomRoot = _.shuffle(word.roots)[Math.floor(Math.random() * (word.roots.length - 1))];
+    const answer = randomRoot.value;
+    const components = _.flatten(word.components.map((c) => {
+      const display = c.value != randomRoot.value;
+      return c.value.split('').map((char) => ({ value: char, guess: display ? char : null }))
+    }));
+    const cursorEndpoints = [_.findIndex(components, (c) => !c.guess), _.findLastIndex(components, (c) => !c.guess)];
+    return { answer: answer, components: components, cursorEndpoints: cursorEndpoints };
+  }
+
+  advancedParams(word) {
+    const answer = word.components.map((c) => c.value).join('');
+    const components = word.value.split('').map((char) => ({ value: char, guess: null }));
+    const cursorEndpoints = [0, answer.length - 1];
+    return { answer: answer, components: components, cursorEndpoints: cursorEndpoints };
   }
 
   tappedHint() {
     let copy = this.state.components;
     const inCorrectIdx = _.findIndex(copy, this.isIncorrect);
-    copy[inCorrectIdx].guess = copy[inCorrectIdx].value;
-    this.setState({ components: copy });
+    if (inCorrectIdx >= 0) {
+      copy[inCorrectIdx].guess = copy[inCorrectIdx].value;
+      this.setState({ components: copy });      
+    } else {
+      this.checkAnswer();
+    }
   }
 
   render() {
     const definition = () => {
-      console.log(this.props.word.definition);
       return this.props.word.definition.map((p, idx) => {
         return <span key={idx} style={{color: p.isRoot ? '#F5A50E' : 'black'}}>{p.value}</span>
       })
@@ -154,7 +177,7 @@ class SpellQuestion extends Component {
       <Layout>
         <Definition>{definition()}</Definition>
         <div>{answerSpaces()}</div>
-        <HintButton onClick={() => this.tappedHint()}>Hint</HintButton>
+        <HintButton type="button" onClick={() => this.tappedHint()}>Hint</HintButton>
       </Layout>
     );
   }
