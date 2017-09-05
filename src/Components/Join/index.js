@@ -15,7 +15,7 @@ class Join extends Component {
       accessCode: '',      
       name: '',
       redirect: null,
-      error: 'none',
+      errorMessage: 'none',
       displayError: false
     };
   }
@@ -30,7 +30,7 @@ class Join extends Component {
         this.setState({ redirect: `/game/${accessCode}/play` })
       }
     } else {
-      this.setState({ error: 'Unable to join game.', displayError: true });
+      this.setState({ errorMessage: 'Unable to join game.', displayError: true });
     }
   }
 
@@ -41,7 +41,7 @@ class Join extends Component {
     const isValid = result[0];
     isValid
       ? this.joinGame(name, accessCode, result[1])
-      : this.setState({ error: result[1], displayError: true });
+      : this.setState({ errorMessage: result[1], displayError: true });
   }
 
   render() {
@@ -68,7 +68,7 @@ class Join extends Component {
         </tr>
         <ButtonContainer>
           <Button onClick={this.handleClick}>Play!</Button>
-          <ErrorMessage display={this.state.displayError}>{this.state.error}</ErrorMessage>
+          <ErrorMessage display={this.state.displayError}>{this.state.errorMessage}</ErrorMessage>
         </ButtonContainer>
       </Layout>
     );

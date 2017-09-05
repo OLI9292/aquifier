@@ -27,8 +27,7 @@ class OnCorrectImage extends Component {
 
     const image = _.find(this.state.data, (obj) => {
       let words = obj.Key.split('.')[0].split('-');
-      // TODO: - replace w/   return _.contains(words, this.nextProps.word.value)
-      return _.contains(words, 'cephalopod'); // this.nextProps.word.value
+      return _.contains(words, nextProps.word.value);
     });
 
     if (image) {

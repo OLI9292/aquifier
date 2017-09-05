@@ -32,7 +32,7 @@ class Home extends Component {
         <Buttons>
           {ActionButton('singlePlayer', this.redirect.bind(this))}
           {ActionButton('multiplayer', this.redirect.bind(this))}
-          {ActionButton('schools')}
+          {ActionButton('education', this.redirect.bind(this))}
         </Buttons>
         <Buttons>
           {ActionButton('ios')}

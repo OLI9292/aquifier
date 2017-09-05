@@ -6,7 +6,9 @@ import _ from 'underscore';
 import ActionButton from '../Buttons/action';
 import Firebase from '../../Networking/Firebase';
 
-import Question from '../Question/index';
+import ButtonQuestion from '../Question/button';
+import SpellQuestion from '../Question/spell';
+import Word from '../../Models/Word';
 import Spell from '../Question/spell';
 
 import OnCorrectImage from '../OnCorrectImage/index';
@@ -63,15 +65,17 @@ class Game extends Component {
     }
   }
 
+  incrementScore() {
+    this.setState({ score: this.state.score + 1 });
+  }
+
   nextQuestion = async () => {
     // Display image for a second if it exists
     this.setState({ displayImage: true });
     await sleep(1000);
     // Move onto the next question
     const word = this.getWord();
-    const score = this.state.score + (this.state.correct && (this.state.questionCount > 0) ? 1 : 0);
-    const questionCount = this.state.questionCount + 1;
-    this.setState({ currentWord: word, displayImage: false, questionCount: questionCount, score: score });
+    this.setState({ currentWord: word, displayImage: false, questionCount: this.state.questionCount + 1 });
   }
 
   randomItem(arr) {
@@ -103,12 +107,22 @@ class Game extends Component {
     }
 
     const question = () => {
-      return <Question
-        level={this.props.level}
-        nextQuestion={this.nextQuestion.bind(this)}
-        isDisplayingImage={this.state.displayImage}
-        roots={this.state.roots}
-        word={this.state.currentWord} />
+      if (this.state.level === 'Beginner') {
+        return <ButtonQuestion
+          level={this.props.level}
+          nextQuestion={this.nextQuestion.bind(this)}
+          isDisplayingImage={this.state.displayImage}
+          incrementScore={this.incrementScore.bind(this)}
+          roots={this.state.roots}
+          word={this.state.currentWord} />
+      } else {
+        return <SpellQuestion
+          level={this.props.level}
+          nextQuestion={this.nextQuestion.bind(this)}
+          isDisplayingImage={this.state.displayImage}
+          roots={this.state.roots}
+          word={this.state.currentWord} />          
+      }
     }
 
     return (
