@@ -36,6 +36,7 @@ class ButtonQuestion extends Component {
     if (this.state.correct) {
       this.props.incrementScore();
     }
+    this.props.nextQuestion();
   }
 
   choicesFor(word) {
