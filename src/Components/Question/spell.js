@@ -28,7 +28,6 @@ class SpellQuestion extends Component {
 
   componentDidMount() {
     this.reset(this.props.word);
-
     // TODO: - remove on unmount
     document.body.addEventListener('keydown', (event) => {
       this.handleInput(event);

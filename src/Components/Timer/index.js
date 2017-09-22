@@ -45,6 +45,7 @@ class Timer extends Component {
 }
 
 const Text = styled.p`
+  line-height: 0px;
   font-size: 4em;
   color: ${color.red};
 `
