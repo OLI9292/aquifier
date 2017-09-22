@@ -7,12 +7,12 @@ import ActionButton from '../Buttons/action';
 import Firebase from '../../Networking/Firebase';
 
 import ButtonQuestion from '../Question/button';
+import OnCorrectImage from '../OnCorrectImage/index';
 import SpellQuestion from '../Question/spell';
 import Word from '../../Models/Word';
-import Spell from '../Question/spell';
-
-import OnCorrectImage from '../OnCorrectImage/index';
 import Timer from '../Timer/index';
+
+import { color } from '../../Library/Styles/index';
 import { sleep } from '../../Library/helpers';
 
 class Game extends Component {
@@ -25,7 +25,7 @@ class Game extends Component {
       choices: [],
       currentWord: null,
       dataLoaded: false,
-      displayImage: false,
+      isQuestionInterlude: false,
       gameOver: false,
       level: 'Beginner',
       questionCount: 0,
@@ -53,6 +53,18 @@ class Game extends Component {
         this.setState({ words: words, roots: roots, level: level, wordOrder: wordOrder }, this.nextQuestion);
       })
     }
+
+    // TODO: - remove on unmount
+    document.body.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' && this.state.isQuestionInterlude) {
+        this.skipAhead();
+      }
+    });
+  }
+
+  skipAhead() {
+    clearTimeout(window.timeout);
+    this.nextQuestion();
   }
 
   getWord() {
@@ -69,13 +81,17 @@ class Game extends Component {
     this.setState({ score: this.state.score + 1 });
   }
 
-  nextQuestion = async () => {
-    // Display image for a second if it exists
-    this.setState({ displayImage: true });
-    await sleep(1000);
+  runQuestionInterlude = async () =>  {
+    this.setState({ isQuestionInterlude: true });
+    window.timeout = setTimeout(() => { 
+      this.nextQuestion();
+    }, 1500);
+  }
+
+  nextQuestion() {
     // Move onto the next question
     const word = this.getWord();
-    this.setState({ currentWord: word, displayImage: false, questionCount: this.state.questionCount + 1 });
+    this.setState({ currentWord: word, isQuestionInterlude: false, questionCount: this.state.questionCount + 1 });
   }
 
   randomItem(arr) {
@@ -110,16 +126,16 @@ class Game extends Component {
       if (this.state.level === 'Beginner') {
         return <ButtonQuestion
           level={this.props.level}
-          nextQuestion={this.nextQuestion.bind(this)}
-          isDisplayingImage={this.state.displayImage}
+          nextQuestion={this.runQuestionInterlude.bind(this)}
+          isDisplayingImage={this.state.isQuestionInterlude}
           incrementScore={this.incrementScore.bind(this)}
           roots={this.state.roots}
           word={this.state.currentWord} />
       } else {
         return <SpellQuestion
           level={this.props.level}
-          nextQuestion={this.nextQuestion.bind(this)}
-          isDisplayingImage={this.state.displayImage}
+          nextQuestion={this.runQuestionInterlude.bind(this)}
+          isDisplayingImage={this.state.isQuestionInterlude}
           roots={this.state.roots}
           word={this.state.currentWord} />          
       }
@@ -127,6 +143,7 @@ class Game extends Component {
 
     return (
       <Layout>
+        <SmallText display={this.state.isQuestionInterlude}>Press ENTER to skip ahead</SmallText>
         <Scoreboard>
           <Score>{this.state.score}</Score>
           <Timer
@@ -140,13 +157,20 @@ class Game extends Component {
             : !_.isNull(this.state.currentWord) && question()
         }
         <OnCorrectImage 
-          display={this.state.displayImage} 
+          display={this.state.isQuestionInterlude} 
           ref={instance => { this.wordImage = instance }} 
           word={this.state.currentWord} />
       </Layout>
     );
   }
 }
+
+const SmallText = styled.p`
+  visibility: ${props => props.display ? 'visible' : 'hidden'};
+  color: ${color.gray};
+  text-align: right;
+  padding: 10px 10px 0px 0px;
+`
 
 const Layout = styled.div`
   text-align: center;
@@ -158,10 +182,12 @@ const Container = styled.div`
 const Scoreboard = styled.div`
   display: flex;
   justify-content: center;
+
 `
 
 const Score = styled.p`
   font-size: 4em;
+  line-height: 0px;
   margin-right: 10px;
 `
 

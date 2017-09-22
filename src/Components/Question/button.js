@@ -18,11 +18,13 @@ class ButtonQuestion extends Component {
   }
 
   componentDidMount() {
-    this.reset(this.props.word); 
+    this.reset(this.props.word);
   }
 
   componentWillReceiveProps(nextProps) {
-    this.reset(nextProps.word);
+    if (nextProps.word.value !== this.props.word.value) {
+      this.reset(nextProps.word);
+    }
   }
 
   reset(word) {
@@ -87,7 +89,7 @@ class ButtonQuestion extends Component {
     return (
       <Layout>
         <Definition>{definition()}</Definition>
-        <AnswerSpaces display={!this.props.isDisplayingImage}>{answerSpaces()}</AnswerSpaces>
+        <AnswerSpaces>{answerSpaces()}</AnswerSpaces>
         <GameButtons display={!this.props.isDisplayingImage}>{buttons()}</GameButtons>
       </Layout>
     );
@@ -105,7 +107,6 @@ const Definition = styled.div`
 `
 
 const AnswerSpaces = styled.div`
-  display: ${props => props.display ? 'inline' : 'none'};
 `
 
 const AnswerSpace = styled.p`
