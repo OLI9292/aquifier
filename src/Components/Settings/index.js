@@ -64,7 +64,7 @@ class Settings extends Component {
     if (this.state.redirect) {
       const params = `time=${times[this.state.timeIdx]}` +
         `&level=${levels[this.state.levelIdx]}` +
-        `${this.state.topicIndices.map((idx) => `&topic=${topics[idx]}`).join('')}`;
+        `${this.state.topicIndices.map((idx) => `&topic=${topics[idx].slug}`).join('')}`;
       const location = this.props.multiplayer ? `/game/admin/${params}` : `/game/sp/${params}`;
       return <Redirect push to={location} />;
     }
@@ -90,7 +90,7 @@ class Settings extends Component {
         key={idx}
         onClick={() => this.handleClick('topic', idx)} 
         selected={_.contains(this.state.topicIndices, idx)}
-      >{t}</SelectionButton>
+      >{t.displayName}</SelectionButton>
     });
 
     return (
