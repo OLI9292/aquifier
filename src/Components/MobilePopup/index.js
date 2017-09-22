@@ -19,11 +19,11 @@ class MobilePopup extends Component {
       <Layout>
         <Title>Sorry to interrupt!</Title>
         <Text>
-          We noticed you are on a mobile device, and think you will have an easier and more enjoyable time playing the Wordcraft app.
+          We noticed you're on a mobile device.  You'll have a much better time playing the mobile app.  Get it here.
         </Text>
         <ButtonsContainer>
           {ActionButton('ios')}
-          <ReturnButton onClick={this.handleClick.bind(this)}>Return</ReturnButton>
+          <ReturnButton onClick={this.handleClick.bind(this)}>Back</ReturnButton>
         </ButtonsContainer>
       </Layout>
     );
