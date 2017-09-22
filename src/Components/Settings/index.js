@@ -5,6 +5,8 @@ import _ from 'underscore';
 
 import Buttons from '../Buttons/default';
 import { color } from '../../Library/Styles/index';
+import HelpText from '../HelpText/index';
+import questionMark from '../../Library/Images/question-mark.png';
 import GLOBAL from '../../Library/global';
 
 class Settings extends Component {
@@ -15,7 +17,8 @@ class Settings extends Component {
       timeIdx: 0,
       levelIdx: 0,
       topicIndices: [0],
-      redirect: false
+      redirect: false,
+      showHelpText: false
     };
 
     this.handleClick = this.handleClick.bind(this);
@@ -43,6 +46,14 @@ class Settings extends Component {
       default:
         break;
     }
+  }
+
+  showHelpText() {
+    this.setState({ showHelpText: true });
+  }
+
+  hideHelpText() {
+    this.setState({ showHelpText: false });
   }
 
   render() {
@@ -87,14 +98,18 @@ class Settings extends Component {
         <Selection>
           <tr>
             <ShortCell><Text>Time</Text></ShortCell>
+            <QuestionMark style={{visibility: 'hidden'}} src={questionMark} />
             <LongCell>{timeButtons}</LongCell>
           </tr>
           <tr>
             <ShortCell><Text>Level</Text></ShortCell>
+            <QuestionMark onMouseOver={this.showHelpText.bind(this)} onMouseLeave={this.hideHelpText.bind(this)} src={questionMark} />
+            {this.state.showHelpText && <HelpText />}
             <LongCell>{levelButtons}</LongCell>
           </tr>
           <tr>
             <ShortCell><Text>Topic</Text></ShortCell>
+            <QuestionMark style={{visibility: 'hidden'}} src={questionMark} />
             <LongCell>{topicButtons}</LongCell>
           </tr>
         </Selection>
@@ -119,7 +134,6 @@ const Selection = styled.div`
 const ShortCell = styled.td`
   vertical-align: top;
   width: 100px;
-  padding-right: 2em;
 `
 
 const LongCell = styled.td`
@@ -132,6 +146,13 @@ const Text = styled.h4`
   display: inline;
   font-size: 2em;
   margin-right: 10px;
+`
+
+const QuestionMark = styled.img`
+  height: 20px;
+  width: 20px;
+  padding-right: 2em;
+  cursor: pointer;
 `
 
 const SelectionButton = Buttons.medium.extend`
