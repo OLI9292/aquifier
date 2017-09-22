@@ -3,20 +3,34 @@ import { Redirect } from 'react-router';
 import styled from 'styled-components';
 
 import ActionButton from '../Buttons/action';
+import MobilePopup from '../MobilePopup/index';
 import { color } from '../../Library/Styles/index';
 import logo from '../../Library/Images/logo.png';
+import { mobilecheck } from '../../Library/helpers';
 
 class Home extends Component {
   constructor(props) {
     super(props);
-
+    
+    const isMobile = mobilecheck();
+    
     this.state = {
-      redirect: null
+      displayMobilePopup: false,
+      redirect: null,
+      isMobile: isMobile
     };
   }
 
+  removeMobilePopup() {
+    this.setState({ displayMobilePopup: false });
+  }
+
   redirect(location) {
-    this.setState({ redirect: location })
+    if (this.state.isMobile) {
+      this.setState({ displayMobilePopup: true });
+    } else {
+      this.setState({ redirect: location });
+    }
   }
 
   render() {
@@ -26,6 +40,7 @@ class Home extends Component {
 
     return (
       <Layout>
+        {this.state.displayMobilePopup && <MobilePopup removeSelf={this.removeMobilePopup.bind(this)} />}
         <Logo src={logo} />
         <Title>WORDCRAFT</Title>
         <Subtitle>Understand, don't memorize, advanced<br />English vocabulary.</Subtitle>
