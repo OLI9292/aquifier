@@ -14,6 +14,7 @@ class SpellQuestion extends Component {
     this.state = {
       answer: '',
       answerComplete: false,
+      definition: this.props.word.definition,
       correct: true,
       choices: [],
       components: [],
@@ -21,6 +22,7 @@ class SpellQuestion extends Component {
       cursor: 0,
       displayRootDefs: false,
       displayErrors: false,
+      rootsInDefinitionsShown: false,
       guess: '',
       word: null
     }
@@ -76,7 +78,6 @@ class SpellQuestion extends Component {
     if (answerComplete && !this.state.answerComplete) {
       this.setState({ answerComplete: true }, () => this.props.nextQuestion());
     } else {
-      console.log("turn off")
       this.setState({ displayErrors: false });
     }
   }
@@ -119,7 +120,9 @@ class SpellQuestion extends Component {
       components: params.components,
       cursor: params.cursorEndpoints[0],
       cursorEndpoints: params.cursorEndpoints,
+      definition: word.definition,
       displayErrors: false,
+      rootsInDefinitionsShown: false,
       word: word
     });
   }
@@ -143,6 +146,10 @@ class SpellQuestion extends Component {
   }
 
   tappedHint() {
+    !this.state.rootDefinitionsShown ? this.revealRootsinDefinition() : this.giveAwayLetter();
+  }
+
+  giveAwayLetter() {
     let copy = this.state.components;
     const inCorrectIdx = _.findIndex(copy, this.isIncorrect);
     if (inCorrectIdx >= 0) {
@@ -153,9 +160,19 @@ class SpellQuestion extends Component {
     }
   }
 
+  revealRootsinDefinition() {
+    const updated = this.state.definition.map((part) => {
+      const rootComponent = _.find(this.state.word.components, (c) => c.definition === part.value);
+      return part.isRoot && rootComponent
+        ? { isRoot: true, value: `${part.value} (${rootComponent.value.toUpperCase()})` }
+        : part
+    });
+    this.setState({ definition: updated, rootsInDefinitionsShown: true });
+  }
+
   render() {
     const definition = () => {
-      return this.props.word.definition.map((p, idx) => {
+      return this.state.definition.map((p, idx) => {
         return <span key={idx} style={{color: p.isRoot ? '#F5A50E' : 'black'}}>{p.value}</span>
       })
     }
