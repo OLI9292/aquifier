@@ -4,7 +4,7 @@ import _ from 'underscore';
 
 import Buttons from '../Buttons/default';
 import { color } from '../../Library/Styles/index';
-import { toUnderscore } from '../../Library/helpers';
+import { toUnderscore, sleep } from '../../Library/helpers';
 
 class ButtonQuestion extends Component {
   constructor(props) {
@@ -45,7 +45,9 @@ class ButtonQuestion extends Component {
     const correct = word.roots;
     const exclude = _.pluck(correct, 'value');
     const redHerrings = this.redHerrings(exclude);
-    return _.shuffle(correct.concat(redHerrings));
+    let choices = _.shuffle(correct.concat(redHerrings));
+    choices.forEach((c) => c.correct = null);
+    return choices;
   }
 
   guessed(choice) {
@@ -53,11 +55,23 @@ class ButtonQuestion extends Component {
       return c.value === choice ? { value: c.value, display: true } : c;
     });
     
-    const incorrect = _.isEqual(this.state.components, updatedComponents);
+    const correct = !_.isEqual(this.state.components, updatedComponents);
+    this.animate(choice, correct);
 
-    incorrect
-      ? this.setState({ correct: false })
-      : this.setState({ components: updatedComponents }, this.checkComplete);
+    correct
+      ? this.setState({ components: updatedComponents }, this.checkComplete)
+      : this.setState({ correct: false });
+  }
+
+  animate = async (choice, correct) => {
+    let copy = this.state.choices;
+    copy.forEach((c) => { if (c.value === choice) { c.correct = correct } });
+    this.setState({ choices: copy });
+    if (!correct) {
+      await sleep(200);
+      copy.forEach((c) => { if (c.value === choice) { c.correct = null } });
+      this.setState({ choices: copy });
+    }
   }
 
   redHerrings(exclude) {
@@ -81,6 +95,7 @@ class ButtonQuestion extends Component {
     const buttons = () => {
       return this.state.choices.map((c) => {
         return <GameButton
+          correct={c.correct}
           key={c.value}
           onClick={() => {this.guessed(c.value)}}>{c.value.toUpperCase()}<br />{c.definition}</GameButton>
       })
@@ -123,10 +138,15 @@ const GameButtons = styled.div`
 `
 
 const GameButton = Buttons.large.extend`
-  background-color: ${color.blue};
+  background-color: ${props => props.correct === true
+    ? color.green
+    : props.correct === false ? color.red : color.blue};
   &:hover {
-    background-color: ${color.blue10l};
+    background-color: ${props => props.correct === true
+      ? color.green
+      : props.correct === false ? color.red : color.blue10l};
   }
+  transition-duration: 0.2s;
   margin: 10px;
   width: 250px;
   font-size: 2em;
