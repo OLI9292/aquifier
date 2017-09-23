@@ -30,7 +30,7 @@ class ButtonQuestion extends Component {
   reset(word) {
     const components = word.components.map((c) => ({ value: c.value, display: c.type !== 'root' }) );
     const choices = this.choicesFor(word);
-    this.setState({ components: components, correct: true, choices: choices });    
+    this.setState({ components: components, correct: true, choices: choices });
   }
 
   checkComplete() {
@@ -52,7 +52,7 @@ class ButtonQuestion extends Component {
     const updatedComponents = this.state.components.map((c) => {
       return c.value === choice ? { value: c.value, display: true } : c;
     });
-    
+
     const incorrect = _.isEqual(this.state.components, updatedComponents);
 
     incorrect
@@ -123,7 +123,7 @@ const GameButtons = styled.div`
 `
 
 const GameButton = Buttons.large.extend`
-  background-color: ${color.blue};
+  background-color: ${props => props.correct ? 'red' : 'green'};
   &:hover {
     background-color: ${color.blue10l};
   }

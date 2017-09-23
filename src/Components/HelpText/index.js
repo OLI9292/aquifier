@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
+import { color } from '../../Library/Styles/index';
 
 class HelpText extends Component {
   render() {
@@ -22,6 +23,9 @@ class HelpText extends Component {
 const Layout = styled.div`
   background-color: white;
   position: absolute;
+  padding: 15px;
+  border: 5px ${color.lightestGray} solid;
+  border-radius: 15px;
 `
 
 const Text = styled.p`

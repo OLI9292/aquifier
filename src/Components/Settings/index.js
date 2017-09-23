@@ -39,7 +39,7 @@ class Settings extends Component {
   constructor(props) {
     super(props);
 
-    this.state = { 
+    this.state = {
       timeIdx: 0,
       levelIdx: 0,
       topicIndices: [0],
@@ -96,25 +96,25 @@ class Settings extends Component {
     }
 
     const timeButtons = times.map((t, idx) => {
-      return <SelectionButton 
+      return <SelectionButton
         key={idx}
-        onClick={() => this.handleClick('time', idx)} 
+        onClick={() => this.handleClick('time', idx)}
         selected={this.state.timeIdx === idx}
       >{`${t} Minutes`}</SelectionButton>
     });
 
     const levelButtons = levels.map((l, idx) => {
-      return <SelectionButton 
+      return <SelectionButton
         key={idx}
-        onClick={() => this.handleClick('level', idx)} 
+        onClick={() => this.handleClick('level', idx)}
         selected={this.state.levelIdx === idx}
       >{l}</SelectionButton>
     });
 
     const topicButtons = topics.map((t, idx) => {
-      return <SelectionButton 
+      return <SelectionButton
         key={idx}
-        onClick={() => this.handleClick('topic', idx)} 
+        onClick={() => this.handleClick('topic', idx)}
         selected={_.contains(this.state.topicIndices, idx)}
       >{buttonContent(`${t.slug}.png`, t.displayName)}</SelectionButton>
     });
@@ -154,7 +154,8 @@ const Layout = styled.div`
 `
 
 const Selection = styled.div`
-  margin-left: 20px;
+  width: 80%;
+  margin: 0px auto;
 `
 
 const ShortCell = styled.td`

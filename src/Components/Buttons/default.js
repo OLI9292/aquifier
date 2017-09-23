@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 
 const DefaultButton = styled.button`
+  line-height: 1em;
   &:focus {
     outline: 0;
   }
