@@ -9,6 +9,32 @@ import HelpText from '../HelpText/index';
 import questionMark from '../../Library/Images/question-mark.png';
 import GLOBAL from '../../Library/global';
 
+const buttonContent = (src, text) => {
+  return <Content>
+    <Image src={require(`../../Library/Images/${src}`)} />
+    <ContentText>{text}</ContentText>
+  </Content>;
+}
+
+const Content = styled.div`
+  width: 90%;
+  height: 90%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`
+
+const Image = styled.img`
+  height: 75%;
+  margin-right: 5%;
+  width: auto;
+`
+
+const ContentText = styled.p`
+  display: table-cell;
+  vertical-align: middle;
+`
+
 class Settings extends Component {
   constructor(props) {
     super(props);
@@ -90,7 +116,7 @@ class Settings extends Component {
         key={idx}
         onClick={() => this.handleClick('topic', idx)} 
         selected={_.contains(this.state.topicIndices, idx)}
-      >{t.displayName}</SelectionButton>
+      >{buttonContent(`${t.slug}.png`, t.displayName)}</SelectionButton>
     });
 
     return (
