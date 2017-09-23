@@ -11,6 +11,8 @@ const DefaultButton = styled.button`
   cursor: pointer;
   font-family: BrandonGrotesque;
   transition: 0.2s;
+  line-height: 1em;
+  
 `
 
 const ExtraLargeButton = DefaultButton.extend`
