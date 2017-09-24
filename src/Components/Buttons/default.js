@@ -12,7 +12,6 @@ const DefaultButton = styled.button`
   font-family: BrandonGrotesque;
   transition: 0.2s;
   line-height: 1em;
-  
 `
 
 const ExtraLargeButton = DefaultButton.extend`
