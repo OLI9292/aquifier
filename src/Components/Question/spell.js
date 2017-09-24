@@ -22,6 +22,7 @@ class SpellQuestion extends Component {
       cursor: 0,
       displayRootDefs: false,
       displayErrors: false,
+      hintDisabled: false,
       rootsInDefinitionsShown: false,
       guess: '',
       word: null
@@ -69,16 +70,14 @@ class SpellQuestion extends Component {
     if (!pressedEnter && _.contains(_.pluck(this.state.components, 'guess'), null)) {
       return;
     }
-    this.setState({ displayErrors: true }, this.disableDisplayErrors);
+    this.setState({ displayErrors: true }, this.checkIfComplete);
   }
 
-  disableDisplayErrors = async () => {
+  checkIfComplete = async () => {
     await sleep(1000);
     const answerComplete = _.isEmpty(this.state.components.filter(this.isIncorrect));
     if (answerComplete && !this.state.answerComplete) {
       this.setState({ answerComplete: true }, () => this.props.nextQuestion());
-    } else {
-      this.setState({ displayErrors: false });
     }
   }
 
@@ -99,6 +98,7 @@ class SpellQuestion extends Component {
   handleDeletePress() {
     let copy = this.state.components;
     copy[this.state.cursor].guess = null;
+    this.handleArrowPress(true);
     this.setState({ components: copy });
   }
 
@@ -145,16 +145,27 @@ class SpellQuestion extends Component {
     return { answer: answer, components: components, cursorEndpoints: cursorEndpoints };
   }
 
-  tappedHint() {
-    !this.state.rootDefinitionsShown ? this.revealRootsinDefinition() : this.giveAwayLetter();
+  pressedHint = async () => {
+    if (this.state.hintDisabled) {
+      return;
+    }
+    !this.state.rootsInDefinitionsShown ? this.revealRootsinDefinition() : this.giveAwayLetter();
+    this.toggleHintDisabled();
+    await sleep(1000);
+    this.toggleHintDisabled();
+  }
+
+  toggleHintDisabled() {
+    this.setState({ hintDisabled: !this.state.hintDisabled });
   }
 
   giveAwayLetter() {
     let copy = this.state.components;
-    const inCorrectIdx = _.findIndex(copy, this.isIncorrect);
-    if (inCorrectIdx >= 0) {
-      copy[inCorrectIdx].guess = copy[inCorrectIdx].value;
-      this.setState({ components: copy });      
+    const incorrectIdx = _.findIndex(copy, this.isIncorrect);
+    if (incorrectIdx >= 0) {
+      copy[incorrectIdx].guess = copy[incorrectIdx].value;
+      let cursor = Math.min(incorrectIdx + 1, this.state.cursorEndpoints[1]);
+      this.setState({ components: copy, cursor: cursor });      
     } else {
       this.checkAnswer();
     }
@@ -193,7 +204,7 @@ class SpellQuestion extends Component {
       <Layout>
         <Definition>{definition()}</Definition>
         <div>{answerSpaces()}</div>
-        <HintButton type="button" onClick={() => this.tappedHint()}>Hint</HintButton>
+        <HintButton type="button" onClick={() => this.pressedHint()}>Hint</HintButton>
       </Layout>
     );
   }
@@ -204,9 +215,11 @@ const Layout = styled.div`
 
 const AnswerSpace = styled.p`  
   color: ${
-    props => props.displayErrors
-      ? props.correct ? color.green : color.red
-      : props.cursorOn ? color.blue : color.black
+    props => props.cursorOn
+      ? color.blue
+      : props.displayErrors
+        ? props.correct ? color.green : color.red
+        : color.black
   };
   display: inline-block;
   font-size: 2.5em;
