@@ -49,7 +49,8 @@ class Game extends Component {
       Firebase.refs.games.child(this.props.accessCode).on('value', (snapshot) => {
         const level = snapshot.val().level;
         const wordOrder = snapshot.val().words.split(',');
-        this.timer.track();
+        const lateness = this.secondsEnteredLate(snapshot.val().startTime);
+        this.timer.track(lateness);
         this.setState({ words: words, roots: roots, level: level, wordOrder: wordOrder }, this.nextQuestion);
       })
     }
@@ -60,6 +61,10 @@ class Game extends Component {
         this.skipAhead();
       }
     });
+  }
+
+  secondsEnteredLate(startTime) {
+    return Math.floor(((new Date()).getTime() - startTime) / 1000);
   }
 
   skipAhead() {

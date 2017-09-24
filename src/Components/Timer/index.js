@@ -13,14 +13,23 @@ class Timer extends Component {
     }
   }
 
+  accountForLateness(secondsLate) {
+    // TODO: - handle error if game already ended
+    const totalSeconds = (this.props.time === '5' ? 300 : 180) - secondsLate;
+    const minutes = parseInt(totalSeconds / 60);
+    const seconds = (totalSeconds % 60).toString();
+    return `${minutes}:${seconds.length === 1 ? '0' + seconds : seconds}`;
+  }
+
   decrementSeconds(seconds) {
     const updated = parseInt(seconds, 10) - 1;
     return updated < 10 ? `0${updated}` : updated.toString()
   } 
 
-  track() {
-    const minutes = this.state.timeLeft.split(':')[0];
-    const seconds = this.state.timeLeft.split(':')[1];
+  track(secondsLate) {
+    const timeLeft = secondsLate ? this.accountForLateness(secondsLate) : this.state.timeLeft;
+    const minutes = timeLeft.split(':')[0];
+    const seconds = timeLeft.split(':')[1];
 
     if ((seconds === '00') && (minutes === '0')) {
       this.props.gameOver();
