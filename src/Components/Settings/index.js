@@ -40,6 +40,7 @@ class Settings extends Component {
     super(props);
 
     this.state = { 
+      everythingSelected: true,
       timeIdx: 0,
       levelIdx: 0,
       topicIndices: [0],
@@ -64,9 +65,12 @@ class Settings extends Component {
         this.setState({ levelIdx: idx });
         break;
       case 'topic':
-        const indices = _.contains(this.state.topicIndices, idx)
-          ? this.state.topicIndices.filter((tIdx) => tIdx !== idx)
-          : this.state.topicIndices.concat([idx])
+        const indices = idx === 0
+          ? [0]
+          : (_.contains(this.state.topicIndices, idx)
+              ? this.state.topicIndices.filter((tIdx) => tIdx !== idx)
+              : this.state.topicIndices.concat([idx]))
+            .filter((idx) => idx !== 0)
         this.setState({ topicIndices: indices });
         break;
       default:
