@@ -89,11 +89,10 @@ class Game extends Component {
     this.setState({ isQuestionInterlude: true });
     window.timeout = setTimeout(() => { 
       this.nextQuestion();
-    }, 1500);
+    }, 2500);
   }
 
   nextQuestion() {
-    // Move onto the next question
     const word = this.getWord();
     this.setState({ currentWord: word, isQuestionInterlude: false, questionCount: this.state.questionCount + 1 });
   }
@@ -117,19 +116,19 @@ class Game extends Component {
 
     const gameOver = () => {
       return this.state.isSinglePlayer
-        ? <Container>
+        ? <GameOverContainer>
             <Text>You scored {this.state.score}.</Text>
-            {ActionButton('singlePlayer', this.redirect.bind(this))}
-            {ActionButton('ios')}
-            {ActionButton('android')}
-          </Container>
+            <ButtonContainer>{ActionButton('singlePlayer', this.redirect.bind(this))}</ButtonContainer>
+            <ButtonContainer>{ActionButton('ios')}</ButtonContainer>
+            <ButtonContainer>{ActionButton('android')}</ButtonContainer>
+          </GameOverContainer>
         : <Redirect push to={`/game/${this.props.accessCode}/over`} />
     }
 
     const question = () => {
       if (this.state.level === 'Beginner') {
         return <ButtonQuestion
-          level={this.props.level}
+          level={this.state.level}
           nextQuestion={this.runQuestionInterlude.bind(this)}
           isDisplayingImage={this.state.isQuestionInterlude}
           incrementScore={this.incrementScore.bind(this)}
@@ -137,7 +136,7 @@ class Game extends Component {
           word={this.state.currentWord} />
       } else {
         return <SpellQuestion
-          level={this.props.level}
+          level={this.state.level}
           nextQuestion={this.runQuestionInterlude.bind(this)}
           isDisplayingImage={this.state.isQuestionInterlude}
           roots={this.state.roots}
@@ -149,11 +148,11 @@ class Game extends Component {
       <Layout>
         <SmallText display={this.state.isQuestionInterlude}>Press ENTER to skip ahead</SmallText>
         <Scoreboard>
-          <Score>{this.state.score}</Score>
           <Timer
             time={this.props.time}
             ref={instance => { this.timer = instance }}
             gameOver={this.gameOver.bind(this)} />
+          <Score>{this.state.score}</Score>
         </Scoreboard>
         {
           this.state.gameOver 
@@ -180,17 +179,24 @@ const Layout = styled.div`
   text-align: center;
 `
 
-const Container = styled.div`
+const GameOverContainer = styled.div`
+`
+
+const ButtonContainer = styled.div`
+  display: block;
 `
 
 const Scoreboard = styled.div`
-  display: flex;
-  justify-content: center;
-
+  text-align: left;
+  margin: 0 auto;
+  margin-top: -30px;
+  width: 250px;
 `
 
 const Score = styled.p`
   font-size: 4em;
+  display: inline-block;
+  float: right;
   line-height: 0px;
   margin-right: 10px;
 `

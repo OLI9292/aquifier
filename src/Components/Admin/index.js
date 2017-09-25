@@ -12,7 +12,8 @@ class Admin extends Component {
     super(props);
 
     this.state = {
-      accessCode: null
+      accessCode: null,
+      players: []
     }
 
     this.startMatch = this.startMatch.bind(this);
@@ -22,6 +23,10 @@ class Admin extends Component {
     let words = await Firebase.fetchWords();
     words = _.shuffle(_.pluck(words.filter((w) => this.matchesCategory(w.categories, this.props.topics)), 'value')).join(',');
 
+    this.createMatch(words);
+  }
+
+  createMatch = async (words) => {
     Firebase.refs.games.once('value', (snapshot) => {
       const accessCodes = _.keys(snapshot.val());
       const accessCode = this.generateAccessCode(accessCodes);
@@ -39,10 +44,15 @@ class Admin extends Component {
         if (e) {
           console.log(e);
         } else {
-          this.setState({ accessCode: accessCode }, this.fetchWords);
+          this.setState({ accessCode: accessCode }, this.waitForPlayers.bind(this, accessCode));
         }
       });
     });
+  }
+
+  waitForPlayers = async (accessCode) => {
+    const ref = Firebase.refs.games.child(accessCode).child('players');
+    ref.on('value', (snapshot) => this.setState({ players: _.keys(snapshot.val()) }));
   }
 
   matchesCategory(a, b) {
@@ -67,33 +77,73 @@ class Admin extends Component {
     });
   }
 
+  kick(player) {
+    Firebase.refs.games.child(this.state.accessCode).child('players').child(player).remove();
+  }
+
   render() {
+
+    const playersTable = () => {
+      return this.state.players.length === 0
+        ? <Text color={color.gray}>Waiting for players to join...</Text>
+        : <table>
+          {this.state.players.map((p) => {
+           return <tr style={{lineHeight: '0px'}}>
+            <td><SmallText style={{width: '125px'}}>{p}</SmallText></td>
+            <td onClick={() => this.kick(p)}><KickButton>Kick</KickButton></td>
+           </tr> 
+          })}
+        </table>
+    }
+
     const content = () => {
-      return <Container>
-        <AccessCode>{this.state.accessCode}</AccessCode>
-        <Timer ref={instance => { this.timer = instance }} />
-        <StartButton onClick={this.startMatch}>Start Match</StartButton>
-      </Container>
+      return <Table>
+        <tr style={{height: '75px'}}>
+          <ShortCell alignTop><Text>Access Code</Text></ShortCell>
+          <LongCell alignTop><Text color={color.red}>{this.state.accessCode}</Text></LongCell>
+        </tr>
+        <tr style={{height: '300px', marginBottom: '1em'}}>
+          <ShortCell alignTop><Text>Players</Text></ShortCell>
+          <LongCell alignTop>{playersTable()}</LongCell>
+        </tr>
+        <tr>
+          <ShortCell><StartButton onClick={this.startMatch}>Start Match</StartButton></ShortCell>
+          <LongCell><Timer ref={instance => { this.timer = instance }} /></LongCell>
+        </tr>
+      </Table>
     }
 
     return (
-      <Layout>
-        <Heading>Access Code</Heading>
+      <div>
         {this.state.accessCode && content()}
-      </Layout>
+      </div>
     );
   }
 }
 
-const Layout = styled.div`
-  margin: auto;
+const Table = styled.table`
+  margin-left: 20px;
   padding-top: 5%;
-  text-align: center;
-  width: 80%;
 `
 
-const Heading = styled.div`
-  font-size: 4em;
+const Text = styled.h4`
+  display: inline;
+  font-size: 2em;
+  margin-right: 10px;
+  color: ${props => props.color ? props.color : 'black'};
+`
+
+const SmallText = styled.p`
+  font-size: 1.5em;
+`
+
+const ShortCell = styled.td`
+  width: 275px;
+  vertical-align: ${props => props.alignTop ? 'top' : 'middle'};
+`
+
+const LongCell = styled.td`
+  vertical-align: ${props => props.alignTop ? 'top' : 'middle'};
 `
 
 const AccessCode = styled.h1`
@@ -105,12 +155,23 @@ const AccessCode = styled.h1`
 const Container = styled.div`
 `
 
-const StartButton = Buttons.large.extend`
+const TimerContainer = styled.div`
+  margin: -30px 0px 10px 0px;
+`
+
+const StartButton = Buttons.medium.extend`
   background-color: ${color.blue};
   &:hover {
     background-color: ${color.blue10l};
   }
   font-size: 2.5em;
+`
+
+const KickButton = Buttons.small.extend`
+  background-color: ${color.red};
+  &:hover {
+    background-color: ${color.red10l};
+  }
 `
 
 export default Admin;

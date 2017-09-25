@@ -58,10 +58,6 @@ const Firebase = {
     return refs.forms.child(guid()).set(inputs).then(() => true).catch(() => false);
   },
 
-  waitingForGame: async (accessCode) => {
-    return refs.games.child(accessCode).child('status').on('value').then(snapshot => snapshot.val());
-  },
-
   fetchWords: async () => {
     return refs.words.once('value').then(mapWords);
   }

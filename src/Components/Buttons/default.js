@@ -43,10 +43,17 @@ const MediumButton = DefaultButton.extend`
   font-size: 2em;
 `
 
+const SmallButton = DefaultButton.extend`
+  width: 80px;
+  height: 35px;
+  font-size: 1.25em;
+`
+
 const Buttons = {
   extraLarge: ExtraLargeButton,
   large: LargeButton,
-  medium: MediumButton
+  medium: MediumButton,
+  small: SmallButton
 }
 
 export default Buttons;

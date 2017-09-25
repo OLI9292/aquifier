@@ -11,6 +11,7 @@ class OnCorrectImage extends Component {
     this.state = {
       data: [],
       display: false,
+      word: '',
       source: null
     }
   }
@@ -23,7 +24,7 @@ class OnCorrectImage extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (_.isNull(nextProps.word)) { return };
+    if (_.isNull(nextProps.word) || (nextProps.word.value === this.state.word)) { return };
 
     const image = _.find(this.state.data, (obj) => {
       let words = obj.Key.split('.')[0].split('-');
@@ -40,7 +41,7 @@ class OnCorrectImage extends Component {
     
       request.on('success', (response) => {
         const imageSource = 'data:image/jpeg;base64,' + this.encode(response.data.Body);
-        this.setState({ source: imageSource });
+        this.setState({ source: imageSource, word: nextProps.word.value });
       });
     } else {
       this.setState({ source: null });
@@ -62,13 +63,16 @@ class OnCorrectImage extends Component {
 }
 
 const Layout = styled.div`
-  display: ${props => props.display ? 'inline' : 'none'};
+  display: ${props => props.display ? 'block' : 'none'};
   margin: auto;
   width: 100%;
+  height: 250px;
+  margin-top: 2em;
 `
 
 const Image = styled.img`
-  max-width: 100%;
+  height: 100%;
+  width: auto;
 `
 
 export default OnCorrectImage;
