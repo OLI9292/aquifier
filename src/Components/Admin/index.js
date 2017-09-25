@@ -71,7 +71,9 @@ class Admin extends Component {
     const content = () => {
       return <Container>
         <AccessCode>{this.state.accessCode}</AccessCode>
-        <Timer ref={instance => { this.timer = instance }} />
+        <TimerContainer>
+          <Timer ref={instance => { this.timer = instance }} />
+        </TimerContainer>
         <StartButton onClick={this.startMatch}>Start Match</StartButton>
       </Container>
     }
@@ -103,6 +105,10 @@ const AccessCode = styled.h1`
 `
 
 const Container = styled.div`
+`
+
+const TimerContainer = styled.div`
+  margin: -30px 0px 10px 0px;
 `
 
 const StartButton = Buttons.large.extend`

@@ -115,9 +115,9 @@ const Layout = styled.div`
 `
 
 const Definition = styled.div`
-  font-size: 2.5em;
+  font-size: 2em;
   margin: auto;
-  margin-bottom: 2em;
+  margin-bottom: 1em;
   width: 75%
 `
 
@@ -131,7 +131,7 @@ const AnswerSpace = styled.p`
 `
 
 const GameButtons = styled.div`
-  margin-top: 2em;
+  margin-top: 3em;
   display: ${props => props.display ? 'flex' : 'none'};
   flex-wrap: wrap;
   justify-content: center;
