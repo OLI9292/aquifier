@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
-import { Redirect } from 'react-router';
 import styled from 'styled-components';
 import _ from 'underscore';
 
-import Buttons from '../Buttons/default';
 import Firebase from '../../Networking/Firebase';
 import { color } from '../../Library/Styles/index';
 

@@ -13,6 +13,8 @@ class Home extends Component {
     super(props);
     
     const isMobile = mobilecheck();
+
+    console.log(process.env);
     
     this.state = {
       displayMobilePopup: false,

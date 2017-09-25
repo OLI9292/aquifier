@@ -5,7 +5,7 @@ import Word from '../Models/Word';
 import { guid } from '../Library/helpers';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyDHQikqQ6e3q78jI9u5Us-uayAFBuFVTgM',
+  apiKey: process.env.FIREBASE_API_KEY,
   authDomain: 'classical-spelling-bee.firebaseapp.com',
   databaseURL: 'https://classical-spelling-bee.firebaseio.com',
   storageBucket: "classical-spelling-bee.appspot.com"
