@@ -1,7 +1,6 @@
 import queryString from 'query-string';
 import React, { Component } from 'react';
 import { Route, Switch } from 'react-router';
-import { Redirect } from 'react-router';
 import { BrowserRouter } from 'react-router-dom';
 import styled from 'styled-components';
 

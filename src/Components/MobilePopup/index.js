@@ -6,10 +6,6 @@ import Buttons from '../Buttons/default';
 import { color } from '../../Library/Styles/index';
 
 class MobilePopup extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   handleClick() {
     this.props.removeSelf();
   }

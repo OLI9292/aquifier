@@ -1,6 +1,6 @@
 import AWS from 'aws-sdk';
 
-const identityPoolId = { IdentityPoolId: 'us-east-1:63b7c5c5-dd01-4ccd-9183-dc1284e1eb32' };
+const identityPoolId = { IdentityPoolId: process.env.AWS_IDENTITY_POOL_ID };
 const region = 'us-east-1';
 const imagesBucket = { Bucket: 'wordcraft-images' };
 

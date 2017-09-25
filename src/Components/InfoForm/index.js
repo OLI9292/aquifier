@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import _ from 'underscore';
 
-import Buttons from '../Buttons/default';
 import TextAreas from '../TextAreas/index';
 import lightGrayCheckmark from '../../Library/Images/Checkmark-LightGray.png';
 import greenCheckmark from '../../Library/Images/Checkmark-Green.png';

@@ -13,7 +13,6 @@ import Word from '../../Models/Word';
 import Timer from '../Timer/index';
 
 import { color } from '../../Library/Styles/index';
-import { sleep } from '../../Library/helpers';
 
 class Game extends Component {
   constructor(props) {
