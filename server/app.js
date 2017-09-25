@@ -15,4 +15,6 @@ app.get('*', (req, res) => {
   res.sendFile(path.resolve(__dirname, '..', 'build', 'index.html'));
 });
 
+console.log(process.env);
+
 module.exports = app;
