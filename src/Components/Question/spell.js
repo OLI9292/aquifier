@@ -76,7 +76,7 @@ class SpellQuestion extends Component {
     await sleep(1000);
     const answerComplete = _.isEmpty(this.state.components.filter(this.isIncorrect));
     if (answerComplete && !this.state.answerComplete) {
-      this.setState({ answerComplete: true }, () => this.props.nextQuestion());
+      this.setState({ answerComplete: true, cursor: -1 }, () => this.props.nextQuestion());
     }
   }
 
@@ -203,7 +203,7 @@ class SpellQuestion extends Component {
       <Layout>
         <Definition>{definition()}</Definition>
         <div>{answerSpaces()}</div>
-        <HintButton type="button" onClick={() => this.pressedHint()}>Hint</HintButton>
+        <HintButton display={!this.props.isDisplayingImage} type="button" onClick={() => this.pressedHint()}>Hint</HintButton>
       </Layout>
     );
   }
@@ -228,11 +228,13 @@ const AnswerSpace = styled.p`
 const Definition = styled.div`
   font-size: 2.5em;
   margin: auto;
-  margin-bottom: 2em;
+  margin-bottom: 1em;
   width: 75%
 `
 
 const HintButton = Buttons.medium.extend`
+  margin-top: 50px;
+  display: ${props => props.display ? 'normal' : 'none'};
   background-color: ${color.blue};
   &:hover {
     background-color: ${color.blue10l};

@@ -128,7 +128,7 @@ class Game extends Component {
     const question = () => {
       if (this.state.level === 'Beginner') {
         return <ButtonQuestion
-          level={this.props.level}
+          level={this.state.level}
           nextQuestion={this.runQuestionInterlude.bind(this)}
           isDisplayingImage={this.state.isQuestionInterlude}
           incrementScore={this.incrementScore.bind(this)}
@@ -136,7 +136,7 @@ class Game extends Component {
           word={this.state.currentWord} />
       } else {
         return <SpellQuestion
-          level={this.props.level}
+          level={this.state.level}
           nextQuestion={this.runQuestionInterlude.bind(this)}
           isDisplayingImage={this.state.isQuestionInterlude}
           roots={this.state.roots}
