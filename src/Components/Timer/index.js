@@ -17,7 +17,6 @@ class Timer extends Component {
   }
 
   accountForLateness(secondsLate) {
-    // TODO: - handle error if game already ended
     const totalSeconds = (this.props.time === '5' ? 300 : 180) - secondsLate;
     const minutes = parseInt(totalSeconds / 60);
     const seconds = (totalSeconds % 60).toString();

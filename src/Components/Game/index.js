@@ -93,8 +93,6 @@ class Game extends Component {
     if (_.isEmpty(this.state.wordOrder)) {
       return this.randomItem(this.state.words);
     } else {
-      console.log(this.state.wordOrder[0])
-      console.log('hi')
       const next = _.find(this.state.words, (w) => w.value === this.state.wordOrder[0]);
       this.setState({ wordOrder: this.state.wordOrder.slice(1, this.state.wordOrder.length )});
       return next !== undefined ? next : this.getWord();
@@ -122,8 +120,8 @@ class Game extends Component {
   }
 
   submitScore() {
-    const node = Firebase.refs.games.child(this.props.settings.accessCode).child('players').child(this.props.settings.name);
-    node.set(this.state.score);
+    const ref = Firebase.refs.games.child(this.props.settings.accessCode).child('players').child(this.props.settings.name);
+    ref.set(this.state.score);
   }
 
   gameOver() {

@@ -74,10 +74,10 @@ class Admin extends Component {
   }
 
   startMatch() {
-    /*if (_.isEmpty(this.state.players)) {
+    if (_.isEmpty(this.state.players)) {
       this.setState({ errorMessage: 'Games require at least 1 player.' });
       return;
-    }*/
+    }
 
     const time = (new Date()).getTime();
     const startMatchUpdate = { status: 1, startTime: time };
@@ -94,7 +94,7 @@ class Admin extends Component {
   gameOver() {
     const endMatchUpdate = { status: 2 };
     Firebase.refs.games.child(this.state.accessCode).update(endMatchUpdate);
-    this.setState({ redirect: true })
+    this.setState({ redirect: true });
   }
 
   kick(player) {
@@ -113,7 +113,7 @@ class Admin extends Component {
 
     const playersTable = () => {
       return this.state.players.length === 0
-        ? <Text color={color.gray}>{'Waiting for players to join...'}</Text>
+        ? <Text color={color.gray}>Waiting for players to join...</Text>
         : <table>
           {this.state.players.map((p) => {
            return <tr style={{lineHeight: '0px'}}>
