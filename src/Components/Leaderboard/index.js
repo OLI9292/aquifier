@@ -16,7 +16,7 @@ class Leaderboard extends Component {
   }
 
   componentDidMount() {
-    Firebase.refs.games.child(this.props.accessCode).on('value', (snapshot) => {
+    Firebase.refs.games.child(this.props.settings.accessCode).on('value', (snapshot) => {
       const snap = snapshot.val();
 
       if (snap.players) {
@@ -28,6 +28,10 @@ class Leaderboard extends Component {
         };
       }
     })
+  }
+
+  componentWillUnmount() {
+    Firebase.refs.games.child(this.props.settings.accessCode).off();
   }
 
   withPositions(players) {

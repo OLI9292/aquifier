@@ -1,7 +1,10 @@
-import Firebase from '../../Networking/Firebase';
+import queryString from 'query-string';
 import React, { Component } from 'react';
 import { Redirect } from 'react-router';
 import styled from 'styled-components';
+import _ from 'underscore';
+
+import Firebase from '../../Networking/Firebase';
 
 class Waiting extends Component {
   constructor(props) {
@@ -13,21 +16,23 @@ class Waiting extends Component {
   }
 
   componentDidMount() {
-    const gameStatusRef = Firebase.refs.games.child(this.props.accessCode).child('status');
-    
-    gameStatusRef.on('value', (snapshot) => {
+    Firebase.refs.games.child(this.props.settings.accessCode).child('status').on('value', (snapshot) => {
       const gameStarted = snapshot.val() === 1;
-
+      
       if (gameStarted) {
-        gameStatusRef.off();
         this.setState({ redirect: true });
       }
     });
   }
 
+  componentWillUnmount() {
+    Firebase.refs.games.child(this.props.settings.accessCode).child('status').off();
+  }
+
   render() {
     if (this.state.redirect) {
-      return <Redirect push to={`/game/${this.props.accessCode}/play`} />;
+      const settings = _.mapObject(this.props.settings, (v, k) => k === 'component' ? 'game' : v);
+      return <Redirect push to={`/game/${queryString.stringify(settings)}`} />;
     }
 
     return (

@@ -92,10 +92,10 @@ class Settings extends Component {
     const topics = GLOBAL.SETTINGS.TOPIC;
 
     if (this.state.redirect) {
-      const params = `time=${times[this.state.timeIdx]}` +
+      const settings = `time=${times[this.state.timeIdx]}` +
         `&level=${levels[this.state.levelIdx]}` +
         `${this.state.topicIndices.map((idx) => `&topic=${topics[idx].slug}`).join('')}`;
-      const location = this.props.multiplayer ? `/game/admin/${params}` : `/game/sp/${params}`;
+      const location = this.props.multiplayer ? `/game/admin/${settings}` : `/game/${settings}`;
       return <Redirect push to={location} />;
     }
 
@@ -126,22 +126,24 @@ class Settings extends Component {
     return (
       <Layout>
         <Selection>
-          <tr>
-            <ShortCell><Text>Time</Text></ShortCell>
-            <QuestionMark style={{visibility: 'hidden'}} src={questionMark} />
-            <LongCell>{timeButtons}</LongCell>
-          </tr>
-          <tr>
-            <ShortCell><Text>Level</Text></ShortCell>
-            <QuestionMark onMouseOver={this.showHelpText.bind(this)} onMouseLeave={this.hideHelpText.bind(this)} src={questionMark} />
-            {this.state.showHelpText && <HelpText />}
-            <LongCell>{levelButtons}</LongCell>
-          </tr>
-          <tr>
-            <ShortCell><Text>Topic</Text></ShortCell>
-            <QuestionMark style={{visibility: 'hidden'}} src={questionMark} />
-            <LongCell>{topicButtons}</LongCell>
-          </tr>
+          <tbody>
+            <tr>
+              <ShortCell><Text>Time</Text></ShortCell>
+              <td><QuestionMark style={{visibility: 'hidden'}} src={questionMark} /></td>
+              <LongCell>{timeButtons}</LongCell>
+            </tr>
+            <tr>
+              <ShortCell><Text>Level</Text></ShortCell>
+              <td style={{verticalAlign: 'top'}}><QuestionMark onMouseOver={this.showHelpText.bind(this)} onMouseLeave={this.hideHelpText.bind(this)} src={questionMark} /></td>
+              <LongCell>{levelButtons}</LongCell>
+              <div style={{position: 'fixed', left: '50%', marginLeft: '-200px', width: '400px'}}>{this.state.showHelpText && <HelpText />}</div>
+            </tr>
+            <tr>
+              <ShortCell><Text>Topic</Text></ShortCell>
+              <td><QuestionMark style={{visibility: 'hidden'}} src={questionMark} /></td>
+              <LongCell>{topicButtons}</LongCell>
+            </tr>
+          </tbody>
         </Selection>
         <ButtonContainer>
           <AccessCodeButton onClick={this.redirect}>
@@ -157,7 +159,7 @@ const Layout = styled.div`
   padding: 5% 0 5% 0;
 `
 
-const Selection = styled.div`
+const Selection = styled.table`
   margin-left: 20px;
 `
 

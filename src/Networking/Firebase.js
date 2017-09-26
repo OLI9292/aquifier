@@ -2,13 +2,13 @@ import * as firebase from 'firebase';
 import _ from 'underscore';
 
 import Word from '../Models/Word';
-import { guid } from '../Library/helpers';
+import { guid, toArr } from '../Library/helpers';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyDHQikqQ6e3q78jI9u5Us-uayAFBuFVTgM',
   authDomain: 'classical-spelling-bee.firebaseapp.com',
   databaseURL: 'https://classical-spelling-bee.firebaseio.com',
-  storageBucket: "classical-spelling-bee.appspot.com"
+  storageBucket: 'classical-spelling-bee.appspot.com'
 };
 
 const firebaseApp = firebase.initializeApp(firebaseConfig);
@@ -26,13 +26,15 @@ function validate(snapshot, name, accessCode) {
   if (snapshot.status === 2) {
     return [false, 'Game has ended.'];
   }
-  // TODO: - throw error if player name taken 
+  if (snapshot.players && _.includes(toArr(_.keys(snapshot.players)), name)) {
+    return [false, 'Name taken.'];
+  }
   return [true, snapshot];
 }
 
 function mapWords(snapshot) {
   let wordObj = snapshot.val();
-  return _.keys(wordObj).map((val) => Word(val, wordObj[val]));
+  return _.keys(wordObj).map((val) => Word(val, wordObj[val])).filter((w) => !_.isNull(w));
 }
 
 const Firebase = {

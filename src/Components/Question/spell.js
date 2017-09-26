@@ -30,10 +30,11 @@ class SpellQuestion extends Component {
 
   componentDidMount() {
     this.reset(this.props.word);
-    // TODO: - remove on unmount
-    document.body.addEventListener('keydown', (event) => {
-      this.handleInput(event);
-    });
+    document.body.addEventListener('keydown', this.handleInput.bind(this), true);
+  }
+
+  componentWillUnmount() {
+    document.body.removeEventListener('keydown', this.handleInput, true);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -104,7 +105,7 @@ class SpellQuestion extends Component {
   handleLetterPress(letter) {
     let copy = this.state.components;
     copy[this.state.cursor].guess = letter;
-    const cursor = this.state.cursor === this.state.answer.length - 1 ? this.state.cursor : this.state.cursor + 1;
+    const cursor = this.state.cursor === this.state.cursorEndpoints[1] ? this.state.cursor : this.state.cursor + 1;
     this.setState({ components: copy, cursor: cursor }, this.checkAnswer);
   }
 
@@ -203,7 +204,7 @@ class SpellQuestion extends Component {
       <Layout>
         <Definition>{definition()}</Definition>
         <div>{answerSpaces()}</div>
-        <HintButton display={!this.props.isDisplayingImage} type="button" onClick={() => this.pressedHint()}>Hint</HintButton>
+        <HintButton display={!this.props.isDisplayingImage} type='button' onClick={() => this.pressedHint()}>Hint</HintButton>
       </Layout>
     );
   }

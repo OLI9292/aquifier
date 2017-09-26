@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router';
+import queryString from 'query-string';
 import styled from 'styled-components';
 import _ from 'underscore';
 
@@ -12,13 +13,17 @@ import SpellQuestion from '../Question/spell';
 import Word from '../../Models/Word';
 import Timer from '../Timer/index';
 
+import { toArr } from '../../Library/helpers';
 import { color } from '../../Library/Styles/index';
+import leftArrow from '../../Library/Images/left-arrow.png';
+import rightArrow from '../../Library/Images/right-arrow.png';
+import enterKey from '../../Library/Images/enter.png';
 
 class Game extends Component {
   constructor(props) {
     super(props);
 
-    const isSinglePlayer = this.props.accessCode === undefined;
+    const isSinglePlayer = this.props.settings.accessCode === undefined;
 
     this.state = {
       choices: [],
@@ -37,29 +42,42 @@ class Game extends Component {
     }
   }
 
+  matchesCategory(a, b) {
+    return _.intersection(a.map((x) => x.toLowerCase()), toArr(b).map((y) => y.toLowerCase())).length > 0
+  }
+
   async componentDidMount() {
     let words = await Firebase.fetchWords();
     const roots = _.uniq(_.flatten(words.map((w) => w.roots)), 'value');
 
     if (this.state.isSinglePlayer) {
+      const wordOrder = _.shuffle(_.pluck(words.filter((w) => this.matchesCategory(w.categories, this.props.settings.topic)), 'value'));
       this.timer.track();
-      this.setState({ words: words, roots: roots, level: this.props.level }, this.nextQuestion);
+      this.setState({ words: words, roots: roots, level: this.props.settings.level, wordOrder: wordOrder }, this.nextQuestion);
     } else {
-      Firebase.refs.games.child(this.props.accessCode).on('value', (snapshot) => {
+      Firebase.refs.games.child(this.props.settings.accessCode).on('value', (snapshot) => {
         const level = snapshot.val().level;
-        const wordOrder = snapshot.val().words.split(',');
+        const wordOrder = snapshot.val().words === '' ? [] : snapshot.val().words.split(',');
         const lateness = this.secondsEnteredLate(snapshot.val().startTime);
         this.timer.track(lateness);
         this.setState({ words: words, roots: roots, level: level, wordOrder: wordOrder }, this.nextQuestion);
       })
     }
 
-    // TODO: - remove on unmount
-    document.body.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter' && this.state.isQuestionInterlude) {
-        this.skipAhead();
-      }
-    });
+    document.body.addEventListener('keydown', this.handleKeydown.bind(this), true);
+  }
+
+  handleKeydown(event) {
+    if (event.key === 'Enter' && this.state.isQuestionInterlude) {
+      this.skipAhead();
+    }
+  }
+
+  componentWillUnmount() {
+    document.body.removeEventListener('keydown', this.handleKeydown, true);
+    if (!this.state.isSinglePlayer) {
+      Firebase.refs.games.child(this.props.settings.accessCode).off();
+    }
   }
 
   secondsEnteredLate(startTime) {
@@ -72,7 +90,7 @@ class Game extends Component {
   }
 
   getWord() {
-    if (this.state.isSinglePlayer || _.isEmpty(this.state.wordOrder)) {
+    if (_.isEmpty(this.state.wordOrder)) {
       return this.randomItem(this.state.words);
     } else {
       const next = _.find(this.state.words, (w) => w.value === this.state.wordOrder[0]);
@@ -89,7 +107,7 @@ class Game extends Component {
     this.setState({ isQuestionInterlude: true });
     window.timeout = setTimeout(() => { 
       this.nextQuestion();
-    }, 2500);
+    }, 4000);
   }
 
   nextQuestion() {
@@ -99,6 +117,11 @@ class Game extends Component {
 
   randomItem(arr) {
     return arr[Math.floor(Math.random()*arr.length)];
+  }
+
+  submitScore() {
+    const ref = Firebase.refs.games.child(this.props.settings.accessCode).child('players').child(this.props.settings.name);
+    ref.set(this.state.score);
   }
 
   gameOver() {
@@ -115,14 +138,18 @@ class Game extends Component {
     }
 
     const gameOver = () => {
-      return this.state.isSinglePlayer
-        ? <GameOverContainer>
-            <Text>You scored {this.state.score}.</Text>
-            <ButtonContainer>{ActionButton('singlePlayer', this.redirect.bind(this))}</ButtonContainer>
-            <ButtonContainer>{ActionButton('ios')}</ButtonContainer>
-            <ButtonContainer>{ActionButton('android')}</ButtonContainer>
-          </GameOverContainer>
-        : <Redirect push to={`/game/${this.props.accessCode}/over`} />
+      if (this.state.isSinglePlayer) {
+        return <GameOverContainer>
+          <Text>You scored {this.state.score}.</Text>
+          <ButtonContainer>{ActionButton('singlePlayer', this.redirect.bind(this))}</ButtonContainer>
+          <ButtonContainer>{ActionButton('ios')}</ButtonContainer>
+          <ButtonContainer>{ActionButton('android')}</ButtonContainer>
+        </GameOverContainer>
+      } else {
+        this.submitScore();
+        const settings = _.mapObject(this.props.settings, (v, k) => k === 'component' ? 'leaderboard' : v);
+        return <Redirect push to={`/game/${queryString.stringify(settings)}`} />;
+      }
     }
 
     const question = () => {
@@ -144,12 +171,26 @@ class Game extends Component {
       }
     }
 
+    const directions = () => {
+      return <Directions display={!this.state.isQuestionInterlude}>
+        <DirectionsCell>
+          <DirectionsText>Move</DirectionsText>
+          <Image src={leftArrow} />
+          <Image src={rightArrow} />
+        </DirectionsCell>
+        <DirectionsCell>
+          <DirectionsText>Check Answer</DirectionsText>
+          <Image src={enterKey} />
+        </DirectionsCell>
+      </Directions>
+    }
+
     return (
       <Layout>
         <SmallText display={this.state.isQuestionInterlude}>Press ENTER to skip ahead</SmallText>
         <Scoreboard>
           <Timer
-            time={this.props.time}
+            time={this.props.settings.time}
             ref={instance => { this.timer = instance }}
             gameOver={this.gameOver.bind(this)} />
           <Score>{this.state.score}</Score>
@@ -163,6 +204,7 @@ class Game extends Component {
           display={this.state.isQuestionInterlude} 
           ref={instance => { this.wordImage = instance }} 
           word={this.state.currentWord} />
+        {this.state.level !== 'Beginner' && directions()}
       </Layout>
     );
   }
@@ -177,6 +219,7 @@ const SmallText = styled.p`
 
 const Layout = styled.div`
   text-align: center;
+  height: 100%;
 `
 
 const GameOverContainer = styled.div`
@@ -203,6 +246,32 @@ const Score = styled.p`
 
 const Text = styled.h4`
   font-size: 2em;
+`
+
+// Directions components
+const Directions = styled.div`
+  display: ${props => props.display ? 'normal' : 'none'};
+  text-align: left;
+  margin: 0px 0px 40px 20px;
+  width: 250px;
+  bottom: 0;
+  position: absolute;
+`
+
+const DirectionsCell = styled.div`
+  display: inline-block;
+  height: 100px;
+  width: 125px;
+`
+
+const Image = styled.img`
+  height: 35px;
+  width: auto;
+`
+
+const DirectionsText = styled.h4`
+  text-align: left;
+  color: ${color.gray};
 `
 
 export default Game;
