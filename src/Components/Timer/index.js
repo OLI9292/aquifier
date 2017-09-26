@@ -6,11 +6,14 @@ class Timer extends Component {
   constructor(props) {
     super(props);
 
-    const timeLeft = this.props.time === '5' ? '5:00' : '3:00';
-
     this.state = {
-      timeLeft: timeLeft
+      timeLeft: ''
     }
+  }
+
+  componentDidMount() {
+    const timeLeft = this.props.time === '5' ? '5:00' : '3:00';
+    this.setState({ timeLeft: timeLeft });
   }
 
   accountForLateness(secondsLate) {
@@ -37,7 +40,7 @@ class Timer extends Component {
       const time = seconds === '00'
         ? `${parseInt(minutes, 10) - 1}:59`
         : `${minutes}:${this.decrementSeconds(seconds)}`
-      setTimeout(() => { this.update(time) }, 1000);
+      setTimeout(() => { this.update(time) }, 1);
     }
   }
 

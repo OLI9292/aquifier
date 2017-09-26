@@ -13,10 +13,6 @@ class Header extends Component {
     };
   }
 
-  redirect(location) {
-    this.setState({ redirect: location })
-  }
-  
   render() {
     if (this.state.redirect) {
       return <Redirect push to={this.state.redirect} />;
@@ -24,11 +20,11 @@ class Header extends Component {
 
     return (
       <Layout>
-        <Logo src={logo} />
+        <Logo src={logo} onClick={() => this.setState({ redirect: '/' })} />
         <Nav>
-          <Link color={color.green} onClick={() => this.redirect('/education')}>For Schools</Link>
+          <Link color={color.green} onClick={() => this.setState({ redirect: '/education' })}>For Schools</Link>
           <Link color={color.black}>iOS App</Link>
-          <Link color={color.blue} onClick={() => this.redirect('/')}>Home</Link>
+          <Link color={color.blue} onClick={() => this.setState({ redirect: '/' })}>Home</Link>
         </Nav>
       </Layout>
     );
@@ -37,13 +33,15 @@ class Header extends Component {
 
 const Layout = styled.div`
   background-color: white;
-  height: 10%;
+  position: fixed;
+  height: 75px;
   width: 100%;
   min-width: 400px;
 `
 
 const Logo = styled.img`
   float: left;
+  cursor: pointer;
   height: 50%;
   padding-left: 2%;
   position: relative;

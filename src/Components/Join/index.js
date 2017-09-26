@@ -23,12 +23,8 @@ class Join extends Component {
   joinGame = async (name, accessCode, game) => {
     const success = await Firebase.joinGame(name, accessCode);
     if (success) {
-      const status = game.status;
-      if (status === 0) { // Game has not started
-        this.setState({ redirect: `/game/${accessCode}/waiting` });
-      } else { // Game has started
-        this.setState({ redirect: `/game/${accessCode}/play` })
-      }
+      const status = game.status === 0 ? 'waiting' : 'game';
+      this.setState({ redirect: `/game/name=${name}&accessCode=${accessCode}&component=${status}&multiplayer=true` });
     } else {
       this.setState({ errorMessage: 'Unable to join game.', displayError: true });
     }
@@ -62,7 +58,7 @@ class Join extends Component {
         <tr>
           <ShortRow><Text>Access Code</Text></ShortRow>
           <LongRow>
-            <TextAreas.medium value={this.state.accessCode} onChange={(event) => this.setState({ 'accessCode': event.target.value })}>
+            <TextAreas.medium value={this.state.accessCode} onChange={(event) => this.setState({ 'accessCode': event.target.value.trim() })}>
             </TextAreas.medium>
           </LongRow>
         </tr>

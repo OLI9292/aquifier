@@ -1,11 +1,14 @@
+import queryString from 'query-string';
 import Firebase from '../../Networking/Firebase';
 import React, { Component } from 'react';
+import { Redirect } from 'react-router';
 import styled from 'styled-components';
 import _ from 'underscore';
 
 import Buttons from '../Buttons/default';
 import Timer from '../Timer/index';
 import { color } from '../../Library/Styles/index';
+import { toArr } from '../../Library/helpers';
 
 class Admin extends Component {
   constructor(props) {
@@ -13,7 +16,9 @@ class Admin extends Component {
 
     this.state = {
       accessCode: null,
-      players: []
+      errorMessage: null,
+      players: [],
+      redirect: false
     }
 
     this.startMatch = this.startMatch.bind(this);
@@ -21,7 +26,8 @@ class Admin extends Component {
 
   async componentDidMount() {
     let words = await Firebase.fetchWords();
-    words = _.shuffle(_.pluck(words.filter((w) => this.matchesCategory(w.categories, this.props.topics)), 'value')).join(',');
+    const topics = toArr(this.props.settings.topic);
+    words = _.shuffle(_.pluck(words.filter((w) => this.matchesCategory(w.categories, topics)), 'value')).join(',');
 
     this.createMatch(words);
   }
@@ -34,15 +40,15 @@ class Admin extends Component {
       const game = {};
 
       game[accessCode] = { 
-        level: this.props.level,
-        time: this.props.time,
+        level: this.props.settings.level,
+        time: this.props.settings.time,
         status: 0,
         words: words
       };
 
       Firebase.refs.games.update(game, (e) => {
         if (e) {
-          console.log(e);
+          this.setState({ errorMessage: 'Failed to create match.' });
         } else {
           this.setState({ accessCode: accessCode }, this.waitForPlayers.bind(this, accessCode));
         }
@@ -52,7 +58,11 @@ class Admin extends Component {
 
   waitForPlayers = async (accessCode) => {
     const ref = Firebase.refs.games.child(accessCode).child('players');
-    ref.on('value', (snapshot) => this.setState({ players: _.keys(snapshot.val()) }));
+    ref.on('value', (snapshot) => { console.log(snapshot.val()); this.setState({ players: _.keys(snapshot.val()) }) });
+  }
+
+  componentWillUnmount() {
+    Firebase.refs.games.child(this.state.accessCode).child('players').off();
   }
 
   matchesCategory(a, b) {
@@ -64,17 +74,27 @@ class Admin extends Component {
   }
 
   startMatch() {
+    /*if (_.isEmpty(this.state.players)) {
+      this.setState({ errorMessage: 'Games require at least 1 player.' });
+      return;
+    }*/
+
     const time = (new Date()).getTime();
     const startMatchUpdate = { status: 1, startTime: time };
 
     Firebase.refs.games.child(this.state.accessCode).update(startMatchUpdate, (e) => {
       if (e) {
-        // TODO: - handle / show error
-        console.log(e);
+        this.setState({ errorMessage: 'Failed to start match.' });
       } else {
         this.timer.track();
       }
     });
+  }
+
+  gameOver() {
+    const endMatchUpdate = { status: 2 };
+    Firebase.refs.games.child(this.state.accessCode).update(endMatchUpdate);
+    this.setState({ redirect: true })
   }
 
   kick(player) {
@@ -82,10 +102,18 @@ class Admin extends Component {
   }
 
   render() {
+    if (this.state.redirect) {
+      const settings = {
+        accessCode: this.state.accessCode,
+        multiplayer: true,
+        component: 'leaderboard'
+      };
+      return <Redirect push to={`/game/${queryString.stringify(settings)}`} />;
+    }
 
     const playersTable = () => {
       return this.state.players.length === 0
-        ? <Text color={color.gray}>Waiting for players to join...</Text>
+        ? <Text color={color.gray}>{'Waiting for players to join...'}</Text>
         : <table>
           {this.state.players.map((p) => {
            return <tr style={{lineHeight: '0px'}}>
@@ -108,18 +136,32 @@ class Admin extends Component {
         </tr>
         <tr>
           <ShortCell><StartButton onClick={this.startMatch}>Start Match</StartButton></ShortCell>
-          <LongCell><Timer ref={instance => { this.timer = instance }} /></LongCell>
+          <LongCell><Timer admin={true} gameOver={this.gameOver.bind(this)} ref={instance => { this.timer = instance }} /></LongCell>
         </tr>
       </Table>
     }
 
     return (
       <div>
+        {this.state.errorMessage && 
+          <ErrorMessage display={!_.isNull(this.state.errorMessage)}>
+            {this.state.errorMessage}
+          </ErrorMessage>
+        }
         {this.state.accessCode && content()}
       </div>
     );
   }
 }
+
+const ErrorMessage = styled.p`
+  font-size: 1.25em;
+  position: absolute;
+  padding-left: 2%;
+  bottom: 12%;
+  color: ${color.red};  
+  visibility: ${props => props.display ? 'visible' : 'hidden'}
+`
 
 const Table = styled.table`
   margin-left: 20px;
@@ -164,7 +206,7 @@ const StartButton = Buttons.medium.extend`
   &:hover {
     background-color: ${color.blue10l};
   }
-  font-size: 2.5em;
+  font-size: 2.25em;
 `
 
 const KickButton = Buttons.small.extend`

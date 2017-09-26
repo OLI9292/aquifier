@@ -1,18 +1,18 @@
 import _ from 'underscore';
 
 const Word = (val, data) => {
-  // TODO: - validation
-  if (_.isUndefined(val)) {
-  	return seed;
+  const roots = data['components'].filter((c) => c.type === 'root');
+  const categories = _.has(data, 'categories') ? data['categories'].split(',') : [];
+  const components = data['components'];
+  const definition = data['definition'];
+
+  const obj = { value: val, categories: categories, components: components, definition: definition, roots: roots };
+
+  if (_.isUndefined(val) || _.isEmpty(roots)) {
+    return seed;
   }
-  return {
-    value: val,
-    categories: _.has(data, 'categories') ? data['categories'].split(',') : [],
-    components: data['components'],
-    definition: data['definition'],
-    flattened: _.flatten(data['components'].map((c) => c.value.split('').map((char) => ({ value: char, display: false })))),
-    roots: data['components'].filter((c) => c.type === 'root')
-  }
+
+  return obj;
 }
 
 const val = 'cephalapod';
