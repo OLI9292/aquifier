@@ -44,9 +44,9 @@ const MediumButton = DefaultButton.extend`
 `
 
 const SmallButton = DefaultButton.extend`
-  width: 80px;
-  height: 35px;
-  font-size: 1.25em;
+  width: 55px;
+  height: 25px;
+  font-size: 1em;
 `
 
 const Buttons = {

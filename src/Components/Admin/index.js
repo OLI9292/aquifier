@@ -58,7 +58,7 @@ class Admin extends Component {
 
   waitForPlayers = async (accessCode) => {
     const ref = Firebase.refs.games.child(accessCode).child('players');
-    ref.on('value', (snapshot) => { console.log(snapshot.val()); this.setState({ players: _.keys(snapshot.val()) }) });
+    ref.on('value', (snapshot) => { this.setState({ players: _.keys(snapshot.val()) }) });
   }
 
   componentWillUnmount() {
@@ -87,6 +87,7 @@ class Admin extends Component {
         this.setState({ errorMessage: 'Failed to start match.' });
       } else {
         this.timer.track();
+        this.setState({ errorMessage: null });
       }
     });
   }
@@ -117,7 +118,7 @@ class Admin extends Component {
         : <table>
           {this.state.players.map((p) => {
            return <tr style={{lineHeight: '0px'}}>
-            <td><SmallText style={{width: '125px'}}>{p}</SmallText></td>
+            <td><SmallText style={{width: '100px'}}>{p}</SmallText></td>
             <td onClick={() => this.kick(p)}><KickButton>Kick</KickButton></td>
            </tr> 
           })}
@@ -176,7 +177,7 @@ const Text = styled.h4`
 `
 
 const SmallText = styled.p`
-  font-size: 1.5em;
+  font-size: 1.2em;
 `
 
 const ShortCell = styled.td`
