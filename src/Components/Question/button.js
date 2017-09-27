@@ -97,7 +97,12 @@ class ButtonQuestion extends Component {
         return <GameButton
           correct={c.correct}
           key={c.value}
-          onClick={() => {this.guessed(c.value)}}>{c.value.toUpperCase()}<br />{c.definition}</GameButton>
+          onClick={() => {this.guessed(c.value)}}>{c.value.toUpperCase()}
+          <br />
+          <SmallText>
+            {c.definition}
+          </SmallText>
+        </GameButton>
       })
     }
 
@@ -118,7 +123,10 @@ const Definition = styled.div`
   font-size: 2em;
   margin: auto;
   margin-bottom: 1em;
-  width: 75%
+  width: 75%;
+  @media (max-width: 768px) {
+    font-size: 1.75em;
+  }
 `
 
 const AnswerSpaces = styled.div`
@@ -149,7 +157,14 @@ const GameButton = Buttons.large.extend`
   transition-duration: 0.2s;
   margin: 10px;
   width: 250px;
-  font-size: 2em;
+  font-size: 2.2em;
+  @media (max-width: 1000px) {
+    font-size: 1.8em;
+  }
 `
 
+const SmallText = styled.span`
+  font-size: 0.7em;
+  opacity: 0.95;
+`
 export default ButtonQuestion;
