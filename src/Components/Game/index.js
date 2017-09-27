@@ -166,6 +166,7 @@ class Game extends Component {
           level={this.state.level}
           nextQuestion={this.runQuestionInterlude.bind(this)}
           isDisplayingImage={this.state.isQuestionInterlude}
+          incrementScore={this.incrementScore.bind(this)}
           roots={this.state.roots}
           word={this.state.currentWord} />          
       }
