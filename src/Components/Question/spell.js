@@ -78,6 +78,7 @@ class SpellQuestion extends Component {
     const answerComplete = _.isEmpty(this.state.components.filter(this.isIncorrect));
     if (answerComplete && !this.state.answerComplete) {
       this.setState({ answerComplete: true, cursor: -1 }, () => this.props.nextQuestion());
+      this.props.incrementScore();
     }
   }
 
@@ -97,7 +98,7 @@ class SpellQuestion extends Component {
 
   handleDeletePress() {
     let copy = this.state.components;
-    copy[this.state.cursor].guess = null;
+    copy[Math.max(this.state.cursor - 1, 0)].guess = null;
     this.handleArrowPress(true);
     this.setState({ components: copy });
   }
