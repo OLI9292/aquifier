@@ -102,7 +102,7 @@ class InfoForm extends Component {
     return (
       <Layout>
           <Text><Higlighted>WORDCRAFT</Higlighted> teaches the building blocks of English so students can analyze and navigate advanced vocabulary.</Text>
-          <Text>To bring the curriculum to your school, fill out the following and we’ll be in touch as soon as possible.</Text>
+          <Text>To bring the curriculum to your school , fill out the following and we’ll be in touch as soon as possible.</Text>
           <form onSubmit={this.handleSubmit}>
             <InputsContainer>
               {smallInputs}
