@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import ActionButton from '../Buttons/action';
 import MobilePopup from '../MobilePopup/index';
 import DaisyChainAnimation from '../DaisyChainAnimation/index';
+import InfoForm from '../InfoForm/index';
 import { color } from '../../Library/Styles/index';
 import logo from '../../Library/Images/logo.png';
 import { mobilecheck } from '../../Library/helpers';
@@ -32,9 +33,9 @@ class Home extends Component {
     
     let iosIdx;
 
-    if (yPos < 625) {
+    if (yPos < 600) {
       iosIdx = 0;
-    } else if (yPos < 700) {
+    } else if (yPos < 675) {
       iosIdx = 1;
     } else {
       iosIdx = 2;
@@ -61,9 +62,9 @@ class Home extends Component {
     }
 
     const iosCopy = [
-      { header: 'Learn without Memorizing', body: 'Lorem ipsum' },
-      { header: 'Specialize in Topics', body: 'doo dee doo doo' },
-      { header: 'Compete Against Friends', body: 'alejandro goes wild!' }
+      { header: 'Use root words to learn, not memorize', body: 'By playing games with the roots of vocabulary, your knowledge grows expansively and flexibly.' },
+      { header: 'Master a Topic', body: 'Intelligently prepare for tests like the GRE, SAT/ACT, IELTS or TOEFL. Focus on subjects like math, medicine, science, or biology to gain a deeper understanding of the material.' },
+      { header: 'Compete Against Friends', body: 'Play against your friends in our fast paced multiplayer version of the spelling bee.' }
     ];
 
     const iosSections = () => {
@@ -87,44 +88,46 @@ class Home extends Component {
           <Explanation>
             Learn advanced vocabulary using the Latin and Greek roots of English.  Learn faster and more efficiently.
           </Explanation>
+          <div>
+            <div style={{marginBottom: '20px', marginTop: '20px'}}>
+              {ActionButton('singlePlayer', this.redirect.bind(this))}
+            </div>
+            <div>
+              {ActionButton('multiplayer', this.redirect.bind(this))}
+            </div>
+          </div>
         </Container>
         <DaisyChainContainer>
           <DaisyChainAnimation />
         </DaisyChainContainer>
-        <Header>
+        <Header style={{backgroundColor: color.blue, color: 'white'}}>
           IOS APP
         </Header>
         <IOSContainer>
-          {iosSections()}
+          <IOSSectionsContainer>
+            {iosSections()}
+          </IOSSectionsContainer>
+          <ScreenshotContainer>
+            <Screenshot src={require(`../../Library/Images/screenshot-0.png`)} />
+          </ScreenshotContainer>
         </IOSContainer>
-        <ScreenshotContainer>
-          <Screenshot src={require(`../../Library/Images/screenshot-0.png`)} />
-        </ScreenshotContainer>
         <Header>
           BRING TO YOUR CLASSROOM
         </Header>
+        <InfoForm />
       </Layout>
     );
   }
 }
-/*
-        {false && <div><Buttons>
-          {ActionButton('singlePlayer', this.redirect.bind(this))}
-          {ActionButton('multiplayer', this.redirect.bind(this))}
-          {ActionButton('education', this.redirect.bind(this))}
-        </Buttons>
-        <Buttons>
-          {ActionButton('ios')}
-          {ActionButton('android')}
-        </Buttons></div>}
-        */
+
 const Header = styled.h1`
   color: ${color.yellow};
-  padding-left: 2.5%;
+  padding-left: 5%;
   font-size: 3em;
-  letter-spacing: 5px;
-  margin-bottom: 75px;
-  margin-top: 50px;
+  letter-spacing: 2px;
+  padding-top: 25px;
+  margin-bottom: 0px;
+  padding-bottom: 25px;
 `
 
 const Container = styled.div`
@@ -147,10 +150,16 @@ const Subtitle = styled.p`
   font-size: 2em;
   letter-spacing: 1px;
   color: ${color.darkGray};
-  line-height: 60px;
+  line-height: 20px;
 `
 
 const IOSContainer = styled.div`
+  width: 100%;
+  height: 650px;
+  background-color: ${color.blue};
+`
+
+const IOSSectionsContainer = styled.div`
   margin-left: 5%;
   width: 45%;
   vertical-align: top;
@@ -162,12 +171,14 @@ const IOSSection = styled.div`
   cursor: pointer;
 `
 
-const IOSSectionHeader = styled.h3`
-  color: ${props => props.selected ? color.yellow : color.gray};
+const IOSSectionHeader = styled.h2`
+  color: ${props => props.selected ? color.yellow : 'white'};
 `
 
 const IOSSectionP = styled.p`
   visibility: ${props => props.selected ? 'visible' : 'hidden'};
+  color: white;
+  font-size: 1.25em;
 `
 
 const Explanation = styled.p`
@@ -178,12 +189,15 @@ const Explanation = styled.p`
 
 const ScreenshotContainer = styled.div`
   display: inline-block;
-  width: 50%;
+  width: 40%;
+  height: 500px;
+  margin-left: 10%;
+  padding-top: 50px;
 `
 
 const Screenshot = styled.img`
-  width: 50%;
-  height: auto;
+  height: 100%;
+  width: auto;
   border: 2px solid ${color.yellow};
 `
 

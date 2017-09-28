@@ -50,8 +50,7 @@ const Logo = styled.img`
   width: auto;
 `
 
-const Button = Buttons.large.extend`
-  margin: 1%;
+const Button = Buttons.medium.extend`
   background-color: ${props => props.color};
   &:hover {
     background-color: ${props => props.colorHover};
