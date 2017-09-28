@@ -5,7 +5,7 @@ import { color } from '../../Library/Styles/index';
 import appleLogo from '../../Library/Images/apple-logo.png';
 import androidLogo from '../../Library/Images/android-logo.png';
 
-const IOSURL = "https://itunes.apple.com/us/app/wordcraft-vocabulary-from-greek-and-latin-roots/id1247708707?mt=8";
+const IOSURL = "https://bit.ly/playwordcraft";
 
 const ActionButton = (type, redirect) => {
   switch (type) {
