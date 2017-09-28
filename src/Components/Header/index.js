@@ -4,6 +4,8 @@ import logo from '../../Library/Images/logo.png';
 import { color } from '../../Library/Styles/index';
 import { Redirect } from 'react-router';
 
+const IOSURL = "https://bit.ly/playwordcraft";
+
 class Header extends Component {
   constructor(props) {
     super(props);
@@ -23,7 +25,7 @@ class Header extends Component {
         <Logo src={logo} onClick={() => this.setState({ redirect: '/' })} />
         <Nav>
           <Link color={color.green} onClick={() => this.setState({ redirect: '/education' })}>For Schools</Link>
-          <Link color={color.black}>iOS App</Link>
+          <Link color={color.black} href={IOSURL} target="blank">iOS App</Link>
           <Link color={color.blue} onClick={() => this.setState({ redirect: '/' })}>Home</Link>
         </Nav>
       </Layout>
@@ -54,13 +56,15 @@ const Nav = styled.div`
   line-height: 100%;
 `
 
-const Link = styled.h4`
+const Link = styled.a`
   color: ${props => props.color};
   cursor: pointer;
+  text-decoration: none;
   float: right;
   font-size: 1.5em;
   font-weight: 300;
   margin-right: 3%;
+  margin-top: 35px;
 `
 
 export default Header;
