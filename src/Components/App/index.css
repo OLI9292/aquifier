@@ -16,3 +16,15 @@ html, body, #root {
   font-family: BrandonGrotesque;
   background-color: white;
 }
+
+.enter {
+  fill: #34b269;
+}
+
+.update {
+  fill: #333;
+}
+
+.exit {
+  fill: #eb5757;
+}
