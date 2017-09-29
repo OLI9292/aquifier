@@ -9,11 +9,10 @@ class DaisyChainAnimation extends Component {
     super(props);
 
     const words = [
-      { value: 'cryptography', definition: 'the writing and decoding of secret codes' },
-      { value: 'cryptogram', definition: 'a piece of writing in a secret code' },
-      { value: 'monogram', definition: 'a symbol with one initial letter from each word' },
-      { value: 'monolith', definition: 'a single piece of stone' },
-      { value: 'lithophyte', definition: 'a plant that grows upon stone, or a plant that is stony in substance, such as coral' }
+      { value: 'cryptography', definition: 'the writing and decoding of secret codes', indices: [0,4] },
+      { value: 'cryptogram', definition: 'a piece of writing in a secret code', indices: [0,4] },
+      { value: 'monogram', definition: 'a symbol with one initial letter from each word', indices: [4,7] },
+      { value: 'lithophyte', definition: 'a plant that grows upon stone, or a plant that is stony in substance, such as coral', indices: [0,4] }
     ]
 
     this.state = {
@@ -28,13 +27,15 @@ class DaisyChainAnimation extends Component {
       .attr('transform', 'translate(0,100)');
 
     d3.interval(() => {
-      this.update(this.state.words[this.state.idx].value.toUpperCase().split(''));
+      this.update(this.state.words[this.state.idx]);
     }, 3000);
 
-    this.update(this.state.words[this.state.idx].value.toUpperCase().split(''));
+    this.update(this.state.words[this.state.idx]);
   }
 
   update(data) {
+    const word = data.value.toUpperCase().split('');
+
     this.setState({ idx: this.state.idx === this.state.words.length - 1 ? 0 : this.state.idx + 1 });
 
     const t = d3.transition()
@@ -44,7 +45,7 @@ class DaisyChainAnimation extends Component {
       .select('svg')
       .select('g')
       .selectAll('text')
-      .data(data, (d) => d);
+      .data(word, (d) => d);
 
     text.exit()
         .attr('class', 'exit')
@@ -57,13 +58,14 @@ class DaisyChainAnimation extends Component {
         .attr('y', 0)
         .style('fill-opacity', 1)
       .transition(t)
-        .attr('x', (d, i) => i * 18);
+        .attr('x', (d, i) => i * 18)
+        .attr('class', (d, i) => { return (i >= data.indices[0] && i <= data.indices[1]) ? 'enter' : 'none' })
 
     text.enter().append('text')
-        .attr('class', 'enter')
         .attr('dy', '.35em')
         .attr('y', -60)
         .attr('x', (d, i) => i * 18)
+        .attr('class', (d, i) => { return (i >= data.indices[0] && i <= data.indices[1]) ? 'enter' : 'none' })
         .style('fill-opacity', 1e-6)
         .text((d) => d)
       .transition(t)
@@ -116,10 +118,9 @@ const ImageContainer = styled.div`
 `
 
 const Image = styled.img`
-  width: 100%;
-  height: auto;
-  margin-top: 50px;
-  vertical-align: middle;
+  width: auto;
+  height: 50%;
+  margin-top: 50%;
 `
 
 const Definition = styled.p`
