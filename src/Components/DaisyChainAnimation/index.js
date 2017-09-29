@@ -27,16 +27,16 @@ class DaisyChainAnimation extends Component {
       .attr('transform', 'translate(0,100)');
 
     d3.interval(() => {
-      this.update(this.state.words[this.state.idx]);
+      const idx = this.state.idx === this.state.words.length - 1 ? 0 : this.state.idx + 1;
+      this.setState({ idx: idx }, this.update);
     }, 3000);
 
-    this.update(this.state.words[this.state.idx]);
+    this.update();
   }
 
-  update(data) {
+  update() {
+    const data = this.state.words[this.state.idx];
     const word = data.value.toUpperCase().split('');
-
-    this.setState({ idx: this.state.idx === this.state.words.length - 1 ? 0 : this.state.idx + 1 });
 
     const t = d3.transition()
       .duration(750);

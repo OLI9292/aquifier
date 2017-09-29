@@ -101,32 +101,33 @@ class InfoForm extends Component {
 
     return (
       <Layout>
-          <Text><Higlighted>WORDCRAFT</Higlighted> teaches the building blocks of English so students can analyze and navigate advanced vocabulary.</Text>
-          <Text>To bring the curriculum to your school , fill out the following and we’ll be in touch as soon as possible.</Text>
-          <form onSubmit={this.handleSubmit}>
-            <InputsContainer>
-              {smallInputs}
-            </InputsContainer>
-            <CommentsTextArea name="comments" placeholder="comments" onChange={(e) => this.setState({ comments: e.target.value })} />
-            <SubmitButton valid={this.state.allValid} type="submit" value="submit" />
-            <ErrorMessage success={this.state.success} display={this.state.displayError || this.state.success}>
-              {this.state.success ? 'Submitted.  We\'ll be in touch soon!' : this.state.errorMessage}
-            </ErrorMessage>
-          </form>
+        <Text>To bring our curriculum to your school, fill out the following and we’ll be in touch as soon as possible.</Text>
+        <form onSubmit={this.handleSubmit}>
+          <InputsContainer>
+            {smallInputs}
+          </InputsContainer>
+          <CommentsTextArea name="comments" placeholder="comments" onChange={(e) => this.setState({ comments: e.target.value })} />
+          <SubmitButton valid={this.state.allValid} type="submit" value="submit" />
+          <ErrorMessage success={this.state.success} display={this.state.displayError || this.state.success}>
+            {this.state.success ? 'Submitted.  We\'ll be in touch soon!' : this.state.errorMessage}
+          </ErrorMessage>
+        </form>
       </Layout>
     );
   }
 }
 
 const Layout = styled.div`
-  margin: auto;
-  padding: 5% 0% 5% 0%;
-  width: 90%;
+  margin-left: 10%;
+  width: 80%;
+  margin-bottom: 10%;
 `
 
 const Text = styled.p`
   font-size: 2em;
-  text-align: center;
+  letter-spacing: 1px;
+  color: ${color.darkGray};
+  line-height: 50px;
 `
 
 const Image = styled.img`

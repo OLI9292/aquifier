@@ -144,7 +144,7 @@ class Home extends Component {
           HOW IT WORKS
         </Header>
         {iosSection()}
-        <Header>
+        <Header color={color.yellow}>
           BRING TO YOUR CLASSROOM
         </Header>
         <InfoForm />
