@@ -46,8 +46,8 @@ class Home extends Component {
       return <Redirect push to={this.state.redirect} />;
     }
 
-    const topSection = () => {
-      return <TopContainer>
+    const introSection = () => {
+      return <TopLeftContainer>
         <Subtitle>
           Master the Greek and Latin roots of English.
         </Subtitle>
@@ -60,11 +60,6 @@ class Home extends Component {
               <LinkContent><AppleLogo src={appleLogo} /><LinkText>iOS</LinkText></LinkContent>
             </Link>
           </Button>
-          <Button color={color.blue} colorHover={color.blue10l}>
-            <Link>
-              <LinkContent><AppleLogo src={appleLogo} /><LinkText>Android</LinkText></LinkContent>
-            </Link>
-          </Button>
           <Button marginRight onClick={() => this.redirect('/settings')}
             color={color.orange} 
             colorHover={color.orange10l}>Demo</Button>
@@ -72,7 +67,7 @@ class Home extends Component {
             color={color.green}
             colorHover={color.green10l}>Classroom Spelling Bee</Button>
         </ButtonsContainer>
-      </TopContainer>
+      </TopLeftContainer>
     }
 
     const howItWorksSection = () => {
@@ -81,10 +76,10 @@ class Home extends Component {
           HOW IT WORKS
         </Header>
         <ScreenshotContainer>
-          <Screenshot src={require(`../../Library/Images/screenshot-0.png`)} />
+          <Screenshot src={require(`../../Library/Images/example.png`)} />
         </ScreenshotContainer>
         <TextContainer>
-          <Text><span style={{color: 'black'}}><b>60% of English</b></span> words have Greek or Latin roots.  In the fields of science and technology, that number is <span style={{color: 'black'}}><b>above 90%.</b></span><br /><br />By solving fast-paced puzzles, you'll learn hundreds of roots and thousands of words.  Wordcraft is the most fun and efficient way to amass a large vocabulary.</Text>
+          <Text><BlackSpan><b>60% of English</b></BlackSpan> words have Greek or Latin roots.  In the fields of science and technology, that number is <BlackSpan><b>above 90%.</b></BlackSpan><br /><br />By solving fast-paced puzzles, you'll learn hundreds of roots and thousands of words.  Wordcraft is the most fun and efficient way to amass a large vocabulary.</Text>
           <Button color={color.red} colorHover={color.red10l}>
             <Link href={IOSURL} target='blank'>
               <LinkContent><AppleLogo src={appleLogo} /><LinkText>Play</LinkText></LinkContent>
@@ -100,10 +95,10 @@ class Home extends Component {
           MASTER A TOPIC
         </Header>
         <TextContainer>
-          <Text style={{textAlign: 'right'}}>Whether you're preparing for a test, studying a subject in school or just want to increase your knowledge, WORDCRAFT makes your studying more effective.<br /><br />Pick the SAT / ACT, GRE, or IELTS / TOEFL track to learn thousands of words from each test.<br /><br />Or learn the core vocabulary from subject like math, biology, medicine, and zoology.</Text>
+          <Text style={{textAlign: 'right'}}>Whether you're <BlackSpan><b>preparing for a test, studying a subject</b></BlackSpan> in school or just want to <BlackSpan><b>increase your knowledge</b></BlackSpan>, <GoldSpan><b>WORDCRAFT</b></GoldSpan> makes your studying more effective.<br /><br />Pick the <BlackSpan><b>SAT / ACT, GRE, or IELTS / TOEFL</b></BlackSpan> track to learn thousands of words from each test.<br /><br />Or learn the core vocabulary from subject like <BlackSpan><b>math, biology, medicine, and zoology.</b></BlackSpan></Text>
         </TextContainer>
         <ScreenshotContainer>
-          <Screenshot src={require(`../../Library/Images/screenshot-0.png`)} />
+          <Screenshot src={require(`../../Library/Images/categories.png`)} />
         </ScreenshotContainer>
       </Container>      
     }
@@ -114,10 +109,10 @@ class Home extends Component {
           SPELLING BEE
         </Header>
         <ScreenshotContainer>
-          <Screenshot src={require(`../../Library/Images/screenshot-0.png`)} />
+          <Screenshot src={require(`../../Library/Images/results.png`)} />
         </ScreenshotContainer>
         <TextContainer>
-          <Text>Use WORDCRAFT's spelling bee mode to quickly set up a fast-paced vocabulary game for your class.  Any number of players can join on their own computers.<br /><br />Click here for a full tutorial on in-class games.</Text>
+          <Text>Use <GoldSpan><b>WORDCRAFT</b></GoldSpan>'s spelling bee mode to quickly set up a fast-paced vocabulary game for your class.  Any number of players can join on their own computers.<br /><br />Click here for a full tutorial on in-class games.</Text>
           <Button onClick={() => this.redirect('/lobby')} 
             color={color.green} 
             colorHover={color.green10l}>Play Spelling Bee!</Button>
@@ -135,37 +130,44 @@ class Home extends Component {
     }
 
     return (
-      <Layout>
-        {this.state.displayMobilePopup && <MobilePopup removeSelf={this.removeMobilePopup.bind(this)} />}
+      <OuterContainer>
         <Header backgroundColor={'white'} color={color.yellow}>
           WORDCRAFT
         </Header>
-        <TopNav>
-          <NavLink onClick={() => window.scrollTo({ top: 1250, left: 0, behavior: 'smooth'})}
-            color={color.green}>For Schools</NavLink>
-          <NavLink color={color.red}>
-            <a style={{color: 'inherit', textDecoration: 'inherit'}} href='mailto:playwordcraft@gmail.com'>
-              Support
-            </a>
-          </NavLink>
-        </TopNav>
-        {topSection()}
-        <DaisyChainContainer>
-          <DaisyChainAnimation />
-        </DaisyChainContainer>
-        {howItWorksSection()}
-        {masterATopicSection()}
-        {spellingBeeSection()}
-        {bringToYourClassroomForm()}
-      </Layout>
+          {this.state.displayMobilePopup && <MobilePopup removeSelf={this.removeMobilePopup.bind(this)} />}
+          <TopNav>
+            <NavLink onClick={() => window.scrollTo({ top: 2800, left: 0, behavior: 'smooth'})}
+              color={color.green}>For Schools</NavLink>
+            <NavLink color={color.red}>
+              <a style={{color: 'inherit', textDecoration: 'inherit'}} href='mailto:playwordcraft@gmail.com'>
+                Support
+              </a>
+            </NavLink>
+          </TopNav>
+        <InnerContainer>
+          {introSection()}
+          <DaisyChainContainer>
+            <DaisyChainAnimation />
+          </DaisyChainContainer>
+          {howItWorksSection()}
+          {masterATopicSection()}
+          {spellingBeeSection()}
+          {bringToYourClassroomForm()}
+        </InnerContainer>
+      </OuterContainer>
     );
   }
 }
 
-const Layout = styled.div`
+const OuterContainer = styled.div`
   width: 100%;
   background-color: ${color.blue};
   padding-bottom: 80px;
+`
+
+const InnerContainer = styled.div`
+  width: 1100px;
+  margin: auto;
 `
 
 const Header = styled.h1`
@@ -197,13 +199,21 @@ const NavLink = styled.p`
 
 // Top Section
 
-const TopContainer = styled.div`
+const TopLeftContainer = styled.div`
   vertical-align: top;
   margin-top: 25px;
-  margin-left: 5%;
+  height: 425px;
   border-radius: 10px;
   background-color: white;
+  width: 55%;
+  display: inline-block;
+`
+
+const DaisyChainContainer = styled.div`
+  margin-left: 5%;
+  margin-top: 25px;
   width: 40%;
+  height: 425px;
   display: inline-block;
 `
 
@@ -235,6 +245,7 @@ const Button = Buttons.small.extend`
   margin-right: ${props => props.marginRight ? '10px' : '0px'};
   background-color: ${props => props.color};
   width: 250px;
+  height: 60px;
   &:hover {
     background-color: ${props => props.colorHover};
   }
@@ -261,38 +272,38 @@ const LinkText = styled.p`
   vertical-align: middle;
 `
 
+const BlackSpan = styled.span`
+  color: black;
+`
+
+const GoldSpan = styled.span`
+  color: ${color.yellow};
+`
+
 const AppleLogo = styled.img`
   height: 75%;
   margin-right: 5%;
   width: auto;
 `
 
-const DaisyChainContainer = styled.div`
-  margin-left: 5%;
-  margin-top: 25px;
-  width: 45%;
-  height: 400px;
-  display: inline-block;
-`
-
 // Other Section Components
 
 const Container = styled.div`
-  width: 90%;
-  margin-left: 5%;
+  width: 100%;
+  margin: auto;
   margin-top: 40px;
   padding-top: 15px;
-  background-color: white;
   border-radius: 10px;
-  height: 650px;
+  height: 700px;
   background-color: white;
 `
 
 const ScreenshotContainer = styled.div`
   display: inline-block;
-  width: 50%;
+  width: 40%;
   height: 70%;
   text-align: center;
+  margin: 0% 5% 0% 5%;
   margin-top: 35px;
 `
 
@@ -304,7 +315,8 @@ const Screenshot = styled.img`
 
 const TextContainer = styled.div`
   display: inline-block;
-  width: 40%;
+  width: 35%;
+  margin-left: 7.5%;
   vertical-align: top;
   text-align: center;
 `

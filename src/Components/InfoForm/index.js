@@ -101,7 +101,7 @@ class InfoForm extends Component {
 
     return (
       <Layout>
-        <Text>To bring our curriculum to your school, fill out the following and we’ll be in touch as soon as possible.</Text>
+        <Text>To bring the full <span style={{color: color.yellow}}><b>WORDCRAFT</b></span> curriculum to your school, send us the following information and we'll be in touch as soon as possible.</Text>
         <form onSubmit={this.handleSubmit}>
           <InputsContainer>
             {smallInputs}

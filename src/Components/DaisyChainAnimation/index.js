@@ -29,7 +29,7 @@ class DaisyChainAnimation extends Component {
     d3.interval(() => {
       const idx = this.state.idx === this.state.words.length - 1 ? 0 : this.state.idx + 1;
       this.setState({ idx: idx }, this.update);
-    }, 3000);
+    }, 5000);
 
     this.update();
   }
@@ -58,13 +58,13 @@ class DaisyChainAnimation extends Component {
         .attr('y', 0)
         .style('fill-opacity', 1)
       .transition(t)
-        .attr('x', (d, i) => i * 18)
+        .attr('x', (d, i) => i * 24)
         .attr('class', (d, i) => { return (i >= data.indices[0] && i <= data.indices[1]) ? 'enter' : 'none' })
 
     text.enter().append('text')
         .attr('dy', '.35em')
         .attr('y', -60)
-        .attr('x', (d, i) => i * 18)
+        .attr('x', (d, i) => i * 24)
         .attr('class', (d, i) => { return (i >= data.indices[0] && i <= data.indices[1]) ? 'enter' : 'none' })
         .style('fill-opacity', 1e-6)
         .text((d) => d)
@@ -77,7 +77,7 @@ class DaisyChainAnimation extends Component {
     const word = this.state.words[this.state.idx];
     return (
       <Layout>
-        <div style={{marginLeft: '25%', width: '50%', height: '100px'}}>
+        <div style={{marginLeft: '15%', width: '70%', height: '100px'}}>
           <SVG />
         </div>
         <ImageContainer>
@@ -99,7 +99,7 @@ const Layout = styled.div`
 const SVG = styled.svg`
   width: 100%;
   height: 100%;
-  font-size: 1.25em;
+  font-size: 1.4em;
 `
 
 const ImageContainer = styled.div`
@@ -118,9 +118,9 @@ const Definition = styled.p`
   width: 80%;
   margin-left: 10%;
   height: 75px;
-  margin-top: 25px;
+  margin-top: 50px;
   text-align: center;
-  font-size: 1.15em;
+  font-size: 1.25em;
 `
 
 export default DaisyChainAnimation;
