@@ -24,7 +24,7 @@ class DaisyChainAnimation extends Component {
   componentDidMount() {
     d3.select('svg')
       .append('g')
-      .attr('transform', 'translate(0,100)');
+      .attr('transform', 'translate(0,50)');
 
     d3.interval(() => {
       const idx = this.state.idx === this.state.words.length - 1 ? 0 : this.state.idx + 1;
@@ -77,13 +77,13 @@ class DaisyChainAnimation extends Component {
     const word = this.state.words[this.state.idx];
     return (
       <Layout>
+        <div style={{marginLeft: '25%', width: '50%', height: '100px'}}>
+          <SVG />
+        </div>
         <ImageContainer>
           <Image src={require(`../../Library/Images/${word.value}.png`)} />
         </ImageContainer>
-        <WordContainer>
-          <SVG />
-          <Definition>{word.definition}</Definition>
-        </WordContainer>
+        <Definition>{word.definition}</Definition>
       </Layout>
     );
   }
@@ -92,40 +92,34 @@ class DaisyChainAnimation extends Component {
 const Layout = styled.div`
   width: 100%;
   height: 100%;
-  border-radius: 25px;
-  background: ${color.lightGray};
+  border-radius: 10px;
+  background: white;
 `
-const WordContainer = styled.div`
-  height: 50%;
-  display: inline-block;
-  width: 55%;
-  margin-left: 10%;
-`
+
 const SVG = styled.svg`
   width: 100%;
   height: 100%;
   font-size: 1.25em;
-  display: inline-block;
 `
 
 const ImageContainer = styled.div`
-  display: inline-block;
-  vertical-align: top;
-  height: 100%;
-  width: 30%;
-  margin-left: 5%;
-  line-height: 100%;
+  height: 200px;
+  width: 100%;
 `
 
 const Image = styled.img`
   width: auto;
-  height: 50%;
-  margin-top: 50%;
+  height: 100%;
+  margin: auto;
+  display: block;
 `
 
 const Definition = styled.p`
-  width: 100%;
-  color: black;
+  width: 80%;
+  margin-left: 10%;
+  height: 75px;
+  margin-top: 25px;
+  text-align: center;
   font-size: 1.15em;
 `
 

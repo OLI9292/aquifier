@@ -8,11 +8,14 @@ export const color = {
   black: '#000000',
   black10l: '#191919',
   red: '#eb5757',
+  red10l: '#FF7171',
   darkGray: '#686868',
   gray: '#828282',
   lightestGray: '#F2F2F2',
   lightGray: '#d9d9d9',
   gold: '#C98910',
   silver: '#A8A8A8',
-  bronze: '#965A38'
+  bronze: '#965A38',
+  orange: '#FD7F38',
+  orange10l: '#FF9952'
 };

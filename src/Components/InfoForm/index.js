@@ -120,14 +120,12 @@ class InfoForm extends Component {
 const Layout = styled.div`
   margin-left: 10%;
   width: 80%;
-  margin-bottom: 10%;
 `
 
 const Text = styled.p`
-  font-size: 2em;
-  letter-spacing: 1px;
+  font-size: 1.75em;
   color: ${color.darkGray};
-  line-height: 50px;
+  line-height: 40px;
 `
 
 const Image = styled.img`
@@ -145,7 +143,7 @@ const Image = styled.img`
 `
 
 const SmallInput = styled.div`
-  margin: 2%;
+  margin: 1%;
 `
 
 const InputsContainer = styled.div`
@@ -156,9 +154,9 @@ const InputsContainer = styled.div`
 
 const CommentsTextArea = TextAreas.medium.extend`
   width: 80%;
-  height: 200px;
+  height: 150px;
   margin-left: 10%;
-  margin-top: 3%;
+  margin-top: 2%;
   line-height: 1.5;
 `
 
@@ -171,14 +169,14 @@ const SubmitButton = styled.input`
   border: none;
   border-radius: 5px;
   font-family: BrandonGrotesque;
-  font-size: 1.5em;
+  font-size: 1.25em;
   color: ${props => props.valid ? 'white' : '#757575'};
   padding: 0px 20px 0px 20px;
-  height: 60px;
+  height: 50px;
   cursor: pointer;
   transition: 0.2s;
   margin-left: 10%;
-  margin-top: 3%;
+  margin-top: 2%;
 `
 
 const Higlighted = styled.span`
