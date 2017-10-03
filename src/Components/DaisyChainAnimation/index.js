@@ -77,7 +77,7 @@ class DaisyChainAnimation extends Component {
     const word = this.state.words[this.state.idx];
     return (
       <Layout>
-        <div style={{marginLeft: '15%', width: '70%', height: '100px'}}>
+        <div style={{marginLeft: '20%', width: '70%', height: '100px'}}>
           <SVG />
         </div>
         <ImageContainer>

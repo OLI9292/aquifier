@@ -107,7 +107,7 @@ class Home extends Component {
           <Screenshot src={require(`../../Library/Images/example.png`)} />
         </ScreenshotContainer>
         <TextContainer>
-          <Text><BlackSpan><b>60% of English</b></BlackSpan> words have Greek or Latin roots.  In the fields of science and technology, that number is <BlackSpan><b>above 90%.</b></BlackSpan><br /><br />By solving fast-paced puzzles, you'll learn hundreds of roots and thousands of words.  Wordcraft is the most fun and efficient way to amass a large vocabulary.</Text>
+          <Text><BlackSpan><b>60% of English words</b></BlackSpan> have Greek or Latin roots.  In the fields of science and technology, that number is <BlackSpan><b>above 90%.</b></BlackSpan><br /><br />By solving fast-paced puzzles, you'll learn hundreds of roots and thousands of words.  Wordcraft is the most fun and efficient way to acquire a large vocabulary.</Text>
           <Button style={{float: 'left'}} color={color.red} colorHover={color.red10l}>
             <Link href={IOSURL} target='blank'>
               <LinkContent><AppleLogo src={appleLogo} /><LinkText>Play</LinkText></LinkContent>
@@ -123,7 +123,7 @@ class Home extends Component {
           MASTER A TOPIC
         </Header>
         <TextContainer>
-          <Text style={{textAlign: 'right'}}>Whether you're <BlackSpan><b>preparing for a test, studying a subject</b></BlackSpan> in school or just want to <BlackSpan><b>increase your knowledge</b></BlackSpan>, <GoldSpan><b>WORDCRAFT</b></GoldSpan> makes your studying more effective.<br /><br />Pick the <BlackSpan><b>SAT / ACT, GRE, or IELTS / TOEFL</b></BlackSpan> track to learn thousands of words from each test.<br /><br />Or learn the core vocabulary from subject like <BlackSpan><b>math, biology, medicine, and zoology.</b></BlackSpan></Text>
+          <Text style={{textAlign: 'right'}}>Whether you're <BlackSpan><b>preparing for a test, studying a subject</b></BlackSpan> in school or just want to <BlackSpan><b>increase your knowledge</b></BlackSpan>, <GoldSpan><b>WORDCRAFT</b></GoldSpan> makes your studying more effective.<br /><br />Pick the <BlackSpan><b>SAT / ACT, GRE, or IELTS / TOEFL</b></BlackSpan> track to learn thousands of words from each test.<br /><br />Or learn the core vocabulary of subjects like <BlackSpan><b>math, biology, medicine, and zoology.</b></BlackSpan></Text>
         </TextContainer>
         <ScreenshotContainer>
           <Screenshot src={require(`../../Library/Images/categories.png`)} />
@@ -429,6 +429,7 @@ const Container = styled.div`
 
   @media (max-width: 450px) {
     margin-top: 10px;
+    height: fit-content;
   }
 `
 
@@ -442,7 +443,6 @@ const ScreenshotContainer = styled.div`
 
   @media (max-width: 1100px) {
     width: 50%;
-    height: fit-content;
     max-width: 300px;
     display: block;
     margin: auto;

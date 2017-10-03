@@ -10,13 +10,13 @@ class HelpText extends Component {
           To set up an in-class spelling bee, follow these steps:
           <br />
           <br />
-          <b>1</b> Click <b>Play Spelling Bee</b> and <b>Create Game</b>.
+          <b>1</b> Teacher clicks play spelling bee and create game.
           <br />
-          <b>2</b> Choose settings for the game and then click <b>Generate Access Code</b>.
+          <b>2</b> Choose settings for game and click generate access code.
           <br />
-          <b>3</b> Have all players click <b>Play Spelling Bee</b> and then <b>Join Game</b> with the access code.
+          <b>3</b> All players navigate to playwordcraft.com on their own computers.
           <br />
-          <b>4</b> When everyone is ready, click <b>Start</b>.
+          <b>4</b> All players click play spelling bee and then join game with the access code.
         </Text>
       } else if (this.props.type === 'difficultyExplanation') {
         return <Text>
