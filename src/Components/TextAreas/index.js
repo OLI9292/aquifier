@@ -22,8 +22,6 @@ const MediumTextArea = DefaultTextArea.extend`
 
   @media (max-width: 768px) {
     width: 200px;
-    height: 40px;
-    line-height: 40px;
     font-size: 1em;
   }
 `

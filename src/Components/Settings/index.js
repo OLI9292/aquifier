@@ -136,7 +136,7 @@ class Settings extends Component {
               <ShortCell><Text>Level</Text></ShortCell>
               <td style={{verticalAlign: 'top'}}><QuestionMark onMouseOver={this.showHelpText.bind(this)} onMouseLeave={this.hideHelpText.bind(this)} src={questionMark} /></td>
               <LongCell>{levelButtons}</LongCell>
-              <div style={{position: 'fixed', left: '50%', marginLeft: '-200px', width: '400px'}}>{this.state.showHelpText && <HelpText />}</div>
+              <div style={{position: 'fixed', left: '50%', marginLeft: '-200px', width: '400px'}}>{this.state.showHelpText && <HelpText type={'difficultyExplanation'}/>}</div>
             </tr>
             <tr>
               <ShortCell><Text>Topic</Text></ShortCell>

@@ -126,6 +126,16 @@ const Text = styled.p`
   font-size: 1.75em;
   color: ${color.darkGray};
   line-height: 40px;
+
+  @media (max-width: 1100px) {
+    font-size: 1.2em;
+    line-height: 30px;
+    margin-top: 20px;
+  }
+
+  @media (max-width: 450px) {
+    font-size: 0.9em;
+  }
 `
 
 const Image = styled.img`
@@ -177,6 +187,14 @@ const SubmitButton = styled.input`
   transition: 0.2s;
   margin-left: 10%;
   margin-top: 2%;
+
+  @media (max-width: 768px) {
+    font-size: 1em;
+  }
+
+  @media (max-width: 450px) {
+    font-size: 0.9em;
+  }
 `
 
 const Higlighted = styled.span`
@@ -189,6 +207,14 @@ const ErrorMessage = styled.p`
   padding-left: 10%;
   color: ${props => props.success ? color.green : color.red};  
   visibility: ${props => props.display ? 'visible' : 'hidden'}
+
+  @media (max-width: 1100px) {
+    font-size: 1em;
+  }
+
+  @media (max-width: 450px) {
+    font-size: 0.75em;
+  }
 `
 
 export default InfoForm;

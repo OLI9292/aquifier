@@ -7,6 +7,7 @@ import MobilePopup from '../MobilePopup/index';
 import Buttons from '../Buttons/default';
 import DaisyChainAnimation from '../DaisyChainAnimation/index';
 import InfoForm from '../InfoForm/index';
+import HelpText from '../HelpText/index';
 import { color } from '../../Library/Styles/index';
 import logo from '../../Library/Images/logo.png';
 import appleLogo from '../../Library/Images/apple-logo.png';
@@ -41,9 +42,36 @@ class Home extends Component {
     }
   }
 
+  showHelpText() {
+    this.setState({ showHelpText: true });
+  }
+
+  hideHelpText() {
+    this.setState({ showHelpText: false });
+  }
+
   render() {
     if (this.state.redirect) {
       return <Redirect push to={this.state.redirect} />;
+    }
+
+    const navigation = () => {
+      return <Nav>
+        <NavContent>
+          <Header style={{display: 'inline-block'}} backgroundColor={'white'} color={color.yellow}>
+            WORDCRAFT
+          </Header>
+          <NavLinks style={{right: 0}}>
+            <NavLink onClick={() => window.scrollTo({ top: 2875, left: 0, behavior: 'smooth'})}
+              color={color.green}>For Schools</NavLink>
+            <NavLink color={color.red}>
+              <a style={{color: 'inherit', textDecoration: 'inherit'}} href='mailto:playwordcraft@gmail.com'>
+                Support
+              </a>
+            </NavLink>
+          </NavLinks>
+        </NavContent>
+      </Nav>      
     }
 
     const introSection = () => {
@@ -52,7 +80,7 @@ class Home extends Component {
           Master the Greek and Latin roots of English.
         </Subtitle>
         <Explanation>
-          Wordcraft teaches you the building blocks of English so you expand your vocabulary much faster than memorizing long lists of words.
+          Expand your vocabulary without memorizing long lists of words. Prepare for a test, specialize in a topic, or just learn the entire dictionary.
         </Explanation>
         <ButtonsContainer>
           <Button marginRight color={color.red} colorHover={color.red10l}>
@@ -72,7 +100,7 @@ class Home extends Component {
 
     const howItWorksSection = () => {
       return <Container>
-        <Header color={color.blue}>
+        <Header padLeft color={color.blue}>
           HOW IT WORKS
         </Header>
         <ScreenshotContainer>
@@ -80,7 +108,7 @@ class Home extends Component {
         </ScreenshotContainer>
         <TextContainer>
           <Text><BlackSpan><b>60% of English</b></BlackSpan> words have Greek or Latin roots.  In the fields of science and technology, that number is <BlackSpan><b>above 90%.</b></BlackSpan><br /><br />By solving fast-paced puzzles, you'll learn hundreds of roots and thousands of words.  Wordcraft is the most fun and efficient way to amass a large vocabulary.</Text>
-          <Button color={color.red} colorHover={color.red10l}>
+          <Button style={{float: 'left'}} color={color.red} colorHover={color.red10l}>
             <Link href={IOSURL} target='blank'>
               <LinkContent><AppleLogo src={appleLogo} /><LinkText>Play</LinkText></LinkContent>
             </Link>
@@ -91,7 +119,7 @@ class Home extends Component {
 
     const masterATopicSection = () => {
       return <Container>
-        <Header color={color.red}>
+        <Header padLeft color={color.red}>
           MASTER A TOPIC
         </Header>
         <TextContainer>
@@ -105,24 +133,25 @@ class Home extends Component {
 
     const spellingBeeSection = () => {
       return <Container>
-        <Header color={color.orange}>
+        <Header padLeft color={color.orange}>
           SPELLING BEE
         </Header>
         <ScreenshotContainer>
           <Screenshot src={require(`../../Library/Images/results.png`)} />
         </ScreenshotContainer>
         <TextContainer>
-          <Text>Use <GoldSpan><b>WORDCRAFT</b></GoldSpan>'s spelling bee mode to quickly set up a fast-paced vocabulary game for your class.  Any number of players can join on their own computers.<br /><br />Click here for a full tutorial on in-class games.</Text>
+          <Text>Use <GoldSpan><b>WORDCRAFT</b></GoldSpan>'s spelling bee mode to quickly set up a fast-paced vocabulary game for your class.  Any number of players can join on their own computers.<br /><br />Click <BlackSpan onMouseOver={this.showHelpText.bind(this)} onMouseLeave={this.hideHelpText.bind(this)}><b>here</b></BlackSpan> for a full tutorial on in-class games.</Text>
           <Button onClick={() => this.redirect('/lobby')} 
             color={color.green} 
-            colorHover={color.green10l}>Play Spelling Bee!</Button>
+            colorHover={color.green10l}
+            style={{float: 'left'}}>Play Spelling Bee!</Button>
         </TextContainer>
       </Container>   
     }
 
     const bringToYourClassroomForm = () => {
       return <Container>
-        <Header color={color.green}>
+        <Header padLeft color={color.green}>
           BRING TO YOUR CLASSROOM
         </Header>
         <InfoForm />
@@ -131,19 +160,9 @@ class Home extends Component {
 
     return (
       <OuterContainer>
-        <Header backgroundColor={'white'} color={color.yellow}>
-          WORDCRAFT
-        </Header>
-          {this.state.displayMobilePopup && <MobilePopup removeSelf={this.removeMobilePopup.bind(this)} />}
-          <TopNav>
-            <NavLink onClick={() => window.scrollTo({ top: 2800, left: 0, behavior: 'smooth'})}
-              color={color.green}>For Schools</NavLink>
-            <NavLink color={color.red}>
-              <a style={{color: 'inherit', textDecoration: 'inherit'}} href='mailto:playwordcraft@gmail.com'>
-                Support
-              </a>
-            </NavLink>
-          </TopNav>
+        {this.state.showHelpText && <HelpTextContainer><HelpText type={'classroomTutorial'} /></HelpTextContainer>}
+        {this.state.displayMobilePopup && <MobilePopup removeSelf={this.removeMobilePopup.bind(this)} />}
+        {navigation()}
         <InnerContainer>
           {introSection()}
           <DaisyChainContainer>
@@ -159,62 +178,136 @@ class Home extends Component {
   }
 }
 
+const HelpTextContainer = styled.div`
+  position: fixed;
+  left: 30%;
+  margin-left: -300px;
+  line-height: 35px;
+  top: 40%;
+  width: 600px;
+
+  @media (max-width: 1100px) {
+    background-color: white;
+    width: 65%;
+    margin-left: 0;
+  }
+`
+
 const OuterContainer = styled.div`
   width: 100%;
   background-color: ${color.blue};
   padding-bottom: 80px;
+
+  @media (max-width: 1100px) {
+    background-color: white;
+    padding-bottom: 40px;
+  }
 `
 
 const InnerContainer = styled.div`
   width: 1100px;
   margin: auto;
+
+  @media (max-width: 1100px) {
+    width: 90%;
+    min-width: 300px;
+  }
 `
 
 const Header = styled.h1`
   color: ${props => props.color};
   background-color: ${props => props.backgroundColor || 'transparent'};
   paddingTop: 25px;
-  padding-left: 5%;
+  padding-left: ${props => props.padLeft ? '5%' : '0%'};
   font-size: 2.75em;
   letter-spacing: 2px;
   margin-bottom: 0px;
-  height: 50px;
   line-height: 40px;
+  padding-bottom: 10px;
+
+  @media (max-width: 1100px) {
+    font-size: 2em;
+  }
+
+  @media (max-width: 450px) {
+    font-size: 1.25em;
+  }
+`
+
+const Nav = styled.div`
+  width: 100%;
+  background-color: white;
   padding-bottom: 10px;
 `
 
-const TopNav = styled.div`
-  position: absolute;
-  top: 15px;
-  right: 0;
+const NavContent = styled.div`
+  width: 1100px;
+  margin: auto;
+
+  @media (max-width: 1100px) {
+    width: 90%;
+    min-width: 300px;
+  }
+`
+
+const NavLinks = styled.div`
+  display: inline-block;
+  float: right;
+  padding-top: 25px;
+  line-height: 10px;
+
+  @media (max-width: 1100px) {
+    padding-top: 15px;
+  }
 `
 
 const NavLink = styled.p`
   color: ${props => props.color};
   display: inline-block;
   font-size: 1.5em;
-  margin-right: 30px;
+  margin-left: 30px;
   cursor: pointer;
+  text-align: right;
+
+  @media (max-width: 1100px) {
+    font-size: 1em;
+    margin-left: 15px;
+  }
+
+  @media (max-width: 450px) {
+    font-size: 0.9em;
+  }
 `
 
 // Top Section
 
 const TopLeftContainer = styled.div`
   vertical-align: top;
-  margin-top: 25px;
-  height: 425px;
+  margin-top: 40px;
+  height: 450px;
   border-radius: 10px;
   background-color: white;
   width: 55%;
   display: inline-block;
+
+  @media (max-width: 1100px) {
+    margin-top: 20px;
+    display: block;
+    width: 100%;
+    height: fit-content;
+  }
 `
 
 const DaisyChainContainer = styled.div`
   margin-left: 5%;
-  margin-top: 25px;
+  margin-top: 40px;
   width: 40%;
-  height: 425px;
+  height: 450px;
   display: inline-block;
+
+  @media (max-width: 1100px) {
+    display: none;
+  }
 `
 
 const Subtitle = styled.p`
@@ -224,6 +317,16 @@ const Subtitle = styled.p`
   letter-spacing: 1px;
   color: ${color.darkGray};
   line-height: 50px;
+
+  @media (max-width: 1100px) {
+    font-size: 1.75em;
+    line-height: 40px;
+  }
+
+  @media (max-width: 450px) {
+    font-size: 1.25em;
+    line-height: 30px;
+  }
 `
 
 const Explanation = styled.p`
@@ -232,6 +335,16 @@ const Explanation = styled.p`
   width: 90%;
   margin-left: 5%;
   line-height: 35px;
+
+  @media (max-width: 1100px) {
+    font-size: 1.2em;
+    line-height: 30px;
+  }
+
+  @media (max-width: 450px) {
+    font-size: 0.9em;
+    line-height: 25px;
+  }
 `
 
 const ButtonsContainer = styled.div`
@@ -250,6 +363,18 @@ const Button = Buttons.small.extend`
     background-color: ${props => props.colorHover};
   }
   margin-top: 10px;
+
+  @media (max-width: 1100px) {
+    height: 50px;
+    width: 200px;
+    font-size: 1.2em;
+  }
+
+  @media (max-width: 450px) {
+    font-size: 0.9em;
+    height: 45px;
+    width: 175px;
+  }
 `
 
 const LinkContent = styled.div`
@@ -296,6 +421,15 @@ const Container = styled.div`
   border-radius: 10px;
   height: 700px;
   background-color: white;
+
+  @media (max-width: 1100px) {
+    height: fit-content;
+    margin-top: 15px;
+  }
+
+  @media (max-width: 450px) {
+    margin-top: 10px;
+  }
 `
 
 const ScreenshotContainer = styled.div`
@@ -305,12 +439,23 @@ const ScreenshotContainer = styled.div`
   text-align: center;
   margin: 0% 5% 0% 5%;
   margin-top: 35px;
+
+  @media (max-width: 1100px) {
+    width: 50%;
+    max-width: 300px;
+    display: block;
+    margin: auto;
+  }
 `
 
 const Screenshot = styled.img`
   height: 100%;
   width: auto;
-  border: 2px solid ${color.yellow};
+
+  @media (max-width: 1100px) {
+    height: auto;
+    width: 100%;
+  }
 `
 
 const TextContainer = styled.div`
@@ -319,6 +464,10 @@ const TextContainer = styled.div`
   margin-left: 7.5%;
   vertical-align: top;
   text-align: center;
+
+  @media (max-width: 1100px) {
+    width: 90%;
+  }
 `
 
 const Text = styled.p`
@@ -326,6 +475,16 @@ const Text = styled.p`
   text-align: left;
   font-size: 1.5em;
   color: ${color.darkGray};
+
+  @media (max-width: 1100px) {
+    line-height: 30px;
+    text-align: left !important;
+    font-size: 1.2em;
+  }
+
+  @media (max-width: 450px) {
+    font-size: 0.9em;
+  }
 `
 
 export default Home;

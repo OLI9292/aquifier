@@ -41,7 +41,7 @@ const Title = styled.h1`
 
 const Text = styled.p`
   color: white;
-  font-size: 1.5em;
+  font-size: 1.25em;
   height: 5%;
   text-align: center;
   width: 85%;
