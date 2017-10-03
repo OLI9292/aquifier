@@ -442,6 +442,7 @@ const ScreenshotContainer = styled.div`
 
   @media (max-width: 1100px) {
     width: 50%;
+    height: fit-content;
     max-width: 300px;
     display: block;
     margin: auto;
