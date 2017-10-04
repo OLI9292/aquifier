@@ -429,6 +429,7 @@ const Container = styled.div`
 
   @media (max-width: 450px) {
     margin-top: 10px;
+    height: fit-content;
   }
 `
 
