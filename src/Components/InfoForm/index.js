@@ -101,32 +101,41 @@ class InfoForm extends Component {
 
     return (
       <Layout>
-          <Text><Higlighted>WORDCRAFT</Higlighted> teaches the building blocks of English so students can analyze and navigate advanced vocabulary.</Text>
-          <Text>To bring the curriculum to your school, fill out the following and we’ll be in touch as soon as possible.</Text>
-          <form onSubmit={this.handleSubmit}>
-            <InputsContainer>
-              {smallInputs}
-            </InputsContainer>
-            <CommentsTextArea name="comments" placeholder="comments" onChange={(e) => this.setState({ comments: e.target.value })} />
-            <SubmitButton valid={this.state.allValid} type="submit" value="submit" />
-            <ErrorMessage success={this.state.success} display={this.state.displayError || this.state.success}>
-              {this.state.success ? 'Submitted.  We\'ll be in touch soon!' : this.state.errorMessage}
-            </ErrorMessage>
-          </form>
+        <Text>To bring the full <span style={{color: color.yellow}}><b>WORDCRAFT</b></span> curriculum to your school, send us the following information and we'll be in touch as soon as possible.</Text>
+        <form onSubmit={this.handleSubmit}>
+          <InputsContainer>
+            {smallInputs}
+          </InputsContainer>
+          <CommentsTextArea name="comments" placeholder="comments" onChange={(e) => this.setState({ comments: e.target.value })} />
+          <SubmitButton valid={this.state.allValid} type="submit" value="submit" />
+          <ErrorMessage success={this.state.success} display={this.state.displayError || this.state.success}>
+            {this.state.success ? 'Submitted.  We\'ll be in touch soon!' : this.state.errorMessage}
+          </ErrorMessage>
+        </form>
       </Layout>
     );
   }
 }
 
 const Layout = styled.div`
-  margin: auto;
-  padding: 5% 0% 5% 0%;
-  width: 90%;
+  margin-left: 10%;
+  width: 80%;
 `
 
 const Text = styled.p`
-  font-size: 2em;
-  text-align: center;
+  font-size: 1.75em;
+  color: ${color.darkGray};
+  line-height: 40px;
+
+  @media (max-width: 1100px) {
+    font-size: 1.2em;
+    line-height: 30px;
+    margin-top: 20px;
+  }
+
+  @media (max-width: 450px) {
+    font-size: 0.9em;
+  }
 `
 
 const Image = styled.img`
@@ -144,7 +153,7 @@ const Image = styled.img`
 `
 
 const SmallInput = styled.div`
-  margin: 2%;
+  margin: 1%;
 `
 
 const InputsContainer = styled.div`
@@ -155,9 +164,9 @@ const InputsContainer = styled.div`
 
 const CommentsTextArea = TextAreas.medium.extend`
   width: 80%;
-  height: 200px;
+  height: 150px;
   margin-left: 10%;
-  margin-top: 3%;
+  margin-top: 2%;
   line-height: 1.5;
 `
 
@@ -170,14 +179,22 @@ const SubmitButton = styled.input`
   border: none;
   border-radius: 5px;
   font-family: BrandonGrotesque;
-  font-size: 1.5em;
+  font-size: 1.25em;
   color: ${props => props.valid ? 'white' : '#757575'};
   padding: 0px 20px 0px 20px;
-  height: 60px;
+  height: 50px;
   cursor: pointer;
   transition: 0.2s;
   margin-left: 10%;
-  margin-top: 3%;
+  margin-top: 2%;
+
+  @media (max-width: 768px) {
+    font-size: 1em;
+  }
+
+  @media (max-width: 450px) {
+    font-size: 0.9em;
+  }
 `
 
 const Higlighted = styled.span`
@@ -190,6 +207,14 @@ const ErrorMessage = styled.p`
   padding-left: 10%;
   color: ${props => props.success ? color.green : color.red};  
   visibility: ${props => props.display ? 'visible' : 'hidden'}
+
+  @media (max-width: 1100px) {
+    font-size: 1em;
+  }
+
+  @media (max-width: 450px) {
+    font-size: 0.75em;
+  }
 `
 
 export default InfoForm;

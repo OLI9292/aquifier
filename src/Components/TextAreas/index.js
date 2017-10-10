@@ -16,15 +16,13 @@ const DefaultTextArea = styled.textarea`
 
 const MediumTextArea = DefaultTextArea.extend`
   width: 250px;
-  height: 60px;
-  font-size: 1.5em;
+  height: 50px;
+  font-size: 1.25em;
   padding-top: 15px;
 
   @media (max-width: 768px) {
     width: 200px;
-    height: 50px;
-    line-height: 50px;
-    font-size: 1.25em;
+    font-size: 1em;
   }
 `
 

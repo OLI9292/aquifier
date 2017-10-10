@@ -44,6 +44,12 @@ const MediumButton = DefaultButton.extend`
 `
 
 const SmallButton = DefaultButton.extend`
+  width: 140px;
+  height: 50px;
+  font-size: 1.5em;
+`
+
+const SmallestButton = DefaultButton.extend`
   width: 55px;
   height: 25px;
   font-size: 1em;
@@ -53,7 +59,8 @@ const Buttons = {
   extraLarge: ExtraLargeButton,
   large: LargeButton,
   medium: MediumButton,
-  small: SmallButton
+  small: SmallButton,
+  smallest: SmallestButton
 }
 
 export default Buttons;

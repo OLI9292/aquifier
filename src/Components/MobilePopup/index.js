@@ -15,7 +15,7 @@ class MobilePopup extends Component {
       <Layout>
         <Title>Sorry to interrupt!</Title>
         <Text>
-          We noticed you're on a mobile device.  You'll have a much better time playing the mobile app.  Get it here.
+          We noticed you’re on a mobile device. You’ll have a much better time if you use the mobile app. Get it below. If that’s not possible, try it out on a laptop.
         </Text>
         <ButtonsContainer>
           {ActionButton('ios')}
@@ -41,7 +41,7 @@ const Title = styled.h1`
 
 const Text = styled.p`
   color: white;
-  font-size: 1.5em;
+  font-size: 1.25em;
   height: 5%;
   text-align: center;
   width: 85%;
