@@ -39,7 +39,7 @@ class Admin extends Component {
 
       const game = {};
 
-      game[accessCode] = { 
+      game[accessCode] = {
         level: this.props.settings.level,
         time: this.props.settings.time,
         status: 0,
@@ -118,33 +118,37 @@ class Admin extends Component {
         : <table>
           {this.state.players.map((p) => {
            return <tr style={{lineHeight: '0px'}}>
-            <td><SmallText style={{width: '100px'}}>{p}</SmallText></td>
+            <td><SmallText style={{width: '150px'}}>{p}</SmallText></td>
             <td onClick={() => this.kick(p)}><KickButton>Kick</KickButton></td>
-           </tr> 
+           </tr>
           })}
         </table>
     }
 
     const content = () => {
       return <Table>
-        <tr style={{height: '75px'}}>
+        <tr>
           <ShortCell alignTop><Text>Access Code</Text></ShortCell>
-          <LongCell alignTop><Text color={color.red}>{this.state.accessCode}</Text></LongCell>
+          <LongCell alignTop><AccessCode color={color.red}>{this.state.accessCode}</AccessCode></LongCell>
+        </tr>
+        <tr>
+          <ShortCell/>
+          <LongCell alignTop>
+            <Timer admin={true} gameOver={this.gameOver.bind(this)} ref={instance => { this.timer = instance }} />
+            <br/>
+            <StartButton onClick={this.startMatch}>Start Match</StartButton>
+          </LongCell>
         </tr>
         <tr style={{height: '300px', marginBottom: '1em'}}>
           <ShortCell alignTop><Text>Players</Text></ShortCell>
           <LongCell alignTop>{playersTable()}</LongCell>
-        </tr>
-        <tr>
-          <ShortCell><StartButton onClick={this.startMatch}>Start Match</StartButton></ShortCell>
-          <LongCell><Timer admin={true} gameOver={this.gameOver.bind(this)} ref={instance => { this.timer = instance }} /></LongCell>
         </tr>
       </Table>
     }
 
     return (
       <div>
-        {this.state.errorMessage && 
+        {this.state.errorMessage &&
           <ErrorMessage display={!_.isNull(this.state.errorMessage)}>
             {this.state.errorMessage}
           </ErrorMessage>
@@ -160,13 +164,14 @@ const ErrorMessage = styled.p`
   position: absolute;
   padding-left: 2%;
   bottom: 12%;
-  color: ${color.red};  
+  color: ${color.red};
   visibility: ${props => props.display ? 'visible' : 'hidden'}
 `
 
 const Table = styled.table`
   margin-left: 20px;
   padding-top: 5%;
+  text-align: center;
 `
 
 const Text = styled.h4`
@@ -192,17 +197,14 @@ const LongCell = styled.td`
 const AccessCode = styled.h1`
   color: ${color.red};
   font-size: 10em;
-  line-height: 30%;
+  line-height: 0;
 `
 
 const Container = styled.div`
 `
 
-const TimerContainer = styled.div`
-  margin: -30px 0px 10px 0px;
-`
-
 const StartButton = Buttons.medium.extend`
+  margin-bottom: 1em;
   background-color: ${color.blue};
   &:hover {
     background-color: ${color.blue10l};
