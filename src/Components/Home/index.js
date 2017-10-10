@@ -222,7 +222,7 @@ const Header = styled.h1`
   font-size: 2.75em;
   letter-spacing: 2px;
   margin-bottom: 0px;
-  line-height: 40px;
+  line-height: 50px;
   padding-bottom: 10px;
 
   @media (max-width: 1100px) {
