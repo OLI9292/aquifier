@@ -30,7 +30,7 @@ const LargeButton = DefaultButton.extend`
   height: 90px;
   font-size: 2.5em;
 
-  @media (max-width: 1000px) {
+  @media (max-width: 1000px), ( max-height: 700px ) {
     width: 210px;
     height: 75px;
     font-size: 2em;
