@@ -105,7 +105,7 @@ class Game extends Component {
 
   runQuestionInterlude = async () =>  {
     this.setState({ isQuestionInterlude: true });
-    window.timeout = setTimeout(() => { 
+    window.timeout = setTimeout(() => {
       this.nextQuestion();
     }, 4000);
   }
@@ -168,7 +168,7 @@ class Game extends Component {
           isDisplayingImage={this.state.isQuestionInterlude}
           incrementScore={this.incrementScore.bind(this)}
           roots={this.state.roots}
-          word={this.state.currentWord} />          
+          word={this.state.currentWord} />
       }
     }
 
@@ -197,13 +197,13 @@ class Game extends Component {
           <Score>{this.state.score}</Score>
         </Scoreboard>
         {
-          this.state.gameOver 
+          this.state.gameOver
             ? gameOver()
             : !_.isNull(this.state.currentWord) && question()
         }
-        <OnCorrectImage 
-          display={this.state.isQuestionInterlude} 
-          ref={instance => { this.wordImage = instance }} 
+        <OnCorrectImage
+          display={this.state.isQuestionInterlude}
+          ref={instance => { this.wordImage = instance }}
           word={this.state.currentWord} />
         {this.state.level !== 'Beginner' && directions()}
       </Layout>
@@ -243,6 +243,10 @@ const Score = styled.p`
   float: right;
   line-height: 0px;
   margin-right: 10px;
+
+  @media (max-width: 1000px), ( max-height: 700px ) {
+    font-size: 3em;
+  }
 `
 
 const Text = styled.h4`

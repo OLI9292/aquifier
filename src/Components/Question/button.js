@@ -30,7 +30,7 @@ class ButtonQuestion extends Component {
   reset(word) {
     const components = word.components.map((c) => ({ value: c.value, display: c.type !== 'root' }) );
     const choices = this.choicesFor(word);
-    this.setState({ components: components, correct: true, choices: choices });    
+    this.setState({ components: components, correct: true, choices: choices });
   }
 
   checkComplete() {
@@ -54,7 +54,7 @@ class ButtonQuestion extends Component {
     const updatedComponents = this.state.components.map((c) => {
       return c.value === choice ? { value: c.value, display: true } : c;
     });
-    
+
     const correct = !_.isEqual(this.state.components, updatedComponents);
     this.animate(choice, correct);
 
@@ -124,7 +124,7 @@ const Definition = styled.div`
   margin: auto;
   margin-bottom: 1em;
   width: 75%;
-  @media (max-width: 768px) {
+  @media (max-width: 768px), (max-height: 700px ) {
     font-size: 1.75em;
   }
 `
@@ -136,6 +136,9 @@ const AnswerSpace = styled.p`
   margin: 0% 1% 0% 1%;
   font-size: 2.5em;
   display: inline-block;
+  @media (max-width: 768px), (max-height: 700px ) {
+    font-size: 2em;
+  }
 `
 
 const GameButtons = styled.div`
