@@ -43,7 +43,7 @@ const Header = styled.h1`
 `
 
 const Layout = styled.div`
-  position: absolute;
+  position: fixed;
   z-index: 10;
   width: 450px;
   height: 350px;

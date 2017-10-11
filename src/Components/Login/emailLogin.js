@@ -7,6 +7,7 @@ import Buttons from '../Buttons/default';
 import { color } from '../../Library/Styles/index';
 import TextAreas from '../TextAreas/index';
 import { validateEmail } from '../../Library/helpers';
+import User from '../../Models/User';
 
 class EmailLogin extends Component {
   constructor(props) {
@@ -15,24 +16,24 @@ class EmailLogin extends Component {
     this.state = {
       isError: false,
       message: '',
+      firstName: '',
+      lastName: '',
       createAccountEmail: '',
       createAccountPw: '',
-      createAccountConfirmPw: '',
-      createAccountClassId: '',
       loginEmail: '',
       loginPw: ''
     }
   }
 
   validateCreateAccount() {
-    if (!validateEmail(this.state.createAccountEmail)) {
+    if (!this.state.firstName.length) {
+      this.setState({ message: 'First name is missing' });
+    } else if (!this.state.lastName.length) {
+      this.setState({ message: 'Last name is missing' });
+    } else if (!validateEmail(this.state.createAccountEmail)) {
       this.setState({ message: 'Please enter a valid email' });
     } else if ((this.state.createAccountPw.length < 6) || (this.state.createAccountPw.length > 12)) {
       this.setState({ message: 'Passwords must be between 6 and 12 characters' });
-    } else if (this.state.createAccountPw !== this.state.createAccountConfirmPw) {
-      this.setState({ message: 'Passwords do not match' });
-    } else if ((this.state.createAccountClassId.length < 4) || (this.state.createAccountClassId.length > 10)) {
-      this.setState({ message: 'Class IDs must be between 4 and 10 characters' });
     } else {
       return true;
     }
@@ -48,12 +49,23 @@ class EmailLogin extends Component {
     }
   }
 
-  handleCreateAccount() {
+  handleCreateAccount = async () => {
     const valid = this.validateCreateAccount();
 
     if (valid) {
-      // TODO: - make auth call to server to create account
-      // this.setState({ message: 'Account created.', isError: false });
+      const data = {
+        firstName: this.state.firstName,
+        lastName: this.state.lastName,
+        email: this.state.createAccountEmail,
+        password: this.state.createAccountPw
+      }
+
+      const result = await User.createAccount(data);
+      if (_.has(result, 'error')) {
+        this.setState({ isError: true, message: result.error });
+      } else {
+        this.setState({ isError: false, message: 'Account created' });
+      }
     } else {
       this.setState({ isError: true });
     }
@@ -63,7 +75,8 @@ class EmailLogin extends Component {
     const validInput = this.validateLoginInput();
 
     if (validInput) {
-      // TODO: - make auth call to server to login
+      const email = this.state.loginEmail;
+      const password = this.state.loginPw;
     } else {
       this.setState({ isError: true });
     }
@@ -74,10 +87,10 @@ class EmailLogin extends Component {
       <Layout>
         <CreateAccount>
           <Header>Create Account</Header>
+          <TextArea placeholder={'first name'} onChange={(e) => this.setState({ 'firstName': e.target.value.replace(/ /g,'') })}></TextArea>
+          <TextArea placeholder={'last name'} onChange={(e) => this.setState({ 'lastName': e.target.value.replace(/ /g,'') })}></TextArea>
           <TextArea placeholder={'email'} onChange={(e) => this.setState({ 'createAccountEmail': e.target.value.replace(/ /g,'') })}></TextArea>
           <TextArea placeholder={'password'} onChange={(e) => this.setState({ 'createAccountPw': e.target.value.replace(/ /g,'') })}></TextArea>
-          <TextArea placeholder={'confirm password'} onChange={(e) => this.setState({ 'createAccountConfirmPw': e.target.value.replace(/ /g,'') })}></TextArea>
-          <TextArea placeholder={'class ID (optional)'} onChange={(e) => this.setState({ 'createAccountClassId': e.target.value.replace(/ /g,'') })}></TextArea>
           <Button onClick={() => this.handleCreateAccount()}>create account</Button>
         </CreateAccount>
         <LoginWithEmail>

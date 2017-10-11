@@ -29,7 +29,8 @@ class Home extends Component {
       displayLogin: false,
       redirect: null,
       isMobile: isMobile,
-      iosIdx: 0
+      iosIdx: 0,
+      loggedIn: true
     };
   }
 
@@ -58,11 +59,19 @@ class Home extends Component {
   }
 
   displayEmailLogin() {
-    this.setState({ displayEmailLogin: true })
+    this.setState({ displayEmailLogin: true });
   }
 
   handleBackgroundClick() {
-    this.setState({ displayLogin: false, displayEmailLogin: false })
+    this.setState({ displayLogin: false, displayEmailLogin: false });
+  }
+
+  handleLoginLogout() {
+    if (this.state.loggedIn) {
+      this.setState({ loggedIn: false });
+    } else {
+      this.setState({ displayLogin: true });
+    }
   }
 
   render() {
@@ -85,15 +94,18 @@ class Home extends Component {
             WORDCRAFT
           </Header>
           <NavLinks style={{right: 0}}>
-            <NavLink onClick={() => window.scrollTo({ top: 2875, left: 0, behavior: 'smooth'})}
+            <NavLink display onClick={() => window.scrollTo({ top: 2875, left: 0, behavior: 'smooth'})}
               color={color.green}>For Schools</NavLink>
-            <NavLink color={color.red}>
+            <NavLink display color={color.red}>
               <a style={{color: 'inherit', textDecoration: 'inherit'}} href='mailto:playwordcraft@gmail.com'>
                 Support
               </a>
             </NavLink>
-            <NavLink color={color.blue} onClick={() => this.setState({ displayLogin: true })}>
-              Login
+            <NavLink display={this.state.loggedIn} color={color.orange} onClick={() => this.redirect('/profile')}>
+              My Progress
+            </NavLink>
+            <NavLink display color={color.blue} onClick={() => this.handleLoginLogout()}>
+              {this.state.loggedIn ? 'Logout' : 'Login'}
             </NavLink>
           </NavLinks>
         </NavContent>
@@ -287,7 +299,7 @@ const NavLinks = styled.div`
 `
 const NavLink = styled.p`
   color: ${props => props.color};
-  display: inline-block;
+  display: ${props => props.display ? 'inline-block' : 'none'};
   font-size: 1.5em;
   margin-left: 30px;
   cursor: pointer;
