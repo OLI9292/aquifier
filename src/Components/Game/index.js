@@ -18,6 +18,9 @@ import { color } from '../../Library/Styles/index';
 import leftArrow from '../../Library/Images/left-arrow.png';
 import rightArrow from '../../Library/Images/right-arrow.png';
 import enterKey from '../../Library/Images/enter.png';
+import demo1data from '../../Library/WordLists/Demo1';
+import demo2data from '../../Library/WordLists/Demo2';
+import demo3data from '../../Library/WordLists/Demo3';
 
 class Game extends Component {
   constructor(props) {
@@ -31,8 +34,8 @@ class Game extends Component {
       dataLoaded: false,
       isQuestionInterlude: false,
       gameOver: false,
-      level: 'Beginner',
       questionCount: 0,
+      level: 'Beginner',
       redirect: null,
       roots: [],
       score: 0,
@@ -47,24 +50,49 @@ class Game extends Component {
   }
 
   async componentDidMount() {
-    let words = await Firebase.fetchWords();
+    const words = await Firebase.fetchWords();
     const roots = _.uniq(_.flatten(words.map((w) => w.roots)), 'value');
 
     if (this.state.isSinglePlayer) {
-      const wordOrder = _.shuffle(_.pluck(words.filter((w) => this.matchesCategory(w.categories, this.props.settings.topic)), 'value'));
-      this.timer.track();
-      this.setState({ words: words, roots: roots, level: this.props.settings.level, wordOrder: wordOrder }, this.nextQuestion);
+      this.startSinglePlayerGame(words, roots);
     } else {
-      Firebase.refs.games.child(this.props.settings.accessCode).on('value', (snapshot) => {
-        const level = snapshot.val().level;
-        const wordOrder = snapshot.val().words === '' ? [] : snapshot.val().words.split(',');
-        const lateness = this.secondsEnteredLate(snapshot.val().startTime);
-        this.timer.track(lateness);
-        this.setState({ words: words, roots: roots, level: level, wordOrder: wordOrder }, this.nextQuestion);
-      })
+      this.startMultiplayerGame(words, roots);
     }
 
     document.body.addEventListener('keydown', this.handleKeydown.bind(this), true);
+  }
+
+  startSinglePlayerGame(words, roots) {
+    let wordOrder
+    
+    if (this.props.settings.demo) {
+      wordOrder = [demo1data, demo2data, demo3data][parseInt(this.props.settings.demo) - 1] || [];
+    } else {
+      wordOrder = _.pluck(words.filter((w) => this.matchesCategory(w.categories, this.props.settings.topic)), 'value');
+      wordOrder = _.shuffle(wordOrder.map((w) => {{ let obj = {}; obj[w] = this.props.settings.level; return obj }}));
+    }
+
+    this.timer.track();
+    this.setState({ words: words, roots: roots, wordOrder: wordOrder }, this.nextQuestion);    
+  }
+
+  startMultiplayerGame(words, roots) {
+    Firebase.refs.games.child(this.props.settings.accessCode).on('value', (snapshot) => {
+      const snap = snapshot.val();
+      let wordOrder
+
+      if (snap.demo) {
+        wordOrder = [demo1data, demo2data, demo3data][parseInt(snap.demo) - 1] || [];
+      } else {
+        wordOrder = snap.words.length === 0
+          ? []
+          : snap.words.split(',').map((w) => {{ let obj = {}; obj[w] = snap.level; return obj }});
+      }
+
+      const lateness = this.secondsEnteredLate(snap.startTime);
+      this.timer.track(lateness);
+      this.setState({ words: words, roots: roots, wordOrder: wordOrder }, this.nextQuestion);
+    })    
   }
 
   handleKeydown(event) {
@@ -91,11 +119,12 @@ class Game extends Component {
 
   getWord() {
     if (_.isEmpty(this.state.wordOrder)) {
-      return this.randomItem(this.state.words);
+      return { word: this.randomItem(this.state.words), level: this.props.settings.level };
     } else {
-      const next = _.find(this.state.words, (w) => w.value === this.state.wordOrder[0]);
+      const next = this.state.wordOrder[0];
+      const word = _.find(this.state.words, (w) => w.value === _.keys(next)[0]);
       this.setState({ wordOrder: this.state.wordOrder.slice(1, this.state.wordOrder.length )});
-      return next !== undefined ? next : this.getWord();
+      return !_.isUndefined(word) ? { word: word, level: next[word.value] }  : this.getWord();
     }
   }
 
@@ -111,8 +140,9 @@ class Game extends Component {
   }
 
   nextQuestion() {
-    const word = this.getWord();
-    this.setState({ currentWord: word, isQuestionInterlude: false, questionCount: this.state.questionCount + 1 });
+    const next = this.getWord();
+    const level = ['Beginner', 'Intermediate', 'Advanced'][next.level] || 'Beginner';
+    this.setState({ currentWord: next.word, isQuestionInterlude: false, level: level, questionCount: this.state.questionCount + 1 });
   }
 
   randomItem(arr) {
