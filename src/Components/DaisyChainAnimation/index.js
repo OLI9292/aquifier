@@ -26,7 +26,7 @@ class DaisyChainAnimation extends Component {
 { value: 'protoplasm', definition: 'the living material inside a cell, so named because it is the first formed thing', indices: [], marginAdjustment: '24%' },
 { value: 'isometric', definition: 'having equal measure', indices: [], marginAdjustment: '25%' },
 { value: 'lithograph', definition: 'a symbol or inscription on stone', indices: [0,3], marginAdjustment: '24%' },
-{ value: 'monolith', definition: 'a single piece of stone	', indices: [4,7], marginAdjustment: '27%' },
+{ value: 'monolith', definition: 'a single piece of stone', indices: [4,7], marginAdjustment: '27%' },
 { value: 'monogram', definition: 'a symbol with one initial letter from each word', indices: [4,7], marginAdjustment: '26%' },
 ]
 
