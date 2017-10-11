@@ -6,7 +6,7 @@ import _ from 'underscore';
 import Buttons from '../Buttons/default';
 import { color } from '../../Library/Styles/index';
 import TextAreas from '../TextAreas/index';
-import { validateEmail } from '../../Library/helpers';
+import { validateEmail, sleep } from '../../Library/helpers';
 import User from '../../Models/User';
 
 class EmailLogin extends Component {
@@ -50,9 +50,9 @@ class EmailLogin extends Component {
   }
 
   handleCreateAccount = async () => {
-    const valid = this.validateCreateAccount();
+    const validInput = this.validateCreateAccount();
 
-    if (valid) {
+    if (validInput) {
       const data = {
         firstName: this.state.firstName,
         lastName: this.state.lastName,
@@ -61,22 +61,37 @@ class EmailLogin extends Component {
       }
 
       const result = await User.createAccount(data);
+
       if (_.has(result, 'error')) {
         this.setState({ isError: true, message: result.error });
       } else {
         this.setState({ isError: false, message: 'Account created' });
+        await sleep(1000);
+        this.props.exit();
       }
     } else {
       this.setState({ isError: true });
     }
   }
 
-  handleLogin() {
+  handleLogin = async () => {
     const validInput = this.validateLoginInput();
 
     if (validInput) {
-      const email = this.state.loginEmail;
-      const password = this.state.loginPw;
+      const data = {
+        email: this.state.loginEmail,
+        password: this.state.loginPw
+      }
+
+      const result = await User.login(data);
+
+      if (_.has(result, 'error')) {
+        this.setState({ isError: true, message: result.error });
+      } else {
+        this.setState({ isError: false, message: 'Logged in' });
+        await sleep(1000);
+        this.props.exit();
+      }
     } else {
       this.setState({ isError: true });
     }

@@ -10,8 +10,17 @@ const createAccount = async (data) => {
   }
 }
 
+const login = async (data) => {
+  try {
+    return await axios.post(`${CONFIG.ACCOUNTS_API}/user/login`, data);
+  } catch (e) {
+    return e.response.data;
+  }
+}
+
 const User = {
-  createAccount: createAccount
+  createAccount: createAccount,
+  login: login
 }
 
 export default User;

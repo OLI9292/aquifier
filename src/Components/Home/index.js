@@ -55,7 +55,7 @@ class Home extends Component {
   }
 
   exitLogin() {
-    this.setState({ displayLogin: false })
+    this.setState({ displayLogin: false, displayEmailLogin: false });
   }
 
   displayEmailLogin() {
@@ -81,7 +81,7 @@ class Home extends Component {
 
     const login = () => {
       if (this.state.displayEmailLogin) {
-        return <EmailLogin />
+        return <EmailLogin exit={this.exitLogin.bind(this)}/>
       } else if (this.state.displayLogin) {
         return <Login displayEmailLogin={this.displayEmailLogin.bind(this)} exitLogin={this.exitLogin.bind(this)} />
       }
