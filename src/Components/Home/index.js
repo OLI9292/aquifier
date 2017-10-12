@@ -26,8 +26,19 @@ class Home extends Component {
       displayMobilePopup: false,
       redirect: null,
       isMobile: isMobile,
+      isSmallScreen: false,
       iosIdx: 0
     };
+  }
+
+  checkWindowSize() {
+    const isSmallScreen = window.innerWidth <= 1100 ? true : false
+    this.setState ({ isSmallScreen: isSmallScreen });
+  }
+
+  componentDidMount() {
+    this.checkWindowSize();
+    window.addEventListener("resize", this.checkWindowSize.bind(this));
   }
 
   removeMobilePopup() {
@@ -79,6 +90,7 @@ class Home extends Component {
         <Subtitle>
           Master the Greek and Latin roots of English.
         </Subtitle>
+        {this.state.isSmallScreen && <DaisyChainAnimation />}
         <Explanation>
           Expand your vocabulary without memorizing long lists of words. Prepare for a test, specialize in a topic, or just learn the entire dictionary.
         </Explanation>
@@ -108,7 +120,7 @@ class Home extends Component {
         </ScreenshotContainer>
         <TextContainer>
           <Text><BlackSpan><b>60% of English words</b></BlackSpan> have Greek or Latin roots.  In the fields of science and technology, that number is <BlackSpan><b>above 90%.</b></BlackSpan><br /><br />By solving fast-paced puzzles, you'll learn hundreds of roots and thousands of words.  Wordcraft is the most fun and efficient way to acquire a large vocabulary.</Text>
-          <Button style={{float: 'left'}} color={color.red} colorHover={color.red10l}>
+          <Button color={color.red} colorHover={color.red10l}>
             <Link href={IOSURL} target='blank'>
               <LinkContent><AppleLogo src={appleLogo} /><LinkText>Play</LinkText></LinkContent>
             </Link>
@@ -143,8 +155,7 @@ class Home extends Component {
           <Text>Use <GoldSpan><b>WORDCRAFT</b></GoldSpan>'s spelling bee mode to quickly set up a fast-paced vocabulary game for your class.  Any number of players can join on their own computers.<br /><br />Click <BlackSpan onMouseOver={this.showHelpText.bind(this)} onMouseLeave={this.hideHelpText.bind(this)}><b>here</b></BlackSpan> for a full tutorial on in-class games.</Text>
           <Button onClick={() => this.redirect('/lobby')}
             color={color.green}
-            colorHover={color.green10l}
-            style={{float: 'left'}}>Play Spelling Bee!</Button>
+            colorHover={color.green10l}>Play Spelling Bee!</Button>
         </TextContainer>
       </Container>
     }
@@ -165,9 +176,7 @@ class Home extends Component {
         {navigation()}
         <InnerContainer>
           {introSection()}
-          <DaisyChainContainer>
-            <DaisyChainAnimation />
-          </DaisyChainContainer>
+          {!this.state.isSmallScreen && <DaisyChainContainer> <DaisyChainAnimation /> </DaisyChainContainer>}
           {howItWorksSection()}
           {masterATopicSection()}
           {spellingBeeSection()}
@@ -209,6 +218,7 @@ const InnerContainer = styled.div`
   margin: auto;
 
   @media (max-width: 1100px) {
+    text-align: center;
     width: 90%;
     min-width: 300px;
   }
@@ -298,6 +308,10 @@ const TopLeftContainer = styled.div`
   }
 `
 
+const DaisyChainMobileContainer  = styled.div`
+  }
+`
+
 const DaisyChainContainer = styled.div`
   margin-left: 5%;
   margin-top: 40px;
@@ -321,6 +335,7 @@ const Subtitle = styled.p`
   @media (max-width: 1100px) {
     font-size: 1.75em;
     line-height: 40px;
+    margin-bottom: 0px;
   }
 
   @media (max-width: 450px) {
@@ -330,7 +345,7 @@ const Subtitle = styled.p`
 `
 
 const Explanation = styled.p`
-  color: ${color.gray};
+  color: ${color.darkGray};
   font-size: 1.25em;
   width: 90%;
   margin-left: 5%;
