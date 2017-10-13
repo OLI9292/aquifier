@@ -12,6 +12,7 @@ class ButtonQuestion extends Component {
 
     this.state = {
       correct: true,
+      timeTaken: 0,
       choices: [],
       components: []
     }
@@ -19,6 +20,7 @@ class ButtonQuestion extends Component {
 
   componentDidMount() {
     this.reset(this.props.word);
+    setInterval(() => { this.setState ({ timeTaken: this.state.timeTaken + 1}); }, 1000);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -30,13 +32,16 @@ class ButtonQuestion extends Component {
   reset(word) {
     const components = word.components.map((c) => ({ value: c.value, display: c.type !== 'root' }) );
     const choices = this.choicesFor(word);
-    this.setState({ components: components, correct: true, choices: choices });
+    this.setState({ components: components, correct: true, timeTaken: 0, choices: choices });
   }
 
   checkComplete() {
     if (_.contains(_.pluck(this.state.components, 'display'), false)) { return };
-    if (this.state.correct) {
-      this.props.incrementScore();
+    if (this.state.correct && this.state.timeTaken < 3) {
+      this.props.incrementScore(2);
+    }
+    else if (this.state.correct) {
+      this.props.incrementScore(1);
     }
     this.props.nextQuestion();
   }
@@ -168,6 +173,12 @@ const GameButton = Buttons.large.extend`
 
 const SmallText = styled.span`
   font-size: 0.7em;
-  opacity: 0.95;
+  @keyframes fadeIn {
+    0% {opacity: 0;}
+    75% {opacity: 0;}
+    100% {opacity: 1;}
+  }
+  animation-name: fadeIn;
+  animation-duration: 3s;
 `
 export default ButtonQuestion;

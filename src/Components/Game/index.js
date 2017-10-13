@@ -99,8 +99,8 @@ class Game extends Component {
     }
   }
 
-  incrementScore() {
-    this.setState({ score: this.state.score + 1 });
+  incrementScore(amount) {
+    this.setState({ score: this.state.score + amount });
   }
 
   runQuestionInterlude = async () =>  {
