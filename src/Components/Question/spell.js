@@ -48,6 +48,7 @@ class SpellQuestion extends Component {
     }
 
     const pressedEnter = e.key === 'Enter';
+    const pressedEquals = e.keyCode === 187;
     const pressedLetter = isLetter(e.key);
     const pressedLeft = e.keyCode === 37;
     const pressedRight = e.keyCode === 39;
@@ -56,6 +57,8 @@ class SpellQuestion extends Component {
     if (pressedEnter) {
       e.preventDefault();
       this.checkAnswer(true);
+    } else if (pressedEquals) {
+      this.pressedHint();
     } else if (pressedLetter) {
       this.handleLetterPress(e.key)
     } else if (pressedLeft || pressedRight) {
@@ -74,7 +77,6 @@ class SpellQuestion extends Component {
   }
 
   checkIfComplete = async () => {
-    await sleep(1000);
     const answerComplete = _.isEmpty(this.state.components.filter(this.isIncorrect));
     if (answerComplete && !this.state.answerComplete) {
       this.setState({ answerComplete: true, cursor: -1 }, () => this.props.nextQuestion());
@@ -97,17 +99,21 @@ class SpellQuestion extends Component {
   }
 
   handleDeletePress() {
-    let copy = this.state.components;
-    copy[Math.max(this.state.cursor - 1, 0)].guess = null;
-    this.handleArrowPress(true);
-    this.setState({ components: copy });
+    if (this.state.cursor > this.state.cursorEndpoints[0]) {
+      let copy = this.state.components;
+      copy[Math.max(this.state.cursor - 1, 0)].guess = null;
+      this.handleArrowPress(true);
+      this.setState({ components: copy });
+    }
   }
 
   handleLetterPress(letter) {
-    let copy = this.state.components;
-    copy[this.state.cursor].guess = letter;
-    const cursor = this.state.cursor === this.state.cursorEndpoints[1] ? this.state.cursor : this.state.cursor + 1;
-    this.setState({ components: copy, cursor: cursor }, this.checkAnswer);
+    if (this.state.cursor != this.state.cursorEndpoints[1] + 1) {
+      let copy = this.state.components;
+      copy[this.state.cursor].guess = letter;
+      const cursor = this.state.cursor + 1;
+      this.setState({ components: copy, cursor: cursor }, this.checkAnswer);
+    }
   }
 
   reset(word) {
@@ -166,7 +172,7 @@ class SpellQuestion extends Component {
     if (incorrectIdx >= 0) {
       copy[incorrectIdx].guess = copy[incorrectIdx].value;
       let cursor = Math.min(incorrectIdx + 1, this.state.cursorEndpoints[1]);
-      this.setState({ components: copy, cursor: cursor });      
+      this.setState({ components: copy, cursor: cursor });
     } else {
       this.checkAnswer();
     }
@@ -192,7 +198,7 @@ class SpellQuestion extends Component {
     const answerSpaces = () => {
       return this.state.components.map((c, idx) => {
         const correct = c.guess && c.value === c.guess;
-        return <AnswerSpace 
+        return <AnswerSpace
           correct={correct}
           displayErrors={c.guess && this.state.displayErrors}
           cursorOn={this.state.cursor === idx}
@@ -214,17 +220,26 @@ class SpellQuestion extends Component {
 const Layout = styled.div`
 `
 
-const AnswerSpace = styled.p`  
+const AnswerSpace = styled.p`
   color: ${
-    props => props.cursorOn
-      ? color.blue
-      : props.displayErrors
-        ? props.correct ? color.green : color.red
-        : color.black
+    props => props.displayErrors ? props.correct ? color.green : color.red : color.black
   };
   display: inline-block;
   font-size: 2.5em;
   margin: 0% 1% 0% 1%;
+  &::before {
+     content: "I";
+     color: ${
+       props => props.cursorOn ? color.blue : 'transparent'
+     };
+     animation: ${
+       props => props.cursorOn ? 'blink 1s step-end infinite' : 'none'
+     };
+     @keyframes blink {
+       50% { opacity: 0; }
+     }
+     padding-right: 2px;
+  }
 `
 
 const Definition = styled.div`

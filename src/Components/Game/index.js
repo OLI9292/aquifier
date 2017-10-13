@@ -18,6 +18,7 @@ import { color } from '../../Library/Styles/index';
 import leftArrow from '../../Library/Images/left-arrow.png';
 import rightArrow from '../../Library/Images/right-arrow.png';
 import enterKey from '../../Library/Images/enter.png';
+import equalsKey from '../../Library/Images/equals.png';
 
 class Game extends Component {
   constructor(props) {
@@ -180,6 +181,10 @@ class Game extends Component {
           <Image src={rightArrow} />
         </DirectionsCell>
         <DirectionsCell>
+          <DirectionsText>Hint</DirectionsText>
+          <Image src={equalsKey} />
+        </DirectionsCell>
+        <DirectionsCell>
           <DirectionsText>Check Answer</DirectionsText>
           <Image src={enterKey} />
         </DirectionsCell>
@@ -257,8 +262,8 @@ const Text = styled.h4`
 const Directions = styled.div`
   display: ${props => props.display ? 'normal' : 'none'};
   text-align: left;
-  margin: 0px 0px 40px 20px;
-  width: 250px;
+  margin: 0px 0px 80px 20px;
+  width: 400px;
   bottom: 0;
   position: absolute;
 `
