@@ -78,7 +78,7 @@ class SpellQuestion extends Component {
     const answerComplete = _.isEmpty(this.state.components.filter(this.isIncorrect));
     if (answerComplete && !this.state.answerComplete) {
       this.setState({ answerComplete: true, cursor: -1 }, () => this.props.nextQuestion());
-      this.props.incrementScore();
+      this.props.incrementScore(1);
     }
   }
 
@@ -166,7 +166,7 @@ class SpellQuestion extends Component {
     if (incorrectIdx >= 0) {
       copy[incorrectIdx].guess = copy[incorrectIdx].value;
       let cursor = Math.min(incorrectIdx + 1, this.state.cursorEndpoints[1]);
-      this.setState({ components: copy, cursor: cursor });      
+      this.setState({ components: copy, cursor: cursor });
     } else {
       this.checkAnswer();
     }
@@ -192,7 +192,7 @@ class SpellQuestion extends Component {
     const answerSpaces = () => {
       return this.state.components.map((c, idx) => {
         const correct = c.guess && c.value === c.guess;
-        return <AnswerSpace 
+        return <AnswerSpace
           correct={correct}
           displayErrors={c.guess && this.state.displayErrors}
           cursorOn={this.state.cursor === idx}
@@ -214,7 +214,7 @@ class SpellQuestion extends Component {
 const Layout = styled.div`
 `
 
-const AnswerSpace = styled.p`  
+const AnswerSpace = styled.p`
   color: ${
     props => props.cursorOn
       ? color.blue
