@@ -1,21 +1,20 @@
-import _ from 'underscore';
-import axios from 'axios';
 import CONFIG from '../Config/main';
+import axios from 'axios';
 
 const fetch = async (query) => {
   try {
     if (query) {
 
     } else {
-      return await axios.get(`${CONFIG.WORDS_API}/words`);
+      return await axios.get(`${CONFIG.WORDS_API}/roots`);
     }
   } catch (e) {
     return e.response.data;
   }
 }
 
-const Word = {
+const Root = {
   fetch: fetch
 }
 
-export default Word;
+export default Root;

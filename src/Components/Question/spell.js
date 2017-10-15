@@ -130,9 +130,9 @@ class SpellQuestion extends Component {
 
   intermediateParams(word) {
     const randomRoot = _.shuffle(word.roots)[Math.floor(Math.random() * (word.roots.length - 1))];
-    const answer = randomRoot.value;
+    const answer = _.find(this.props.roots, (r) => r._id === randomRoot).value;
     const components = _.flatten(word.components.map((c) => {
-      const display = c.value !== randomRoot.value;
+      const display = c.value !== answer;
       return c.value.split('').map((char) => ({ value: char, guess: display ? char : null }))
     }));
     const cursorEndpoints = [_.findIndex(components, (c) => !c.guess), _.findLastIndex(components, (c) => !c.guess)];
