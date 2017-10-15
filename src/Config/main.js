@@ -1,5 +1,5 @@
 module.exports = {  
-  'PORT': process.env.REACT_APP_PORT || 3000,
+  'PORT': process.env.REACT_APP_PORT || process.env.PORT || 3000,
   'ACCOUNTS_API': process.env.REACT_APP_ACCOUNTS_API,
   'WORDS_API': process.env.REACT_APP_WORDS_API,
   'AWS_IDENTITY_POOL_ID': process.env.REACT_APP_AWS_IDENTITY_POOL_ID,
