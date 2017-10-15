@@ -14,7 +14,7 @@ class Waiting extends Component {
     super(props);
 
     this.state = {
-      text: 'Waiting for the admin to start the game...',
+      text: 'Be patient while other players join...',
       redirect: false
     }
   }
@@ -23,7 +23,7 @@ class Waiting extends Component {
     Firebase.refs.games.child(this.props.settings.accessCode).on('value', (snapshot) => {
       const kicked = !_.includes(_.keys(snapshot.val().players), this.props.settings.name);
       const gameStarted = snapshot.val().status === 1;
-      
+
       if (kicked) {
         this.setState({ text: 'You were kicked by the admin.' });
       } else if (gameStarted) {
@@ -42,7 +42,7 @@ class Waiting extends Component {
         return <Redirect push to={'/join'} />;
       } else {
         const settings = _.mapObject(this.props.settings, (v, k) => k === 'component' ? 'game' : v);
-        return <Redirect push to={`/game/${queryString.stringify(settings)}`} />;        
+        return <Redirect push to={`/game/${queryString.stringify(settings)}`} />;
       }
     }
 

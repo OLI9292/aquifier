@@ -26,7 +26,7 @@ class Timer extends Component {
   decrementSeconds(seconds) {
     const updated = parseInt(seconds, 10) - 1;
     return updated < 10 ? `0${updated}` : updated.toString()
-  } 
+  }
 
   track(secondsLate) {
     const timeLeft = secondsLate ? this.accountForLateness(secondsLate) : this.state.timeLeft;
@@ -60,6 +60,10 @@ const Text = styled.p`
   line-height: 0px;
   font-size: 4em;
   color: ${color.red};
+
+  @media (max-width: 1000px), ( max-height: 700px ) {
+    font-size: 3em;
+  }
 `
 
 export default Timer;

@@ -22,7 +22,7 @@ const IOSURL = "https://bit.ly/playwordcraft";
 class Home extends Component {
   constructor(props) {
     super(props);
-    
+
     const isMobile = mobilecheck();
     const userId = localStorage.getItem('userId');
 
@@ -101,7 +101,7 @@ class Home extends Component {
             <NavLink display onClick={() => window.scrollTo({ top: 2875, left: 0, behavior: 'smooth'})}
               color={color.green}>For Schools</NavLink>
             <NavLink display color={color.red}>
-              <a style={{color: 'inherit', textDecoration: 'inherit'}} href='mailto:playwordcraft@gmail.com'>
+              <a style={{color: 'inherit', textDecoration: 'inherit'}} href='mailto:support@gmail.com'>
                 Support
               </a>
             </NavLink>
@@ -113,7 +113,7 @@ class Home extends Component {
             </NavLink>
           </NavLinks>
         </NavContent>
-      </Nav>      
+      </Nav>
     }
 
     const introSection = () => {
@@ -131,8 +131,8 @@ class Home extends Component {
             </Link>
           </Button>
           <Button marginRight onClick={() => this.redirect('/settings')}
-            color={color.orange} 
-            colorHover={color.orange10l}>Demo</Button>
+            color={color.blue}
+            colorHover={color.blue10l}>Demo</Button>
           <Button onClick={() => this.redirect('/lobby')}
             color={color.green}
             colorHover={color.green10l}>Classroom Spelling Bee</Button>
@@ -169,7 +169,7 @@ class Home extends Component {
         <ScreenshotContainer>
           <Screenshot src={require(`../../Library/Images/categories.png`)} />
         </ScreenshotContainer>
-      </Container>      
+      </Container>
     }
 
     const spellingBeeSection = () => {
@@ -182,12 +182,12 @@ class Home extends Component {
         </ScreenshotContainer>
         <TextContainer>
           <Text>Use <GoldSpan><b>WORDCRAFT</b></GoldSpan>'s spelling bee mode to quickly set up a fast-paced vocabulary game for your class.  Any number of players can join on their own computers.<br /><br />Click <BlackSpan onMouseOver={this.showHelpText.bind(this)} onMouseLeave={this.hideHelpText.bind(this)}><b>here</b></BlackSpan> for a full tutorial on in-class games.</Text>
-          <Button onClick={() => this.redirect('/lobby')} 
-            color={color.green} 
+          <Button onClick={() => this.redirect('/lobby')}
+            color={color.green}
             colorHover={color.green10l}
             style={{float: 'left'}}>Play Spelling Bee!</Button>
         </TextContainer>
-      </Container>   
+      </Container>
     }
     const bringToYourClassroomForm = () => {
       return <Container>
@@ -270,7 +270,7 @@ const Header = styled.h1`
   font-size: 2.75em;
   letter-spacing: 2px;
   margin-bottom: 0px;
-  line-height: 40px;
+  line-height: 50px;
   padding-bottom: 10px;
   @media (max-width: 1100px) {
     font-size: 2em;
