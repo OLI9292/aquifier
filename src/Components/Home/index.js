@@ -32,13 +32,17 @@ class Home extends Component {
   }
 
   checkWindowSize() {
-    const isSmallScreen = window.innerWidth <= 1100 ? true : false
-    this.setState ({ isSmallScreen: isSmallScreen });
+    const isSmallScreen = window.innerWidth <= 1100
+    this.setState({ isSmallScreen });
   }
 
   componentDidMount() {
     this.checkWindowSize();
-    window.addEventListener("resize", this.checkWindowSize.bind(this));
+    window.addEventListener('resize', this.checkWindowSize.bind(this));
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.checkWindowSize.bind(this));
   }
 
   removeMobilePopup() {
