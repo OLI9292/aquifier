@@ -12,6 +12,7 @@ import OnCorrectImage from '../OnCorrectImage/index';
 import SpellQuestion from '../Question/spell';
 import Word from '../../Models/Word';
 import Timer from '../Timer/index';
+import User from '../../Models/User';
 
 import { toArr } from '../../Library/helpers';
 import { color } from '../../Library/Styles/index';
@@ -38,7 +39,8 @@ class Game extends Component {
       score: 0,
       isSinglePlayer: isSinglePlayer,
       words: [],
-      wordOrder: []
+      wordOrder: [],
+      stats: []
     }
   }
 
@@ -99,8 +101,10 @@ class Game extends Component {
     }
   }
 
-  incrementScore() {
-    this.setState({ score: this.state.score + 1 });
+  record(correct) {
+    const difficulty = {'Beginner': 4, 'Intermediate': 7, 'Advanced': 10 }[this.state.level];
+    const data = { word: this.state.currentWord.value, correct: correct, difficulty: difficulty };
+    this.setState({ stats: _.union(this.state.stats, [data]), score: correct ? this.state.score + 1 : this.state.score });
   }
 
   runQuestionInterlude = async () =>  {
@@ -125,6 +129,11 @@ class Game extends Component {
   }
 
   gameOver() {
+    const stats = this.state.stats;
+    const userId = localStorage.getItem('userId');
+    if (!_.isNull(userId) && !_.isEmpty(stats)) {
+      User.saveStats(userId, stats);
+    }
     this.setState({ gameOver: true });
   }
 
@@ -158,7 +167,7 @@ class Game extends Component {
           level={this.state.level}
           nextQuestion={this.runQuestionInterlude.bind(this)}
           isDisplayingImage={this.state.isQuestionInterlude}
-          incrementScore={this.incrementScore.bind(this)}
+          record={this.record.bind(this)}
           roots={this.state.roots}
           word={this.state.currentWord} />
       } else {
@@ -166,7 +175,7 @@ class Game extends Component {
           level={this.state.level}
           nextQuestion={this.runQuestionInterlude.bind(this)}
           isDisplayingImage={this.state.isQuestionInterlude}
-          incrementScore={this.incrementScore.bind(this)}
+          record={this.record.bind(this)}
           roots={this.state.roots}
           word={this.state.currentWord} />          
       }
@@ -250,6 +259,7 @@ const Text = styled.h4`
 `
 
 // Directions components
+
 const Directions = styled.div`
   display: ${props => props.display ? 'normal' : 'none'};
   text-align: left;

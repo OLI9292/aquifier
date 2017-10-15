@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router';
 import styled from 'styled-components';
+import _ from 'underscore';
 
 import ActionButton from '../Buttons/action';
 import MobilePopup from '../MobilePopup/index';
@@ -23,14 +24,15 @@ class Home extends Component {
     super(props);
     
     const isMobile = mobilecheck();
-    
+    const userId = localStorage.getItem('userId');
+
     this.state = {
       displayMobilePopup: false,
       displayLogin: false,
       redirect: null,
       isMobile: isMobile,
       iosIdx: 0,
-      loggedIn: true
+      loggedIn: !_.isNull(userId)
     };
   }
 
@@ -55,7 +57,8 @@ class Home extends Component {
   }
 
   exitLogin() {
-    this.setState({ displayLogin: false, displayEmailLogin: false });
+    const userId = localStorage.getItem('userId');
+    this.setState({ displayLogin: false, displayEmailLogin: false, loggedIn: !_.isNull(userId) });
   }
 
   displayEmailLogin() {
@@ -68,6 +71,7 @@ class Home extends Component {
 
   handleLoginLogout() {
     if (this.state.loggedIn) {
+      localStorage.clear('userId');
       this.setState({ loggedIn: false });
     } else {
       this.setState({ displayLogin: true });

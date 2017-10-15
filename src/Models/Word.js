@@ -1,6 +1,30 @@
 import _ from 'underscore';
+import axios from 'axios';
 
-const Word = (val, data) => {
+import CONFIG from '../Config/main';
+
+const href = `${CONFIG.WORDS_API}`
+
+const fetch = async (query) => {
+  try {
+    if (query) {
+
+    } else {
+      return await axios.get(`${href}/words`);
+    }
+  } catch (e) {
+    return e.response.data;
+  }
+}
+
+const Word = {
+  fetch: fetch
+}
+
+/*const Word = async (val, data) => {
+
+
+
   const roots = data['components'].filter((c) => c.type === 'root');
   const categories = _.has(data, 'categories') ? data['categories'].split(',') : [];
   const components = data['components'];
@@ -13,40 +37,6 @@ const Word = (val, data) => {
   }
 
   return obj;
-}
-
-const val = 'cephalapod';
-const data = {
-  components: [
-    {
-      value: 'ceph',
-      type: 'root'
-    },
-    {
-      value: 'ala',
-      type: 'unknown'
-    },
-    {
-      value: 'pod',
-      type: 'root'
-    }
-  ],
-  definition: [
-    {
-      value: 'has a head',
-      isRoot: true
-    },
-    {
-      value: ' and ',
-      isRoot: false
-    },
-    {
-      value: 'feet',
-      isRoot: true
-    }
-  ]
-};
-
-const seed = Word(val, data);
+}*/
 
 export default Word;

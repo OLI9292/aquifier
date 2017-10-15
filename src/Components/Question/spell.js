@@ -78,7 +78,7 @@ class SpellQuestion extends Component {
     const answerComplete = _.isEmpty(this.state.components.filter(this.isIncorrect));
     if (answerComplete && !this.state.answerComplete) {
       this.setState({ answerComplete: true, cursor: -1 }, () => this.props.nextQuestion());
-      this.props.incrementScore();
+      this.props.record(true);
     }
   }
 

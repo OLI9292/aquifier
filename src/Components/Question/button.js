@@ -35,9 +35,7 @@ class ButtonQuestion extends Component {
 
   checkComplete() {
     if (_.contains(_.pluck(this.state.components, 'display'), false)) { return };
-    if (this.state.correct) {
-      this.props.incrementScore();
-    }
+    this.props.record(this.state.correct);
     this.props.nextQuestion();
   }
 

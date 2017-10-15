@@ -57,7 +57,8 @@ class EmailLogin extends Component {
         firstName: this.state.firstName,
         lastName: this.state.lastName,
         email: this.state.createAccountEmail,
-        password: this.state.createAccountPw
+        password: this.state.createAccountPw,
+        signUpMethod: 'email'
       }
 
       const result = await User.createAccount(data);
@@ -65,6 +66,8 @@ class EmailLogin extends Component {
       if (_.has(result, 'error')) {
         this.setState({ isError: true, message: result.error });
       } else {
+        const userId = result.data._id;
+        localStorage.setItem('userId', userId);
         this.setState({ isError: false, message: 'Account created' });
         await sleep(1000);
         this.props.exit();
@@ -85,12 +88,15 @@ class EmailLogin extends Component {
 
       const result = await User.login(data);
 
-      if (_.has(result, 'error')) {
-        this.setState({ isError: true, message: result.error });
-      } else {
+      if (_.has(result.data, 'success')) {
+        const userId = result.data.user._id;
+        localStorage.setItem('userId', userId);
         this.setState({ isError: false, message: 'Logged in' });
         await sleep(1000);
         this.props.exit();
+      } else {
+        const message = _.has(result, 'error') ? result.error : 'Server Error'
+        this.setState({ isError: true, message: message });
       }
     } else {
       this.setState({ isError: true });

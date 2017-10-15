@@ -79,7 +79,7 @@ const OuterFrame = styled.div`
   height: 100%;
   width: 100%;
   min-width: 600px;
-  background-color: ${color.lightestGray};
+  background-color: ${color.blue};
   display: block;
   overflow: auto;
 `

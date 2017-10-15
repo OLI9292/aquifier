@@ -33,3 +33,11 @@ export const validateEmail = (email) => {
   const re = /\S+@\S+\.\S+/;
   return re.test(email);
 }
+
+export const capitalizeOne = (str) => {
+  return str.charAt(0).toUpperCase().concat(str.slice(1).toLowerCase());
+}
+
+export const concat = (x, y) => x.concat(y)
+
+export const flatMap = (f, xs) => xs.map(f).reduce(concat, [])
