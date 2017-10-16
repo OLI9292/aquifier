@@ -87,7 +87,7 @@ class Home extends Component {
       if (this.state.displayEmailLogin) {
         return <EmailLogin exit={this.exitLogin.bind(this)}/>
       } else if (this.state.displayLogin) {
-        return <Login displayEmailLogin={this.displayEmailLogin.bind(this)} exitLogin={this.exitLogin.bind(this)} />
+        return <Login displayEmailLogin={this.displayEmailLogin.bind(this)} exit={this.exitLogin.bind(this)} />
       }
     }
 

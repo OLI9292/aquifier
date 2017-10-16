@@ -44,8 +44,10 @@ class Profile extends Component {
 
   loadUser = async () => {
     const id = localStorage.getItem('userId');
-    let result = await User.fetch(id);
 
+    const query = { type: 'id', value: id };
+    let result = await User.fetch(query);
+    console.log(result)
     if (_.has(result.data, 'user')) {
       const user = result.data.user;
       const wordExperience = user.words.map((obj) => { obj.definition = ''; return obj });

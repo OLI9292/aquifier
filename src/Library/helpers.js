@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 export const sleep = (ms) => {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -41,3 +43,13 @@ export const capitalizeOne = (str) => {
 export const concat = (x, y) => x.concat(y)
 
 export const flatMap = (f, xs) => xs.map(f).reduce(concat, [])
+
+// 1 level deep
+export const get = (obj, attr) => {
+  _.keys(obj).forEach((k) => {
+    if (_.has(_.keys(obj[k])), attr) {
+      return obj[k][attr];
+    }
+  })
+  return undefined;
+}
