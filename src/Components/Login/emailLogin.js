@@ -56,7 +56,7 @@ class EmailLogin extends Component {
       const data = {
         firstName: this.state.firstName,
         lastName: this.state.lastName,
-        email: this.state.createAccountEmail,
+        email: this.state.createAccountEmail.toLowerCase(),
         password: this.state.createAccountPw,
         signUpMethod: 'email'
       }
