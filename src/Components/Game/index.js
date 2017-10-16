@@ -144,6 +144,7 @@ class Game extends Component {
     const stats = this.state.stats;
     const userId = localStorage.getItem('userId');
     if (!_.isNull(userId) && !_.isEmpty(stats)) {
+      
       User.saveStats(userId, stats);
     }
     this.setState({ gameOver: true });

@@ -4,9 +4,11 @@ import CONFIG from '../Config/main';
 
 const href = `${CONFIG.ACCOUNTS_API}/user`
 
-const fetch = async (id) => {
+const fetch = async (query) => {
   try {
-    return await axios.get(`${href}/${id}`);
+    return query.type === 'id'
+      ? await axios.get(`${href}/${query.value}`)
+      : await axios.get(`${href}${query.value}`);
   } catch (e) {
     return e.response.data;
   }
@@ -30,7 +32,13 @@ const login = async (data) => {
 
 const saveStats = (id, stats) => {
   try {
-    axios.post(`${href}login`, stats);
+    const params = {
+      id: id,
+      stats: stats,
+      platform: 'web'
+    }
+    console.log(params)
+    axios.post(href, stats);
   } catch (e) {
     console.log(e)
   }
@@ -39,7 +47,8 @@ const saveStats = (id, stats) => {
 const User = {
   createAccount: createAccount,
   login: login,
-  fetch
+  fetch: fetch,
+  saveStats: saveStats
 }
 
 export default User;

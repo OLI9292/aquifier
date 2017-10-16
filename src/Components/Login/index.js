@@ -5,23 +5,95 @@ import _ from 'underscore';
 
 import Buttons from '../Buttons/default';
 import { color } from '../../Library/Styles/index';
+import { sleep, get } from '../../Library/helpers';
+import User from '../../Models/User';
 
 class Login extends Component {
   constructor(props) {
     super(props);
-
-    this.state = {
-    }
   }
 
   handleFacebookLogin = async () => {
     var provider = new firebase.auth.FacebookAuthProvider();
-    const user = await firebase.auth().signInWithPopup(provider);
+    try {
+      const firebaseResult = await firebase.auth().signInWithPopup(provider);
+      
+      if (_.has(firebaseResult, 'additionalUserInfo')) {
+        const facebookId = firebaseResult.additionalUserInfo.profile.id;
+        const query = { type: 'query', value: `?facebookId=${facebookId}` }
+        const result = await User.fetch(query);
+        
+        if (_.has(result.data, 'user')) {
+          const userId = result.data.user._id;
+          localStorage.setItem('userId', userId);
+          this.props.exit();
+        } else {
+          const profile = firebaseResult.additionalUserInfo.profile;
+          const email = profile.email;
+          const firstName = profile.first_name;
+          const lastName = profile.last_name;
+
+          const data = {
+            firstName: firstName,
+            lastName: lastName,
+            facebookId: facebookId,
+            email: email,
+            signUpMethod: 'facebook'
+          }
+
+          const result = await User.createAccount(data);
+          
+          if (_.has(result.data, 'user')) {
+            const userId = result.data.user._id;
+            localStorage.setItem('userId', userId);
+            this.props.exit();
+          } else {
+            this.setState({ isError: true, message: _.has(result.data, 'error') ? result.data.error : 'Server Error' });
+          }
+        }
+      }
+    } catch (e) {
+      console.log(`Error handling facebook login -> ${e}`)
+    }
   }
 
   handleGoogleLogin = async () => {
     var provider = new firebase.auth.GoogleAuthProvider();
-    const user = await firebase.auth().signInWithPopup(provider);
+    try {
+      const firebaseResult = await firebase.auth().signInWithPopup(provider);
+      const email = firebaseResult.user.email;
+      const query = { type: 'query', value: `?email=${email}` }
+      const result = await User.fetch(query);
+
+      if (_.has(result.data, 'user')) {
+        const userId = result.data.user._id;
+        localStorage.setItem('userId', userId);
+        this.props.exit();
+      } else {        
+        const email = firebaseResult.additionalUserInfo.profile.email
+        const firstName = firebaseResult.additionalUserInfo.profile.given_name;
+        const lastName = firebaseResult.additionalUserInfo.profile.family_name;
+
+        const data = {
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          signUpMethod: 'google'
+        }
+
+        const result = await User.createAccount(data);
+
+        if (_.has(result.data, 'user')) {
+          const userId = result.data.user._id;
+          localStorage.setItem('userId', userId);
+          this.props.exit();
+        } else {
+          this.setState({ isError: true, message: _.has(result.data, 'error') ? result.data.error : 'Server Error' });
+        }
+      }
+    } catch (e) {
+      console.log(`Error handling google login -> ${e}`)
+    }
   }
 
   render() {
@@ -31,7 +103,7 @@ class Login extends Component {
         <Button color={color.facebookBlue} onClick={() => this.handleFacebookLogin()}>Continue with Facebook</Button>
         <Button color={color.googleRed} onClick={() => this.handleGoogleLogin()}>Continue with Google</Button>
         <Button color={color.gray} onClick={() => this.props.displayEmailLogin()}>Continue with Email</Button>
-        <ContinueButton onClick={() => this.props.exitLogin()}>Continue without saving progress</ContinueButton>
+        <ContinueButton onClick={() => this.props.exit()}>Continue without saving progress</ContinueButton>
       </Layout>
     );
   }
