@@ -1,6 +1,7 @@
 import AWS from 'aws-sdk';
+import CONFIG from '../Config/main';
 
-const identityPoolId = { IdentityPoolId: 'us-east-1:63b7c5c5-dd01-4ccd-9183-dc1284e1eb32' };
+const identityPoolId = { IdentityPoolId: CONFIG.AWS_IDENTITY_POOL_ID };
 const region = 'us-east-1';
 const imagesBucket = { Bucket: 'wordcraft-images' };
 

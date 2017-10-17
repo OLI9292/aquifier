@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router';
 import styled from 'styled-components';
+import _ from 'underscore';
 
 import ActionButton from '../Buttons/action';
 import MobilePopup from '../MobilePopup/index';
@@ -8,6 +9,8 @@ import Buttons from '../Buttons/default';
 import DaisyChainAnimation from '../DaisyChainAnimation/index';
 import InfoForm from '../InfoForm/index';
 import HelpText from '../HelpText/index';
+import Login from '../Login/index';
+import EmailLogin from '../Login/emailLogin';
 import { color } from '../../Library/Styles/index';
 import logo from '../../Library/Images/logo.png';
 import appleLogo from '../../Library/Images/apple-logo.png';
@@ -21,13 +24,17 @@ class Home extends Component {
     super(props);
 
     const isMobile = mobilecheck();
+    const userId = localStorage.getItem('userId');
 
     this.state = {
       displayMobilePopup: false,
+      displayLogin: false,
       redirect: null,
       isMobile: isMobile,
       isSmallScreen: false,
-      iosIdx: 0
+      iosIdx: 0,
+      loggedIn: !_.isNull(userId),
+      isTeacher: false
     };
   }
 
@@ -39,6 +46,9 @@ class Home extends Component {
   componentDidMount() {
     this.checkWindowSize();
     window.addEventListener('resize', this.checkWindowSize.bind(this));
+    const userId = localStorage.getItem('userId');
+    const classId = localStorage.getItem('classId');
+    this.setState({ userId: userId, isTeacher: !_.isNull(classId) });
   }
 
   componentWillUnmount() {
@@ -65,9 +75,46 @@ class Home extends Component {
     this.setState({ showHelpText: false });
   }
 
+  exitLogin() {
+    const userId = localStorage.getItem('userId');
+    const classId = localStorage.getItem('classId');
+    this.setState({
+      displayLogin: false,
+      displayEmailLogin: false,
+      loggedIn: !_.isNull(userId),
+      userId: userId,
+      isTeacher: !_.isNull(classId)
+    });
+  }
+
+  displayEmailLogin() {
+    this.setState({ displayEmailLogin: true });
+  }
+
+  handleBackgroundClick() {
+    this.setState({ displayLogin: false, displayEmailLogin: false });
+  }
+
+  handleLoginLogout() {
+    if (this.state.loggedIn) {
+      localStorage.clear('userId');
+      this.setState({ loggedIn: false });
+    } else {
+      this.setState({ displayLogin: true });
+    }
+  }
+
   render() {
     if (this.state.redirect) {
       return <Redirect push to={this.state.redirect} />;
+    }
+
+    const login = () => {
+      if (this.state.displayEmailLogin) {
+        return <EmailLogin exit={this.exitLogin.bind(this)}/>
+      } else if (this.state.displayLogin) {
+        return <Login displayEmailLogin={this.displayEmailLogin.bind(this)} exit={this.exitLogin.bind(this)} />
+      }
     }
 
     const navigation = () => {
@@ -77,12 +124,20 @@ class Home extends Component {
             WORDCRAFT
           </Header>
           <NavLinks style={{right: 0}}>
-            <NavLink onClick={() => window.scrollTo({ top: 2875, left: 0, behavior: 'smooth'})}
+            <NavLink display onClick={() => window.scrollTo({ top: 2875, left: 0, behavior: 'smooth'})}
               color={color.green}>For Schools</NavLink>
-            <NavLink color={color.red}>
-              <a style={{color: 'inherit', textDecoration: 'inherit'}} href='mailto:support@playwordcraft.com'>
+            <NavLink display color={color.red}>
+              <a style={{color: 'inherit', textDecoration: 'inherit'}} href='mailto:support@gmail.com'>
                 Support
               </a>
+            </NavLink>
+            <NavLink onClick={() => this.redirect(this.state.isTeacher ? '/dashboard' : `/profile/${this.state.userId}`)}
+              display={this.state.loggedIn}
+              color={color.orange}>
+              {this.state.isTeacher ? 'My Class' : 'My Progress'}
+            </NavLink>
+            <NavLink display color={color.blue} onClick={() => this.handleLoginLogout()}>
+              {this.state.loggedIn ? 'Logout' : 'Login'}
             </NavLink>
           </NavLinks>
         </NavContent>
@@ -132,7 +187,6 @@ class Home extends Component {
         </TextContainer>
       </Container>
     }
-
     const masterATopicSection = () => {
       return <Container>
         <Header padLeft color={color.red}>
@@ -163,7 +217,6 @@ class Home extends Component {
         </TextContainer>
       </Container>
     }
-
     const bringToYourClassroomForm = () => {
       return <Container>
         <Header padLeft color={color.green}>
@@ -172,11 +225,12 @@ class Home extends Component {
         <InfoForm />
       </Container>
     }
-
     return (
       <OuterContainer>
         {this.state.showHelpText && <HelpTextContainer><HelpText type={'classroomTutorial'} /></HelpTextContainer>}
         {this.state.displayMobilePopup && <MobilePopup removeSelf={this.removeMobilePopup.bind(this)} />}
+        {login()}
+        <DarkBackground display={this.state.displayLogin} onClick={() => this.handleBackgroundClick()} />
         {navigation()}
         <InnerContainer>
           {introSection()}
@@ -190,7 +244,20 @@ class Home extends Component {
     );
   }
 }
-
+const DarkBackground = styled.div`
+  display: ${props => props.display ? '' : 'none'};
+  z-index: 5;
+  background-color: rgb(0, 0, 0);
+  opacity: 0.7;
+  -moz-opacity: 0.7;
+  filter: alpha(opacity=70);
+  height: 100%;
+  width: 100%;
+  background-repeat: repeat;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+`
 const HelpTextContainer = styled.div`
   position: fixed;
   left: 30%;
@@ -198,36 +265,30 @@ const HelpTextContainer = styled.div`
   line-height: 35px;
   top: 40%;
   width: 600px;
-
   @media (max-width: 1100px) {
     background-color: white;
     width: 65%;
     margin-left: 0;
   }
 `
-
 const OuterContainer = styled.div`
   width: 100%;
   background-color: ${color.blue};
   padding-bottom: 80px;
-
   @media (max-width: 1100px) {
     background-color: white;
     padding-bottom: 40px;
   }
 `
-
 const InnerContainer = styled.div`
   width: 1100px;
   margin: auto;
-
   @media (max-width: 1100px) {
     text-align: center;
     width: 90%;
     min-width: 300px;
   }
 `
-
 const Header = styled.h1`
   color: ${props => props.color};
   background-color: ${props => props.backgroundColor || 'transparent'};
@@ -238,63 +299,51 @@ const Header = styled.h1`
   margin-bottom: 0px;
   line-height: 50px;
   padding-bottom: 10px;
-
   @media (max-width: 1100px) {
     font-size: 2em;
   }
-
   @media (max-width: 450px) {
     font-size: 1.25em;
   }
 `
-
 const Nav = styled.div`
   width: 100%;
   background-color: white;
   padding-bottom: 10px;
 `
-
 const NavContent = styled.div`
   width: 1100px;
   margin: auto;
-
   @media (max-width: 1100px) {
     width: 90%;
     min-width: 300px;
   }
 `
-
 const NavLinks = styled.div`
   display: inline-block;
   float: right;
   padding-top: 25px;
   line-height: 10px;
-
   @media (max-width: 1100px) {
     padding-top: 15px;
   }
 `
-
 const NavLink = styled.p`
   color: ${props => props.color};
-  display: inline-block;
+  display: ${props => props.display ? 'inline-block' : 'none'};
   font-size: 1.5em;
   margin-left: 30px;
   cursor: pointer;
   text-align: right;
-
   @media (max-width: 1100px) {
     font-size: 1em;
     margin-left: 15px;
   }
-
   @media (max-width: 450px) {
     font-size: 0.9em;
   }
 `
-
 // Top Section
-
 const TopLeftContainer = styled.div`
   vertical-align: top;
   margin-top: 40px;
@@ -303,7 +352,6 @@ const TopLeftContainer = styled.div`
   background-color: white;
   width: 55%;
   display: inline-block;
-
   @media (max-width: 1100px) {
     margin-top: 20px;
     display: block;
@@ -311,23 +359,24 @@ const TopLeftContainer = styled.div`
     height: fit-content;
   }
 `
+<<<<<<< HEAD
 
 const DaisyChainMobileContainer  = styled.div`
   }
 `
 
+=======
+>>>>>>> master
 const DaisyChainContainer = styled.div`
   margin-left: 5%;
   margin-top: 40px;
   width: 40%;
   height: 450px;
   display: inline-block;
-
   @media (max-width: 1100px) {
     display: none;
   }
 `
-
 const Subtitle = styled.p`
   font-size: 2em;
   margin-left: 5%;
@@ -335,43 +384,36 @@ const Subtitle = styled.p`
   letter-spacing: 1px;
   color: ${color.darkGray};
   line-height: 50px;
-
   @media (max-width: 1100px) {
     font-size: 1.75em;
     line-height: 40px;
     margin-bottom: 0px;
   }
-
   @media (max-width: 450px) {
     font-size: 1.25em;
     line-height: 30px;
   }
 `
-
 const Explanation = styled.p`
   color: ${color.darkGray};
   font-size: 1.25em;
   width: 90%;
   margin-left: 5%;
   line-height: 35px;
-
   @media (max-width: 1100px) {
     font-size: 1.2em;
     line-height: 30px;
   }
-
   @media (max-width: 450px) {
     font-size: 0.9em;
     line-height: 25px;
   }
 `
-
 const ButtonsContainer = styled.div`
   margin-top: 20px;
   margin-left: 5%;
   margin-bottom: 20px;
 `
-
 const Button = Buttons.small.extend`
   vertical-align: top;
   margin-right: ${props => props.marginRight ? '10px' : '0px'};
@@ -382,20 +424,17 @@ const Button = Buttons.small.extend`
     background-color: ${props => props.colorHover};
   }
   margin-top: 10px;
-
   @media (max-width: 1100px) {
     height: 50px;
     width: 200px;
     font-size: 1.2em;
   }
-
   @media (max-width: 450px) {
     font-size: 0.9em;
     height: 45px;
     width: 175px;
   }
 `
-
 const LinkContent = styled.div`
   width: 90%;
   height: 90%;
@@ -403,35 +442,28 @@ const LinkContent = styled.div`
   justify-content: center;
   align-items: center;
 `
-
 const Link = styled.a`
   color: inherit;
   width: 100%;
   height: 100%;
   text-decoration: none;
 `
-
 const LinkText = styled.p`
   display: table-cell;
   vertical-align: middle;
 `
-
 const BlackSpan = styled.span`
   color: black;
 `
-
 const GoldSpan = styled.span`
   color: ${color.yellow};
 `
-
 const AppleLogo = styled.img`
   height: 75%;
   margin-right: 5%;
   width: auto;
 `
-
 // Other Section Components
-
 const Container = styled.div`
   width: 100%;
   margin: auto;
@@ -440,18 +472,15 @@ const Container = styled.div`
   border-radius: 10px;
   height: 700px;
   background-color: white;
-
   @media (max-width: 1100px) {
     height: fit-content;
     margin-top: 15px;
   }
-
   @media (max-width: 450px) {
     margin-top: 10px;
     height: fit-content;
   }
 `
-
 const ScreenshotContainer = styled.div`
   display: inline-block;
   width: 40%;
@@ -459,7 +488,6 @@ const ScreenshotContainer = styled.div`
   text-align: center;
   margin: 0% 5% 0% 5%;
   margin-top: 35px;
-
   @media (max-width: 1100px) {
     width: 50%;
     max-width: 300px;
@@ -467,44 +495,36 @@ const ScreenshotContainer = styled.div`
     margin: auto;
   }
 `
-
 const Screenshot = styled.img`
   height: 100%;
   width: auto;
-
   @media (max-width: 1100px) {
     height: auto;
     width: 100%;
   }
 `
-
 const TextContainer = styled.div`
   display: inline-block;
   width: 35%;
   margin-left: 7.5%;
   vertical-align: top;
   text-align: center;
-
   @media (max-width: 1100px) {
     width: 90%;
   }
 `
-
 const Text = styled.p`
   line-height: 40px;
   text-align: left;
   font-size: 1.5em;
   color: ${color.darkGray};
-
   @media (max-width: 1100px) {
     line-height: 30px;
     text-align: left !important;
     font-size: 1.2em;
   }
-
   @media (max-width: 450px) {
     font-size: 0.9em;
   }
 `
-
 export default Home;
