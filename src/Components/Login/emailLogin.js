@@ -69,7 +69,7 @@ class EmailLogin extends Component {
         const userId = result.data._id;
         localStorage.setItem('userId', userId);
         this.setState({ isError: false, message: 'Account created' });
-        await sleep(1000);
+        await sleep(500);
         this.props.exit();
       }
     } else {
@@ -91,8 +91,12 @@ class EmailLogin extends Component {
       if (_.has(result.data, 'success')) {
         const userId = result.data.user._id;
         localStorage.setItem('userId', userId);
+        const klass = _.first(result.data.user.classes.filter((c) => c.role === 'teacher'))
+        if (!_.isUndefined(klass)) {
+          localStorage.setItem('classId', klass.id);
+        }
         this.setState({ isError: false, message: 'Logged in' });
-        await sleep(1000);
+        await sleep(500);
         this.props.exit();
       } else {
         const message = _.has(result, 'error') ? result.error : 'Server Error'

@@ -6,7 +6,7 @@ import Buttons from '../Buttons/default';
 import { color } from '../../Library/Styles/index';
 import User from '../../Models/User';
 import Word from '../../Models/Word';
-import { capitalizeOne, flatMap } from '../../Library/helpers'
+import { capitalizeOne, flatMap, sum } from '../../Library/helpers'
 
 class Profile extends Component {
   constructor(props) {
@@ -18,23 +18,23 @@ class Profile extends Component {
       stats: {
         wordsLearned: {
           name: 'words learned',
-          value: 0,
           image: 'book',
           color: color.blue
         },
         wordsMastered: {
           name: 'words mastered',
-          value: 0,
           image: 'wizard',
           color: color.yellow
         },
         wordAccuracy: {
           name: 'word accuracy',
-          value: 0,
           image: 'archer',
           color: color.red
         },
-      }
+      },
+      wordsLearned: 0,
+      wordsMastered: 0,
+      wordAccuracy: 0
     }
   }
 
@@ -43,17 +43,23 @@ class Profile extends Component {
   }
 
   loadUser = async () => {
-    const id = localStorage.getItem('userId');
-
-    const query = { type: 'id', value: id };
+    const query = { type: 'id', value: this.props.userId };
     let result = await User.fetch(query);
-    console.log(result)
+
     if (_.has(result.data, 'user')) {
       const user = result.data.user;
       const wordExperience = user.words.map((obj) => { obj.definition = ''; return obj });
+      const wordsLearned = wordExperience.length;
+      const wordsMastered = wordExperience.filter((w) => w.experience >= 7).length;
+
+      const wordAccuracy = parseInt((100 * sum(wordExperience, 'correct'))/sum(wordExperience, 'seen')) || 0;
+
       this.setState({
         name: capitalizeOne(user.firstName),
-        wordExperience: _.sortBy(user.words, 'name')
+        wordExperience: _.sortBy(user.words, 'name'),
+        wordsLearned: wordsLearned,
+        wordsMastered: wordsMastered,
+        wordAccuracy: `${wordAccuracy}%`
       }, this.loadWords)
     }
   }
@@ -97,7 +103,7 @@ class Profile extends Component {
         return <StatContainer key={k}>
           <div>
             <StatImage src={require(`../../Library/Images/${this.state.stats[k].image}.png`)} />
-            <Stat color={this.state.stats[k].color}>{this.state.stats[k].value}</Stat>
+            <Stat color={this.state.stats[k].color}>{this.state[k]}</Stat>
           </div>
           <StatDescription>{this.state.stats[k].name}</StatDescription>
         </StatContainer>
@@ -105,12 +111,9 @@ class Profile extends Component {
     }
 
     return (
-      <Layout>
+      <div>
         <ProgressSection>
-          <Topline>
-            <UserImage src={require('../../Library/Images/user.png')} />
-            <Header>{this.state.name}'s Progress</Header>
-          </Topline>
+          <Header>{this.state.name}'s Progress</Header>
           <ProgressTable>
             {wordProgress()}
           </ProgressTable>
@@ -119,13 +122,10 @@ class Profile extends Component {
           <ShareButton>Email Report</ShareButton>
           {stats()}
         </Sidebar>
-      </Layout>
+      </div>
     );
   }
 }
-
-const Layout = styled.div`
-`
 
 const ProgressSection = styled.div`
   width: 70%;
@@ -136,34 +136,19 @@ const ProgressSection = styled.div`
 
 // Header
 
-const Topline = styled.div`
-  height: 100px;
-`
-
-const UserImage = styled.img`
-  float: left;
-  height: 100%;
-  width: auto;
-  margin: 0px 25px 0px 25px;
-`
-
-const StarImage = styled.img`
-  height: 20px;
-  width: 20px;
-`
-
 const Header = styled.p`
   height: 75px;
   line-height: 75px;
   margin-left: 25px;
   font-size: 2.75em;
   vertical-align: top;
+  text-align: center;
 `
 
-// Progress Table
+// Table
 
 const ProgressTable = styled.table`
-  margin-top: 25px;
+  margin: 25px 0px 25px 0px;
   width: 100%;
   border-collapse: collapse;
 `
@@ -177,10 +162,15 @@ const WordCell = styled.td`
   width: 50%;
   text-align: center;
 `
+
 const WordValue = styled.p`
   display: block;
   height: 0%;
   line-height: 0%;
+`
+const StarImage = styled.img`
+  height: 20px;
+  width: 20px;
 `
 
 const DefinitionCell = styled.td`
