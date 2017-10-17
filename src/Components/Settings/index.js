@@ -44,6 +44,7 @@ class Settings extends Component {
       timeIdx: 0,
       levelIdx: 0,
       topicIndices: [0],
+      demoIdx: -1,
       redirect: false,
       showHelpText: false
     };
@@ -59,10 +60,10 @@ class Settings extends Component {
   handleClick(group, idx) {
     switch (group) {
       case 'time':
-        this.setState({ timeIdx: idx });
+        this.setState({ timeIdx: idx }, this.resetNonDemoSettings);
         break;
       case 'level':
-        this.setState({ levelIdx: idx });
+        this.setState({ levelIdx: idx }, this.resetNonDemoSettings);
         break;
       case 'topic':
         const indices = idx === 0
@@ -71,10 +72,31 @@ class Settings extends Component {
               ? this.state.topicIndices.filter((tIdx) => tIdx !== idx)
               : this.state.topicIndices.concat([idx]))
             .filter((idx) => idx !== 0)
-        this.setState({ topicIndices: indices });
+        this.setState({ topicIndices: indices }, this.resetNonDemoSettings);
+        break;
+      case 'demo':
+        this.setState({ demoIdx: idx }, this.turnOffNonDemoSettings);
         break;
       default:
         break;
+    }
+  }
+
+  resetNonDemoSettings() {
+    if (this.state.demoIdx > 0) {
+      let state = { demoIdx: 0 };
+      
+      if (this.state.timeIdx < 0 || this.state.timeIdx > GLOBAL.SETTINGS.TIME.length - 1) {
+        state['timeIdx'] = 0;
+      }
+      if (this.state.levelIdx < 0 || this.state.levelIdx > GLOBAL.SETTINGS.LEVEL.length - 1) {
+        state['levelIdx'] = 0;
+      }
+      if (_.isEmpty(this.state.topicIndices)) {
+        state['topicIndices'] = [0]
+      }
+
+      this.setState(state);
     }
   }
 
@@ -86,15 +108,25 @@ class Settings extends Component {
     this.setState({ showHelpText: false });
   }
 
+  turnOffNonDemoSettings() {
+    this.setState({ timeIdx: -1, levelIdx: -1, topicIndices: [] });
+  }
+
+  settings(times, levels, topics) {
+    return this.state.demoIdx > 0
+      ? `demo=${this.state.demoIdx}`
+      : `time=${times[this.state.timeIdx]}` +
+      `&level=${this.state.levelIdx}` +
+      `${this.state.topicIndices.map((idx) => `&topic=${topics[idx].slug}`).join('')}`;
+  }
+
   render() {
     const times = GLOBAL.SETTINGS.TIME;
     const levels = GLOBAL.SETTINGS.LEVEL;
     const topics = GLOBAL.SETTINGS.TOPIC;
 
     if (this.state.redirect) {
-      const settings = `time=${times[this.state.timeIdx]}` +
-        `&level=${levels[this.state.levelIdx]}` +
-        `${this.state.topicIndices.map((idx) => `&topic=${topics[idx].slug}`).join('')}`;
+      const settings = this.settings(times, levels, topics);
       const location = this.props.multiplayer ? `/game/admin/${settings}` : `/game/${settings}`;
       return <Redirect push to={location} />;
     }
@@ -123,6 +155,14 @@ class Settings extends Component {
       >{buttonContent(`${t.slug}.png`, t.displayName)}</SelectionButton>
     });
 
+    const demoButtons = _.range(1, 4).map((idx) => {
+      return <SelectionButton special
+        key={idx}
+        onClick={() => this.handleClick('demo', idx)} 
+        selected={this.state.demoIdx === idx}
+      >{idx}</SelectionButton>      
+    })
+
     return (
       <Layout>
         <Selection>
@@ -142,6 +182,11 @@ class Settings extends Component {
               <ShortCell><Text>Topic</Text></ShortCell>
               <td><QuestionMark style={{visibility: 'hidden'}} src={questionMark} /></td>
               <LongCell>{topicButtons}</LongCell>
+            </tr>
+            <tr>
+              <ShortCell><Text>Demo</Text></ShortCell>
+              <td><QuestionMark style={{visibility: 'hidden'}} src={questionMark} /></td>
+              <LongCell>{demoButtons}</LongCell>
             </tr>
           </tbody>
         </Selection>
@@ -188,7 +233,9 @@ const QuestionMark = styled.img`
 `
 
 const SelectionButton = Buttons.medium.extend`
-  background-color: ${props => props.selected ? color.red : color.lightestGray};
+  background-color: ${props => props.selected
+    ? props.special ? color.green : color.red
+    : color.lightestGray};
   color: ${props => props.selected ? 'white' : 'black'};
   margin: 0 0.5em 0.5em 0;
 `

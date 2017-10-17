@@ -37,8 +37,7 @@ const saveStats = (id, stats) => {
       stats: stats,
       platform: 'web'
     }
-    console.log(params)
-    axios.post(href, stats);
+    axios.patch(href, params);
   } catch (e) {
     console.log(e)
   }

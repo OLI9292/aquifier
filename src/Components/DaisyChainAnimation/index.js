@@ -33,7 +33,8 @@ class DaisyChainAnimation extends Component {
     this.state = {
       words: words,
       idx: 0,
-      mobile: props.mobile
+      mobile: props.mobile, 
+      timeout: null
     }
 
     console.log("daisychain mobile is", this.state.mobile);
@@ -44,12 +45,17 @@ class DaisyChainAnimation extends Component {
       .append('g')
       .attr('transform', 'translate(0,50)');
 
-    d3.interval(() => {
+    const timeout = setTimeout(() => {
       const idx = this.state.idx === this.state.words.length - 1 ? 0 : this.state.idx + 1;
       this.setState({ idx: idx }, this.update);
     }, 5000);
+    this.setState({ timeout });
 
     this.update();
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.state.timeout)
   }
 
   update() {
