@@ -60,28 +60,12 @@ class Game extends Component {
       .then(axios.spread((res1, res2) => {
         const words = res1.data.words;
         const roots = res2.data.roots;
-        this.state.isSinglePlayer ? this.setupSinglePlayer(words, roots) : this.setupMultiplayer(words, roots);
+        this.state.isSinglePlayer ? this.startSinglePlayerGame(words, roots) : this.startMultiplayerGame(words, roots);
       }))
       // TODO: - properly handle error
       .catch((err) => {
         console.log(err);
       })
-  }
-
-  setupSinglePlayer(words, roots) {
-    const wordOrder = _.shuffle(_.pluck(words.filter((w) => this.matchesCategory(w.categories, this.props.settings.topic)), 'value'));
-    this.timer.track();
-    this.setState({ words: words, roots: roots, level: this.props.settings.level, wordOrder: wordOrder }, this.nextQuestion);
-  }
-
-  setupMultiplayer(words, roots) {
-    Firebase.refs.games.child(this.props.settings.accessCode).on('value', (snapshot) => {
-      const level = snapshot.val().level;
-      const wordOrder = snapshot.val().words === '' ? [] : snapshot.val().words.split(',');
-      const lateness = this.secondsEnteredLate(snapshot.val().startTime);
-      this.timer.track(lateness);
-      this.setState({ words: words, roots: roots, level: level, wordOrder: wordOrder }, this.nextQuestion);
-    })    
   }
 
   startSinglePlayerGame(words, roots) {
