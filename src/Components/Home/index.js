@@ -32,8 +32,15 @@ class Home extends Component {
       redirect: null,
       isMobile: isMobile,
       iosIdx: 0,
-      loggedIn: !_.isNull(userId)
+      loggedIn: !_.isNull(userId),
+      isTeacher: false
     };
+  }
+
+  componentDidMount() {
+    const userId = localStorage.getItem('userId');
+    const classId = localStorage.getItem('classId');
+    this.setState({ userId: userId, isTeacher: !_.isNull(classId) })
   }
 
   removeMobilePopup() {
@@ -58,7 +65,14 @@ class Home extends Component {
 
   exitLogin() {
     const userId = localStorage.getItem('userId');
-    this.setState({ displayLogin: false, displayEmailLogin: false, loggedIn: !_.isNull(userId) });
+    const classId = localStorage.getItem('classId');
+    this.setState({
+      displayLogin: false,
+      displayEmailLogin: false,
+      loggedIn: !_.isNull(userId),
+      userId: userId,
+      isTeacher: !_.isNull(classId)
+    });
   }
 
   displayEmailLogin() {
@@ -105,8 +119,10 @@ class Home extends Component {
                 Support
               </a>
             </NavLink>
-            <NavLink display={this.state.loggedIn} color={color.orange} onClick={() => this.redirect('/profile')}>
-              My Progress
+            <NavLink onClick={() => this.redirect(this.state.isTeacher ? '/dashboard' : `/profile/${this.state.userId}`)}
+              display={this.state.loggedIn} 
+              color={color.orange}>
+              {this.state.isTeacher ? 'My Class' : 'My Progress'}
             </NavLink>
             <NavLink display color={color.blue} onClick={() => this.handleLoginLogout()}>
               {this.state.loggedIn ? 'Logout' : 'Login'}
