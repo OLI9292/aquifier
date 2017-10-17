@@ -359,14 +359,7 @@ const TopLeftContainer = styled.div`
     height: fit-content;
   }
 `
-<<<<<<< HEAD
 
-const DaisyChainMobileContainer  = styled.div`
-  }
-`
-
-=======
->>>>>>> master
 const DaisyChainContainer = styled.div`
   margin-left: 5%;
   margin-top: 40px;
