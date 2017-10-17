@@ -25,26 +25,37 @@ class Admin extends Component {
   }
 
   async componentDidMount() {
-    let words = await Firebase.fetchWords();
-    const topics = toArr(this.props.settings.topic);
-    words = _.shuffle(_.pluck(words.filter((w) => this.matchesCategory(w.categories, topics)), 'value')).join(',');
+    let data = { isDemo: !_.isUndefined(this.props.settings.demo) };
 
-    this.createMatch(words);
+    if (this.props.settings.demo) {
+      data.demo = this.props.settings.demo;
+    } else {
+      data = await Firebase.fetchWords();
+      const topics = toArr(this.props.settings.topic);
+      data.words = _.shuffle(_.pluck(data.filter((w) => this.matchesCategory(w.categories, topics)), 'value')).join(',');
+    }
+
+    this.createMatch(data);
   }
 
-  createMatch = async (words) => {
+  createMatch = async (data) => {
     Firebase.refs.games.once('value', (snapshot) => {
       const accessCodes = _.keys(snapshot.val());
       const accessCode = this.generateAccessCode(accessCodes);
 
       const game = {};
 
-      game[accessCode] = {
-        level: this.props.settings.level,
-        time: this.props.settings.time,
-        status: 0,
-        words: words
-      };
+      game[accessCode] = data.isDemo
+        ? { 
+            status: 0,
+            demo: data.demo
+          }
+        : {
+            level: this.props.settings.level,
+            time: this.props.settings.time,
+            status: 0,
+            words: data.words
+          };
 
       Firebase.refs.games.update(game, (e) => {
         if (e) {

@@ -11,6 +11,8 @@ import Home from '../Home/index';
 import InfoForm from '../InfoForm/index';
 import Join from '../Join/index';
 import Leaderboard from '../Leaderboard/index';
+import Dashboard from '../Dashboard/index';
+import Profile from '../Profile/index';
 import Lobby from '../Lobby/index';
 import Settings from '../Settings/index';
 import Waiting from '../Waiting/index';
@@ -26,6 +28,13 @@ class App extends Component {
           <Route exact path='/lobby' component={() => <Container component='lobby' />} />
           <Route exact path='/join' component={() => <Container component='join' />} />
           <Route exact path='/settings' component={() => <Container component='settings' />} />
+          <Route exact path='/profile' component={() => <Container component='profile' />} />
+
+          <Route exact path='/profile/:userId' component={({ match }) => {
+            return <Container component='profile' userId={match.params.userId} />;
+          }} />          
+
+          <Route exact path='/dashboard' component={() => <Container component='dashboard' />} />
           <Route exact path='/education' component={() => <Container component='education' />} />
           <Route exact path='/settings/multiplayer' component={() => <Container component='settings' multiplayer={true} />} />
           <Route exact path='/game/admin/:settings' component={({ match }) => {
@@ -54,6 +63,10 @@ class Container extends Component {
         case 'game': return <Game settings={this.props.settings} />
         case 'join': return <Join />
         case 'lobby': return <Lobby />
+        
+        case 'profile': return <Profile userId={this.props.userId} />
+
+        case 'dashboard': return <Dashboard />
         case 'leaderboard': return <Leaderboard settings={this.props.settings} />
         case 'settings': return <Settings multiplayer={this.props.multiplayer} />
         case 'waiting': return <Waiting settings={this.props.settings} />
@@ -76,7 +89,7 @@ const OuterFrame = styled.div`
   height: 100%;
   width: 100%;
   min-width: 600px;
-  background-color: ${color.lightestGray};
+  background-color: ${color.blue};
   display: block;
   overflow: auto;
 `

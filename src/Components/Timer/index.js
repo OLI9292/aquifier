@@ -7,7 +7,8 @@ class Timer extends Component {
     super(props);
 
     this.state = {
-      timeLeft: ''
+      timeLeft: '',
+      timeout: null
     }
   }
 
@@ -28,6 +29,10 @@ class Timer extends Component {
     return updated < 10 ? `0${updated}` : updated.toString()
   }
 
+  componentWillUnmount() {
+    clearTimeout(this.state.timeout)
+  }
+
   track(secondsLate) {
     const timeLeft = secondsLate ? this.accountForLateness(secondsLate) : this.state.timeLeft;
     const minutes = timeLeft.split(':')[0];
@@ -39,7 +44,9 @@ class Timer extends Component {
       const time = seconds === '00'
         ? `${parseInt(minutes, 10) - 1}:59`
         : `${minutes}:${this.decrementSeconds(seconds)}`
-      setTimeout(() => { this.update(time) }, 1000);
+      
+      const timeout = setTimeout(() => { this.update(time) }, 1000);
+      this.setState({ timeout });
     }
   }
 
