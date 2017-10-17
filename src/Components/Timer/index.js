@@ -46,7 +46,7 @@ class Timer extends Component {
         : `${minutes}:${this.decrementSeconds(seconds)}`
       
       const timeout = setTimeout(() => { this.update(time) }, 1000);
-      this.setState({ timeout })
+      this.setState({ timeout });
     }
   }
 
