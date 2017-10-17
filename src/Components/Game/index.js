@@ -88,10 +88,19 @@ class Game extends Component {
   }
 
   componentWillUnmount() {
+    this.saveStats();
+
     document.body.removeEventListener('keydown', this.handleKeydown, true);
+
     if (!this.state.isSinglePlayer) {
       Firebase.refs.games.child(this.props.settings.accessCode).off();
-    }
+    }    
+  }
+
+  saveStats() {
+    const userId = localStorage.getItem('userId');
+    const stats = this.state.stats;
+    if (userId && !_.isEmpty(stats)) { User.saveStats(userId, stats) };
   }
 
   secondsEnteredLate(startTime) {
@@ -138,16 +147,6 @@ class Game extends Component {
   submitScore() {
     const ref = Firebase.refs.games.child(this.props.settings.accessCode).child('players').child(this.props.settings.name);
     ref.set(this.state.score);
-  }
-
-  gameOver() {
-    const stats = this.state.stats;
-    const userId = localStorage.getItem('userId');
-    if (!_.isNull(userId) && !_.isEmpty(stats)) {
-      
-      User.saveStats(userId, stats);
-    }
-    this.setState({ gameOver: true });
   }
 
   redirect(location) {
@@ -215,7 +214,7 @@ class Game extends Component {
           <Timer
             time={this.props.settings.time}
             ref={instance => { this.timer = instance }}
-            gameOver={this.gameOver.bind(this)} />
+            gameOver={() => this.setState({ gameOver: true })} />
           <Score>{this.state.score}</Score>
         </Scoreboard>
         {
