@@ -1,20 +1,19 @@
 import * as firebase from 'firebase';
 import _ from 'underscore';
 
-import Word from '../Models/Word';
 import { guid, toArr } from '../Library/helpers';
+import CONFIG from '../Config/main';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyDHQikqQ6e3q78jI9u5Us-uayAFBuFVTgM',
-  authDomain: 'classical-spelling-bee.firebaseapp.com',
-  databaseURL: 'https://classical-spelling-bee.firebaseio.com',
-  storageBucket: 'classical-spelling-bee.appspot.com'
+  apiKey: CONFIG.FIREBASE_API_KEY,
+  authDomain: CONFIG.FIREBASE_AUTH_DOMAIN,
+  databaseURL: CONFIG.FIREBASE_DATABASE_URL,
+  storageBucket: CONFIG.FIREBASE_STORAGE_BUCKET
 };
 
 const firebaseApp = firebase.initializeApp(firebaseConfig);
 
 const refs = {
-  words: firebaseApp.database().ref().child('mobile').child('words'),
   games: firebaseApp.database().ref().child('web').child('games'),
   forms: firebaseApp.database().ref().child('web').child('forms')
 }
@@ -30,11 +29,6 @@ function validate(snapshot, name, accessCode) {
     return [false, 'Name taken.'];
   }
   return [true, snapshot];
-}
-
-function mapWords(snapshot) {
-  let wordObj = snapshot.val();
-  return _.keys(wordObj).map((val) => Word(val, wordObj[val])).filter((w) => !_.isNull(w));
 }
 
 const Firebase = {
@@ -58,10 +52,6 @@ const Firebase = {
 
   sendForm: async (inputs) => {
     return refs.forms.child(guid()).set(inputs).then(() => true).catch(() => false);
-  },
-
-  fetchWords: async () => {
-    return refs.words.once('value').then(mapWords);
   }
 }
 
