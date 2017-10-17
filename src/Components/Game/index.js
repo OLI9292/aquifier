@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { Component } from 'react';
 import { Redirect } from 'react-router';
 import queryString from 'query-string';
@@ -11,7 +12,9 @@ import ButtonQuestion from '../Question/button';
 import OnCorrectImage from '../OnCorrectImage/index';
 import SpellQuestion from '../Question/spell';
 import Word from '../../Models/Word';
+import Root from '../../Models/Root';
 import Timer from '../Timer/index';
+import User from '../../Models/User';
 
 import { toArr } from '../../Library/helpers';
 import { color } from '../../Library/Styles/index';
@@ -41,7 +44,8 @@ class Game extends Component {
       score: 0,
       isSinglePlayer: isSinglePlayer,
       words: [],
-      wordOrder: []
+      wordOrder: [],
+      stats: []
     }
   }
 
@@ -50,16 +54,34 @@ class Game extends Component {
   }
 
   async componentDidMount() {
-    const words = await Firebase.fetchWords();
-    const roots = _.uniq(_.flatten(words.map((w) => w.roots)), 'value');
-
-    if (this.state.isSinglePlayer) {
-      this.startSinglePlayerGame(words, roots);
-    } else {
-      this.startMultiplayerGame(words, roots);
-    }
-
     document.body.addEventListener('keydown', this.handleKeydown.bind(this), true);
+
+    axios.all([Word.fetch(), Root.fetch()])
+      .then(axios.spread((res1, res2) => {
+        const words = res1.data.words;
+        const roots = res2.data.roots;
+        this.state.isSinglePlayer ? this.setupSinglePlayer(words, roots) : this.setupMultiplayer(words, roots);
+      }))
+      // TODO: - properly handle error
+      .catch((err) => {
+        console.log(err);
+      })
+  }
+
+  setupSinglePlayer(words, roots) {
+    const wordOrder = _.shuffle(_.pluck(words.filter((w) => this.matchesCategory(w.categories, this.props.settings.topic)), 'value'));
+    this.timer.track();
+    this.setState({ words: words, roots: roots, level: this.props.settings.level, wordOrder: wordOrder }, this.nextQuestion);
+  }
+
+  setupMultiplayer(words, roots) {
+    Firebase.refs.games.child(this.props.settings.accessCode).on('value', (snapshot) => {
+      const level = snapshot.val().level;
+      const wordOrder = snapshot.val().words === '' ? [] : snapshot.val().words.split(',');
+      const lateness = this.secondsEnteredLate(snapshot.val().startTime);
+      this.timer.track(lateness);
+      this.setState({ words: words, roots: roots, level: level, wordOrder: wordOrder }, this.nextQuestion);
+    })    
   }
 
   startSinglePlayerGame(words, roots) {
@@ -102,10 +124,19 @@ class Game extends Component {
   }
 
   componentWillUnmount() {
+    this.saveStats();
+
     document.body.removeEventListener('keydown', this.handleKeydown, true);
+
     if (!this.state.isSinglePlayer) {
       Firebase.refs.games.child(this.props.settings.accessCode).off();
-    }
+    }    
+  }
+
+  saveStats() {
+    const userId = localStorage.getItem('userId');
+    const stats = this.state.stats;
+    if (userId && !_.isEmpty(stats)) { User.saveStats(userId, stats) };
   }
 
   secondsEnteredLate(startTime) {
@@ -128,8 +159,10 @@ class Game extends Component {
     }
   }
 
-  incrementScore() {
-    this.setState({ score: this.state.score + 1 });
+  record(correct) {
+    const difficulty = {'Beginner': 4, 'Intermediate': 7, 'Advanced': 10 }[this.state.level];
+    const data = { word: this.state.currentWord.value, correct: correct, difficulty: difficulty };
+    this.setState({ stats: _.union(this.state.stats, [data]), score: correct ? this.state.score + 1 : this.state.score });
   }
 
   runQuestionInterlude = async () =>  {
@@ -152,10 +185,6 @@ class Game extends Component {
   submitScore() {
     const ref = Firebase.refs.games.child(this.props.settings.accessCode).child('players').child(this.props.settings.name);
     ref.set(this.state.score);
-  }
-
-  gameOver() {
-    this.setState({ gameOver: true });
   }
 
   redirect(location) {
@@ -188,7 +217,7 @@ class Game extends Component {
           level={this.state.level}
           nextQuestion={this.runQuestionInterlude.bind(this)}
           isDisplayingImage={this.state.isQuestionInterlude}
-          incrementScore={this.incrementScore.bind(this)}
+          record={this.record.bind(this)}
           roots={this.state.roots}
           word={this.state.currentWord} />
       } else {
@@ -196,7 +225,7 @@ class Game extends Component {
           level={this.state.level}
           nextQuestion={this.runQuestionInterlude.bind(this)}
           isDisplayingImage={this.state.isQuestionInterlude}
-          incrementScore={this.incrementScore.bind(this)}
+          record={this.record.bind(this)}
           roots={this.state.roots}
           word={this.state.currentWord} />
       }
@@ -223,7 +252,7 @@ class Game extends Component {
           <Timer
             time={this.props.settings.time}
             ref={instance => { this.timer = instance }}
-            gameOver={this.gameOver.bind(this)} />
+            gameOver={() => this.setState({ gameOver: true })} />
           <Score>{this.state.score}</Score>
         </Scoreboard>
         {
@@ -284,6 +313,7 @@ const Text = styled.h4`
 `
 
 // Directions components
+
 const Directions = styled.div`
   display: ${props => props.display ? 'normal' : 'none'};
   text-align: left;

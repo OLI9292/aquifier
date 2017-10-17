@@ -17,5 +17,7 @@ export const color = {
   silver: '#A8A8A8',
   bronze: '#965A38',
   orange: '#FD7F38',
-  orange10l: '#FF9952'
+  orange10l: '#FF9952',
+  googleRed: '#DC4C3D',
+  facebookBlue: '#4862A3'
 };
