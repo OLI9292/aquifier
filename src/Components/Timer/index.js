@@ -39,7 +39,7 @@ class Timer extends Component {
       const time = seconds === '00'
         ? `${parseInt(minutes, 10) - 1}:59`
         : `${minutes}:${this.decrementSeconds(seconds)}`
-      setTimeout(() => { this.update(time) }, 50);
+      setTimeout(() => { this.update(time) }, 1000);
     }
   }
 
