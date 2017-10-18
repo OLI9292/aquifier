@@ -6,6 +6,7 @@ import Buttons from '../Buttons/default';
 import { color } from '../../Library/Styles/index';
 import User from '../../Models/User';
 import Word from '../../Models/Word';
+import Firebase from '../../Networking/Firebase';
 import { capitalizeOne, flatMap, sum } from '../../Library/helpers'
 
 class Profile extends Component {
@@ -65,17 +66,14 @@ class Profile extends Component {
   }
 
   loadWords = async () => {
-    const result = await Word.fetch();
-    if (_.has(result.data, 'words')) {
-      const words = result.data.words;
-      this.setState({
-        wordExperience: this.state.wordExperience.map((obj) => {
-          const idx = _.findIndex(words, (w) => w.value === obj.name);
-          if (idx) { obj.definition = _.pluck(words[idx].definition, 'value').join('') };
-          return obj;
-        })
+    const words = await Firebase.fetchWords();
+    this.setState({
+      wordExperience: this.state.wordExperience.map((obj) => {
+        const idx = _.findIndex(words, (w) => w.value === obj.name);
+        if (idx) { obj.definition = _.pluck(words[idx].definition, 'value').join('') };
+        return obj;
       })
-    }
+    })
   }
 
   render() {

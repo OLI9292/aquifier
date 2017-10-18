@@ -265,7 +265,8 @@ const SmallText = styled.p`
   visibility: ${props => props.display ? 'visible' : 'hidden'};
   color: ${color.gray};
   text-align: right;
-  padding: 10px 10px 0px 0px;
+  font-size: 1.4em;
+  padding: 15px 15px 0px 0px;
 `
 
 const Layout = styled.div`

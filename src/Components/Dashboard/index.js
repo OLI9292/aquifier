@@ -53,7 +53,7 @@ class Dashboard extends Component {
         const mastery = sum(s.words, 'experience')/10;
         const wordsLearned = s.words.length;
         const wordsMastered = s.words.filter((w) => w.experience >= 7).length;
-        const timePlayed = sum(s.words, 'timeSpent');
+        const timePlayed = Math.ceil(sum(s.words, 'timeSpent')/60);
         return {
           id: s._id,
           name: name,
@@ -68,7 +68,8 @@ class Dashboard extends Component {
   }
 
   sortStudents(attr) {
-    const students = _.sortBy(this.state.students, attr).reverse();
+    let students = _.sortBy(this.state.students, attr);
+    if (attr !== 'name') { students = students.reverse() };
     this.setState({ students })
   }
 
