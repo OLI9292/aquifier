@@ -166,6 +166,13 @@ const GameButton = Buttons.large.extend`
 
 const SmallText = styled.span`
   font-size: 0.7em;
-  opacity: 0.95;
+  @keyframes fadeIn {
+    0% {opacity: 0;}
+    75% {opacity: 0;}
+    100% {opacity: 1;}
+  }
+  animation-name: fadeIn;
+  animation-duration: 3s;
 `
+
 export default ButtonQuestion;
