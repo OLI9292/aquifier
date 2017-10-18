@@ -32,8 +32,8 @@ class EmailLogin extends Component {
       this.setState({ message: 'Last name is missing' });
     } else if (!validateEmail(this.state.createAccountEmail)) {
       this.setState({ message: 'Please enter a valid email' });
-    } else if ((this.state.createAccountPw.length < 6) || (this.state.createAccountPw.length > 12)) {
-      this.setState({ message: 'Passwords must be between 6 and 12 characters' });
+    } else if ((this.state.createAccountPw.length < 6) || (this.state.createAccountPw.length > 26)) {
+      this.setState({ message: 'Passwords must be between 6 and 26 characters' });
     } else {
       return true;
     }
