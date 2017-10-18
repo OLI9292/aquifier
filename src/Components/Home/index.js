@@ -86,6 +86,7 @@ class Home extends Component {
   handleLoginLogout() {
     if (this.state.loggedIn) {
       localStorage.clear('userId');
+      localStorage.clear('username');
       this.setState({ loggedIn: false });
     } else {
       this.setState({ displayLogin: true });

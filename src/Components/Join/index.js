@@ -2,6 +2,7 @@ import Firebase from '../../Networking/Firebase';
 import React, { Component } from 'react';
 import { Redirect } from 'react-router';
 import styled from 'styled-components';
+import _ from 'underscore';
 
 import Buttons from '../Buttons/default';
 import TextAreas from '../TextAreas/index';
@@ -13,8 +14,9 @@ class Join extends Component {
 
     this.state = {
       accessCode: '',      
-      name: '',
+      name: localStorage.getItem('username') || '',
       redirect: null,
+      isLoggedIn: !_.isNull(localStorage.getItem('userId')),
       errorMessage: 'none',
       displayError: false
     };
@@ -50,8 +52,11 @@ class Join extends Component {
         <tr>
           <ShortRow><Text>Name</Text></ShortRow>
           <LongRow>
-            <TextAreas.medium value={this.state.name} onChange={(event) => this.setState({ 'name': event.target.value })}>
-            </TextAreas.medium>
+            {
+              this.state.isLoggedIn
+                ? <Username>{this.state.name}</Username>
+                : <TextAreas.medium value={this.state.name} onChange={(event) => this.setState({ 'name': event.target.value })}></TextAreas.medium>
+            }
           </LongRow>
         </tr>
         <br />
@@ -93,8 +98,13 @@ const ShortRow = styled.td`
   width: 200px;
 `
 
+const Username = styled.p`
+  font-size: 1.5em;
+`
+
 const LongRow = styled.td`
   width: 300px;
+  vertical-align: middle;
 `
 
 const ButtonContainer = styled.div`
