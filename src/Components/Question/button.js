@@ -28,7 +28,7 @@ class ButtonQuestion extends Component {
   }
 
   reset(word) {
-    const components = word.components.map((c) => ({ value: c.value, display: c.componentType !== 'root' }) );
+    const components = word.components.map((c) => ({ value: c.value, display: c.type !== 'root' }));
     const choices = this.choicesFor(word);
     this.setState({ components: components, correct: true, choices: choices });
   }
@@ -40,7 +40,7 @@ class ButtonQuestion extends Component {
   }
 
   choicesFor(word) {
-    const correct = this.props.roots.filter((r) => _.includes(word.roots, r._id));
+    const correct = word.roots;
     const exclude = _.pluck(correct, 'value');
     const redHerrings = this.redHerrings(exclude);
     let choices = _.shuffle(correct.concat(redHerrings));
@@ -98,7 +98,7 @@ class ButtonQuestion extends Component {
           onClick={() => {this.guessed(c.value)}}>{c.value.toUpperCase()}
           <br />
           <SmallText>
-            {_.find(c.definitions, (d) => _.contains(_.pluck(this.props.word.components, 'definition'), d)) || c.definitions[0]}
+            {c.definition}
           </SmallText>
         </GameButton>
       })
