@@ -46,7 +46,9 @@ class Game extends Component {
       isSinglePlayer: isSinglePlayer,
       words: [],
       wordOrder: [],
-      stats: []
+      stats: [],
+      time: 0,
+      refreshInterval: null
     }
   }
 
@@ -56,6 +58,9 @@ class Game extends Component {
 
   async componentDidMount() {
     document.body.addEventListener('keydown', this.handleKeydown.bind(this), true);
+
+    const refreshInterval = setInterval(() => this.setState({ time: this.state.time + 1 }), 1000);
+    this.setState({ refreshInterval });
 
     axios.all([Word.fetch(), Root.fetch()])
       .then(axios.spread((res1, res2) => {
@@ -109,9 +114,10 @@ class Game extends Component {
   }
 
   componentWillUnmount() {
-    this.saveStats();
-
+    clearInterval(this.state.refreshInterval);
     document.body.removeEventListener('keydown', this.handleKeydown, true);
+
+    this.saveStats();
 
     if (!this.state.isSinglePlayer) {
       Firebase.refs.games.child(this.props.settings.accessCode).off();
@@ -146,8 +152,11 @@ class Game extends Component {
 
   record(correct) {
     const difficulty = {'Beginner': 4, 'Intermediate': 7, 'Advanced': 10 }[this.state.level];
-    const data = { word: this.state.currentWord.value, correct: correct, difficulty: difficulty };
-    this.setState({ stats: _.union(this.state.stats, [data]), score: correct ? this.state.score + 1 : this.state.score });
+    const time = Math.min(this.state.time, 10);
+    const data = { word: this.state.currentWord.value, correct: correct, difficulty: difficulty, time: time };
+    const doublePoints = time < 4;
+    const points = correct ? doublePoints ? 2 : 1 : 0;
+    this.setState({stats: _.union(this.state.stats, [data]), score: this.state.score + points });
   }
 
   runQuestionInterlude = async () =>  {
@@ -160,7 +169,7 @@ class Game extends Component {
   nextQuestion() {
     const next = this.getWord();
     const level = ['Beginner', 'Intermediate', 'Advanced'][next.level] || 'Beginner';
-    this.setState({ currentWord: next.word, isQuestionInterlude: false, level: level, questionCount: this.state.questionCount + 1 });
+    this.setState({ currentWord: next.word, isQuestionInterlude: false, level: level, questionCount: this.state.questionCount + 1, time: 0 });
   }
 
   randomItem(arr) {
