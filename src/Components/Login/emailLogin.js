@@ -68,6 +68,7 @@ class EmailLogin extends Component {
       } else {
         const userId = result.data._id;
         localStorage.setItem('userId', userId);
+        localStorage.setItem('username', `${result.data.firstName} ${result.data.lastName}`);
         this.setState({ isError: false, message: 'Account created' });
         await sleep(500);
         this.props.exit();
@@ -88,9 +89,10 @@ class EmailLogin extends Component {
 
       const result = await User.login(data);
 
-      if (_.has(result.data, 'success')) {
+      if (result.data.user) {
         const userId = result.data.user._id;
         localStorage.setItem('userId', userId);
+        localStorage.setItem('username', `${result.data.user.firstName} ${result.data.user.lastName}`);
         const klass = _.first(result.data.user.classes.filter((c) => c.role === 'teacher'))
         if (!_.isUndefined(klass)) {
           localStorage.setItem('classId', klass.id);
