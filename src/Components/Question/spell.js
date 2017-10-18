@@ -188,6 +188,12 @@ class SpellQuestion extends Component {
     this.setState({ definition: updated, rootsInDefinitionsShown: true });
   }
 
+  handleClick(idx) {
+    if (_.contains(_.range(this.state.cursorEndpoints[0], this.state.cursorEndpoints[1] + 1), idx)) {
+      this.setState({ cursor: idx });
+    }
+  }
+
   render() {
     const definition = () => {
       return this.state.definition.map((p, idx) => {
@@ -200,6 +206,7 @@ class SpellQuestion extends Component {
         const correct = c.guess && c.value === c.guess;
         return <AnswerSpace
           correct={correct}
+          onClick={() => this.handleClick(idx)}
           displayErrors={c.guess && this.state.displayErrors}
           cursorOn={this.state.cursor === idx}
           key={idx}>{c.guess ? c.guess.toUpperCase() : toUnderscore(c.value)}
@@ -240,6 +247,7 @@ const AnswerSpace = styled.p`
      }
      padding-right: 2px;
   }
+  cursor: pointer;
 `
 
 const Definition = styled.div`
