@@ -115,15 +115,15 @@ class Home extends Component {
           <NavLinks style={{right: 0}}>
             <NavLink display onClick={() => window.scrollTo({ top: 2875, left: 0, behavior: 'smooth'})}
               color={color.green}>For Schools</NavLink>
-            <NavLink display color={color.red}>
-              <a style={{color: 'inherit', textDecoration: 'inherit'}} href='mailto:support@gmail.com'>
-                Support
-              </a>
-            </NavLink>
             <NavLink onClick={() => this.redirect(this.state.isTeacher ? '/dashboard' : `/profile/${this.state.userId}`)}
               display={this.state.loggedIn} 
               color={color.orange}>
               {this.state.isTeacher ? 'My Class' : 'My Progress'}
+            </NavLink>
+            <NavLink display color={color.red}>
+              <a style={{color: 'inherit', textDecoration: 'inherit'}} href='mailto:support@gmail.com'>
+                Support
+              </a>
             </NavLink>
             <NavLink display color={color.blue} onClick={() => this.handleLoginLogout()}>
               {this.state.loggedIn ? 'Logout' : 'Login'}
