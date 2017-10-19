@@ -172,7 +172,7 @@ const SmallText = styled.span`
     100% {opacity: 1;}
   }
   animation-name: fadeIn;
-  animation-duration: 3s;
+  animation-duration: 4.5s;
 `
 
 export default ButtonQuestion;

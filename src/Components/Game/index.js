@@ -47,6 +47,7 @@ class Game extends Component {
       wordOrder: [],
       stats: [],
       time: 0,
+      isSpeedy: false,
       refreshInterval: null
     }
   }
@@ -147,9 +148,9 @@ class Game extends Component {
     const difficulty = {'Beginner': 4, 'Intermediate': 7, 'Advanced': 10 }[this.state.level];
     const time = Math.min(this.state.time, 10);
     const data = { word: this.state.currentWord.value, correct: correct, difficulty: difficulty, time: time };
-    const doublePoints = time < 4;
+    const doublePoints = time < 5;
     const points = correct ? doublePoints ? 2 : 1 : 0;
-    this.setState({stats: _.union(this.state.stats, [data]), score: this.state.score + points });
+    this.setState({stats: _.union(this.state.stats, [data]), score: this.state.score + points, isSpeedy: doublePoints });
   }
 
   runQuestionInterlude = async () =>  {
@@ -162,7 +163,14 @@ class Game extends Component {
   nextQuestion() {
     const next = this.getWord();
     const level = ['Beginner', 'Intermediate', 'Advanced'][next.level] || 'Beginner';
-    this.setState({ currentWord: next.word, isQuestionInterlude: false, level: level, questionCount: this.state.questionCount + 1, time: 0 });
+    this.setState({
+      currentWord: next.word,
+      isQuestionInterlude: false,
+      level: level,
+      questionCount: this.state.questionCount + 1,
+      time: 0,
+      isSpeedy: false
+    });
   }
 
   randomItem(arr) {
@@ -236,9 +244,19 @@ class Game extends Component {
       </Directions>
     }
 
+    const speedy = () => {
+      return <div>
+        <SpeedyImage src={require('../../Library/Images/speedy.png')} />
+        <Speedy>Speedy! +2</Speedy>
+      </div>
+    }
+
     return (
       <Layout>
-        <SmallText display={this.state.isQuestionInterlude}>Press ENTER to skip ahead</SmallText>
+        <GameInfo>
+          <SmallText display={this.state.isQuestionInterlude}>Press ENTER to skip ahead</SmallText>
+          {this.state.isSpeedy && speedy()}
+        </GameInfo>
         <Scoreboard>
           <Timer
             time={this.props.settings.time}
@@ -261,12 +279,34 @@ class Game extends Component {
   }
 }
 
+const GameInfo = styled.div`
+  width: 92.5%;
+  height: 50px;
+  display: flex;
+  justify-content: space-between;
+  margin: auto;
+`
+
+const SpeedyImage = styled.img`
+  display: inline-block;
+  height: 40px;
+  width: 40px;
+  vertical-align: middle;
+`
+
+const Speedy = styled.p`
+  font-size: 1.3em;
+  display: inline-block;
+  color: ${color.red};
+  vertical-align: middle;
+  margin-left: 5px;
+`
+
 const SmallText = styled.p`
   visibility: ${props => props.display ? 'visible' : 'hidden'};
   color: ${color.gray};
-  text-align: right;
-  font-size: 1.4em;
-  padding: 15px 15px 0px 0px;
+  display: inline-block;
+  font-size: 1.3em;
 `
 
 const Layout = styled.div`
