@@ -34,16 +34,16 @@ class Header extends Component {
       <Layout>
         <Title onClick={() => this.setState({ redirect: '/' })}>WORDCRAFT</Title>
         <Nav>
-          <Link color={color.red}>
-            <a style={{color: 'inherit', textDecoration: 'inherit'}} href='mailto:support@gmail.com'>Support</a>
-          </Link>
+          <Link color={color.green} colorHover={color.green10l} onClick={() => this.setState({ redirect: '/' })}>Home</Link>          
           {
             this.state.userId &&
-            <Link color={color.orange} onClick={() => this.handleClick()}>
+            <Link color={color.orange} colorHover={color.orange10l} onClick={() => this.handleClick()}>
               {this.state.isTeacher ? 'My Class' : 'My Progress'}
             </Link>
           }
-          <Link color={color.green} onClick={() => this.setState({ redirect: '/' })}>Home</Link>
+          <Link color={color.red} colorHover={color.red10l}>
+            <a style={{color: 'inherit', textDecoration: 'inherit'}} href='mailto:support@gmail.com'>Support</a>
+          </Link>          
         </Nav>
       </Layout>
     );
@@ -52,12 +52,9 @@ class Header extends Component {
 
 const Title = styled.h1`
   color: ${color.yellow};
-  display: inline-block;
-  margin: 5px 0px 0px 50px;
-  height: 75px;
-  line-height: 75px;
   font-size: 2.25em;
   cursor: pointer;
+  margin-top: 15px;
 `
 
 const Layout = styled.div`
@@ -65,7 +62,9 @@ const Layout = styled.div`
   position: fixed;
   height: 75px;
   width: 100%;
-  min-width: 400px;
+  min-width: 600px;
+  display: flex;
+  justify-content:space-around;
 `
 
 const Logo = styled.img`
@@ -79,22 +78,19 @@ const Logo = styled.img`
 `
 
 const Nav = styled.div`
-  height: 100%;
-  line-height: 100%;
-  margin-right: 30px;
-  display: inline-block;
-  float: right;
+  margin-top: 25px;
 `
 
 const Link = styled.a`
   color: ${props => props.color};
+  &:hover {
+    color: ${props => props.colorHover};
+  }  
   cursor: pointer;
   text-decoration: none;
-  float: right;
   font-size: 1.5em;
   font-weight: 300;
-  margin-right: 20px;
-  margin-top: 35px;
+  margin-left: 25px;
 `
 
 export default Header;
