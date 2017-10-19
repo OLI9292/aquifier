@@ -163,7 +163,7 @@ class Home extends Component {
           </Button>
           <Button marginRight onClick={() => this.redirect('/settings')}
             color={color.blue}
-            colorHover={color.blue10l}>Demo</Button>
+            colorHover={color.blue10l}>Train</Button>
           <Button onClick={() => this.redirect('/lobby')}
             color={color.green}
             colorHover={color.green10l}>Classroom Spelling Bee</Button>
