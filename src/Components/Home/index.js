@@ -164,7 +164,7 @@ class Home extends Component {
           HOW IT WORKS
         </Header>
         <ScreenshotContainer>
-          <Screenshot src={require(`../../Library/Images/example.png`)} />
+          <Screenshot src={require('../../Library/Images/example.png')} />
         </ScreenshotContainer>
         <TextContainer>
           <Text><BlackSpan><b>60% of English words</b></BlackSpan> have Greek or Latin roots.  In the fields of science and technology, that number is <BlackSpan><b>above 90%.</b></BlackSpan><br /><br />By solving fast-paced puzzles, you'll learn hundreds of roots and thousands of words.  Wordcraft is the most fun and efficient way to acquire a large vocabulary.</Text>
