@@ -34,7 +34,7 @@ class Header extends Component {
       <Layout>
         <Title onClick={() => this.setState({ redirect: '/' })}>WORDCRAFT</Title>
         <Nav>
-          <Link color={color.green} colorHover={color.green10l} onClick={() => this.setState({ redirect: '/' })}>Home</Link>          
+          <Link color={color.green} colorHover={color.green10l} onClick={() => this.setState({ redirect: '/' })}>Home</Link>
           {
             this.state.userId &&
             <Link color={color.orange} colorHover={color.orange10l} onClick={() => this.handleClick()}>
@@ -42,8 +42,8 @@ class Header extends Component {
             </Link>
           }
           <Link color={color.red} colorHover={color.red10l}>
-            <a style={{color: 'inherit', textDecoration: 'inherit'}} href='mailto:support@gmail.com'>Support</a>
-          </Link>          
+            <a style={{color: 'inherit', textDecoration: 'inherit'}} href='mailto:support@playwordraft.com'>Support</a>
+          </Link>
         </Nav>
       </Layout>
     );
@@ -85,7 +85,7 @@ const Link = styled.a`
   color: ${props => props.color};
   &:hover {
     color: ${props => props.colorHover};
-  }  
+  }
   cursor: pointer;
   text-decoration: none;
   font-size: 1.5em;

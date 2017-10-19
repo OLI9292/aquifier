@@ -31,16 +31,28 @@ class Home extends Component {
       displayLogin: false,
       redirect: null,
       isMobile: isMobile,
+      isSmallScreen: false,
       iosIdx: 0,
       loggedIn: !_.isNull(userId),
       isTeacher: false
     };
   }
 
+  checkWindowSize() {
+    const isSmallScreen = window.innerWidth <= 1100
+    this.setState({ isSmallScreen });
+  }
+
   componentDidMount() {
+    this.checkWindowSize();
+    window.addEventListener('resize', this.checkWindowSize.bind(this));
     const userId = localStorage.getItem('userId');
     const classId = localStorage.getItem('classId');
     this.setState({ userId: userId, isTeacher: !_.isNull(classId) })
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.checkWindowSize.bind(this));
   }
 
   removeMobilePopup() {
@@ -116,7 +128,7 @@ class Home extends Component {
             <NavLink display onClick={() => window.scrollTo({ top: 2875, left: 0, behavior: 'smooth'})}
               color={color.green} colorHover={color.green10l}>For Schools</NavLink>
             <NavLink onClick={() => this.redirect(this.state.isTeacher ? '/dashboard' : `/profile/${this.state.userId}`)}
-              display={this.state.loggedIn} 
+              display={this.state.loggedIn}
               color={color.orange}
               colorHover={color.orange10l}>
               {this.state.isTeacher ? 'My Class' : 'My Progress'}
@@ -139,6 +151,7 @@ class Home extends Component {
         <Subtitle>
           Master the Greek and Latin roots of English.
         </Subtitle>
+        {this.state.isSmallScreen && <DaisyChainAnimation />}
         <Explanation>
           Expand your vocabulary without memorizing long lists of words. Prepare for a test, specialize in a topic, or just learn the entire dictionary.
         </Explanation>
@@ -167,8 +180,8 @@ class Home extends Component {
           <Screenshot src={require('../../Library/Images/example.png')} />
         </ScreenshotContainer>
         <TextContainer>
-          <Text><BlackSpan><b>60% of English words</b></BlackSpan> have Greek or Latin roots.  In the fields of science and technology, that number is <BlackSpan><b>above 90%.</b></BlackSpan><br /><br />By solving fast-paced puzzles, you'll learn hundreds of roots and thousands of words.  Wordcraft is the most fun and efficient way to acquire a large vocabulary.</Text>
-          <Button style={{float: 'left'}} color={color.red} colorHover={color.red10l}>
+          <Text><BlackSpan><b>60% of English words</b></BlackSpan> have Greek or Latin roots.  In the fields of science and technology, that number is <BlackSpan><b>above 90%.</b></BlackSpan><br /><br />By solving fast-paced puzzles, you will learn hundreds of roots and thousands of words.  Wordcraft is the most fun and efficient way to acquire a large vocabulary.</Text>
+          <Button color={color.red} colorHover={color.red10l}>
             <Link href={IOSURL} target='blank'>
               <LinkContent><AppleLogo src={appleLogo} /><LinkText>Play</LinkText></LinkContent>
             </Link>
@@ -176,13 +189,14 @@ class Home extends Component {
         </TextContainer>
       </Container>
     }
+
     const masterATopicSection = () => {
       return <Container>
         <Header padLeft color={color.red}>
           MASTER A TOPIC
         </Header>
         <TextContainer>
-          <Text style={{textAlign: 'right'}}>Whether you're <BlackSpan><b>preparing for a test, studying a subject</b></BlackSpan> in school or just want to <BlackSpan><b>increase your knowledge</b></BlackSpan>, <GoldSpan><b>WORDCRAFT</b></GoldSpan> makes your studying more effective.<br /><br />Pick the <BlackSpan><b>SAT / ACT, GRE, or IELTS / TOEFL</b></BlackSpan> track to learn thousands of words from each test.<br /><br />Or learn the core vocabulary of subjects like <BlackSpan><b>math, biology, medicine, and zoology.</b></BlackSpan></Text>
+          <Text style={{textAlign: 'right'}}>Whether you are <BlackSpan><b>preparing for a test, studying a subject</b></BlackSpan> in school or just want to <BlackSpan><b>increase your knowledge</b></BlackSpan>, <GoldSpan><b>WORDCRAFT</b></GoldSpan> makes your studying more effective.<br /><br />Pick the <BlackSpan><b>SAT / ACT, GRE, or IELTS / TOEFL</b></BlackSpan> track to learn thousands of words from each test.<br /><br />Or learn the core vocabulary of subjects like <BlackSpan><b>math, biology, medicine, and zoology.</b></BlackSpan></Text>
         </TextContainer>
         <ScreenshotContainer>
           <Screenshot src={require(`../../Library/Images/categories.png`)} />
@@ -199,11 +213,11 @@ class Home extends Component {
           <Screenshot src={require(`../../Library/Images/results.png`)} />
         </ScreenshotContainer>
         <TextContainer>
-          <Text>Use <GoldSpan><b>WORDCRAFT</b></GoldSpan>'s spelling bee mode to quickly set up a fast-paced vocabulary game for your class.  Any number of players can join on their own computers.<br /><br />Click <BlackSpan onMouseOver={this.showHelpText.bind(this)} onMouseLeave={this.hideHelpText.bind(this)}><b>here</b></BlackSpan> for a full tutorial on in-class games.</Text>
+          <Text>Use <GoldSpan><b>WORDCRAFT</b></GoldSpan> spelling bee mode to quickly set up a fast-paced vocabulary game for your class.  Any number of players can join on their own computers.<br /><br />Click <BlackSpan onMouseOver={this.showHelpText.bind(this)} onMouseLeave={this.hideHelpText.bind(this)}><b>here</b></BlackSpan> for a full tutorial on in-class games.</Text>
           <Button onClick={() => this.redirect('/lobby')}
             color={color.green}
-            colorHover={color.green10l}
-            style={{float: 'left'}}>Play Spelling Bee!</Button>
+            colorHover={color.green10l}>
+            Play Spelling Bee!</Button>
         </TextContainer>
       </Container>
     }
@@ -224,9 +238,7 @@ class Home extends Component {
         {navigation()}
         <InnerContainer>
           {introSection()}
-          <DaisyChainContainer>
-            <DaisyChainAnimation />
-          </DaisyChainContainer>
+          {!this.state.isSmallScreen && <DaisyChainContainer> <DaisyChainAnimation /> </DaisyChainContainer>}
           {howItWorksSection()}
           {masterATopicSection()}
           {spellingBeeSection()}
@@ -276,6 +288,7 @@ const InnerContainer = styled.div`
   width: 1100px;
   margin: auto;
   @media (max-width: 1100px) {
+    text-align: center;
     width: 90%;
     min-width: 300px;
   }
@@ -326,17 +339,19 @@ const NavLink = styled.p`
   margin-left: 30px;
   cursor: pointer;
   text-align: right;
-  @media (max-width: 1100px) {
-    font-size: 1em;
-    margin-left: 15px;
-  }
   &:hover {
     color: ${props => props.colorHover};
-  }  
-  @media (max-width: 450px) {
+  }
+  @media (max-width: 1100px) {
+    margin-left: 15px;
+  }
+  @media (max-width: 725px) {
+    font-size: 1.2em;
+  }
+  @media (max-width: 400px) {
     font-size: 0.9em;
   }
-`
+  `
 // Top Section
 const TopLeftContainer = styled.div`
   vertical-align: top;
@@ -353,6 +368,7 @@ const TopLeftContainer = styled.div`
     height: fit-content;
   }
 `
+
 const DaisyChainContainer = styled.div`
   margin-left: 5%;
   margin-top: 40px;
@@ -373,6 +389,7 @@ const Subtitle = styled.p`
   @media (max-width: 1100px) {
     font-size: 1.75em;
     line-height: 40px;
+    margin-bottom: 0px;
   }
   @media (max-width: 450px) {
     font-size: 1.25em;
@@ -380,7 +397,7 @@ const Subtitle = styled.p`
   }
 `
 const Explanation = styled.p`
-  color: ${color.gray};
+  color: ${color.darkGray};
   font-size: 1.25em;
   width: 90%;
   margin-left: 5%;

@@ -32,7 +32,7 @@ class App extends Component {
 
           <Route exact path='/profile/:userId' component={({ match }) => {
             return <Container component='profile' userId={match.params.userId} />;
-          }} />          
+          }} />
 
           <Route exact path='/dashboard' component={() => <Container component='dashboard' />} />
           <Route exact path='/education' component={() => <Container component='education' />} />
@@ -47,7 +47,7 @@ class App extends Component {
         </Switch>
       </BrowserRouter>
     );
-  } 
+  }
 }
 
 class Container extends Component {
@@ -63,7 +63,7 @@ class Container extends Component {
         case 'game': return <Game settings={this.props.settings} />
         case 'join': return <Join />
         case 'lobby': return <Lobby />
-        
+
         case 'profile': return <Profile userId={this.props.userId} />
 
         case 'dashboard': return <Dashboard />
@@ -89,6 +89,7 @@ const OuterFrame = styled.div`
   height: 100%;
   width: 100%;
   min-width: 600px;
+  padding-bottom: 10px;
   background-color: ${color.blue};
   display: block;
   overflow: auto;
@@ -98,11 +99,11 @@ const InnerFrame = styled.div`
   width: 80%;
   max-width: 900px;
   min-width: 750px;
-  margin-top: 100px;
+  margin-top: 120px;
   margin-bottom: 2.5%;
   margin-left: auto;
   margin-right: auto;
-  background-color: white;  
+  background-color: white;
   border-radius: 10px;
 `
 
