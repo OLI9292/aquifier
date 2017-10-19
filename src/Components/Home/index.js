@@ -339,14 +339,16 @@ const NavLink = styled.p`
   margin-left: 30px;
   cursor: pointer;
   text-align: right;
-  @media (max-width: 1100px) {
-    font-size: 1em;
-    margin-left: 15px;
-  }
   &:hover {
     color: ${props => props.colorHover};
   }
-  @media (max-width: 450px) {
+  @media (max-width: 1100px) {
+    margin-left: 15px;
+  }
+  @media (max-width: 725px) {
+    font-size: 1.2em;
+  }
+  @media (max-width: 400px) {
     font-size: 0.9em;
   }
   `
