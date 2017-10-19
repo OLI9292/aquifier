@@ -33,6 +33,11 @@ class Timer extends Component {
     clearTimeout(this.state.timeout)
   }
 
+  reset(secondsLate) {
+    clearTimeout(this.state.timeout)
+    this.track(secondsLate)
+  }
+
   track(secondsLate) {
     const timeLeft = secondsLate ? this.accountForLateness(secondsLate) : this.state.timeLeft;
     const minutes = timeLeft.split(':')[0];

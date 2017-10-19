@@ -18,7 +18,10 @@ class Admin extends Component {
       accessCode: null,
       errorMessage: null,
       players: [],
-      redirect: false
+      redirect: false,
+      hasFocus: true,
+      checkFocusInterval: null,
+      startTime: null
     }
 
     this.startMatch = this.startMatch.bind(this);
@@ -36,6 +39,26 @@ class Admin extends Component {
     }
 
     this.createMatch(data);
+
+    const checkFocusInterval = setInterval(() => this.checkFocus(), 1000);
+    this.setState({ checkFocusInterval });
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.state.checkFocusInterval);
+  }
+
+  checkFocus() {
+    if (document.hasFocus() && !this.state.hasFocus && this.state.startTime) {
+      this.setState({ hasFocus: true }, this.resetTimer);
+    } else if (!document.hasFocus() && this.state.hasFocus) {
+      this.setState({ hasFocus: false });
+    }
+  }
+
+  resetTimer() {
+    const secondsOff = Math.floor(((new Date()).getTime() - this.state.startTime) / 1000);
+    this.timer.reset(secondsOff);
   }
 
   createMatch = async (data) => {
@@ -90,15 +113,15 @@ class Admin extends Component {
       return;
     }
 
-    const time = (new Date()).getTime();
-    const startMatchUpdate = { status: 1, startTime: time };
+    const startTime = (new Date()).getTime();
+    const startMatchUpdate = { status: 1, startTime: startTime };
 
     Firebase.refs.games.child(this.state.accessCode).update(startMatchUpdate, (e) => {
       if (e) {
         this.setState({ errorMessage: 'Failed to start match.' });
       } else {
         this.timer.track();
-        this.setState({ errorMessage: null });
+        this.setState({ errorMessage: null, startTime: startTime });
       }
     });
   }
@@ -145,7 +168,9 @@ class Admin extends Component {
         <tr>
           <ShortCell/>
           <LongCell alignTop>
-            <Timer admin={true} gameOver={this.gameOver.bind(this)} ref={instance => { this.timer = instance }} />
+            <Timer ref={instance => { this.timer = instance }}
+              time={this.props.settings.time} 
+              gameOver={this.gameOver.bind(this)} />
             <br/>
             <StartButton onClick={this.startMatch}>Start Match</StartButton>
           </LongCell>
