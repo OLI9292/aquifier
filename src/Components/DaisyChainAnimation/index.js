@@ -42,7 +42,7 @@ class DaisyChainAnimation extends Component {
       .append('g')
       .attr('transform', 'translate(0,50)');
 
-    const timeout = setTimeout(() => {
+    const timeout = setInterval(() => {
       const idx = this.state.idx === this.state.words.length - 1 ? 0 : this.state.idx + 1;
       this.setState({ idx: idx }, this.update);
     }, 5000);
