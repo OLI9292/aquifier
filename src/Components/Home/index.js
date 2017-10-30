@@ -134,7 +134,7 @@ class Home extends Component {
               {this.state.isTeacher ? 'My Class' : 'My Progress'}
             </NavLink>
             <NavLink display color={color.red} colorHover={color.red10l}>
-              <a style={{color: 'inherit', textDecoration: 'inherit'}} href='mailto:support@gmail.com'>
+              <a style={{color: 'inherit', textDecoration: 'inherit'}} href='mailto:support@playwordcraft.com'>
                 Support
               </a>
             </NavLink>
