@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import _ from 'underscore';
 
-import Buttons from '../Buttons/default';
+import Button from '../Common/button';
 import { color } from '../../Library/Styles/index';
 import { toUnderscore, sleep } from '../../Library/helpers';
 
@@ -146,7 +146,7 @@ const GameButtons = styled.div`
   justify-content: center;
 `
 
-const GameButton = Buttons.large.extend`
+const GameButton = Button.large.extend`
   background-color: ${props => props.correct === true
     ? color.green
     : props.correct === false ? color.red : color.blue};

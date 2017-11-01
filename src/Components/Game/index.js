@@ -5,7 +5,6 @@ import queryString from 'query-string';
 import styled from 'styled-components';
 import _ from 'underscore';
 
-import ActionButton from '../Buttons/action';
 import Firebase from '../../Networking/Firebase';
 
 import ButtonQuestion from '../Question/button';
@@ -195,9 +194,6 @@ class Game extends Component {
       if (this.state.isSinglePlayer) {
         return <GameOverContainer>
           <Text>You scored {this.state.score}.</Text>
-          <ButtonContainer>{ActionButton('singlePlayer', this.redirect.bind(this))}</ButtonContainer>
-          <ButtonContainer>{ActionButton('ios')}</ButtonContainer>
-          <ButtonContainer>{ActionButton('android')}</ButtonContainer>
         </GameOverContainer>
       } else {
         this.submitScore();

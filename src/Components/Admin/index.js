@@ -5,7 +5,7 @@ import { Redirect } from 'react-router';
 import styled from 'styled-components';
 import _ from 'underscore';
 
-import Buttons from '../Buttons/default';
+import Button from '../Common/button';
 import Timer from '../Timer/index';
 import { color } from '../../Library/Styles/index';
 import { toArr } from '../../Library/helpers';
@@ -239,7 +239,7 @@ const AccessCode = styled.h1`
 const Container = styled.div`
 `
 
-const StartButton = Buttons.medium.extend`
+const StartButton = Button.medium.extend`
   margin-bottom: 1em;
   background-color: ${color.blue};
   &:hover {
@@ -248,7 +248,7 @@ const StartButton = Buttons.medium.extend`
   font-size: 2.25em;
 `
 
-const KickButton = Buttons.small.extend`
+const KickButton = Button.small.extend`
   background-color: ${color.red};
   &:hover {
     background-color: ${color.red10l};

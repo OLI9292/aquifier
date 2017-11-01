@@ -18,5 +18,6 @@ module.exports = {
     TIME: times,
     LEVEL: levels,
     TOPIC: topics
-  }
+  },
+  IOSURL: 'https://bit.ly/playwordcraft'
 };

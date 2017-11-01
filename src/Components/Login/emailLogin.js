@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import _ from 'underscore';
 
-import Buttons from '../Buttons/default';
+import Button from '../Common/button';
 import { color } from '../../Library/Styles/index';
 import TextAreas from '../TextAreas/index';
 import { validateEmail, sleep } from '../../Library/helpers';
@@ -89,7 +89,7 @@ class EmailLogin extends Component {
 
       const result = await User.login(data);
 
-      if (result.data.user) {
+      if (result.data && result.data.user) {
         const userId = result.data.user._id;
         localStorage.setItem('userId', userId);
         localStorage.setItem('username', `${result.data.user.firstName} ${result.data.user.lastName}`);
@@ -118,13 +118,13 @@ class EmailLogin extends Component {
           <TextArea placeholder={'last name'} onChange={(e) => this.setState({ 'lastName': e.target.value.replace(/ /g,'') })}></TextArea>
           <TextArea placeholder={'email'} onChange={(e) => this.setState({ 'createAccountEmail': e.target.value.replace(/ /g,'') })}></TextArea>
           <TextArea placeholder={'password'} onChange={(e) => this.setState({ 'createAccountPw': e.target.value.replace(/ /g,'') })}></TextArea>
-          <Button onClick={() => this.handleCreateAccount()}>create account</Button>
+          <LoginButton onClick={() => this.handleCreateAccount()}>create account</LoginButton>
         </CreateAccount>
         <LoginWithEmail>
           <Header>Login</Header>
           <TextArea placeholder={'email'} onChange={(e) => this.setState({ 'loginEmail': e.target.value.replace(/ /g,'') })}></TextArea>
           <TextArea placeholder={'password'} onChange={(e) => this.setState({ 'loginPw': e.target.value.replace(/ /g,'') })}></TextArea>
-          <Button onClick={() => this.handleLogin()}>login</Button>
+          <LoginButton onClick={() => this.handleLogin()}>login</LoginButton>
           <ForgotPassword>forgot password</ForgotPassword>
         </LoginWithEmail>
         <Message isError={this.state.isError}>{this.state.message}</Message>
@@ -170,12 +170,11 @@ const TextArea = TextAreas.medium.extend`
   margin-top: 5px;
 `
 
-const Button = Buttons.medium.extend`
+const LoginButton = Button.medium.extend`
   width: 250px;
   font-size: 1.2em;
   height: 50px;
   margin-top: 10px;
-  background-color: ${color.blue};
 `
 
 const ForgotPassword = styled.p`

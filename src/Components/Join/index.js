@@ -4,7 +4,7 @@ import { Redirect } from 'react-router';
 import styled from 'styled-components';
 import _ from 'underscore';
 
-import Buttons from '../Buttons/default';
+import Button from '../Common/button';
 import TextAreas from '../TextAreas/index';
 import { color } from '../../Library/Styles/index';
 
@@ -68,7 +68,7 @@ class Join extends Component {
           </LongRow>
         </tr>
         <ButtonContainer>
-          <Button onClick={this.handleClick}>Play!</Button>
+          <Button.extraLarge color={color.blue} onClick={this.handleClick}>Play!</Button.extraLarge>
           <ErrorMessage display={this.state.displayError}>{this.state.errorMessage}</ErrorMessage>
         </ButtonContainer>
       </Layout>
@@ -110,13 +110,6 @@ const LongRow = styled.td`
 const ButtonContainer = styled.div`
   margin-top: 100px;
   text-align: center;
-`
-
-const Button = Buttons.extraLarge.extend`
-  background-color: ${color.blue};
-  &:hover {
-    background-color: ${color.blue10l};
-  }
 `
 
 export default Join;

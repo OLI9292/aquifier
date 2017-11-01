@@ -1,20 +1,15 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router';
 import styled from 'styled-components';
-import _ from 'underscore';
 
-import ActionButton from '../Buttons/action';
 import MobilePopup from '../MobilePopup/index';
-import Buttons from '../Buttons/default';
+import Button from '../Common/button';
 import DaisyChainAnimation from '../DaisyChainAnimation/index';
 import InfoForm from '../InfoForm/index';
+import Header from '../Header/index';
 import HelpText from '../HelpText/index';
-import Login from '../Login/index';
-import EmailLogin from '../Login/emailLogin';
 import { color } from '../../Library/Styles/index';
 import logo from '../../Library/Images/logo.png';
-import appleLogo from '../../Library/Images/apple-logo.png';
-import androidLogo from '../../Library/Images/android-logo.png';
 import { mobilecheck } from '../../Library/helpers';
 
 const IOSURL = "https://bit.ly/playwordcraft";
@@ -28,12 +23,10 @@ class Home extends Component {
 
     this.state = {
       displayMobilePopup: false,
-      displayLogin: false,
       redirect: null,
       isMobile: isMobile,
       isSmallScreen: false,
       iosIdx: 0,
-      loggedIn: !_.isNull(userId),
       isTeacher: false
     };
   }
@@ -46,9 +39,6 @@ class Home extends Component {
   componentDidMount() {
     this.checkWindowSize();
     window.addEventListener('resize', this.checkWindowSize.bind(this));
-    const userId = localStorage.getItem('userId');
-    const classId = localStorage.getItem('classId');
-    this.setState({ userId: userId, isTeacher: !_.isNull(classId) })
   }
 
   componentWillUnmount() {
@@ -60,11 +50,9 @@ class Home extends Component {
   }
 
   redirect(location) {
-    if (this.state.isMobile) {
-      this.setState({ displayMobilePopup: true });
-    } else {
-      this.setState({ redirect: location });
-    }
+    this.state.isMobile
+      ? this.setState({ displayMobilePopup: true })
+      : this.setState({ redirect: location });
   }
 
   showHelpText() {
@@ -75,75 +63,9 @@ class Home extends Component {
     this.setState({ showHelpText: false });
   }
 
-  exitLogin() {
-    const userId = localStorage.getItem('userId');
-    const classId = localStorage.getItem('classId');
-    this.setState({
-      displayLogin: false,
-      displayEmailLogin: false,
-      loggedIn: !_.isNull(userId),
-      userId: userId,
-      isTeacher: !_.isNull(classId)
-    });
-  }
-
-  displayEmailLogin() {
-    this.setState({ displayEmailLogin: true });
-  }
-
-  handleBackgroundClick() {
-    this.setState({ displayLogin: false, displayEmailLogin: false });
-  }
-
-  handleLoginLogout() {
-    if (this.state.loggedIn) {
-      localStorage.clear('userId');
-      localStorage.clear('username');
-      this.setState({ loggedIn: false });
-    } else {
-      this.setState({ displayLogin: true });
-    }
-  }
-
   render() {
     if (this.state.redirect) {
       return <Redirect push to={this.state.redirect} />;
-    }
-
-    const login = () => {
-      if (this.state.displayEmailLogin) {
-        return <EmailLogin exit={this.exitLogin.bind(this)}/>
-      } else if (this.state.displayLogin) {
-        return <Login displayEmailLogin={this.displayEmailLogin.bind(this)} exit={this.exitLogin.bind(this)} />
-      }
-    }
-
-    const navigation = () => {
-      return <Nav>
-        <NavContent>
-          <Header style={{display: 'inline-block'}} backgroundColor={'white'} color={color.yellow}>
-            WORDCRAFT
-          </Header>
-          <NavLinks style={{right: 0}}>
-            <NavLink display onClick={() => window.scrollTo({ top: 2875, left: 0, behavior: 'smooth'})}
-              color={color.green} colorHover={color.green10l}>For Schools</NavLink>
-            <NavLink onClick={() => this.redirect(this.state.isTeacher ? '/dashboard' : `/profile/${this.state.userId}`)}
-              display={this.state.loggedIn}
-              color={color.orange}
-              colorHover={color.orange10l}>
-              {this.state.isTeacher ? 'My Class' : 'My Progress'}
-            </NavLink>
-            <NavLink display color={color.red} colorHover={color.red10l}>
-              <a style={{color: 'inherit', textDecoration: 'inherit'}} href='mailto:support@gmail.com'>
-                Support
-              </a>
-            </NavLink>
-            <NavLink display color={color.blue} colorHover={color.blue10l} onClick={() => this.handleLoginLogout()}>
-              {this.state.loggedIn ? 'Logout' : 'Login'}
-            </NavLink>
-          </NavLinks>
-        </NavContent>
-      </Nav>
     }
 
     const introSection = () => {
@@ -155,46 +77,29 @@ class Home extends Component {
         <Explanation>
           Expand your vocabulary without memorizing long lists of words. Prepare for a test, specialize in a topic, or just learn the entire dictionary.
         </Explanation>
-        <ButtonsContainer>
-          <Button marginRight color={color.red} colorHover={color.red10l}>
-            <Link href={IOSURL} target='blank'>
-              <LinkContent><AppleLogo src={appleLogo} /><LinkText>iOS</LinkText></LinkContent>
-            </Link>
-          </Button>
-          <Button marginRight onClick={() => this.redirect('/settings')}
-            color={color.blue}
-            colorHover={color.blue10l}>Train</Button>
-          <Button onClick={() => this.redirect('/lobby')}
-            color={color.green}
-            colorHover={color.green10l}>Classroom Spelling Bee</Button>
-        </ButtonsContainer>
       </TopLeftContainer>
     }
 
     const howItWorksSection = () => {
       return <Container>
-        <Header padLeft color={color.blue}>
+        <Heading padLeft color={color.blue}>
           HOW IT WORKS
-        </Header>
+        </Heading>
         <ScreenshotContainer>
           <Screenshot src={require('../../Library/Images/example.png')} />
         </ScreenshotContainer>
         <TextContainer>
           <Text><BlackSpan><b>60% of English words</b></BlackSpan> have Greek or Latin roots.  In the fields of science and technology, that number is <BlackSpan><b>above 90%.</b></BlackSpan><br /><br />By solving fast-paced puzzles, you will learn hundreds of roots and thousands of words.  Wordcraft is the most fun and efficient way to acquire a large vocabulary.</Text>
-          <Button color={color.red} colorHover={color.red10l}>
-            <Link href={IOSURL} target='blank'>
-              <LinkContent><AppleLogo src={appleLogo} /><LinkText>Play</LinkText></LinkContent>
-            </Link>
-          </Button>
+          <Button.iOS />
         </TextContainer>
       </Container>
     }
 
     const masterATopicSection = () => {
       return <Container>
-        <Header padLeft color={color.red}>
+        <Heading padLeft color={color.red}>
           MASTER A TOPIC
-        </Header>
+        </Heading>
         <TextContainer>
           <Text style={{textAlign: 'right'}}>Whether you are <BlackSpan><b>preparing for a test, studying a subject</b></BlackSpan> in school or just want to <BlackSpan><b>increase your knowledge</b></BlackSpan>, <GoldSpan><b>WORDCRAFT</b></GoldSpan> makes your studying more effective.<br /><br />Pick the <BlackSpan><b>SAT / ACT, GRE, or IELTS / TOEFL</b></BlackSpan> track to learn thousands of words from each test.<br /><br />Or learn the core vocabulary of subjects like <BlackSpan><b>math, biology, medicine, and zoology.</b></BlackSpan></Text>
         </TextContainer>
@@ -206,39 +111,35 @@ class Home extends Component {
 
     const spellingBeeSection = () => {
       return <Container>
-        <Header padLeft color={color.orange}>
+        <Heading padLeft color={color.orange}>
           SPELLING BEE
-        </Header>
+        </Heading>
         <ScreenshotContainer>
           <Screenshot src={require(`../../Library/Images/results.png`)} />
         </ScreenshotContainer>
         <TextContainer>
           <Text>Use <GoldSpan><b>WORDCRAFT</b></GoldSpan> spelling bee mode to quickly set up a fast-paced vocabulary game for your class.  Any number of players can join on their own computers.<br /><br />Click <BlackSpan onMouseOver={this.showHelpText.bind(this)} onMouseLeave={this.hideHelpText.bind(this)}><b>here</b></BlackSpan> for a full tutorial on in-class games.</Text>
-          <Button onClick={() => this.redirect('/lobby')}
-            color={color.green}
-            colorHover={color.green10l}>
-            Play Spelling Bee!</Button>
+          <Button.medium margin={'00px 0px 0px 10px'} onClick={() => this.redirect('/lobby')}
+            color={color.green}>Play Spelling Bee!</Button.medium>
         </TextContainer>
       </Container>
     }
     const bringToYourClassroomForm = () => {
       return <Container>
-        <Header padLeft color={color.green}>
+        <Heading padLeft color={color.green}>
           BRING TO YOUR CLASSROOM
-        </Header>
+        </Heading>
         <InfoForm />
       </Container>
     }
     return (
       <OuterContainer>
+        <Header />
         {this.state.showHelpText && <HelpTextContainer><HelpText type={'classroomTutorial'} /></HelpTextContainer>}
         {this.state.displayMobilePopup && <MobilePopup removeSelf={this.removeMobilePopup.bind(this)} />}
-        {login()}
-        <DarkBackground display={this.state.displayLogin} onClick={() => this.handleBackgroundClick()} />
-        {navigation()}
         <InnerContainer>
           {introSection()}
-          {!this.state.isSmallScreen && <DaisyChainContainer> <DaisyChainAnimation /> </DaisyChainContainer>}
+          {!this.state.isSmallScreen && <DaisyChainContainer><DaisyChainAnimation /></DaisyChainContainer>}
           {howItWorksSection()}
           {masterATopicSection()}
           {spellingBeeSection()}
@@ -248,20 +149,7 @@ class Home extends Component {
     );
   }
 }
-const DarkBackground = styled.div`
-  display: ${props => props.display ? '' : 'none'};
-  z-index: 5;
-  background-color: rgb(0, 0, 0);
-  opacity: 0.7;
-  -moz-opacity: 0.7;
-  filter: alpha(opacity=70);
-  height: 100%;
-  width: 100%;
-  background-repeat: repeat;
-  position: fixed;
-  top: 0px;
-  left: 0px;
-`
+
 const HelpTextContainer = styled.div`
   position: fixed;
   left: 30%;
@@ -293,7 +181,7 @@ const InnerContainer = styled.div`
     min-width: 300px;
   }
 `
-const Header = styled.h1`
+const Heading = styled.h1`
   color: ${props => props.color};
   background-color: ${props => props.backgroundColor || 'transparent'};
   paddingTop: 25px;
@@ -355,7 +243,7 @@ const NavLink = styled.p`
 // Top Section
 const TopLeftContainer = styled.div`
   vertical-align: top;
-  margin-top: 40px;
+  margin-top: 100px;
   height: 450px;
   border-radius: 10px;
   background-color: white;
@@ -371,7 +259,7 @@ const TopLeftContainer = styled.div`
 
 const DaisyChainContainer = styled.div`
   margin-left: 5%;
-  margin-top: 40px;
+  margin-top: 100px;
   width: 40%;
   height: 450px;
   display: inline-block;
@@ -411,60 +299,14 @@ const Explanation = styled.p`
     line-height: 25px;
   }
 `
-const ButtonsContainer = styled.div`
-  margin-top: 20px;
-  margin-left: 5%;
-  margin-bottom: 20px;
-`
-const Button = Buttons.small.extend`
-  vertical-align: top;
-  margin-right: ${props => props.marginRight ? '10px' : '0px'};
-  background-color: ${props => props.color};
-  width: 250px;
-  height: 60px;
-  &:hover {
-    background-color: ${props => props.colorHover};
-  }
-  margin-top: 10px;
-  @media (max-width: 1100px) {
-    height: 50px;
-    width: 200px;
-    font-size: 1.2em;
-  }
-  @media (max-width: 450px) {
-    font-size: 0.9em;
-    height: 45px;
-    width: 175px;
-  }
-`
-const LinkContent = styled.div`
-  width: 90%;
-  height: 90%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`
-const Link = styled.a`
-  color: inherit;
-  width: 100%;
-  height: 100%;
-  text-decoration: none;
-`
-const LinkText = styled.p`
-  display: table-cell;
-  vertical-align: middle;
-`
+
 const BlackSpan = styled.span`
   color: black;
 `
 const GoldSpan = styled.span`
   color: ${color.yellow};
 `
-const AppleLogo = styled.img`
-  height: 75%;
-  margin-right: 5%;
-  width: auto;
-`
+
 // Other Section Components
 const Container = styled.div`
   width: 100%;

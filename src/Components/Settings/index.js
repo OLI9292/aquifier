@@ -3,7 +3,7 @@ import { Redirect } from 'react-router';
 import styled from 'styled-components';
 import _ from 'underscore';
 
-import Buttons from '../Buttons/default';
+import Button from '../Common/button';
 import { color } from '../../Library/Styles/index';
 import HelpText from '../HelpText/index';
 import questionMark from '../../Library/Images/question-mark.png';
@@ -232,7 +232,7 @@ const QuestionMark = styled.img`
   cursor: pointer;
 `
 
-const SelectionButton = Buttons.medium.extend`
+const SelectionButton = Button.medium.extend`
   background-color: ${props => props.selected
     ? props.special ? color.green : color.red
     : color.lightestGray};
@@ -245,7 +245,7 @@ const ButtonContainer = styled.div`
   text-align: center;
 `
 
-const AccessCodeButton = Buttons.extraLarge.extend`
+const AccessCodeButton = Button.extraLarge.extend`
   background-color: ${color.blue};
   &:hover {
     background-color: ${color.blue10l};

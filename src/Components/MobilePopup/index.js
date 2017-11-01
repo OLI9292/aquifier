@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 
-import ActionButton from '../Buttons/action';
-import Buttons from '../Buttons/default';
+import Button from '../Common/button';
 import { color } from '../../Library/Styles/index';
 
 class MobilePopup extends Component {
@@ -18,7 +17,6 @@ class MobilePopup extends Component {
           We noticed you’re on a mobile device. You’ll have a much better time if you use the mobile app. Get it below. If that’s not possible, try it out on a laptop.
         </Text>
         <ButtonsContainer>
-          {ActionButton('ios')}
           <ReturnButton onClick={this.handleClick.bind(this)}>Back</ReturnButton>
         </ButtonsContainer>
       </Layout>
@@ -53,7 +51,7 @@ const ButtonsContainer = styled.div`
   text-align: center;
 `
 
-const ReturnButton = Buttons.medium.extend`
+const ReturnButton = Button.medium.extend`
   margin-top: 20px;
   background-color: white;
   color: black;

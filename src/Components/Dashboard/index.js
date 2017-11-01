@@ -3,7 +3,7 @@ import { Redirect } from 'react-router';
 import styled from 'styled-components';
 import _ from 'underscore';
 
-import Buttons from '../Buttons/default';
+import Button from '../Common/button';
 import { color } from '../../Library/Styles/index';
 import User from '../../Models/User';
 import Class from '../../Models/Class';

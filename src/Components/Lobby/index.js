@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Redirect } from 'react-router';
 import styled from 'styled-components';
 
-import Buttons from '../Buttons/default';
+import Button from '../Common/button';
 import { color } from '../../Library/Styles/index';
 
 class Lobby extends Component {
@@ -25,10 +25,10 @@ class Lobby extends Component {
 
     return (
       <Layout>
-        <Button onClick={() => this.handleClick('/join')}>Join a Game!</Button>
+        <Button.extraLarge color={color.blue} onClick={() => this.handleClick('/join')}>Join a Game!</Button.extraLarge>
         <Text>Enter an access code to join a<br />multiplayer game.</Text>
         <br /><br />
-        <Button onClick={() => this.handleClick('/settings/multiplayer')}>Create a Game!</Button>
+        <Button.extraLarge color={color.blue} onClick={() => this.handleClick('/settings/multiplayer')}>Create a Game!</Button.extraLarge>
         <Text>Create a vocabulary game<br />for multiple players.</Text>
       </Layout>
     );
@@ -44,13 +44,6 @@ const Layout = styled.div`
 
 const Text = styled.p`
   font-size: 2em;
-`
-
-const Button = Buttons.extraLarge.extend`
-  background-color: ${color.blue};
-  &:hover {
-    background-color: ${color.blue10l};
-  }
 `
 
 export default Lobby;

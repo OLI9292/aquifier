@@ -4,7 +4,7 @@ import { Redirect } from 'react-router';
 import styled from 'styled-components';
 import _ from 'underscore';
 
-import Buttons from '../Buttons/default';
+import Button from '../Common/button';
 import Firebase from '../../Networking/Firebase';
 
 import { color } from '../../Library/Styles/index';
@@ -72,7 +72,7 @@ const Text = styled.p`
   font-size: 3em;
 `
 
-const JoinButton = Buttons.medium.extend`
+const JoinButton = Button.medium.extend`
   background-color: ${color.blue};
   &:hover {
     background-color: ${color.blue10l};

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import _ from 'underscore';
 
-import Buttons from '../Buttons/default';
+import Button from '../Common/button';
 import { color } from '../../Library/Styles/index';
 import User from '../../Models/User';
 import Word from '../../Models/Word';
@@ -183,7 +183,7 @@ const Sidebar = styled.div`
   display: inline-block;
 `
 
-const ShareButton = Buttons.medium.extend`
+const ShareButton = Button.medium.extend`
   background-color: ${color.blue};
   font-size: 1.35em;
   width: 140px;

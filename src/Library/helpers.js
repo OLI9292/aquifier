@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import { color } from './Styles/index';
 
 export const sleep = (ms) => {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -45,3 +46,18 @@ export const concat = (x, y) => x.concat(y)
 export const flatMap = (f, xs) => xs.map(f).reduce(concat, [])
 
 export const sum = (arr, attr) => _.reduce(_.pluck(arr, attr), (n, m) => n + m, 0)
+
+export const lighten10 = (hex) => {
+  const colors = {};
+  colors[color.blue] = color.blue10l;
+  colors[color.green] = color.green10l;
+  colors[color.yellow] = color.yellow10l;
+  colors[color.black] = color.black10l;
+  colors[color.red] = color.red10l;
+  colors[color.orange] = color.orange10l;
+  colors[color.purple] = color.purple10l;
+  colors[color.googleRed] = color.googleRed10l;
+  colors[color.gray] = color.gray10l;
+  colors[color.facebookBlue] = color.facebookBlue10l;
+  return colors[hex];
+}

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import _ from 'underscore';
 
-import Buttons from '../Buttons/default';
+import Button from '../Common/button';
 import { color } from '../../Library/Styles/index';
 import { isLetter, sleep, toUnderscore } from '../../Library/helpers';
 
@@ -257,7 +257,7 @@ const Definition = styled.div`
   width: 75%
 `
 
-const HintButton = Buttons.medium.extend`
+const HintButton = Button.medium.extend`
   margin-top: 50px;
   display: ${props => props.display ? 'normal' : 'none'};
   background-color: ${color.blue};
