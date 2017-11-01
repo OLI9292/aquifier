@@ -198,48 +198,7 @@ const Heading = styled.h1`
     font-size: 1.25em;
   }
 `
-const Nav = styled.div`
-  width: 100%;
-  background-color: white;
-  padding-bottom: 10px;
-`
-const NavContent = styled.div`
-  width: 1100px;
-  margin: auto;
-  @media (max-width: 1100px) {
-    width: 90%;
-    min-width: 300px;
-  }
-`
-const NavLinks = styled.div`
-  display: inline-block;
-  float: right;
-  padding-top: 25px;
-  line-height: 10px;
-  @media (max-width: 1100px) {
-    padding-top: 15px;
-  }
-`
-const NavLink = styled.p`
-  color: ${props => props.color};
-  display: ${props => props.display ? 'inline-block' : 'none'};
-  font-size: 1.5em;
-  margin-left: 30px;
-  cursor: pointer;
-  text-align: right;
-  &:hover {
-    color: ${props => props.colorHover};
-  }
-  @media (max-width: 1100px) {
-    margin-left: 15px;
-  }
-  @media (max-width: 725px) {
-    font-size: 1.2em;
-  }
-  @media (max-width: 400px) {
-    font-size: 0.9em;
-  }
-  `
+
 // Top Section
 const TopLeftContainer = styled.div`
   vertical-align: top;
