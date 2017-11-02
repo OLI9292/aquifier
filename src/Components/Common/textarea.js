@@ -41,6 +41,7 @@ const ExtraLarge = Default.extend`
 `
 
 const TextArea = {
+  default: Default,
   medium: Medium,
   extraLarge: ExtraLarge
 }

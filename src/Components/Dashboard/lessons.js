@@ -24,7 +24,11 @@ class LessonsDashboard extends Component {
 
     this.state = {
       isEditing: true,
-      fileUploadStatus: 'unchosen'
+      fileUploadStatus: 'unchosen',
+      textMatches: [{lineNo: "25", word: "disaster", context: "He hung up his black-beetle-coloured helmet He hung up his black-beetle-coloured helmet He hung up his black-beetle-coloured helmet and sh…eels one inch from the concrete floor downstairs."},
+{lineNo: "95", word: "fragile", context: "tiny, in fine detail, the lines about his mouth, e…ower-failure, He hung up his black-beetle-coloured helmet He hung up his black-beetle-coloured helmethis mother had found and lit a last"},
+{lineNo: "145", word: "pedestrian", context: 'lights were blazing. "What\'s going on?" Montag had…for He hung up his black-beetle-coloured helmet He hung up his black-beetle-coloured helmet being a pedestrian. Oh, we\'re most peculiar."'}],
+      focused: null
     }
   }
 
@@ -40,11 +44,12 @@ class LessonsDashboard extends Component {
       const formData = new FormData();
       formData.append('text', files[0]);
       const options = { headers: { 'Content-Type': 'multipart/form-data' } };
-      this.setState({ fileUploadIdx: 'uploading' });
+      this.setState({ fileUploadStatus: 'uploading' });
       const result = await axios.post(`${CONFIG.WORDS_API}/texts/parse`, formData, options);
+      console.log(result);
       const state = result.data.length
-        ? { fileUploadIdx: 'complete', filename: files[0].name, textMatches: result.data.data }
-        : { fileUploadIdx: 'unchosen' };
+        ? { fileUploadStatus: 'complete', filename: files[0].name, textMatches: result.data }
+        : { fileUploadStatus: 'unchosen' };
       this.setState(state);
     }
   }  
@@ -64,6 +69,33 @@ class LessonsDashboard extends Component {
       </div>
     }
 
+    const textMatchesTable = () => {
+      console.log(this.state.textMatches.slice(0,10))
+      return <TextMatchesTable>
+        <tbody>
+          <tr style={{width:'100%'}}>
+            <td style={{width:'30%',fontSize:'1.5em'}}>WORD</td>
+            <td style={{width:'70%',fontSize:'1.5em'}}>PASSAGE</td>
+          </tr>
+          {
+            this.state.textMatches.map((m, i) => {
+              return <tr style={{width:'100%'}} key={i}>
+                <td style={{width:'30%',fontStyle:'bold'}}>
+                  {m.word}
+                </td>
+                <td style={{width:'70%'}}>
+                  <PassageTextArea
+                    focused={this.state.focused === i}
+                    onFocus={() => this.setState({ focused: i })}
+                  >{m.context}</PassageTextArea>
+                </td>
+              </tr>
+            })
+          }
+        </tbody>
+      </TextMatchesTable>
+    }
+
     const editingLesson = () => {
       const state = fileUploadState[this.state.fileUploadStatus];
       return <div style={{textAlign:'center'}}>
@@ -78,6 +110,8 @@ class LessonsDashboard extends Component {
             <input type='file' style={{visibility: 'hidden'}} onChange={(e) => this.handleFiles(e.target.files)} />
           </FileUploadLabel>
         </div>
+        <h2 style={{margin:'-47px 275px 0px 0px'}}>Text</h2>
+        {textMatchesTable()}
       </div>
     }
 
@@ -92,6 +126,10 @@ class LessonsDashboard extends Component {
     );
   }
 }
+
+const PassageTextArea = Textarea.default.extend`
+  
+`
 
 const Layout = styled.div`
   width: 95%;
@@ -118,6 +156,14 @@ const FileUploadLabel = styled.label`
   border-radius: 5px;
   font-family: BrandonGrotesque;
   display: block;
+`
+
+const TextMatchesTable = styled.table`
+  width: 100%;
+  margin-top: 25px;
+  font-size: 1.25em;
+  border-collapse: separate;
+  border-spacing: 0 1em;
 `
 
 export default LessonsDashboard;
