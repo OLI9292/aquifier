@@ -35,7 +35,8 @@ class InfoForm extends Component {
     let obj = {};
     this.state.smallInputs.forEach((i) => obj[i.name] = i.value );
     obj.comments = this.state.comments;
-    obj.timestamp = Date.now().toDateString();
+    const date = new Date();
+    obj.date = date.toLocaleDateString('en-US');
     return obj;
   }
 
