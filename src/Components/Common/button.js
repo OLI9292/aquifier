@@ -49,18 +49,18 @@ const LargeButton = Default.extend`
 `
 
 const MediumButton = Default.extend`
-  width: 250px;
+  width: 225px;
   height: 60px;
-  font-size: 1.5em;
+  font-size: 1.75em;
   @media (max-width: 1100px) {
     height: 50px;
-    width: 200px;
-    font-size: 1.2em;
+    width: 175px;
+    font-size: 1.5em;
   }
   @media (max-width: 450px) {
-    font-size: 0.9em;
-    height: 45px;
-    width: 175px;
+    font-size: 1.2em;
+    height: 40px;
+    width: 125px;
   }  
 `
 
@@ -91,12 +91,12 @@ const LinkText = styled.p`
 
 const iOS = () => {
   return <MediumButton color={color.black}>
-    <Link href={GLOBAL.IOSURL} target='blank' color={'white'}>
+    <Link.default href={GLOBAL.IOSURL} target='blank' color={'white'}>
       <LinkContent>
         <img style={{height: '75%', marginRight: '5%',width: 'auto'}} src={require('../../Library/Images/apple-logo.png')} />
         <LinkText>iOS</LinkText>
       </LinkContent>
-    </Link>
+    </Link.default>
   </MediumButton>
 }
 

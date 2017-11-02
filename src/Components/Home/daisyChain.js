@@ -4,7 +4,7 @@ import * as d3 from 'd3';
 
 import { color } from '../../Library/Styles/index';
 
-class DaisyChainAnimation extends Component {
+class DaisyChain extends Component {
   constructor(props) {
     super(props);
 
@@ -159,4 +159,4 @@ const Definition = styled.p`
   }
 `
 
-export default DaisyChainAnimation;
+export default DaisyChain;

@@ -68,10 +68,10 @@ class Header extends Component {
 
     const dropdown = () => {
       return <DropdownContainer visibility={this.state.displayDropdown ? 'visible' : 'hidden'}>
-        <Link onClick={() => this.setState({ redirect: `/profile/${this.state.userId}`})} display={this.state.isTeacher ? 'none' : 'block'} color={color.green}>Progress</Link>
-        <Link onClick={() => this.setState({ redirect: '/dashboard' })}  display={this.state.isTeacher ? 'block' : 'none'} color={color.purple}>Class</Link>
-        <Link onClick={() => this.setState({ redirect: '/lessons'})} display={this.state.isTeacher ? 'block' : 'none'} color={color.green}>Lessons</Link>
-        <Link color={color.red} onClick={() => this.handleLogout()}>Logout</Link>
+        <Link.default onClick={() => this.setState({ redirect: `/profile/${this.state.userId}`})} display={this.state.isTeacher ? 'none' : 'block'} color={color.green}>Progress</Link.default>
+        <Link.default onClick={() => this.setState({ redirect: '/classes' })}  display={this.state.isTeacher ? 'block' : 'none'} color={color.purple}>Class</Link.default>
+        <Link.default onClick={() => this.setState({ redirect: '/lessons'})} display={this.state.isTeacher ? 'block' : 'none'} color={color.green}>Lessons</Link.default>
+        <Link.default color={color.red} onClick={() => this.handleLogout()}>Logout</Link.default>
       </DropdownContainer>
     }    
 
@@ -79,14 +79,14 @@ class Header extends Component {
       if (this.state.loggedIn) {
         return <NavigationContainer onClick={() => this.displayDropdown()}>
           <div>
-            <Link style={{display: 'inline-block', verticalAlign: 'top'}} color={color.blue}>Me</Link>
+            <Link.default style={{display: 'inline-block', verticalAlign: 'top'}} color={color.blue}>Me</Link.default>
             <DropdownImage src={require('../../Library/Images/dropdown.png')} />
           </div>
           {dropdown()}
         </NavigationContainer>
       } else {
         return <NavigationContainer>
-          <Link color={color.blue} onClick={() => this.setState({ displayLogin: true })}>Login</Link>
+          <Link.default color={color.blue} onClick={() => this.setState({ displayLogin: true })}>Login</Link.default>
         </NavigationContainer>
       }
     }

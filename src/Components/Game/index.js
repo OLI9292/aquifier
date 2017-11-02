@@ -7,9 +7,9 @@ import _ from 'underscore';
 
 import Firebase from '../../Networking/Firebase';
 
-import ButtonQuestion from '../Question/button';
-import OnCorrectImage from '../OnCorrectImage/index';
-import SpellQuestion from '../Question/spell';
+import ButtonQuestion from './buttonQuestion';
+import OnCorrectImage from './onCorrectImage';
+import SpellQuestion from './spellQuestion';
 import Word from '../../Models/Word';
 import Timer from '../Timer/index';
 import User from '../../Models/User';

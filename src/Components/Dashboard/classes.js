@@ -9,7 +9,7 @@ import User from '../../Models/User';
 import Class from '../../Models/Class';
 import { sum } from '../../Library/helpers';
 
-class Dashboard extends Component {
+class ClassesDashboard extends Component {
   constructor(props) {
     super(props);
 
@@ -157,4 +157,4 @@ const TableCell = styled.td`
   padding-left: ${props => props.left ? '10px' : '0px'};
 `
 
-export default Dashboard;
+export default ClassesDashboard;

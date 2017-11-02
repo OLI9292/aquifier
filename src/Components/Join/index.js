@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import _ from 'underscore';
 
 import Button from '../Common/button';
-import TextAreas from '../TextAreas/index';
+import TextArea from '../Common/textarea';
 import { color } from '../../Library/Styles/index';
 
 class Join extends Component {
@@ -55,7 +55,7 @@ class Join extends Component {
             {
               this.state.isLoggedIn
                 ? <Username>{this.state.name}</Username>
-                : <TextAreas.medium value={this.state.name} onChange={(event) => this.setState({ 'name': event.target.value })}></TextAreas.medium>
+                : <TextArea.medium value={this.state.name} onChange={(event) => this.setState({ 'name': event.target.value })}></TextArea.medium>
             }
           </LongRow>
         </tr>
@@ -63,8 +63,8 @@ class Join extends Component {
         <tr>
           <ShortRow><Text>Access Code</Text></ShortRow>
           <LongRow>
-            <TextAreas.medium value={this.state.accessCode} onChange={(event) => this.setState({ 'accessCode': event.target.value.trim() })}>
-            </TextAreas.medium>
+            <TextArea.medium value={this.state.accessCode} onChange={(event) => this.setState({ 'accessCode': event.target.value.trim() })}>
+            </TextArea.medium>
           </LongRow>
         </tr>
         <ButtonContainer>

@@ -14,4 +14,13 @@ const Default = styled.a`
   font-weight: 300;
 `
 
-export default Default;
+const Large = Default.extend`
+  font-size: 2.25em;
+`
+
+const Link = {
+  default: Default,
+  large: Large
+}
+
+export default Link;

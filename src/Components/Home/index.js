@@ -4,15 +4,13 @@ import styled from 'styled-components';
 
 import MobilePopup from '../MobilePopup/index';
 import Button from '../Common/button';
-import DaisyChainAnimation from '../DaisyChainAnimation/index';
+import DaisyChain from './daisyChain';
 import InfoForm from '../InfoForm/index';
 import Header from '../Header/index';
 import HelpText from '../HelpText/index';
 import { color } from '../../Library/Styles/index';
 import logo from '../../Library/Images/logo.png';
 import { mobilecheck } from '../../Library/helpers';
-
-const IOSURL = "https://bit.ly/playwordcraft";
 
 class Home extends Component {
   constructor(props) {
@@ -73,7 +71,7 @@ class Home extends Component {
         <Subtitle>
           Master the Greek and Latin roots of English.
         </Subtitle>
-        {this.state.isSmallScreen && <DaisyChainAnimation />}
+        {this.state.isSmallScreen && <DaisyChain />}
         <Explanation>
           Expand your vocabulary without memorizing long lists of words. Prepare for a test, specialize in a topic, or just learn the entire dictionary.
         </Explanation>
@@ -139,7 +137,7 @@ class Home extends Component {
         {this.state.displayMobilePopup && <MobilePopup removeSelf={this.removeMobilePopup.bind(this)} />}
         <InnerContainer>
           {introSection()}
-          {!this.state.isSmallScreen && <DaisyChainContainer><DaisyChainAnimation /></DaisyChainContainer>}
+          {!this.state.isSmallScreen && <DaisyChainContainer><DaisyChain /></DaisyChainContainer>}
           {howItWorksSection()}
           {masterATopicSection()}
           {spellingBeeSection()}
