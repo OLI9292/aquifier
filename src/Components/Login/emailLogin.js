@@ -5,7 +5,7 @@ import _ from 'underscore';
 
 import Button from '../Common/button';
 import { color } from '../../Library/Styles/index';
-import TextArea from '../Common/textarea';
+import Textarea from '../Common/textarea';
 import { validateEmail, sleep } from '../../Library/helpers';
 import User from '../../Models/User';
 
@@ -109,21 +109,25 @@ class EmailLogin extends Component {
     }
   }
 
+  trim(e) {
+    return e.target.value.replace(/ /g,'')
+  }
+
   render() {
     return (
       <Layout>
         <CreateAccount>
           <Header>Create Account</Header>
-          <TextArea style={{marginTop: '5px;'}} placeholder={'first name'} onChange={(e) => this.setState({ 'firstName': e.target.value.replace(/ /g,'') })}></TextArea>
-          <TextArea style={{marginTop: '5px;'}} placeholder={'last name'} onChange={(e) => this.setState({ 'lastName': e.target.value.replace(/ /g,'') })}></TextArea>
-          <TextArea style={{marginTop: '5px;'}} placeholder={'email'} onChange={(e) => this.setState({ 'createAccountEmail': e.target.value.replace(/ /g,'') })}></TextArea>
-          <TextArea style={{marginTop: '5px;'}} placeholder={'password'} onChange={(e) => this.setState({ 'createAccountPw': e.target.value.replace(/ /g,'') })}></TextArea>
+          <Textarea.medium style={{marginTop:'5px'}} placeholder={'first name'} onChange={(e) => this.setState({ 'firstName': this.trim(e) })}></Textarea.medium>
+          <Textarea.medium style={{marginTop:'5px'}} placeholder={'last name'} onChange={(e) => this.setState({ 'lastName': this.trim(e) })}></Textarea.medium>
+          <Textarea.medium style={{marginTop:'5px'}} placeholder={'email'} onChange={(e) => this.setState({ 'createAccountEmail': this.trim(e) })}></Textarea.medium>
+          <Textarea.medium style={{marginTop:'5px'}} placeholder={'password'} onChange={(e) => this.setState({ 'createAccountPw': this.trim(e) })}></Textarea.medium>
           <LoginButton onClick={() => this.handleCreateAccount()}>create account</LoginButton>
         </CreateAccount>
         <LoginWithEmail>
           <Header>Login</Header>
-          <TextArea style={{marginTop: '5px;'}} placeholder={'email'} onChange={(e) => this.setState({ 'loginEmail': e.target.value.replace(/ /g,'') })}></TextArea>
-          <TextArea style={{marginTop: '5px;'}} placeholder={'password'} onChange={(e) => this.setState({ 'loginPw': e.target.value.replace(/ /g,'') })}></TextArea>
+          <Textarea.medium style={{marginTop:'5px'}} placeholder={'email'} onChange={(e) => this.setState({ 'loginEmail': this.trim(e) })}></Textarea.medium>
+          <Textarea.medium style={{marginTop:'5px'}} placeholder={'password'} onChange={(e) => this.setState({ 'loginPw': this.trim(e) })}></Textarea.medium>
           <LoginButton onClick={() => this.handleLogin()}>login</LoginButton>
           <ForgotPassword>forgot password</ForgotPassword>
         </LoginWithEmail>

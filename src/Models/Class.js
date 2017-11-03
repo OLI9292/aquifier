@@ -10,6 +10,14 @@ const fetch = async (id) => {
   }
 }
 
+const forTeacher = async (id) => {
+  try {
+    return await axios.get(`${CONFIG.ACCOUNTS_API}/class?teacher=${id}`);
+  } catch (e) {
+    return e.response.data;
+  }
+}
+
 const studentsInClass = async (id) => {
   try {
     return await axios.get(`${CONFIG.ACCOUNTS_API}/class/${id}/students`);
@@ -20,6 +28,7 @@ const studentsInClass = async (id) => {
 
 const Class = {
   fetch: fetch,
+  forTeacher: forTeacher,
   students: studentsInClass
 }
 

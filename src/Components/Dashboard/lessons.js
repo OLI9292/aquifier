@@ -6,9 +6,13 @@ import axios from 'axios';
 
 import Button from '../Common/button';
 import Link from '../Common/link';
+import deletePng from '../../Library/Images/delete.png';
+import checkboxChecked from '../../Library/Images/checkbox-checked.png';
+import checkboxUnchecked from '../../Library/Images/checkbox-unchecked.png';
 import Textarea from '../Common/textarea';
+import TextareaAutosize from 'react-autosize-textarea';
 import { color } from '../../Library/Styles/index';
-import User from '../../Models/User';
+import Lesson from '../../Models/Lesson';
 import Class from '../../Models/Class';
 import CONFIG from '../../Config/main';
 
@@ -21,22 +25,36 @@ const fileUploadState = {
 class LessonsDashboard extends Component {
   constructor(props) {
     super(props);
-
-    this.state = {
-      isEditing: true,
-      fileUploadStatus: 'unchosen',
-      textMatches: [{lineNo: "25", word: "disaster", context: "He hung up his black-beetle-coloured helmet He hung up his black-beetle-coloured helmet He hung up his black-beetle-coloured helmet and sh…eels one inch from the concrete floor downstairs."},
-{lineNo: "95", word: "fragile", context: "tiny, in fine detail, the lines about his mouth, e…ower-failure, He hung up his black-beetle-coloured helmet He hung up his black-beetle-coloured helmethis mother had found and lit a last"},
-{lineNo: "145", word: "pedestrian", context: 'lights were blazing. "What\'s going on?" Montag had…for He hung up his black-beetle-coloured helmet He hung up his black-beetle-coloured helmet being a pedestrian. Oh, we\'re most peculiar."'}],
-      focused: null
-    }
+    this.state = {};
   }
 
   componentDidMount() {
-    this.loadUser()
+    this.loadClasses();
+    this.reset();
   }
 
-  loadUser = async () => {
+  loadClasses = async () => {
+    const userId = localStorage.getItem('userId');
+    const result = await Class.forTeacher(userId);
+    const classes = result.data || [];
+    classes.forEach((c) => c.checked = false);
+    this.setState({ classes });
+  }
+
+  reset() {
+    const state = {
+      isEditing: false,
+      fileUploadStatus: 'unchosen',
+      textMatches: [],
+      focused: null,
+      hovered: null,
+      errorMsg: '',
+      lessonTitle: null,
+      redirect: null,
+      filename: null
+    };
+
+    this.setState(state);
   }
 
   handleFiles = async (files) => {
@@ -46,13 +64,61 @@ class LessonsDashboard extends Component {
       const options = { headers: { 'Content-Type': 'multipart/form-data' } };
       this.setState({ fileUploadStatus: 'uploading' });
       const result = await axios.post(`${CONFIG.WORDS_API}/texts/parse`, formData, options);
-      console.log(result);
       const state = result.data.length
         ? { fileUploadStatus: 'complete', filename: files[0].name, textMatches: result.data }
         : { fileUploadStatus: 'unchosen' };
       this.setState(state);
+      this.fileInput.value = '';
     }
-  }  
+  }
+
+  handleDeleteRow(i) {
+    let textMatches = this.state.textMatches;
+    textMatches.splice(i, 1);
+    this.setState({ textMatches });
+  }
+
+  handleDeleteFile() {
+    this.setState({ textMatches: [], fileUploadStatus: 'unchosen', filename: null });
+  }
+
+  handleClickedSave() {
+    let errorMsg
+
+    if (!this.state.lessonTitle) {
+      errorMsg = 'Please enter a lesson title.'
+    } else if (!this.state.textMatches.length) {
+      errorMsg = 'Lessons require at least 1 WORD / PASSAGE.'
+    }
+
+    if (errorMsg) {
+      this.setState({ errorMsg });
+    } else {
+      this.save();
+    }
+  }
+
+  handleClassClick(i) {
+    const classes = this.state.classes;
+    classes[i].checked = !classes[i].checked;
+    this.setState({ classes });
+  }
+
+  save = async () => {
+    const name = this.state.lessonTitle;
+    const filename = this.state.filename;
+    const createdOn = Date.now();
+    const questions = this.state.textMatches.map((m) => ({ word: m.word.toLowerCase(), context: m.context }));
+    
+    const data = {
+      name: name,
+      filename: filename,
+      updatedOn: createdOn,
+      questions: questions
+    }
+    
+    // const result = await Lesson.create(data);
+  }
 
   render() {
     if (this.state.redirect) {
@@ -70,24 +136,48 @@ class LessonsDashboard extends Component {
     }
 
     const textMatchesTable = () => {
-      console.log(this.state.textMatches.slice(0,10))
       return <TextMatchesTable>
         <tbody>
           <tr style={{width:'100%'}}>
-            <td style={{width:'30%',fontSize:'1.5em'}}>WORD</td>
+            <td style={{width:'30%',fontSize:'1.5em',paddingLeft:'45px'}}>WORD</td>
             <td style={{width:'70%',fontSize:'1.5em'}}>PASSAGE</td>
           </tr>
           {
             this.state.textMatches.map((m, i) => {
-              return <tr style={{width:'100%'}} key={i}>
-                <td style={{width:'30%',fontStyle:'bold'}}>
+              const even = i % 2 === 0;
+              const isFocused = this.state.focused === i;
+              const isHovered = this.state.hovered === i;
+              const textareaBackgroundColor = isHovered || isFocused
+                ? even ? 'white' : color.lightestGray
+                : even ? color.lightestGray : 'white'
+              const resizableTextAreastyles = {
+                backgroundColor: textareaBackgroundColor,
+                border: 'none',
+                borderRadius: '5px',
+                fontFamily: 'BrandonGrotesque',
+                transitionDuration: '0.2s',
+                width: '90%',
+                outline: '0',
+                padding: '10px 10px 25px 10px',
+                fontSize: '0.8em',
+                verticalAlign: 'middle',
+                margin: '10px'
+              }
+              const rowBackgroundColor = even ? color.lightestGray : 'white';
+              return <tr style={{width:'100%',backgroundColor:rowBackgroundColor}} key={i}>
+                <th style={{width:'30%',fontStyle:'bold'}}>
+                  <DeleteImage style = {{float:'left',marginLeft:'15px'}} src={deletePng} onClick={() => this.handleDeleteRow(i)}/>
                   {m.word}
-                </td>
+                </th>
                 <td style={{width:'70%'}}>
-                  <PassageTextArea
-                    focused={this.state.focused === i}
+                  <TextareaAutosize
+                    spellCheck={'false'}
+                    style={resizableTextAreastyles}
+                    onMouseEnter={() => this.setState({ hovered: i })}
+                    onMouseLeave={() => this.setState({ hovered: null })}
                     onFocus={() => this.setState({ focused: i })}
-                  >{m.context}</PassageTextArea>
+                    value={m.context}
+                  />
                 </td>
               </tr>
             })
@@ -97,21 +187,52 @@ class LessonsDashboard extends Component {
     }
 
     const editingLesson = () => {
-      const state = fileUploadState[this.state.fileUploadStatus];
-      return <div style={{textAlign:'center'}}>
-        <div>
-          <Link.large onClick={() => this.setState({ isEditing: false })} style={{display:'inline-block',float:'left'}} color={color.blue}>Back</Link.large>
-          <Link.large style={{display: 'inline-block',float:'right'}} color={color.green}>Save</Link.large>
+      const fileUploadStatus = this.state.fileUploadStatus;
+      const state = fileUploadState[fileUploadStatus];
+      const fileIsUploaded = fileUploadStatus === 'complete';
+      const deleteTextVisibility = fileIsUploaded ? 'visible' : 'hidden';
+      console.log(this.state.classes)
+      return <div>
+        <div style={{height:'50px'}}>
+          <Link.large onClick={() => this.reset()} style={{display:'inline-block',float:'left'}} color={color.blue}>Back</Link.large>
+          <Link.large onClick={() => this.handleClickedSave()} style={{display: 'inline-block',float:'right'}} color={color.green}>Save</Link.large>
         </div>
-        <Textarea.extraLarge style={{textAlign:'center'}} placeholder={'Type Lesson Title'} />
-        <div style={{width:'200px',margin:'0 auto'}}>
-          <FileUploadLabel backgroundColor={state.backgroundColor} color={state.color}>
-            {this.state.filename || state.text}
-            <input type='file' style={{visibility: 'hidden'}} onChange={(e) => this.handleFiles(e.target.files)} />
-          </FileUploadLabel>
-        </div>
-        <h2 style={{margin:'-47px 275px 0px 0px'}}>Text</h2>
-        {textMatchesTable()}
+        <ErrorMessage>{this.state.errorMsg}</ErrorMessage>        
+        <table>
+          <tbody>
+          <tr style={{verticalAlign:'top',height:'75px'}}>
+            <th style={{width:'100px',fontSize:'1.5em',textAlign:'left'}}>Title</th>
+            <td>
+              <Textarea.medium placeholder={'ex. The Giver'} onChange={(e) => this.setState({ lessonTitle: e.target.value })}/>
+            </td>
+          </tr>
+          <tr style={{verticalAlign:'top',height:'75px'}}>
+            <th style={{width:'100px',fontSize:'1.5em',textAlign:'left'}}>Text</th>
+            <td>
+              <FileUploadLabel backgroundColor={state.backgroundColor} color={state.color}>
+                {this.state.filename || state.text}
+                <input type='file' style={{visibility: 'hidden'}} ref={ref => this.fileInput = ref }
+                  onChange={(e) => { if (!fileIsUploaded) { this.handleFiles(e.target.files) } }} />
+              </FileUploadLabel>
+            </td>
+            <DeleteImage style={{visibility:deleteTextVisibility}} onClick={() => this.handleDeleteFile()} src={deletePng} />
+          </tr>
+          <tr style={{verticalAlign:'top',height:'75px'}}>
+            <th style={{width:'100px',fontSize:'1.5em',textAlign:'left'}}>Classes</th>
+            <td>
+              {
+                this.state.classes.map((c,i) => {
+                  return <div style={{height:'20px',marginBottom:'10px',display:'flex',alignItems:'center',cursor:'pointer'}} onClick={() => this.handleClassClick(i)}>
+                    <img style={{height:'20px'}} src={c.checked ? checkboxChecked : checkboxUnchecked} />
+                    <p style={{fontFamily:'BrandonGrotesque',marginLeft:'5px'}}>{c.name}</p>
+                  </div>
+                })
+              }
+            </td>
+          </tr>          
+          </tbody>
+        </table>
+        {!_.isEmpty(this.state.textMatches) && textMatchesTable()}
       </div>
     }
 
@@ -127,8 +248,22 @@ class LessonsDashboard extends Component {
   }
 }
 
+const ErrorMessage = styled.p`
+  color: ${color.red};
+  height: 15px;
+  line-height: 15px;
+  text-align: right;
+`
+
+const DeleteImage = styled.img`
+  height: 30px;
+  cursor: pointer;
+  margin-left: 10px;
+`
+
 const PassageTextArea = Textarea.default.extend`
-  
+  width: 95%;
+  margin: 0 auto;
 `
 
 const Layout = styled.div`
@@ -146,21 +281,21 @@ const Header = styled.p`
 `
 
 const FileUploadLabel = styled.label`
-  height: 60px;
-  line-height: 60px;
-  margin-top: 25px;
-  font-size: 1.5em;
+  height: 50px;
+  line-height: 50px;
+  font-size: 1.25em;
   background-color: ${props => props.backgroundColor};
   color: ${props => props.color};
   transition-duration: 0.2s;
   border-radius: 5px;
   font-family: BrandonGrotesque;
   display: block;
+  width: 240px;
+  padding-left: 10px;
 `
 
 const TextMatchesTable = styled.table`
   width: 100%;
-  margin-top: 25px;
   font-size: 1.25em;
   border-collapse: separate;
   border-spacing: 0 1em;
