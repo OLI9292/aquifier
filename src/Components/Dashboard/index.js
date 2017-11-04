@@ -32,15 +32,11 @@ class Dashboard extends Component {
 
     if (_.has(result.data, 'user')) {
       const user = result.data.user;
-      const title = this.formatName(user);
+      const title = "My Class";
       this.setState({
         title: title
       }, this.loadClass)
     }
-  }
-
-  formatName(user) {
-    return `${user.gender === 'female' ? 'Ms.' : 'Mr.'} ${user.lastName}'s Class`
   }
 
   loadClass = async () => {
