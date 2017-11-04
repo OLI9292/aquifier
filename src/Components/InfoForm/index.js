@@ -35,6 +35,7 @@ class InfoForm extends Component {
     let obj = {};
     this.state.smallInputs.forEach((i) => obj[i.name] = i.value );
     obj.comments = this.state.comments;
+    obj.date = Date.now();
     return obj;
   }
 

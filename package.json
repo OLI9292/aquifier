@@ -11,6 +11,7 @@
     "express": "^4.15.4",
     "firebase": "^4.3.0",
     "morgan": "^1.8.2",
+    "node-slack": "0.0.7",
     "passport-local": "^1.0.0",
     "query-string": "^5.0.0",
     "react": "^15.6.1",
@@ -28,6 +29,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "bringToYourSchoolFormCheck": "node bin/bringToYourSchoolFormCheck"
   }
 }
