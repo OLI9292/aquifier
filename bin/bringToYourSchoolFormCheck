@@ -16,7 +16,7 @@ const firebaseConfig = {
 const firebaseApp = firebase.initializeApp(firebaseConfig);
 const ref = firebaseApp.database().ref().child('web').child('forms');
 
-const date = new Date();
+const date = Date.now();
 
 ref.once('value').then(async (snap) => {
   const submissions = Object.keys(snap.val()).map((k) => snap.val()[k]);
