@@ -22,7 +22,7 @@ ref.once('value').then(async (snap) => {
   const submissions = Object.keys(snap.val()).map((k) => snap.val()[k]);
   
   const newSubmissions = submissions.filter((s) => {
-    const diffMs = (date - s.timestamp)    
+    const diffMs = (date - s.date)    
     const diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000)
     return diffMins <= 10
   })
