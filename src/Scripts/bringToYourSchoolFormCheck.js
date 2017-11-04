@@ -1,14 +1,14 @@
 const firebase = require('firebase');
 const Slack = require('node-slack');
 const CONFIG = require('../Config/main');
-
-const slack = new Slack(process.env.SLACK_HOOK_URL, {});
+console.log(CONFIG)
+const slack = new Slack(CONFIG.SLACK_HOOK_URL, {});
 
 const firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY,
-  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-  databaseURL: process.env.FIREBASE_DATABASE_URL,
-  storageBucket: process.env.FIREBASE_STORAGE_BUCKET
+  apiKey: CONFIG.FIREBASE_API_KEY,
+  authDomain: CONFIG.FIREBASE_AUTH_DOMAIN,
+  databaseURL: CONFIG.FIREBASE_DATABASE_URL,
+  storageBucket: CONFIG.FIREBASE_STORAGE_BUCKET
 };
 
 const firebaseApp = firebase.initializeApp(firebaseConfig);
