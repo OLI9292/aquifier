@@ -14,33 +14,13 @@ class Dashboard extends Component {
     super(props);
 
     this.state = {
-      title: null,
       students: [],
       redirect: null
     }
   }
 
   componentDidMount() {
-    this.loadUser()
-  }
-
-  loadUser = async () => {
-    const userId = localStorage.getItem('userId');
-
-    const query = { type: 'id', value: userId };
-    let result = await User.fetch(query);
-
-    if (_.has(result.data, 'user')) {
-      const user = result.data.user;
-      const title = this.formatName(user);
-      this.setState({
-        title: title
-      }, this.loadClass)
-    }
-  }
-
-  formatName(user) {
-    return `${user.gender === 'female' ? 'Ms.' : 'Mr.'} ${user.lastName}'s Class`
+    this.loadClass()
   }
 
   loadClass = async () => {
@@ -94,7 +74,7 @@ class Dashboard extends Component {
 
     return (
       <div>
-        <Header>{this.state.title}</Header>
+        <Header>My Class</Header>
         <Table>
           <tbody>
             <Row>
