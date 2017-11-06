@@ -37,14 +37,14 @@ const ExtraLargeButton = Default.extend`
 `
 
 const LargeButton = Default.extend`
-  width: 270px;
-  height: 90px;
-  font-size: 2.5em;
+  width: 250px;
+  height: 80px;
+  font-size: 2em;
 
   @media (max-width: 1000px), ( max-height: 700px ) {
     width: 210px;
     height: 75px;
-    font-size: 2em;
+    font-size: 1.75em;
   }
 `
 
@@ -53,8 +53,8 @@ const MediumButton = Default.extend`
   height: 60px;
   font-size: 1.75em;
   @media (max-width: 1100px) {
-    height: 50px;
     width: 175px;
+    height: 50px;
     font-size: 1.5em;
   }
   @media (max-width: 450px) {

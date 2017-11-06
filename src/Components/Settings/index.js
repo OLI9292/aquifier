@@ -6,9 +6,11 @@ import _ from 'underscore';
 import Button from '../Common/button';
 import { color } from '../../Library/Styles/index';
 import HelpText from '../HelpText/index';
+import Lesson from '../../Models/Lesson';
 import questionMark from '../../Library/Images/question-mark.png';
 import GLOBAL from '../../Library/global';
 
+// TODO: - refactor
 const buttonContent = (src, text) => {
   return <Content>
     <Image src={require(`../../Library/Images/${src}`)} />
@@ -44,13 +46,26 @@ class Settings extends Component {
       timeIdx: 0,
       levelIdx: 0,
       topicIndices: [0],
-      demoIdx: -1,
+      demoIdx: 0,
+      lessonIdx: -1,
       redirect: false,
-      showHelpText: false
+      showHelpText: false,
+      lessons: []
     };
 
     this.handleClick = this.handleClick.bind(this);
     this.redirect = this.redirect.bind(this);
+  }
+
+  async componentDidMount() {
+    const userId = localStorage.getItem('userId');
+    if (userId) {
+      const result = await Lesson.forStudent(userId);
+      if (result.data.length) {
+        const lessons = result.data;
+        this.setState({ lessons });
+      }
+    }
   }
 
   redirect() {
@@ -77,6 +92,9 @@ class Settings extends Component {
       case 'demo':
         this.setState({ demoIdx: idx }, this.turnOffNonDemoSettings);
         break;
+      case 'lesson':
+        this.setState({ lessonIdx: idx });
+        break;        
       default:
         break;
     }
@@ -113,11 +131,15 @@ class Settings extends Component {
   }
 
   settings(times, levels, topics) {
-    return this.state.demoIdx > 0
-      ? `demo=${this.state.demoIdx}`
-      : `time=${times[this.state.timeIdx]}` +
+    if (this.state.demoIdx > 0) {
+      return `demo=${this.state.demoIdx}`;
+    } else if (this.state.lessonIdx >= 0) {
+      return `lesson=${this.state.lessons[this.state.lessonIdx]._id}`;
+    } else {
+      return `time=${times[this.state.timeIdx]}` +
       `&level=${this.state.levelIdx}` +
       `${this.state.topicIndices.map((idx) => `&topic=${topics[idx].slug}`).join('')}`;
+    }
   }
 
   render() {
@@ -163,6 +185,14 @@ class Settings extends Component {
       >{idx}</SelectionButton>      
     })
 
+    const lessonButtons = this.state.lessons.map((l, idx) => {
+      return <SelectionButton 
+        key={idx}
+        onClick={() => this.handleClick('lesson', idx)} 
+        selected={this.state.lessonIdx === idx}        
+        >{l.name}</SelectionButton>
+    })
+
     return (
       <Layout>
         <Selection>
@@ -188,6 +218,14 @@ class Settings extends Component {
               <td><QuestionMark style={{visibility: 'hidden'}} src={questionMark} /></td>
               <LongCell>{demoButtons}</LongCell>
             </tr>
+            {
+              !_.isEmpty(this.state.lessons) &&
+              <tr>
+                <ShortCell><Text>Lesson</Text></ShortCell>
+                <td><QuestionMark style={{visibility: 'hidden'}} src={questionMark} /></td>
+                <LongCell>{lessonButtons}</LongCell>
+              </tr>              
+            }
           </tbody>
         </Selection>
         <ButtonContainer>
@@ -232,6 +270,7 @@ const QuestionMark = styled.img`
   cursor: pointer;
 `
 
+// Refactor
 const SelectionButton = Button.medium.extend`
   background-color: ${props => props.selected
     ? props.special ? color.green : color.red

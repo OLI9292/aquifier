@@ -147,11 +147,11 @@ const GameButtons = styled.div`
 `
 
 const GameButton = Button.large.extend`
-  background-color: ${props => props.correct === true
+  background-color: ${props => props.correct
     ? color.green
     : props.correct === false ? color.red : color.blue};
   &:hover {
-    background-color: ${props => props.correct === true
+    background-color: ${props => props.correct
       ? color.green
       : props.correct === false ? color.red : color.blue10l};
   }

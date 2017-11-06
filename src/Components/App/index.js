@@ -6,6 +6,7 @@ import styled from 'styled-components';
 
 import Admin from '../Admin/index';
 import Game from '../Game/index';
+import Lesson from '../Game/lesson';
 import Header from '../Header/index';
 import Home from '../Home/index';
 import InfoForm from '../InfoForm/index';
@@ -44,7 +45,11 @@ class App extends Component {
           }} />
           <Route exact path='/game/:settings' component={({ match }) => {
             const settings = queryString.parse(match.params.settings);
-            return <Container component={settings.multiplayer ? settings.component : 'game'} settings={settings} />
+            if (settings.lesson) {
+              return <Container component='lesson' id={settings.lesson} />
+            } else {
+              return <Container component={settings.multiplayer ? settings.component : 'game'} settings={settings} />
+            }
           }} />
         </Switch>
       </BrowserRouter>
@@ -63,6 +68,7 @@ class Container extends Component {
         case 'admin': return <Admin settings={this.props.settings} />
         case 'education': return <InfoForm />
         case 'game': return <Game settings={this.props.settings} />
+        case 'lesson': return <Lesson id={this.props.id} />
         case 'join': return <Join />
         case 'lobby': return <Lobby />
 

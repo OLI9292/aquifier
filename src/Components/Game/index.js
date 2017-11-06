@@ -1,4 +1,3 @@
-import axios from 'axios';
 import React, { Component } from 'react';
 import { Redirect } from 'react-router';
 import queryString from 'query-string';

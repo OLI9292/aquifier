@@ -61,3 +61,7 @@ export const lighten10 = (hex) => {
   colors[color.facebookBlue] = color.facebookBlue10l;
   return colors[hex];
 }
+
+export const unixTime = () => {
+  return Math.round((new Date()).getTime() / 1000)
+}
