@@ -43,7 +43,7 @@ class Join extends Component {
   }
 
   render() {
-    if (this.state.redirect) {
+    if (this.state.redirect && !window.location.href.endsWith(this.state.redirect)) {
       return <Redirect push to={this.state.redirect} />;
     }
 

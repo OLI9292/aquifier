@@ -1,21 +1,19 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import logo from '../../Library/Images/logo.png';
 import { Redirect } from 'react-router';
 import _ from 'underscore';
 
 import { color } from '../../Library/Styles/index';
 import Login from '../Login/index';
-import Link from '../Common/link';
 import EmailLogin from '../Login/emailLogin';
+import Navigation from './navigation';
 
 class Header extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      displayLogin: false,
-      displayDropdown: false
+      displayLogin: false
     };
   }
 
@@ -50,45 +48,16 @@ class Header extends Component {
   handleLogout() {
     localStorage.clear('userId');
     localStorage.clear('username');
-    this.setState({ redirect: '/' });
+    this.setState({ redirect: '/', loggedIn: false });
   }
 
   handleBackgroundClick() {
     this.setState({ displayLogin: false, displayEmailLogin: false });
   }  
 
-  displayDropdown() {
-    this.setState({ displayDropdown: !this.state.displayDropdown })
-  }
-
   render() {
-    if (this.state.redirect) {
+    if (this.state.redirect && !window.location.href.endsWith(this.state.redirect)) {
       return <Redirect push to={this.state.redirect} />;
-    }
-
-    const dropdown = () => {
-      return <DropdownContainer visibility={this.state.displayDropdown ? 'visible' : 'hidden'}>
-        <Link.default onClick={() => this.setState({ redirect: `/profile/${this.state.userId}`})} display={this.state.isTeacher ? 'none' : 'block'} color={color.green}>Progress</Link.default>
-        <Link.default onClick={() => this.setState({ redirect: '/classes' })}  display={this.state.isTeacher ? 'block' : 'none'} color={color.purple}>Class</Link.default>
-        <Link.default onClick={() => this.setState({ redirect: '/lessons'})} display={this.state.isTeacher ? 'block' : 'none'} color={color.green}>Lessons</Link.default>
-        <Link.default color={color.red} onClick={() => this.handleLogout()}>Logout</Link.default>
-      </DropdownContainer>
-    }    
-
-    const navigation = () => {
-      if (this.state.loggedIn) {
-        return <NavigationContainer onClick={() => this.displayDropdown()}>
-          <div>
-            <Link.default style={{display: 'inline-block', verticalAlign: 'top'}} color={color.blue}>Me</Link.default>
-            <DropdownImage src={require('../../Library/Images/dropdown.png')} />
-          </div>
-          {dropdown()}
-        </NavigationContainer>
-      } else {
-        return <NavigationContainer>
-          <Link.default color={color.blue} onClick={() => this.setState({ displayLogin: true })}>Login</Link.default>
-        </NavigationContainer>
-      }
     }
 
     const login = () => {
@@ -105,39 +74,23 @@ class Header extends Component {
           <Title onClick={() => this.setState({ redirect: '/' })}>WORDCRAFT</Title>
           {login()}
           <DarkBackground display={this.state.displayLogin} onClick={() => this.handleBackgroundClick()} />
-          {navigation()}
+          <Navigation
+            loggedIn={this.state.loggedIn}
+            isTeacher={this.state.isTeacher}
+            userId={this.state.userId}
+            login={() => this.setState({ displayLogin: true })}
+            logout={this.handleLogout.bind(this)}
+          />
         </Content>
       </Container>
     );
   }
 }
 
-const DropdownContainer = styled.div`
-  width: 100px;
-  background-color: white;
-  border-radius: 10px;
-  padding: 5px;
-  border: 5px solid ${color.lightGray};
-  visibility: ${props => props.visibility};
-`
-
-const DropdownImage = styled.img`
-  margin: 4px 0px 0px 5px;
-  height: 25px;
-  display: inline-block;
-`
-
 const Container = styled.div`
   background-color: white;
   height: 90px;
   width: 100%;
-  min-width: 400px;
-`
-
-const NavigationContainer = styled.div`
-  margin-top: 30px;
-  cursor: pointer;
-  width: 125px;
 `
 
 const Content = styled.div`
@@ -168,6 +121,9 @@ const Title = styled.h1`
   font-size: 2.5em;
   cursor: pointer;
   margin-top: 20px;
+  @media (max-width: 600px) {
+    font-size: 1.5em;
+  }  
 `
 
 export default Header;

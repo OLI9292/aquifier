@@ -147,7 +147,7 @@ class Settings extends Component {
     const levels = GLOBAL.SETTINGS.LEVEL;
     const topics = GLOBAL.SETTINGS.TOPIC;
 
-    if (this.state.redirect) {
+    if (this.state.redirect && !window.location.href.endsWith(this.state.redirect)) {
       const settings = this.settings(times, levels, topics);
       const location = this.props.multiplayer ? `/game/admin/${settings}` : `/game/${settings}`;
       return <Redirect push to={location} />;

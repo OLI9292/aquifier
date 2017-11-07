@@ -197,10 +197,6 @@ const SubmitButton = styled.input`
   }
 `
 
-const Higlighted = styled.span`
-  color: ${color.yellow};
-`
-
 const ErrorMessage = styled.p`
   font-size: 1.25em;
   position: relative;

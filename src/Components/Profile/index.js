@@ -7,7 +7,7 @@ import { color } from '../../Library/Styles/index';
 import User from '../../Models/User';
 import Word from '../../Models/Word';
 import Firebase from '../../Networking/Firebase';
-import { capitalizeOne, flatMap, sum } from '../../Library/helpers'
+import { capitalizeOne, sum } from '../../Library/helpers'
 
 class Profile extends Component {
   constructor(props) {
@@ -97,7 +97,6 @@ class Profile extends Component {
 
     const stats = () => {
       return _.keys(this.state.stats).map((k) => {
-        const statDescription = k.replace(/([A-Z])/g, ' $1').toLowerCase();
         return <StatContainer key={k}>
           <div>
             <StatImage src={require(`../../Library/Images/${this.state.stats[k].image}.png`)} />

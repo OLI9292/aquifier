@@ -9,6 +9,7 @@ import Game from '../Game/index';
 import Lesson from '../Game/lesson';
 import Header from '../Header/index';
 import Home from '../Home/index';
+import MobilePopup from '../MobilePopup/index';
 import InfoForm from '../InfoForm/index';
 import Join from '../Join/index';
 import Leaderboard from '../Leaderboard/index';
@@ -19,6 +20,7 @@ import Lobby from '../Lobby/index';
 import Settings from '../Settings/index';
 import Waiting from '../Waiting/index';
 import { color } from '../../Library/Styles/index';
+import { mobilecheck } from '../../Library/helpers';
 import './index.css';
 
 class App extends Component {
@@ -60,9 +62,12 @@ class App extends Component {
 class Container extends Component {
 
   render() {
+    const isMobile = mobilecheck();
     const isGame = this.props.component === 'game';
     const styles = isGame ? { minHeight: '600px', height: '85%' } : { minHeight: '600px' };
 
+    if (isMobile && this.props.component !== 'home') { return <MobilePopup /> };
+    
     const component = () => {
       switch (this.props.component) {
         case 'admin': return <Admin settings={this.props.settings} />
@@ -71,9 +76,7 @@ class Container extends Component {
         case 'lesson': return <Lesson id={this.props.id} />
         case 'join': return <Join />
         case 'lobby': return <Lobby />
-
         case 'profile': return <Profile userId={this.props.userId} />
-
         case 'classesDashboard': return <ClassesDashboard />
         case 'lessonsDashboard': return <LessonsDashboard />
         case 'leaderboard': return <Leaderboard settings={this.props.settings} />

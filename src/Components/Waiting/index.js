@@ -37,7 +37,7 @@ class Waiting extends Component {
   }
 
   render() {
-    if (this.state.redirect) {
+    if (this.state.redirect && !window.location.href.endsWith(this.state.redirect)) {
       if (this.state.text.includes('kicked')) {
         return <Redirect push to={'/join'} />;
       } else {

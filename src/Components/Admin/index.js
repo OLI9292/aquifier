@@ -44,10 +44,6 @@ class Admin extends Component {
     this.setState({ checkFocusInterval });
   }
 
-  componentWillUnmount() {
-    clearInterval(this.state.checkFocusInterval);
-  }
-
   checkFocus() {
     if (document.hasFocus() && !this.state.hasFocus && this.state.startTime) {
       this.setState({ hasFocus: true }, this.resetTimer);
@@ -96,6 +92,7 @@ class Admin extends Component {
   }
 
   componentWillUnmount() {
+    clearInterval(this.state.checkFocusInterval);    
     Firebase.refs.games.child(this.state.accessCode).child('players').off();
   }
 
@@ -137,7 +134,7 @@ class Admin extends Component {
   }
 
   render() {
-    if (this.state.redirect) {
+    if (this.state.redirect && !window.location.href.endsWith(this.state.redirect)) {
       const settings = {
         accessCode: this.state.accessCode,
         multiplayer: true,
@@ -234,9 +231,6 @@ const AccessCode = styled.h1`
   color: ${color.red};
   font-size: 10em;
   line-height: 0;
-`
-
-const Container = styled.div`
 `
 
 const StartButton = Button.medium.extend`

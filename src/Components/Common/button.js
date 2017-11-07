@@ -13,8 +13,8 @@ const Default = styled.button`
   &:hover {
     background-color: ${props => lighten10(props.color) || color.blue10l};
   }
-  margin: ${props => props.margin};  
-  vertical-align: ${props => props.verticalAlign};
+  margin: ${props => props.margin || '0'};  
+  vertical-align: ${props => props.verticalAlign || 'baseline'};
   border-radius: 10px;
   border-width: 0px;
   color: white;
@@ -91,7 +91,7 @@ const LinkText = styled.p`
 
 const iOS = () => {
   return <MediumButton color={color.black}>
-    <Link.default href={GLOBAL.IOSURL} target='blank' color={'white'}>
+    <Link.default style={{fontSize:'inherit'}} href={GLOBAL.IOSURL} target='blank' color={'white'}>
       <LinkContent>
         <img style={{height: '75%', marginRight: '5%',width: 'auto'}} src={require('../../Library/Images/apple-logo.png')} />
         <LinkText>iOS</LinkText>

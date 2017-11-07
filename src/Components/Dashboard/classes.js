@@ -3,7 +3,6 @@ import { Redirect } from 'react-router';
 import styled from 'styled-components';
 import _ from 'underscore';
 
-import Button from '../Common/button';
 import { color } from '../../Library/Styles/index';
 import User from '../../Models/User';
 import Class from '../../Models/Class';
@@ -78,7 +77,7 @@ class ClassesDashboard extends Component {
   }
 
   render() {
-    if (this.state.redirect) {
+    if (this.state.redirect && !window.location.href.endsWith(this.state.redirect)) {
       return <Redirect push to={this.state.redirect} />;
     }
 

@@ -2,27 +2,19 @@ import React, { Component } from 'react';
 import { Redirect } from 'react-router';
 import styled from 'styled-components';
 
-import MobilePopup from '../MobilePopup/index';
 import Button from '../Common/button';
 import DaisyChain from './daisyChain';
 import InfoForm from '../InfoForm/index';
 import Header from '../Header/index';
 import HelpText from '../HelpText/index';
 import { color } from '../../Library/Styles/index';
-import logo from '../../Library/Images/logo.png';
-import { mobilecheck } from '../../Library/helpers';
 
 class Home extends Component {
   constructor(props) {
     super(props);
 
-    const isMobile = mobilecheck();
-    const userId = localStorage.getItem('userId');
-
     this.state = {
-      displayMobilePopup: false,
       redirect: null,
-      isMobile: isMobile,
       isSmallScreen: false,
       iosIdx: 0,
       isTeacher: false
@@ -43,14 +35,8 @@ class Home extends Component {
     window.removeEventListener('resize', this.checkWindowSize.bind(this));
   }
 
-  removeMobilePopup() {
-    this.setState({ displayMobilePopup: false });
-  }
-
   redirect(location) {
-    this.state.isMobile
-      ? this.setState({ displayMobilePopup: true })
-      : this.setState({ redirect: location });
+    this.setState({ redirect: location });
   }
 
   showHelpText() {
@@ -62,7 +48,7 @@ class Home extends Component {
   }
 
   render() {
-    if (this.state.redirect) {
+    if (this.state.redirect && !window.location.href.endsWith(this.state.redirect)) {
       return <Redirect push to={this.state.redirect} />;
     }
 
@@ -134,7 +120,6 @@ class Home extends Component {
       <OuterContainer>
         <Header />
         {this.state.showHelpText && <HelpTextContainer><HelpText type={'classroomTutorial'} /></HelpTextContainer>}
-        {this.state.displayMobilePopup && <MobilePopup removeSelf={this.removeMobilePopup.bind(this)} />}
         <InnerContainer>
           {introSection()}
           {!this.state.isSmallScreen && <DaisyChainContainer><DaisyChain /></DaisyChainContainer>}

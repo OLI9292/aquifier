@@ -10,7 +10,6 @@ import questionMark from '../../Library/Images/question-mark-white.png';
 import LessonModel from '../../Models/Lesson';
 import ProgressBar from '../ProgressBar/index';
 import Firebase from '../../Networking/Firebase';
-import Word from '../../Models/Word';
 
 class Lesson extends Component {
   constructor(props) {
@@ -21,6 +20,7 @@ class Lesson extends Component {
       correct: null,
       context: null,
       dataLoaded: false,
+      gameOver: false,
       hintCount: 0,
       questions: [],
       name: '',
@@ -47,7 +47,7 @@ class Lesson extends Component {
   nextQuestion() {
     const idx = this.state.nextIndex;
     if (idx >= this.state.questions.length) {
-      // game over
+      this.setState({ gameOver: true });
     } else {
       const next = this.state.questions[idx];
       const correct = this.state.words.find((w) => w.value === next.word);
@@ -92,7 +92,7 @@ class Lesson extends Component {
   }
 
   render() {
-    if (this.state.redirect) {
+    if (this.state.redirect && !window.location.href.endsWith(this.state.redirect)) {
       return <Redirect push to={this.state.redirect} />;
     }
 
@@ -116,8 +116,8 @@ class Lesson extends Component {
       }
     }
 
-    return (
-      <Layout hide={!this.state.dataLoaded}>
+    const lesson = () => {
+      return <div>
         <div style={{width:'50%',margin:'0 auto'}}>
           <ProgressBar width={this.state.nextIndex / this.state.questions.length} />
         </div>
@@ -126,7 +126,19 @@ class Lesson extends Component {
         {buttons()}
         <QuestionMark onClick={() => this.setState({ hintCount: this.state.hintCount + 1 })}>
           <img style={{width:'100%'}} src={questionMark} />
-        </QuestionMark>
+        </QuestionMark>      
+      </div>
+    }
+
+    const gameOver = () => {
+      return <div>
+        <p style={{textAlign:'center',width:'100%'}}>{`Congragulations! You've completed ${this.state.name}.`}</p>
+      </div>
+    }
+
+    return (
+      <Layout hide={!this.state.dataLoaded}>
+        {this.state.gameOver ? gameOver() : lesson()}
       </Layout>
     );
   }

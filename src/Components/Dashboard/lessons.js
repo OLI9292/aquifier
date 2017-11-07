@@ -161,7 +161,9 @@ class LessonsDashboard extends Component {
     const name = this.state.lessonTitle;
     const filename = this.state.filename;
     const createdOn = unixTime();
-    const questions = this.state.textMatches.map((m) => ({ word: m.word.toLowerCase(), context: m.context }));
+    const questions = this.state.textMatches
+      .filter((m) => m.context.includes(m.word.toLowerCase()))
+      .map((m) => ({ word: m.word.toLowerCase(), context: m.context }));
     
     const data = {
       name: name,
@@ -185,7 +187,7 @@ class LessonsDashboard extends Component {
   }
 
   render() {
-    if (this.state.redirect) {
+    if (this.state.redirect && !window.location.href.endsWith(this.state.redirect)) {
       return <Redirect push to={this.state.redirect} />;
     }
 
@@ -342,11 +344,6 @@ const DeleteImage = styled.img`
   height: 30px;
   cursor: pointer;
   margin-left: 10px;
-`
-
-const PassageTextArea = Textarea.default.extend`
-  width: 95%;
-  margin: 0 auto;
 `
 
 const LessonButton = styled.p`

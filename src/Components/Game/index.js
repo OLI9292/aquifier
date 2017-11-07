@@ -9,7 +9,6 @@ import Firebase from '../../Networking/Firebase';
 import ButtonQuestion from './buttonQuestion';
 import OnCorrectImage from './onCorrectImage';
 import SpellQuestion from './spellQuestion';
-import Word from '../../Models/Word';
 import Timer from '../Timer/index';
 import User from '../../Models/User';
 
@@ -185,7 +184,7 @@ class Game extends Component {
   }
 
   render() {
-    if (this.state.redirect) {
+    if (this.state.redirect && !window.location.href.endsWith(this.state.redirect)) {
       return <Redirect push to={this.state.redirect} />;
     }
 
@@ -310,10 +309,6 @@ const Layout = styled.div`
 `
 
 const GameOverContainer = styled.div`
-`
-
-const ButtonContainer = styled.div`
-  display: block;
 `
 
 const Scoreboard = styled.div`
