@@ -18,6 +18,14 @@ const create = async (data) => {
   }
 }
 
+const update = async (id, data) => {
+  try {
+    return await axios.patch(`${CONFIG.ACCOUNTS_API}/lesson/${id}`, data);
+  } catch (e) {
+    return e.response.data;
+  }
+}
+
 const forTeacher = async (id) => {
   try {
     return await axios.get(`${CONFIG.ACCOUNTS_API}/lesson?teacher=${id}`);
@@ -47,7 +55,8 @@ const Lesson = {
   forTeacher: forTeacher,
   forStudent: forStudent,
   delete: deleteLesson,
-  fetch: fetch
+  fetch: fetch,
+  update: update
 }
 
 export default Lesson;

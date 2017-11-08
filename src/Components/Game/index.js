@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { Component } from 'react';
 import { Redirect } from 'react-router';
 import queryString from 'query-string';
@@ -12,6 +13,8 @@ import SpellQuestion from './spellQuestion';
 import Timer from '../Timer/index';
 import User from '../../Models/User';
 
+import Root from '../../Models/Root';
+import Word from '../../Models/Word';
 import { toArr } from '../../Library/helpers';
 import { color } from '../../Library/Styles/index';
 import leftArrow from '../../Library/Images/left-arrow.png';
@@ -59,10 +62,15 @@ class Game extends Component {
     const refreshInterval = setInterval(() => this.setState({ time: this.state.time + 1 }), 1000);
     this.setState({ refreshInterval });
 
-    const words = await Firebase.fetchWords();
-    const roots = _.uniq(_.flatten(words.map((w) => w.roots)), 'value');
-
-    this.state.isSinglePlayer ? this.startSinglePlayerGame(words, roots) : this.startMultiplayerGame(words, roots);
+    axios.all([Word.fetch(), Root.fetch()])
+      .then(axios.spread((res1, res2) => {
+        const words = res1.data.words;
+        const roots = res2.data.roots;
+        this.state.isSinglePlayer
+          ? this.startSinglePlayerGame(words, roots)
+          : this.startMultiplayerGame(words, roots);
+      }))
+      .catch((err) => console.log(err)) // TODO: - handle error
   }
 
   startSinglePlayerGame(words, roots) {

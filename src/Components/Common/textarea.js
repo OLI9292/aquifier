@@ -27,6 +27,13 @@ const Medium = Default.extend`
   }
 `
 
+const Small = Default.extend`
+  width: 120px;
+  height: 30px;
+  line-height: 30px;
+  font-size: 0.75em;
+`
+
 const ExtraLarge = Default.extend`
   width: 400px;
   height: 100px;
@@ -43,8 +50,9 @@ const ExtraLarge = Default.extend`
 
 const TextArea = {
   default: Default,
+  extraLarge: ExtraLarge,
   medium: Medium,
-  extraLarge: ExtraLarge
+  small: Small
 }
 
 export default TextArea;

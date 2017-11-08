@@ -6,17 +6,19 @@ import axios from 'axios';
 import moment from 'moment';
 
 import Button from '../Common/button';
-import Link from '../Common/link';
-import deletePng from '../../Library/Images/delete.png';
 import checkboxChecked from '../../Library/Images/checkbox-checked.png';
 import checkboxUnchecked from '../../Library/Images/checkbox-unchecked.png';
+import Class from '../../Models/Class';
+import { color } from '../../Library/Styles/index';
+import CONFIG from '../../Config/main';
+import deletePng from '../../Library/Images/delete.png';
+import Lesson from '../../Models/Lesson';
+import Link from '../Common/link';
+import RelatedWords from './relatedWords';
 import Textarea from '../Common/textarea';
 import TextareaAutosize from 'react-autosize-textarea';
-import { color } from '../../Library/Styles/index';
 import { unixTime } from '../../Library/helpers';
-import Lesson from '../../Models/Lesson';
-import Class from '../../Models/Class';
-import CONFIG from '../../Config/main';
+import Word from '../../Models/Word';
 
 const fileUploadState = {
   unchosen: { text: 'Choose File', backgroundColor: '#f1f1f1', color: color.darkGray },
@@ -30,7 +32,9 @@ class LessonsDashboard extends Component {
     super(props);
     this.state = {
       classes: [],
-      lessons: []
+      lessons: [],
+      relatedWords: [],
+      words: []
     };
   }
 
@@ -41,7 +45,8 @@ class LessonsDashboard extends Component {
 
   loadData() {
     this.loadLessons();
-    this.loadClasses();    
+    this.loadClasses();
+    this.loadWordData();
   }
 
   loadLessons = async () => {
@@ -54,7 +59,18 @@ class LessonsDashboard extends Component {
     const result = await Class.forTeacher(this.state.userId);
     const classes = result.data || [];
     classes.forEach((c) => c.checked = false);
-    this.setState({ classes });
+    this.setState({ classes });      
+  }
+
+  loadWordData = async () => {
+    const wordsRes = await Word.fetch();
+    if (wordsRes.data && wordsRes.data.words) { this.setState({ words: _.pluck(wordsRes.data.words, 'value') }) }
+  }
+
+  loadRelatedWordData = async () => {
+    const values = this.state.textMatches.map((m) => m.word).join(',');
+    const relatedWordsRes = await Word.relatedWords(values);
+    if (relatedWordsRes.data) { this.setState({ relatedWords: relatedWordsRes.data }) }
   }
 
   reset() {
@@ -83,8 +99,8 @@ class LessonsDashboard extends Component {
       const state = result.data.length
         ? { fileUploadStatus: 'complete', filename: files[0].name, textMatches: result.data }
         : { fileUploadStatus: 'unchosen' };
-      this.setState(state);
       this.fileInput.value = '';
+      this.setState(state, this.loadRelatedWordData);
     }
   }
 
@@ -136,8 +152,9 @@ class LessonsDashboard extends Component {
       filename: filename,
       textMatches: questions,
       classes: classes,
-      isNewLesson: false
-    });
+      isNewLesson: false,
+      lessonId: this.state.lessons[i]._id
+    }, this.loadRelatedWordData);
   }
 
   handleDeleteLesson = async (i) => {
@@ -163,7 +180,7 @@ class LessonsDashboard extends Component {
     const createdOn = unixTime();
     const questions = this.state.textMatches
       .filter((m) => m.context.includes(m.word.toLowerCase()))
-      .map((m) => ({ word: m.word.toLowerCase(), context: m.context }));
+      .map((m) => ({ word: m.word.toLowerCase(), context: m.context, related: m.related }));
     
     const data = {
       name: name,
@@ -172,18 +189,26 @@ class LessonsDashboard extends Component {
       questions: questions,
       classes: this.checkedClasses()
     }
-    
-    const result = await Lesson.create(data);
 
-    if (result.data.error) {
-      this.setState({ errorMsg: 'There was an error saving the lesson.  Please try again.' });
-    } else {
-      if (this.state.isNewLesson) {
-        this.setState({ isEditing: false }, this.loadLessons);  
-      } else {
-        // TODO: - implement
-      }
-    }
+    const result = this.state.isNewLesson
+      ? (await Lesson.create(data))
+      : (await Lesson.update(this.state.lessonId, data));
+
+    result.data.error 
+      ? this.setState({ errorMsg: 'There was an error saving the lesson.  Please try again.' })
+      : this.setState({ isEditing: false }, this.loadLessons);
+  }
+
+  updateRelatedWords(index, relatedWords) {
+    const textMatches = this.state.textMatches;
+    textMatches[index].related = relatedWords;
+    this.setState({ textMatches });
+  }
+
+  updateContext(index, context) {
+    const textMatches = this.state.textMatches;
+    textMatches[index].context = context;
+    this.setState({ textMatches });
   }
 
   render() {
@@ -225,53 +250,54 @@ class LessonsDashboard extends Component {
       </div>
     }
 
+    const questions = () => {
+      return this.state.textMatches.map((m, i) => {
+        const even = i % 2 === 0;
+        const isFocused = this.state.focused === i;
+        const isHovered = this.state.hovered === i;
+        const textareaBackgroundColor = isHovered || isFocused
+          ? even ? 'white' : color.lightestGray
+          : even ? color.lightestGray : 'white'
+        const rowBackgroundColor = even ? color.lightestGray : 'white';
+
+        return <tr style={{width:'100%',backgroundColor:rowBackgroundColor}} key={i}>
+          <th style={{width:'15%'}}>
+            <DeleteImage style = {{float:'left',marginLeft:'15px'}} src={deletePng} onClick={() => this.handleDeleteRow(i)}/>
+            {m.word}
+          </th>
+          <td style={{width:'50%'}}>
+            <TextareaAutosize
+              spellCheck={'false'}
+              style={resizableTextAreastyles(textareaBackgroundColor)}
+              onMouseEnter={() => this.setState({ hovered: i })}
+              onMouseLeave={() => this.setState({ hovered: null })}
+              onFocus={() => this.setState({ focused: i })}
+              value={m.context}
+              onChange={(e) => this.updateContext(i, e.target.value)}
+            />
+          </td>
+          <td style={{width:'35%'}}>
+            <RelatedWords
+              index={i}
+              updateRelatedWords={this.updateRelatedWords.bind(this)} 
+              words={this.state.words}
+              added={m.related || []}
+              suggested={this.state.relatedWords[m.word]}
+            />
+          </td>
+        </tr>
+      })      
+    }
+
     const textMatchesTable = () => {
       return <Table>
         <tbody>
           <tr style={{width:'100%'}}>
-            <td style={{width:'30%',fontSize:'1.5em',paddingLeft:'45px'}}>WORD</td>
-            <td style={{width:'70%',fontSize:'1.5em'}}>PASSAGE</td>
+            <td style={{width:'15%',fontSize:'1.5em',paddingLeft:'45px'}}>WORD</td>
+            <td style={{width:'50%',fontSize:'1.5em',textAlign:'center'}}>PASSAGE</td>
+            <td style={{width:'35%',fontSize:'1.5em',textAlign:'center'}}>RELATED WORDS</td>
           </tr>
-          {
-            this.state.textMatches.map((m, i) => {
-              const even = i % 2 === 0;
-              const isFocused = this.state.focused === i;
-              const isHovered = this.state.hovered === i;
-              const textareaBackgroundColor = isHovered || isFocused
-                ? even ? 'white' : color.lightestGray
-                : even ? color.lightestGray : 'white'
-              const resizableTextAreastyles = {
-                backgroundColor: textareaBackgroundColor,
-                border: 'none',
-                borderRadius: '5px',
-                fontFamily: 'BrandonGrotesque',
-                transitionDuration: '0.2s',
-                width: '90%',
-                outline: '0',
-                padding: '10px 10px 25px 10px',
-                fontSize: '0.8em',
-                verticalAlign: 'middle',
-                margin: '10px'
-              }
-              const rowBackgroundColor = even ? color.lightestGray : 'white';
-              return <tr style={{width:'100%',backgroundColor:rowBackgroundColor}} key={i}>
-                <th style={{width:'30%'}}>
-                  <DeleteImage style = {{float:'left',marginLeft:'15px'}} src={deletePng} onClick={() => this.handleDeleteRow(i)}/>
-                  {m.word}
-                </th>
-                <td style={{width:'70%'}}>
-                  <TextareaAutosize
-                    spellCheck={'false'}
-                    style={resizableTextAreastyles}
-                    onMouseEnter={() => this.setState({ hovered: i })}
-                    onMouseLeave={() => this.setState({ hovered: null })}
-                    onFocus={() => this.setState({ focused: i })}
-                    value={m.context}
-                  />
-                </td>
-              </tr>
-            })
-          }
+          {questions()}
         </tbody>
       </Table>
     }
@@ -330,6 +356,22 @@ class LessonsDashboard extends Component {
         {this.state.isEditing ? editingLesson() : allLessons()}
       </Layout>
     );
+  }
+}
+
+const resizableTextAreastyles = (textareaBackgroundColor) => {
+  return { 
+    backgroundColor: textareaBackgroundColor,
+    border: 'none',
+    borderRadius: '5px',
+    fontFamily: 'BrandonGrotesque',
+    transitionDuration: '0.2s',
+    width: '90%',
+    outline: '0',
+    padding: '10px 10px 25px 10px',
+    fontSize: '0.8em',
+    verticalAlign: 'middle',
+    margin: '10px'
   }
 }
 

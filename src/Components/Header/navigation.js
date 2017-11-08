@@ -1,14 +1,10 @@
 import ReactDOM from 'react-dom';
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import logo from '../../Library/Images/logo.png';
 import { Redirect } from 'react-router';
-import _ from 'underscore';
 
 import { color } from '../../Library/Styles/index';
-import Login from '../Login/index';
 import Link from '../Common/link';
-import EmailLogin from '../Login/emailLogin';
 
 class Navigation extends Component {
   constructor(props) {

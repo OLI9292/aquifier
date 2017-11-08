@@ -5,7 +5,6 @@ import _ from 'underscore';
 import Button from '../Common/button';
 import { color } from '../../Library/Styles/index';
 import User from '../../Models/User';
-import Word from '../../Models/Word';
 import Firebase from '../../Networking/Firebase';
 import { capitalizeOne, sum } from '../../Library/helpers'
 
