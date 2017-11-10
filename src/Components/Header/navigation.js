@@ -38,6 +38,7 @@ class Navigation extends Component {
         <Link.default onClick={() => this.setState({ redirect: `/profile/${this.props.userId}`})} display={this.props.isTeacher ? 'none' : 'block'} color={color.green}>Progress</Link.default>
         <Link.default onClick={() => this.setState({ redirect: '/classes' })}  display={this.props.isTeacher ? 'block' : 'none'} color={color.purple}>Class</Link.default>
         <Link.default onClick={() => this.setState({ redirect: '/lessons'})} display={this.props.isTeacher ? 'block' : 'none'} color={color.green}>Lessons</Link.default>
+        <Link.default onClick={() => this.setState({ redirect: '/word-lists'})} display={this.props.isTeacher ? 'block' : 'none'} color={color.yellow}>Word Lists</Link.default>
         <Link.default color={color.red} onClick={() => this.props.logout()}>Logout</Link.default>
       </DropdownContainer>
     }    

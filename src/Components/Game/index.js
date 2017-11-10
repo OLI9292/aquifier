@@ -5,13 +5,13 @@ import queryString from 'query-string';
 import styled from 'styled-components';
 import _ from 'underscore';
 
-import Firebase from '../../Networking/Firebase';
-
 import ButtonQuestion from './buttonQuestion';
 import OnCorrectImage from './onCorrectImage';
 import SpellQuestion from './spellQuestion';
 import Timer from '../Timer/index';
 import User from '../../Models/User';
+
+import Firebase from 'firebase';
 
 import Root from '../../Models/Root';
 import Word from '../../Models/Word';

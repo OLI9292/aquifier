@@ -124,5 +124,4 @@ const DarkBackground = styled.div`
   left: 0px;
 `
 
-
 export default RelatedWords;

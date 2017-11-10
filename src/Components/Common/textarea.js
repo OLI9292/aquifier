@@ -16,8 +16,10 @@ const Default = styled.textarea`
 `
 
 const Medium = Default.extend`
-  width: 250px;
-  height: 50px;
+  width: ${props => props.long 
+    ? '500px'
+    : props.short ? '125px' : '250px'};
+  height: 55px;
   line-height: 50px;
   font-size: 1.2em;
 
@@ -29,7 +31,7 @@ const Medium = Default.extend`
 
 const Small = Default.extend`
   width: 120px;
-  height: 30px;
+  height: 35px;
   line-height: 30px;
   font-size: 0.75em;
 `

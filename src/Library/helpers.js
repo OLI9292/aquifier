@@ -10,7 +10,7 @@ export const toArr = (elem) => {
 }
 
 export const toUnderscore = (str) => {
-  return str.split('').map((c) => '_').join('');
+  return str ? str.split('').map((c) => '_').join('') : '';
 }
 
 export const isLetter = (str) => {
@@ -46,6 +46,11 @@ export const concat = (x, y) => x.concat(y)
 export const flatMap = (f, xs) => xs.map(f).reduce(concat, [])
 
 export const sum = (arr, attr) => _.reduce(_.pluck(arr, attr), (n, m) => n + m, 0)
+
+export const move = (array, fromIndex, toIndex) => {
+  array.splice(toIndex, 0, array.splice(fromIndex, 1)[0]);
+  return array;
+} 
 
 export const lighten10 = (hex) => {
   const colors = {};

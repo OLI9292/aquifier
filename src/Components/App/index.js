@@ -6,6 +6,7 @@ import styled from 'styled-components';
 
 import Admin from '../Admin/index';
 import Game from '../Game/index';
+import Game2 from '../Game/index2';
 import Lesson from '../Game/lesson';
 import Header from '../Header/index';
 import Home from '../Home/index';
@@ -15,6 +16,7 @@ import Join from '../Join/index';
 import Leaderboard from '../Leaderboard/index';
 import ClassesDashboard from '../Dashboard/classes';
 import LessonsDashboard from '../Dashboard/lessons';
+import WordListsDashboard from '../Dashboard/wordLists';
 import Profile from '../Profile/index';
 import Lobby from '../Lobby/index';
 import Settings from '../Settings/index';
@@ -40,6 +42,7 @@ class App extends Component {
 
           <Route exact path='/classes' component={() => <Container component='classesDashboard' />} />
           <Route exact path='/lessons' component={() => <Container component='lessonsDashboard' />} />
+          <Route exact path='/word-lists' component={() => <Container component='wordListsDashboard' />} />
           <Route exact path='/education' component={() => <Container component='education' />} />
           <Route exact path='/settings/multiplayer' component={() => <Container component='settings' multiplayer={true} />} />
           <Route exact path='/game/admin/:settings' component={({ match }) => {
@@ -47,8 +50,9 @@ class App extends Component {
           }} />
           <Route exact path='/game/:settings' component={({ match }) => {
             const settings = queryString.parse(match.params.settings);
+            console.log(settings)
             if (settings.lesson) {
-              return <Container component='lesson' id={settings.lesson} />
+              return <Container component='game' settings={settings} />
             } else {
               return <Container component={settings.multiplayer ? settings.component : 'game'} settings={settings} />
             }
@@ -64,7 +68,6 @@ class Container extends Component {
   render() {
     const isMobile = mobilecheck();
     const isGame = this.props.component === 'game';
-    const styles = isGame ? { minHeight: '600px', height: '85%' } : { minHeight: '600px' };
 
     if (isMobile && this.props.component !== 'home') { return <MobilePopup /> };
     
@@ -72,13 +75,14 @@ class Container extends Component {
       switch (this.props.component) {
         case 'admin': return <Admin settings={this.props.settings} />
         case 'education': return <InfoForm />
-        case 'game': return <Game settings={this.props.settings} />
+        case 'game': return <Game2 settings={this.props.settings} />
         case 'lesson': return <Lesson id={this.props.id} />
         case 'join': return <Join />
         case 'lobby': return <Lobby />
         case 'profile': return <Profile userId={this.props.userId} />
         case 'classesDashboard': return <ClassesDashboard />
         case 'lessonsDashboard': return <LessonsDashboard />
+        case 'wordListsDashboard': return <WordListsDashboard />
         case 'leaderboard': return <Leaderboard settings={this.props.settings} />
         case 'settings': return <Settings multiplayer={this.props.multiplayer} />
         case 'waiting': return <Waiting settings={this.props.settings} />
@@ -89,7 +93,7 @@ class Container extends Component {
     return (
       <OuterFrame>
         <Header />
-        <InnerFrame style={styles}>
+        <InnerFrame>
           {component()}
         </InnerFrame>
       </OuterFrame>
@@ -111,6 +115,7 @@ const InnerFrame = styled.div`
   width: 80%;
   max-width: 900px;
   min-width: 750px;
+  min-height: 600px;
   margin-top: 120px;
   margin-bottom: 2.5%;
   margin-left: auto;
