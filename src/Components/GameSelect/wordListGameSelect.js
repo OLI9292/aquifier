@@ -74,7 +74,7 @@ class WordListGameSelect extends Component {
     const timeLimit = this.state.timeLimit;
     const players = 'single';
     const wordList = _.find(_.flatten(_.values(this.state.wordLists)), (w) => w.id === this.state.selected);
-    return wordList ? `/game/players=${players}&wordList=${wordList.id}&time=${timeLimit}` : null;
+    return wordList ? `/play/players=${players}&wordList=${wordList.id}&time=${timeLimit}` : null;
   }
 
   handleClickedBack() {

@@ -63,7 +63,6 @@ class Game extends Component {
 
   setupWordList = async (id) => {
     const result = await WordList.fetch(id);
-
     if (result) {
       const wordList = result.data;
       const name = wordList.name;
@@ -91,7 +90,7 @@ class Game extends Component {
 
   runInterlude = async () => {
     this.setState({ isInterlude: true });
-    await sleep(4000);
+    await sleep(1500);
     this.setState({ isInterlude: false });
     return;
   }
