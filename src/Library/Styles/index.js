@@ -26,3 +26,10 @@ export const color = {
   facebookBlue: '#4862A3',
   facebookBlue10l: '#5a71ac'
 };
+
+export const breakpoints = {
+  largeWH: '@media screen and (max-height: 700px), screen and (max-width: 1150px)',
+  largeW: '@media screen and (max-width: 1150px)',
+  mediumW: '@media screen and (max-width: 1000px)',
+  smallW: '@media (max-width: 600px)'
+}

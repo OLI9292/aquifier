@@ -7,11 +7,13 @@ import styled from 'styled-components';
 import Admin from '../Admin/index';
 import Game from '../Game/index';
 import Game2 from '../Game/index2';
-import Lesson from '../Game/lesson';
 import Header from '../Header/index';
 import Home from '../Home/index';
 import MobilePopup from '../MobilePopup/index';
 import InfoForm from '../InfoForm/index';
+import GameSelect from '../GameSelect/index';
+import WordListGameSelect from '../GameSelect/wordListGameSelect';
+import ReadingGameSelect from '../GameSelect/readingGameSelect';
 import Join from '../Join/index';
 import Leaderboard from '../Leaderboard/index';
 import ClassesDashboard from '../Dashboard/classes';
@@ -19,44 +21,40 @@ import LessonsDashboard from '../Dashboard/lessons';
 import WordListsDashboard from '../Dashboard/wordLists';
 import Profile from '../Profile/index';
 import Lobby from '../Lobby/index';
-import Settings from '../Settings/index';
 import Waiting from '../Waiting/index';
-import { color } from '../../Library/Styles/index';
+import { color, breakpoints } from '../../Library/Styles/index';
 import { mobilecheck } from '../../Library/helpers';
 import './index.css';
 
 class App extends Component {
   render() {
+
     return (
       <BrowserRouter>
         <Switch>
           <Route exact path='/' component={Home} />
           <Route exact path='/lobby' component={() => <Container component='lobby' />} />
           <Route exact path='/join' component={() => <Container component='join' />} />
-          <Route exact path='/settings' component={() => <Container component='settings' />} />
           <Route exact path='/profile' component={() => <Container component='profile' />} />
 
           <Route exact path='/profile/:userId' component={({ match }) => {
             return <Container component='profile' userId={match.params.userId} />;
           }} />
 
-          <Route exact path='/classes' component={() => <Container component='classesDashboard' />} />
+          
+          <Route exact path='/play' component={() => <Container component='gameSelect' />} />
+          <Route path='/play/:settings' component={({ match }) => {
+            const settings = queryString.parse(match.params.settings);
+            const component = settings.setup
+              ? `${settings.game === 'read' ? 'reading' : 'wordList'}GameSelect`
+              : 'game';
+            return <Container component={component} settings={settings} />
+          }} />
+
           <Route exact path='/lessons' component={() => <Container component='lessonsDashboard' />} />
           <Route exact path='/word-lists' component={() => <Container component='wordListsDashboard' />} />
+          <Route exact path='/classes' component={() => <Container component='classesDashboard' />} />
           <Route exact path='/education' component={() => <Container component='education' />} />
-          <Route exact path='/settings/multiplayer' component={() => <Container component='settings' multiplayer={true} />} />
-          <Route exact path='/game/admin/:settings' component={({ match }) => {
-            return <Container component='admin' settings={queryString.parse(match.params.settings)} />;
-          }} />
-          <Route exact path='/game/:settings' component={({ match }) => {
-            const settings = queryString.parse(match.params.settings);
-            console.log(settings)
-            if (settings.lesson) {
-              return <Container component='game' settings={settings} />
-            } else {
-              return <Container component={settings.multiplayer ? settings.component : 'game'} settings={settings} />
-            }
-          }} />
         </Switch>
       </BrowserRouter>
     );
@@ -75,8 +73,13 @@ class Container extends Component {
       switch (this.props.component) {
         case 'admin': return <Admin settings={this.props.settings} />
         case 'education': return <InfoForm />
+        
         case 'game': return <Game2 settings={this.props.settings} />
-        case 'lesson': return <Lesson id={this.props.id} />
+
+        case 'gameSelect': return <GameSelect />
+        case 'wordListGameSelect': return <WordListGameSelect settings={this.props.settings} />
+        case 'readingGameSelect': return <ReadingGameSelect settings={this.props.settings} />
+
         case 'join': return <Join />
         case 'lobby': return <Lobby />
         case 'profile': return <Profile userId={this.props.userId} />
@@ -84,7 +87,6 @@ class Container extends Component {
         case 'lessonsDashboard': return <LessonsDashboard />
         case 'wordListsDashboard': return <WordListsDashboard />
         case 'leaderboard': return <Leaderboard settings={this.props.settings} />
-        case 'settings': return <Settings multiplayer={this.props.multiplayer} />
         case 'waiting': return <Waiting settings={this.props.settings} />
         default: return <Home />
       }
@@ -104,22 +106,27 @@ class Container extends Component {
 const OuterFrame = styled.div`
   height: 100%;
   width: 100%;
-  min-width: 600px;
-  padding-bottom: 10px;
   background-color: ${color.blue};
   display: block;
   overflow: auto;
 `
 
 const InnerFrame = styled.div`
-  width: 80%;
-  max-width: 900px;
-  min-width: 750px;
-  min-height: 600px;
-  margin-top: 120px;
-  margin-bottom: 2.5%;
-  margin-left: auto;
-  margin-right: auto;
+  width: 1000px;
+  ${breakpoints.largeW} {
+    width: 900px;
+  }  
+  ${breakpoints.mediumW} {
+    width: 800px;
+  }
+  padding-bottom: 25px;
+  position: relative;
+  margin-left: 2.5%;
+  margin-right: 2.5%;
+  margin: auto;
+  min-height: 450px;
+  margin-top: 25px;
+  margin-bottom: 25px;
   background-color: white;
   border-radius: 10px;
 `

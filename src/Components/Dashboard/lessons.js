@@ -39,8 +39,11 @@ class LessonsDashboard extends Component {
   }
 
   componentDidMount() {
-    this.setState({ userId: localStorage.getItem('userId') }, this.loadData);
-    this.reset();
+    const userId = localStorage.getItem('userId');
+    if (userId) {
+      this.setState({ userId: userId }, this.loadData);
+      this.reset();      
+    }
   }
 
   loadData() {
@@ -187,7 +190,8 @@ class LessonsDashboard extends Component {
       filename: filename,
       updatedOn: createdOn,
       questions: questions,
-      classes: this.checkedClasses()
+      classes: this.checkedClasses(),
+      public: this.state.userId === '59e5026f30616e001f1268e1'
     }
 
     const result = this.state.isNewLesson

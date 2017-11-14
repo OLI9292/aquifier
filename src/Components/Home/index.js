@@ -52,15 +52,20 @@ class Home extends Component {
       return <Redirect push to={this.state.redirect} />;
     }
 
+    if (localStorage.getItem('userId') !== null) {
+      this.setState({ redirect: '/play'});
+    }
+
     const introSection = () => {
       return <TopLeftContainer>
         <Subtitle>
-          Master the Greek and Latin roots of English.
+          Learn English vocabulary through Greek and Latin root words.
         </Subtitle>
         {this.state.isSmallScreen && <DaisyChain />}
-        <Explanation>
-          Expand your vocabulary without memorizing long lists of words. Prepare for a test, specialize in a topic, or just learn the entire dictionary.
-        </Explanation>
+        <div style={{textAlign:'center'}}>
+          <Button.medium color={color.green} style={{width:'90%'}} onClick={() => this.setState({ redirect: '/play' })}>Play Now</Button.medium>
+          {Button.iOS({width:'90%',marginTop:'15px'})}
+        </div>
       </TopLeftContainer>
     }
 
@@ -108,6 +113,7 @@ class Home extends Component {
         </TextContainer>
       </Container>
     }
+
     const bringToYourClassroomForm = () => {
       return <Container>
         <Heading padLeft color={color.green}>
@@ -116,6 +122,7 @@ class Home extends Component {
         <InfoForm />
       </Container>
     }
+
     return (
       <OuterContainer>
         <Header />
@@ -224,21 +231,6 @@ const Subtitle = styled.p`
   @media (max-width: 450px) {
     font-size: 1.25em;
     line-height: 30px;
-  }
-`
-const Explanation = styled.p`
-  color: ${color.darkGray};
-  font-size: 1.25em;
-  width: 90%;
-  margin-left: 5%;
-  line-height: 35px;
-  @media (max-width: 1100px) {
-    font-size: 1.2em;
-    line-height: 30px;
-  }
-  @media (max-width: 450px) {
-    font-size: 0.9em;
-    line-height: 25px;
   }
 `
 

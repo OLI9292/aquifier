@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import { Redirect } from 'react-router';
 
-import { color } from '../../Library/Styles/index';
+import { color, breakpoints } from '../../Library/Styles/index';
 import Link from '../Common/link';
 
 class Navigation extends Component {
@@ -68,13 +68,15 @@ class Navigation extends Component {
 }
 
 const Layout = styled.div`
-  @media (max-width: 600px) {
+  ${breakpoints.smallW} {
     font-size: 0.75em;
-  }  
+  }
 `
 
 const DropdownContainer = styled.div`
   width: 100px;
+  position: relative;
+  z-index: ${props => props.visibility ? 2000 : 0};  
   background-color: white;
   border-radius: 10px;
   padding: 5px;

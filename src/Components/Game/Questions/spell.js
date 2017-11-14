@@ -1,10 +1,10 @@
-/*import React, { Component } from 'react';
+import React, { Component } from 'react';
 import styled from 'styled-components';
 import _ from 'underscore';
 
-import Button from '../Common/button';
-import { color } from '../../Library/Styles/index';
-import { isLetter, sleep, toUnderscore } from '../../Library/helpers';
+import Button from '../../Common/button';
+import { color } from '../../../Library/Styles/index';
+import { isLetter, sleep, toUnderscore } from '../../../Library/helpers';
 
 class SpellQuestion extends Component {
   constructor(props) {
@@ -80,7 +80,8 @@ class SpellQuestion extends Component {
     const answerComplete = _.isEmpty(this.state.components.filter(this.isIncorrect));
     if (answerComplete && !this.state.answerComplete) {
       this.setState({ answerComplete: true, cursor: -1 }, () => this.props.nextQuestion());
-      this.props.record(true);
+      // TODO: - implement
+      // this.props.record(this.state.correct);
     }
   }
 
@@ -117,9 +118,9 @@ class SpellQuestion extends Component {
   }
 
   reset(word) {
-    const params = this.props.level === 'Intermediate'
-      ? this.intermediateParams(word)
-      : this.advancedParams(word);
+    const params = this.props.isEasy
+      ? this.easyParams(word)
+      : this.hardParams(word);
 
     this.setState({
       answer: params.answer,
@@ -134,7 +135,7 @@ class SpellQuestion extends Component {
     });
   }
 
-  intermediateParams(word) {
+  easyParams(word) {
     const randomRoot = _.shuffle(word.roots)[Math.floor(Math.random() * (word.roots.length - 1))];
     const answer = _.find(this.props.roots, (r) => r._id === randomRoot).value;
     const components = _.flatten(word.components.map((c) => {
@@ -145,7 +146,7 @@ class SpellQuestion extends Component {
     return { answer: answer, components: components, cursorEndpoints: cursorEndpoints };
   }
 
-  advancedParams(word) {
+  hardParams(word) {
     const answer = word.components.map((c) => c.value).join('');
     const components = word.value.split('').map((char) => ({ value: char, guess: null }));
     const cursorEndpoints = [0, answer.length - 1];
@@ -215,17 +216,14 @@ class SpellQuestion extends Component {
     }
 
     return (
-      <Layout>
+      <div>
         <Definition>{definition()}</Definition>
         <div>{answerSpaces()}</div>
         <HintButton display={!this.props.isDisplayingImage} type='button' onClick={() => this.pressedHint()}>Hint</HintButton>
-      </Layout>
+      </div>
     );
   }
 }
-
-const Layout = styled.div`
-`
 
 const AnswerSpace = styled.p`
   color: ${
@@ -236,12 +234,8 @@ const AnswerSpace = styled.p`
   margin: 0% 1% 0% 1%;
   &::before {
      content: "I";
-     color: ${
-       props => props.cursorOn ? color.blue : 'transparent'
-     };
-     animation: ${
-       props => props.cursorOn ? 'blink 1s step-end infinite' : 'none'
-     };
+     color: ${props => props.cursorOn ? color.blue : 'transparent'};
+     animation: ${props => props.cursorOn ? 'blink 1s step-end infinite' : 'none'};
      @keyframes blink {
        50% { opacity: 0; }
      }
@@ -267,4 +261,3 @@ const HintButton = Button.medium.extend`
 `
 
 export default SpellQuestion;
-*/

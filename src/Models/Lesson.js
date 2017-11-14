@@ -36,7 +36,7 @@ const forTeacher = async (id) => {
 
 const forStudent = async (id) => {
   try {
-    return await axios.get(`${CONFIG.ACCOUNTS_API}/lesson?student=${id}`);
+    return await axios.get(`${CONFIG.ACCOUNTS_API}/lesson?student=${id || 'anon'}`);
   } catch (e) {
     return e.response.data;
   }

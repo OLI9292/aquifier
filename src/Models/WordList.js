@@ -1,13 +1,15 @@
 import axios from 'axios';
 import CONFIG from '../Config/main';
 
-const fetch = async () => {
+const fetch = async (id) => {
   try {
-    return await axios.get(`${CONFIG.WORDS_API}/word-lists`);
+    let url = `${CONFIG.WORDS_API}/word-lists`
+    if (id) { url += `/${id}`};
+    return await axios.get(url);
   } catch (e) {
     return e.response.data;
   }
-}  
+}
 
 const create = async (data) => {
   try {

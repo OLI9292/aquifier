@@ -64,10 +64,8 @@ class OnCorrectImage extends Component {
 
 const Layout = styled.div`
   display: ${props => props.display ? 'block' : 'none'};
-  margin: auto;
-  width: 100%;
-  height: 250px;
-  margin-top: 2em;
+  height: 70%;
+  vertical-align: middle;
 `
 
 const Image = styled.img`

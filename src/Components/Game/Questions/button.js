@@ -152,11 +152,6 @@ const GameButton = Button.large.extend`
   }
   transition-duration: 0.2s;
   margin: 10px;
-  width: 250px;
-  font-size: 2.2em;
-  @media (max-width: 1000px) {
-    font-size: 1.8em;
-  }
 `
 
 const SmallText = styled.span`

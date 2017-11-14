@@ -12,6 +12,8 @@ import CONFIG from '../../Config/main';
 import deletePng from '../../Library/Images/delete.png';
 import upArrow from '../../Library/Images/arrow_up.png';
 import downArrow from '../../Library/Images/arrow_down.png';
+import checkboxChecked from '../../Library/Images/checkbox-checked.png';
+import checkboxUnchecked from '../../Library/Images/checkbox-unchecked.png';
 import Link from '../Common/link';
 import Textarea from '../Common/textarea';
 import { unixTime, move } from '../../Library/helpers';
@@ -43,15 +45,13 @@ class WordListsDashboard extends Component {
 
   loadWordLists = async () => {
     const result = await WordList.fetch();
-    console.log(1)
     const wordLists = result.data || [];
     this.setState({ wordLists });    
   }
 
   loadWords = async () => {
     const result = await Word.fetch();
-    console.log(2)
-    const words = _.pluck((result.data.words || []), 'value');
+    const words = _.pluck((result.data || []), 'value');
     this.setState({ words });    
   }  
 
@@ -74,6 +74,7 @@ class WordListsDashboard extends Component {
       name: wordList.name,
       category: wordList.category,
       description: wordList.description,
+      isStudy: wordList.isStudy,
       questions: wordList.questions.map((l) => ({ word: l.word, difficulty: l.difficulty }))
     }
 
@@ -90,20 +91,19 @@ class WordListsDashboard extends Component {
 
     if (!this.state.currentlyEditing.name) {
       errorMsg = 'Please enter a name.'
-    } else if (!this.state.currentlyEditing.category) {
-      errorMsg = 'Please enter a category.'
-    } else if (!this.state.currentlyEditing.description) {
-      errorMsg = 'Please enter a description.'
-    } else if (!this.state.currentlyEditing.questions) {
+    }
+    if (!this.state.currentlyEditing.questions) {
       errorMsg = 'Lists require at least 1 question.'
     }
 
     if (errorMsg) {
       this.setState({ errorMsg });
     } else {
+      const wordList = this.state.currentlyEditing;
+      wordList.updatedOn = unixTime();
       const result = this.state.isNewWordList
-        ? (await WordList.create(this.state.currentlyEditing))
-        : (await WordList.update(this.state.wordListId, this.state.currentlyEditing));
+        ? (await WordList.create(wordList))
+        : (await WordList.update(this.state.wordListId, wordList));
       this.reset()
     }
   }
@@ -136,6 +136,12 @@ class WordListsDashboard extends Component {
     this.setState({ currentlyEditing });
   }
 
+  update(attr, to) {
+    const currentlyEditing = this.state.currentlyEditing;
+    currentlyEditing[attr] = to;
+    this.setState({ currentlyEditing });
+  }
+
   render() {
     if (this.state.redirect && !window.location.href.endsWith(this.state.redirect)) {
       return <Redirect push to={this.state.redirect} />;
@@ -165,9 +171,9 @@ class WordListsDashboard extends Component {
 
     const allWordLists = () => {
       return <div>
-        <Header>Word Lists</Header>
+        <p style={{fontSize:'2.75em',textAlign:'center',lineHeight:'0px'}}>Word Lists</p>
         <Button.small
-          color={color.red} style={{float:'right',margin:'-65px 25px 0px 0px'}}
+          color={color.red} style={{float:'right',marginTop:'-65px'}}
           onClick={() => this.setState({ isEditing: true, isNewWordList: true })}
         >Create</Button.small>
         <Table>
@@ -188,7 +194,7 @@ class WordListsDashboard extends Component {
                   </td>
                   <th style={{width:'35%',textAlign:'center'}}>{l.name}</th>
                   <td style={{width:'25%',textAlign:'center'}}>{l.questions.length}</td>
-                  <td style={{width:'30%',textAlign:'center'}}></td>
+                  <td style={{width:'30%',textAlign:'center'}}>{moment.unix(l.updatedOn).format('MMM Do YY')}</td>
                 </tr>
               })
             }
@@ -260,7 +266,7 @@ class WordListsDashboard extends Component {
               <Textarea.medium
                 placeholder={'ex. Keystar 1'}
                 value={this.state.currentlyEditing.name}
-                onChange={(e) => { const c = this.state.currentlyEditing; c.name = e.target.value; this.setState({ currentlyEditing: c }) }}
+                onChange={(e) => this.update('name', e.target.value)}
               />
             </td>
           </EditRow>
@@ -271,7 +277,7 @@ class WordListsDashboard extends Component {
               <Textarea.medium
                 placeholder={'ex. ESL'}
                 value={this.state.currentlyEditing.category}
-                onChange={(e) => { const c = this.state.currentlyEditing; c.category = e.target.value; this.setState({ currentlyEditing: c }) }}
+                onChange={(e) => this.update('category', e.target.value)}
               />
             </td>
           </EditRow>
@@ -282,10 +288,26 @@ class WordListsDashboard extends Component {
               <Textarea.medium long
                 placeholder={'ex. English as a Second Language'}
                 value={this.state.currentlyEditing.description}
-                onChange={(e) => { const c = this.state.currentlyEditing; c.description = e.target.value; this.setState({ currentlyEditing: c }) }}
+                onChange={(e) => this.update('description', e.target.value)}
               />
             </td>
           </EditRow>
+
+          <EditRow>
+            <EditTableHeader>Type</EditTableHeader>
+            <td>
+              <div onClick={() => this.update('isStudy', true)}
+                style={{height:'20px',marginBottom:'10px',display:'flex',alignItems:'center',cursor:'pointer'}}>
+                <img style={{height:'100%'}} src={this.state.currentlyEditing.isStudy ? checkboxChecked : checkboxUnchecked} />
+                <p style={{fontFamily:'BrandonGrotesque',marginLeft:'5px'}}>Study</p>
+              </div>
+              <div onClick={() => this.update('isStudy', false)}
+                style={{height:'20px',marginBottom:'10px',display:'flex',alignItems:'center',cursor:'pointer'}}>
+                <img style={{height:'100%'}} src={!this.state.currentlyEditing.isStudy ? checkboxChecked : checkboxUnchecked} />
+                <p style={{fontFamily:'BrandonGrotesque',marginLeft:'5px'}}>Explore</p>
+              </div>              
+            </td>
+          </EditRow>          
 
           </tbody>
         </table>
@@ -299,9 +321,9 @@ class WordListsDashboard extends Component {
     }
 
     return (
-      <Layout>
+      <div style={{width:'95%',margin:'0 auto'}}>
         {this.state.isEditing ? editingWordList() : allWordLists()}
-      </Layout>
+      </div>
     );
   }
 }
@@ -328,20 +350,6 @@ const ErrorMessage = styled.p`
   height: 15px;
   line-height: 15px;
   text-align: right;
-`
-
-const Header = styled.p`
-  width: 100%;
-  font-size: 2.75em;
-  padding-top: 25px;
-  text-align: center;
-  height: 25px;
-`
-
-const Layout = styled.div`
-  width: 95%;
-  margin: 0 auto;
-  padding-top: 25px;
 `
 
 const LessonButton = styled.p`
