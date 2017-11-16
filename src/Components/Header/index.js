@@ -4,6 +4,7 @@ import { Redirect } from 'react-router';
 import _ from 'underscore';
 
 import { color } from '../../Library/Styles/index';
+import { isHome } from '../../Library/helpers';
 import Login from '../Login/index';
 import EmailLogin from '../Login/emailLogin';
 import Navigation from './navigation';
@@ -32,13 +33,17 @@ class Header extends Component {
     const userId = localStorage.getItem('userId');
     const classId = localStorage.getItem('classId');
 
-    this.setState({
-      displayLogin: false,
-      displayEmailLogin: false,
-      loggedIn: !_.isNull(userId),
-      userId: userId,
-      isTeacher: !_.isNull(classId)
-    });
+    if (isHome()) {
+      this.setState({ redirect: '/play' })
+    } else {
+      this.setState({
+        displayLogin: false,
+        displayEmailLogin: false,
+        loggedIn: !_.isNull(userId),
+        userId: userId,
+        isTeacher: !_.isNull(classId)
+      });      
+    }
   }
 
   displayEmailLogin() {

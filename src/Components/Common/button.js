@@ -97,7 +97,7 @@ const iOS = (style = {}) => {
   return <MediumButton color={color.black} style={style}>
     <Link.default style={{fontSize:'inherit'}} href={GLOBAL.IOSURL} target='blank' color={'white'}>
       <LinkContent>
-        <img style={{height: '75%', marginRight: '5%',width: 'auto'}} src={require('../../Library/Images/apple-logo.png')} />
+        <img alt='iOS' style={{height: '75%', marginRight: '5%',width: 'auto'}} src={require('../../Library/Images/apple-logo.png')} />
         <LinkText>iOS</LinkText>
       </LinkContent>
     </Link.default>

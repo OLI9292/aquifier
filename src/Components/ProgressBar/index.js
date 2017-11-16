@@ -1,27 +1,15 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import _ from 'underscore';
 
 import { color } from '../../Library/Styles/index';
 
 class ProgressBar extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   marginLeft(checkpoint) {
     switch(checkpoint) {
-      case 0:
-        return this.props.checkpoints[0]
-        break
-      case 1:
-        return this.props.checkpoints[1] - this.props.checkpoints[0]
-        break
-      case 2: 
-        return this.props.checkpoints[2] - this.props.checkpoints[1]
-        break
-      default:
-        break
+      case 0: return this.props.checkpoints[0];
+      case 1: return this.props.checkpoints[1] - this.props.checkpoints[0];
+      case 2: return this.props.checkpoints[2] - this.props.checkpoints[1]
+      default: break
     }
   }
 

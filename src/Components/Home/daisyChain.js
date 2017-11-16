@@ -2,33 +2,31 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import * as d3 from 'd3';
 
-import { color } from '../../Library/Styles/index';
+const words = [
+  { value: 'cryptogram', definition: 'a piece of writing in a secret code', indices: [0,4], marginAdjustment: '24%' },
+  { value: 'cryptography', definition: 'the writing and decoding of secret codes', indices: [0,4], marginAdjustment: '20%' },
+  { value: 'telegraph', definition: 'a device for sending a written message over a great distance by wires', indices: [4,8],marginAdjustment: '25%' },
+  { value: 'dermatoglyph', definition: 'the fingerprint, i.e. a symbol found in the skin of the fingertips', indices: [], marginAdjustment: '20%' },
+  { value: 'decagon', definition: 'a geometrical shape with ten angles', indices: [], marginAdjustment: '32%' },
+  { value: 'cephalopod', definition: 'an animal, such as a squid, that uses its head as a foot', indices: [], marginAdjustment: '25%'},
+  { value: 'gastropod', definition: 'an animal that uses its stomach as a foot - such as a snail', indices: [6,8], marginAdjustment: '25%' },
+  { value: 'pteropod', definition: 'a sea creature with a winged foot for swimming, also known as the sea butterfly', indices: [5,7], marginAdjustment: '28%' },
+  { value: 'pterodactyl', definition: 'an extinct flying dinosaur which had a finger on its wing', indices: [0,4], marginAdjustment: '23%' },
+  { value: 'quadruped', definition: 'a four legged animal', indices: [], marginAdjustment: '26%' },
+  { value: 'quadrilateral', definition: 'a four sided shape', indices: [0,3], marginAdjustment: '17%' },
+  { value: 'equilateral', definition: 'having equal sides', indices: [4,10], marginAdjustment: '23%' },
+  { value: 'polydactylic', definition: 'having many or too many fingers or toes', indices: [], marginAdjustment: '20%' },
+  { value: 'polyhedron', definition: 'a solid geometrical shape with many faces', indices: [0,3], marginAdjustment: '24%' },
+  { value: 'protoplasm', definition: 'the living material inside a cell, so named because it is the first formed thing', indices: [], marginAdjustment: '24%' },
+  { value: 'isometric', definition: 'having equal measure', indices: [], marginAdjustment: '25%' },
+  { value: 'lithograph', definition: 'a symbol or inscription on stone', indices: [0,3], marginAdjustment: '24%' },
+  { value: 'monolith', definition: 'a single piece of stone', indices: [4,7], marginAdjustment: '28%' },
+  { value: 'monogram', definition: 'a symbol with one initial letter from each word', indices: [4,7], marginAdjustment: '26%' }
+]
 
 class DaisyChain extends Component {
   constructor(props) {
     super(props);
-
-    const words = [
-      { value: 'cryptogram', definition: 'a piece of writing in a secret code', indices: [0,4], marginAdjustment: '24%' },
-      { value: 'cryptography', definition: 'the writing and decoding of secret codes', indices: [0,4], marginAdjustment: '20%' },
-      { value: 'telegraph', definition: 'a device for sending a written message over a great distance by wires', indices: [4,8],marginAdjustment: '25%' },
-      { value: 'dermatoglyph', definition: 'the fingerprint, i.e. a symbol found in the skin of the fingertips', indices: [], marginAdjustment: '20%' },
-      { value: 'decagon', definition: 'a geometrical shape with ten angles', indices: [], marginAdjustment: '32%' },
-      { value: 'cephalopod', definition: 'an animal, such as a squid, that uses its head as a foot', indices: [], marginAdjustment: '25%'},
-      { value: 'gastropod', definition: 'an animal that uses its stomach as a foot - such as a snail', indices: [6,8], marginAdjustment: '25%' },
-      { value: 'pteropod', definition: 'a sea creature with a winged foot for swimming, also known as the sea butterfly', indices: [5,7], marginAdjustment: '28%' },
-      { value: 'pterodactyl', definition: 'an extinct flying dinosaur which had a finger on its wing', indices: [0,4], marginAdjustment: '23%' },
-      { value: 'quadruped', definition: 'a four legged animal', indices: [], marginAdjustment: '26%' },
-      { value: 'quadrilateral', definition: 'a four sided shape', indices: [0,3], marginAdjustment: '17%' },
-      { value: 'equilateral', definition: 'having equal sides', indices: [4,10], marginAdjustment: '23%' },
-      { value: 'polydactylic', definition: 'having many or too many fingers or toes', indices: [], marginAdjustment: '20%' },
-      { value: 'polyhedron', definition: 'a solid geometrical shape with many faces', indices: [0,3], marginAdjustment: '24%' },
-      { value: 'protoplasm', definition: 'the living material inside a cell, so named because it is the first formed thing', indices: [], marginAdjustment: '24%' },
-      { value: 'isometric', definition: 'having equal measure', indices: [], marginAdjustment: '25%' },
-      { value: 'lithograph', definition: 'a symbol or inscription on stone', indices: [0,3], marginAdjustment: '24%' },
-      { value: 'monolith', definition: 'a single piece of stone', indices: [4,7], marginAdjustment: '28%' },
-      { value: 'monogram', definition: 'a symbol with one initial letter from each word', indices: [4,7], marginAdjustment: '26%' }
-]
 
     this.state = {
       words: words,
@@ -95,7 +93,6 @@ class DaisyChain extends Component {
 
   render() {
     const word = this.state.words[this.state.idx];
-    const marginValues = []
     return (
       <Layout>
         <div style={{marginLeft: word.marginAdjustment, height: '100px'}}>

@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import { lighten10 } from '../../Library/helpers';
-import { color } from '../../Library/Styles/index';
 
 const Default = styled.a`
   color: ${props => props.color || 'white'};

@@ -19,7 +19,7 @@ class Timer extends Component {
 
   accountForLateness(secondsLate) {
     const totalSeconds = (this.props.time === '5' ? 300 : 180) - secondsLate;
-    const minutes = parseInt(totalSeconds / 60);
+    const minutes = parseInt(totalSeconds / 60, 10);
     const seconds = (totalSeconds % 60).toString();
     return `${minutes}:${seconds.length === 1 ? '0' + seconds : seconds}`;
   }

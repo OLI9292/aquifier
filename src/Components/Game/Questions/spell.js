@@ -109,7 +109,7 @@ class SpellQuestion extends Component {
   }
 
   handleLetterPress(letter) {
-    if (this.state.cursor != this.state.cursorEndpoints[1] + 1) {
+    if (this.state.cursor !== this.state.cursorEndpoints[1] + 1) {
       let copy = this.state.components;
       copy[this.state.cursor].guess = letter;
       const cursor = this.state.cursor + 1;

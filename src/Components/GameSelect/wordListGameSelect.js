@@ -55,7 +55,7 @@ class WordListGameSelect extends Component {
     return _.groupBy(_.sortBy(wordLists
       .map((w) => {
         const split = w.name.split(' ');
-        const [category, name] = [split.slice(0, split.length - 1).join(' '), parseInt(split[split.length - 1])];
+        const [category, name] = [split.slice(0, split.length - 1).join(' '), parseInt(split[split.length - 1], 10)];
         const valid = split.length > 1 && Number.isInteger(name);
         return valid ? { category: category, name: name, questions: w.questions, id: w._id } : null;
       })

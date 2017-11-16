@@ -5,23 +5,22 @@ import { BrowserRouter } from 'react-router-dom';
 import styled from 'styled-components';
 
 import Admin from '../Admin/index';
-import Game from '../Game/index';
+import ClassesDashboard from '../Dashboard/classes';
 import Game2 from '../Game/index2';
+import GameSelect from '../GameSelect/index';
 import Header from '../Header/index';
 import Home from '../Home/index';
-import MobilePopup from '../MobilePopup/index';
-import InfoForm from '../InfoForm/index';
-import GameSelect from '../GameSelect/index';
-import WordListGameSelect from '../GameSelect/wordListGameSelect';
-import ReadingGameSelect from '../GameSelect/readingGameSelect';
 import Join from '../Join/index';
 import Leaderboard from '../Leaderboard/index';
-import ClassesDashboard from '../Dashboard/classes';
 import LessonsDashboard from '../Dashboard/lessons';
-import WordListsDashboard from '../Dashboard/wordLists';
-import Profile from '../Profile/index';
 import Lobby from '../Lobby/index';
+import MobilePopup from '../MobilePopup/index';
+import Profile from '../Profile/index';
+import ReadingGameSelect from '../GameSelect/readingGameSelect';
 import Waiting from '../Waiting/index';
+import WordListsDashboard from '../Dashboard/wordLists';
+import WordListGameSelect from '../GameSelect/wordListGameSelect';
+
 import { color, breakpoints } from '../../Library/Styles/index';
 import { mobilecheck } from '../../Library/helpers';
 import './index.css';
@@ -54,7 +53,6 @@ class App extends Component {
           <Route exact path='/lessons' component={() => <Container component='lessonsDashboard' />} />
           <Route exact path='/word-lists' component={() => <Container component='wordListsDashboard' />} />
           <Route exact path='/classes' component={() => <Container component='classesDashboard' />} />
-          <Route exact path='/education' component={() => <Container component='education' />} />
         </Switch>
       </BrowserRouter>
     );
@@ -64,30 +62,26 @@ class App extends Component {
 class Container extends Component {
 
   render() {
-    const isMobile = mobilecheck();
-    const isGame = this.props.component === 'game';
-
-    if (isMobile && this.props.component !== 'home') { return <MobilePopup /> };
+    // Display not-mobile-compatable popup
+    if (mobilecheck() && this.props.component !== 'home') { 
+      return <MobilePopup />
+    };
     
     const component = () => {
       switch (this.props.component) {
         case 'admin': return <Admin settings={this.props.settings} />
-        case 'education': return <InfoForm />
-        
+        case 'classesDashboard': return <ClassesDashboard />
         case 'game': return <Game2 settings={this.props.settings} />
-
         case 'gameSelect': return <GameSelect />
-        case 'wordListGameSelect': return <WordListGameSelect settings={this.props.settings} />
-        case 'readingGameSelect': return <ReadingGameSelect settings={this.props.settings} />
-
         case 'join': return <Join />
+        case 'leaderboard': return <Leaderboard settings={this.props.settings} />
+        case 'lessonsDashboard': return <LessonsDashboard />
         case 'lobby': return <Lobby />
         case 'profile': return <Profile userId={this.props.userId} />
-        case 'classesDashboard': return <ClassesDashboard />
-        case 'lessonsDashboard': return <LessonsDashboard />
-        case 'wordListsDashboard': return <WordListsDashboard />
-        case 'leaderboard': return <Leaderboard settings={this.props.settings} />
+        case 'readingGameSelect': return <ReadingGameSelect settings={this.props.settings} />
         case 'waiting': return <Waiting settings={this.props.settings} />
+        case 'wordListsDashboard': return <WordListsDashboard />
+        case 'wordListGameSelect': return <WordListGameSelect settings={this.props.settings} />
         default: return <Home />
       }
     }

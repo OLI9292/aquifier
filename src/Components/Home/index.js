@@ -6,7 +6,6 @@ import Button from '../Common/button';
 import DaisyChain from './daisyChain';
 import InfoForm from '../InfoForm/index';
 import Header from '../Header/index';
-import HelpText from '../HelpText/index';
 import { color } from '../../Library/Styles/index';
 
 class Home extends Component {
@@ -39,14 +38,6 @@ class Home extends Component {
     this.setState({ redirect: location });
   }
 
-  showHelpText() {
-    this.setState({ showHelpText: true });
-  }
-
-  hideHelpText() {
-    this.setState({ showHelpText: false });
-  }
-
   render() {
     if (this.state.redirect && !window.location.href.endsWith(this.state.redirect)) {
       return <Redirect push to={this.state.redirect} />;
@@ -69,54 +60,9 @@ class Home extends Component {
       </TopLeftContainer>
     }
 
-    const howItWorksSection = () => {
-      return <Container>
-        <Heading padLeft color={color.blue}>
-          HOW IT WORKS
-        </Heading>
-        <ScreenshotContainer>
-          <Screenshot src={require('../../Library/Images/example.png')} />
-        </ScreenshotContainer>
-        <TextContainer>
-          <Text><BlackSpan><b>60% of English words</b></BlackSpan> have Greek or Latin roots.  In the fields of science and technology, that number is <BlackSpan><b>above 90%.</b></BlackSpan><br /><br />By solving fast-paced puzzles, you will learn hundreds of roots and thousands of words.  Wordcraft is the most fun and efficient way to acquire a large vocabulary.</Text>
-          <Button.iOS />
-        </TextContainer>
-      </Container>
-    }
-
-    const masterATopicSection = () => {
-      return <Container>
-        <Heading padLeft color={color.red}>
-          MASTER A TOPIC
-        </Heading>
-        <TextContainer>
-          <Text style={{textAlign: 'right'}}>Whether you are <BlackSpan><b>preparing for a test, studying a subject</b></BlackSpan> in school or just want to <BlackSpan><b>increase your knowledge</b></BlackSpan>, <GoldSpan><b>WORDCRAFT</b></GoldSpan> makes your studying more effective.<br /><br />Pick the <BlackSpan><b>SAT / ACT, GRE, or IELTS / TOEFL</b></BlackSpan> track to learn thousands of words from each test.<br /><br />Or learn the core vocabulary of subjects like <BlackSpan><b>math, biology, medicine, and zoology.</b></BlackSpan></Text>
-        </TextContainer>
-        <ScreenshotContainer>
-          <Screenshot src={require(`../../Library/Images/categories.png`)} />
-        </ScreenshotContainer>
-      </Container>
-    }
-
-    const spellingBeeSection = () => {
-      return <Container>
-        <Heading padLeft color={color.orange}>
-          SPELLING BEE
-        </Heading>
-        <ScreenshotContainer>
-          <Screenshot src={require(`../../Library/Images/results.png`)} />
-        </ScreenshotContainer>
-        <TextContainer>
-          <Text>Use <GoldSpan><b>WORDCRAFT</b></GoldSpan> spelling bee mode to quickly set up a fast-paced vocabulary game for your class.  Any number of players can join on their own computers.<br /><br />Click <BlackSpan onMouseOver={this.showHelpText.bind(this)} onMouseLeave={this.hideHelpText.bind(this)}><b>here</b></BlackSpan> for a full tutorial on in-class games.</Text>
-          <Button.medium margin={'00px 0px 0px 10px'} onClick={() => this.redirect('/lobby')}
-            color={color.green}>Play Spelling Bee!</Button.medium>
-        </TextContainer>
-      </Container>
-    }
-
     const bringToYourClassroomForm = () => {
       return <Container>
-        <Heading padLeft color={color.green}>
+        <Heading color={color.green}>
           BRING TO YOUR CLASSROOM
         </Heading>
         <InfoForm />
@@ -126,13 +72,9 @@ class Home extends Component {
     return (
       <OuterContainer>
         <Header />
-        {this.state.showHelpText && <HelpTextContainer><HelpText type={'classroomTutorial'} /></HelpTextContainer>}
         <InnerContainer>
           {introSection()}
           {!this.state.isSmallScreen && <DaisyChainContainer><DaisyChain /></DaisyChainContainer>}
-          {howItWorksSection()}
-          {masterATopicSection()}
-          {spellingBeeSection()}
           {bringToYourClassroomForm()}
         </InnerContainer>
       </OuterContainer>
@@ -140,19 +82,6 @@ class Home extends Component {
   }
 }
 
-const HelpTextContainer = styled.div`
-  position: fixed;
-  left: 30%;
-  margin-left: -300px;
-  line-height: 35px;
-  top: 40%;
-  width: 600px;
-  @media (max-width: 1100px) {
-    background-color: white;
-    width: 65%;
-    margin-left: 0;
-  }
-`
 const OuterContainer = styled.div`
   width: 100%;
   background-color: ${color.blue};
@@ -175,7 +104,7 @@ const Heading = styled.h1`
   color: ${props => props.color};
   background-color: ${props => props.backgroundColor || 'transparent'};
   paddingTop: 25px;
-  padding-left: ${props => props.padLeft ? '5%' : '0%'};
+  padding-left: 5%;
   font-size: 2.75em;
   letter-spacing: 2px;
   margin-bottom: 0px;
@@ -192,7 +121,7 @@ const Heading = styled.h1`
 // Top Section
 const TopLeftContainer = styled.div`
   vertical-align: top;
-  margin-top: 100px;
+  margin-top: 25px;
   height: 450px;
   border-radius: 10px;
   background-color: white;
@@ -208,7 +137,7 @@ const TopLeftContainer = styled.div`
 
 const DaisyChainContainer = styled.div`
   margin-left: 5%;
-  margin-top: 100px;
+  margin-top: 25px;
   width: 40%;
   height: 450px;
   display: inline-block;
@@ -233,14 +162,6 @@ const Subtitle = styled.p`
     line-height: 30px;
   }
 `
-
-const BlackSpan = styled.span`
-  color: black;
-`
-const GoldSpan = styled.span`
-  color: ${color.yellow};
-`
-
 // Other Section Components
 const Container = styled.div`
   width: 100%;
@@ -259,50 +180,5 @@ const Container = styled.div`
     height: fit-content;
   }
 `
-const ScreenshotContainer = styled.div`
-  display: inline-block;
-  width: 40%;
-  height: 70%;
-  text-align: center;
-  margin: 0% 5% 0% 5%;
-  margin-top: 35px;
-  @media (max-width: 1100px) {
-    width: 50%;
-    max-width: 300px;
-    display: block;
-    margin: auto;
-  }
-`
-const Screenshot = styled.img`
-  height: 100%;
-  width: auto;
-  @media (max-width: 1100px) {
-    height: auto;
-    width: 100%;
-  }
-`
-const TextContainer = styled.div`
-  display: inline-block;
-  width: 35%;
-  margin-left: 7.5%;
-  vertical-align: top;
-  text-align: center;
-  @media (max-width: 1100px) {
-    width: 90%;
-  }
-`
-const Text = styled.p`
-  line-height: 40px;
-  text-align: left;
-  font-size: 1.5em;
-  color: ${color.darkGray};
-  @media (max-width: 1100px) {
-    line-height: 30px;
-    text-align: left !important;
-    font-size: 1.2em;
-  }
-  @media (max-width: 450px) {
-    font-size: 0.9em;
-  }
-`
+
 export default Home;

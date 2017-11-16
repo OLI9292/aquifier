@@ -67,7 +67,7 @@ class LessonsDashboard extends Component {
 
   loadWordData = async () => {
     const wordsRes = await Word.fetch();
-    if (wordsRes.data && wordsRes.data.words) { this.setState({ words: _.pluck(wordsRes.data.words, 'value') }) }
+    if (wordsRes.data) { this.setState({ words: _.pluck(wordsRes.data, 'value') }) }
   }
 
   loadRelatedWordData = async () => {
@@ -266,7 +266,7 @@ class LessonsDashboard extends Component {
 
         return <tr style={{width:'100%',backgroundColor:rowBackgroundColor}} key={i}>
           <th style={{width:'15%'}}>
-            <DeleteImage style = {{float:'left',marginLeft:'15px'}} src={deletePng} onClick={() => this.handleDeleteRow(i)}/>
+            <DeleteImage style={{float:'left',marginLeft:'15px'}} src={deletePng} alt='delete' onClick={() => this.handleDeleteRow(i)}/>
             {m.word}
           </th>
           <td style={{width:'50%'}}>
@@ -334,7 +334,7 @@ class LessonsDashboard extends Component {
                   onChange={(e) => { if (!fileIsUploaded) { this.handleFiles(e.target.files) } }} />
               </FileUploadLabel>
             </td>
-            <DeleteImage style={{visibility:deleteTextVisibility}} onClick={() => this.handleDeleteFile()} src={deletePng} />
+            <DeleteImage style={{visibility:deleteTextVisibility}} onClick={() => this.handleDeleteFile()} src={deletePng} alt='delete' />
           </tr>
           <tr style={{verticalAlign:'top',height:'75px'}}>
             <th style={{width:'100px',fontSize:'1.5em',textAlign:'left'}}>Classes</th>
@@ -342,7 +342,7 @@ class LessonsDashboard extends Component {
               {
                 this.state.classes.map((c,i) => {
                   return <div style={{height:'20px',marginBottom:'10px',display:'flex',alignItems:'center',cursor:'pointer'}} onClick={() => this.handleClassClick(i)}>
-                    <img style={{height:'20px'}} src={c.checked ? checkboxChecked : checkboxUnchecked} />
+                    <img style={{height:'20px'}} src={c.checked ? checkboxChecked : checkboxUnchecked} alt={c.checked ? 'checked' : 'un-checked'} />
                     <p style={{fontFamily:'BrandonGrotesque',marginLeft:'5px'}}>{c.name}</p>
                   </div>
                 })

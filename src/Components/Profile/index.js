@@ -52,7 +52,7 @@ class Profile extends Component {
       const wordsLearned = wordExperience.length;
       const wordsMastered = wordExperience.filter((w) => w.experience >= 7).length;
 
-      const wordAccuracy = parseInt((100 * sum(wordExperience, 'correct'))/sum(wordExperience, 'seen')) || 0;
+      const wordAccuracy = parseInt(100 * sum(wordExperience, 'correct')/sum(wordExperience, 'seen'), 10) || 0;
 
       this.setState({
         name: capitalizeOne(user.firstName),

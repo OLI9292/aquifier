@@ -1,4 +1,3 @@
-import firebase from 'firebase';
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import _ from 'underscore';

@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Redirect } from 'react-router';
 import styled from 'styled-components';
 import _ from 'underscore';
 
@@ -14,6 +13,7 @@ class RelatedWords extends Component {
       suggested: this.props.suggested || [],
       displayAddMore: false
     };
+    console.log(this.props.words)
   }
 
   componentWillReceiveProps(nextProps) {

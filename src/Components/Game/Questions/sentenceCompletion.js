@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Redirect } from 'react-router';
 import styled from 'styled-components';
 import _ from 'underscore';
 
@@ -95,7 +94,7 @@ class SentenceCompletion extends Component {
         {prompt()}
         {buttons()}
         <QuestionMark onClick={() => this.setState({ hintCount: this.state.hintCount + 1 })}>
-          <img style={{width:'100%'}} src={questionMark} />
+          <img style={{width:'100%'}} src={questionMark} alt='question-mark' />
         </QuestionMark>      
       </div>
     }    
@@ -116,12 +115,6 @@ const GameButton = Button.large.extend`
   }
 `
 
-const Layout = styled.div`
-  width: 90%;
-  visibility: ${props => props.hide ? 'hidden' : ''};
-  margin: 0 auto;
-  padding-top: 50px;
-`
 const Prompt = styled.p`
   font-size: 1.4em;
   line-height: 35px;

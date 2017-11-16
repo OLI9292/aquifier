@@ -73,7 +73,7 @@ class ClassesDashboard extends Component {
   }
 
   average(attr) {
-    return parseInt(sum(this.state.students, attr)/this.state.students.length);
+    return parseInt(sum(this.state.students, attr)/this.state.students.length, 10);
   }
 
   render() {

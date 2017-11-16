@@ -2,13 +2,10 @@ import React, { Component } from 'react';
 import { Redirect } from 'react-router';
 import styled from 'styled-components';
 import _ from 'underscore';
-import axios from 'axios';
 import moment from 'moment';
 
 import Button from '../Common/button';
-import Class from '../../Models/Class';
 import { color } from '../../Library/Styles/index';
-import CONFIG from '../../Config/main';
 import deletePng from '../../Library/Images/delete.png';
 import upArrow from '../../Library/Images/arrow_up.png';
 import downArrow from '../../Library/Images/arrow_down.png';
@@ -101,7 +98,7 @@ class WordListsDashboard extends Component {
     } else {
       const wordList = this.state.currentlyEditing;
       wordList.updatedOn = unixTime();
-      const result = this.state.isNewWordList
+      this.state.isNewWordList
         ? (await WordList.create(wordList))
         : (await WordList.update(this.state.wordListId, wordList));
       this.reset()
@@ -110,7 +107,7 @@ class WordListsDashboard extends Component {
 
   handleDeleteQuestion(index) {
     const currentlyEditing = this.state.currentlyEditing;
-    currentlyEditing.splice(index, 1);
+    currentlyEditing.questions.splice(index, 1);
     this.setState({ currentlyEditing });
   }
 
@@ -222,13 +219,13 @@ class WordListsDashboard extends Component {
           
           <td style={{width:'30%',textAlign:'center'}}>
             <div style={{display:'inline-block',margin:'5px',verticalAlign:'middle'}}>
-              <DeleteImage src={deletePng} onClick={() => this.handleDeleteQuestion(i)}/>
+              <DeleteImage src={deletePng} alt='delete' onClick={() => this.handleDeleteQuestion(i)}/>
             </div>
             <div style={{display:'inline-block',margin:'5px',verticalAlign:'middle'}}>
-              <DeleteImage src={upArrow} onClick={() => this.handleChangeIndex(i, i - 1)}/>
+              <DeleteImage src={upArrow} alt='up-arrow' onClick={() => this.handleChangeIndex(i, i - 1)}/>
             </div>
             <div style={{display:'inline-block',margin:'5px',verticalAlign:'middle'}}>
-              <DeleteImage src={downArrow} onClick={() => this.handleChangeIndex(i, i + 1)}/>
+              <DeleteImage src={downArrow} alt='down-arrow' onClick={() => this.handleChangeIndex(i, i + 1)}/>
             </div>                        
           </td>
           
@@ -239,10 +236,10 @@ class WordListsDashboard extends Component {
           <td style={{width:'25%'}}>
             <Textarea.medium style={{verticalAlign:'middle',textAlign:'center'}}
               onFocus={(e) => this.updateDifficulty(i, '')}
-              onChange={(e) => this.updateDifficulty(i, parseInt(e.target.value) || 0)}
+              onChange={(e) => this.updateDifficulty(i, parseInt(e.target.value, 10) || 0)}
               value={m.difficulty} 
-              onKeyPress={(e) => { if (e.key === 'enter') { this.updateDifficulty(i, parseInt(e.target.value)) } } }
-              onBlur={(e) => this.updateDifficulty(i, parseInt(e.target.value), true)}
+              onKeyPress={(e) => { if (e.key === 'enter') { this.updateDifficulty(i, parseInt(e.target.value, 10)) } } }
+              onBlur={(e) => this.updateDifficulty(i, parseInt(e.target.value, 10), true)}
             />
           </td>
 
@@ -251,6 +248,7 @@ class WordListsDashboard extends Component {
     }
 
     const editingWordList = () => {
+      const isStudy = this.state.currentlyEditing.isStudy;
       return <div>
         <div style={{height:'50px'}}>
           <Link.large onClick={() => this.reset()} style={{display:'inline-block',float:'left'}} color={color.blue}>Back</Link.large>
@@ -298,12 +296,12 @@ class WordListsDashboard extends Component {
             <td>
               <div onClick={() => this.update('isStudy', true)}
                 style={{height:'20px',marginBottom:'10px',display:'flex',alignItems:'center',cursor:'pointer'}}>
-                <img style={{height:'100%'}} src={this.state.currentlyEditing.isStudy ? checkboxChecked : checkboxUnchecked} />
+                <img style={{height:'100%'}} src={isStudy ? checkboxChecked : checkboxUnchecked} alt={isStudy ? 'checked' : 'unchecked'} />
                 <p style={{fontFamily:'BrandonGrotesque',marginLeft:'5px'}}>Study</p>
               </div>
               <div onClick={() => this.update('isStudy', false)}
                 style={{height:'20px',marginBottom:'10px',display:'flex',alignItems:'center',cursor:'pointer'}}>
-                <img style={{height:'100%'}} src={!this.state.currentlyEditing.isStudy ? checkboxChecked : checkboxUnchecked} />
+                <img style={{height:'100%'}} src={!isStudy ? checkboxChecked : checkboxUnchecked} alt={isStudy ? 'unchecked' : 'checked'} />
                 <p style={{fontFamily:'BrandonGrotesque',marginLeft:'5px'}}>Explore</p>
               </div>              
             </td>
@@ -321,7 +319,7 @@ class WordListsDashboard extends Component {
     }
 
     return (
-      <div style={{width:'95%',margin:'0 auto'}}>
+      <div style={{width:'95%',margin:'0 auto',paddingTop:'25px'}}>
         {this.state.isEditing ? editingWordList() : allWordLists()}
       </div>
     );

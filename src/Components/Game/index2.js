@@ -14,7 +14,7 @@ import Word from '../../Models/Word';
 import WordList from '../../Models/WordList';
 import Root from '../../Models/Root';
 import Lesson from '../../Models/Lesson';
-import { flatMap, sleep } from '../../Library/helpers';
+import { sleep } from '../../Library/helpers';
 import { color, breakpoints } from '../../Library/Styles/index';
 
 import leftArrow from '../../Library/Images/left-arrow.png';
@@ -154,18 +154,18 @@ class Game extends Component {
       return <div style={{position:'absolute',bottom:'0',margin:'0px 0px 10px 10px'}}>
         <div style={{height:'25px', marginBottom:'30px'}}>
           <h4 style={{textAlign:'left',color:color.gray,height:'5px',fontSize:'0.85em'}}>Move</h4>
-          <img src={leftArrow} style={{height:'100%',width:'auto'}} />
-          <img src={rightArrow} style={{height:'100%',width:'auto'}} />
+          <img src={leftArrow} alt='left-arrow' style={{height:'100%',width:'auto'}} />
+          <img src={rightArrow} alt='right-arrow' style={{height:'100%',width:'auto'}} />
         </div>
         <div style={{height:'25px', marginBottom:'30px'}}>
           <h4 style={{textAlign:'left',color:color.gray,height:'5px',fontSize:'0.85em'}}>Hint</h4>
-          <img src={equalsKey} style={{height:'100%',width:'auto'}} />
+          <img src={equalsKey} alt='equals-key' style={{height:'100%',width:'auto'}} />
         </div>        
         <div style={{height:'25px', marginBottom:'30px'}}>
           <h4 style={{textAlign:'left',color:color.gray,height:'5px',fontSize:'0.85em'}}>
             {this.state.isInterlude ? 'Skip to Next Question' : 'Check Answer'}
           </h4>
-          <img src={enterKey} style={{height:'100%',width:'auto'}} />
+          <img src={enterKey} alt='enter-key' style={{height:'100%',width:'auto'}} />
         </div>        
       </div>
     }

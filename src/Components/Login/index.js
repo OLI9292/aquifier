@@ -5,14 +5,10 @@ import _ from 'underscore';
 
 import Button from '../Common/button';
 import { color } from '../../Library/Styles/index';
-import { sleep, get } from '../../Library/helpers';
 import User from '../../Models/User';
 
 class Login extends Component {
-  constructor(props) {
-    super(props);
-  }
-
+  
   handleFacebookLogin = async () => {
     var provider = new firebase.auth.FacebookAuthProvider();
     try {
@@ -129,7 +125,7 @@ const Layout = styled.div`
 `
 
 const LoginButton = Button.medium.extend`
-  width: 275px;
+  width: 275px !important;
   font-size: 1.3em;
   height: 50px;
   margin-top: 10px;
