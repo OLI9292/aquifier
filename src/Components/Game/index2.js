@@ -1,4 +1,3 @@
-import axios from 'axios';
 import React, { Component } from 'react';
 import { Redirect } from 'react-router';
 import styled from 'styled-components';
@@ -10,9 +9,7 @@ import SpellQuestion from './Questions/spell';
 import OnCorrectImage from './onCorrectImage';
 import ProgressBar from '../ProgressBar/index';
 
-import Word from '../../Models/Word';
 import WordList from '../../Models/WordList';
-import Root from '../../Models/Root';
 import Lesson from '../../Models/Lesson';
 import { sleep } from '../../Library/helpers';
 import { color, breakpoints } from '../../Library/Styles/index';
@@ -34,11 +31,9 @@ class Game extends Component {
   }
 
   async componentDidMount() {
-    axios.all([Word.fetch(), Root.fetch()])
-      .then(axios.spread((res1, res2) => {
-        this.setState({ words: res1.data, roots: res2.data.roots }, this.setupGame);
-      }))
-      .catch((err) => console.log(err))
+    const words = JSON.parse(localStorage.getItem('words'));
+    const roots = JSON.parse(localStorage.getItem('roots'));
+    this.setState({ words: words, roots: roots }, this.setupGame);
   }
 
   setupGame() {
