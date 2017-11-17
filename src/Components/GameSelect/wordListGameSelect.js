@@ -46,9 +46,13 @@ class WordListGameSelect extends Component {
       .filter((w) => this.props.settings.game === 'explore' ? !w.isStudy : w.isStudy);
     const reformatted = this.reformatWordLists(wordLists);
 
+    // TODO: - refactor, ugly
+    const multiplayer = this.props.settings.multiplayer === 'true';
+    console.log(multiplayer)
+
     if (!_.isEmpty(reformatted)) {
       const selected = reformatted[_.keys(reformatted)[0]][0].id;
-      this.setState({ wordLists: reformatted, selected: selected });
+      this.setState({ wordLists: reformatted, selected: selected, isMultiplayer: multiplayer });
     }
   }
 
@@ -75,7 +79,7 @@ class WordListGameSelect extends Component {
 
   gameLink() {
     const timeLimit = this.state.timeLimit;
-    const multiplayer = this.props.settings.multiplayer;
+    const multiplayer = this.state.isMultiplayer;
     const wordList = _.find(_.flatten(_.values(this.state.wordLists)), (w) => w.id === this.state.selected);
     if (wordList) {
       return multiplayer
@@ -164,7 +168,7 @@ class WordListGameSelect extends Component {
           <div style={{textAlign:'center'}}>
             {this.state.step === 0 ? wordListTable() : timeSelect()}
             <Button.medium color={color.blue} style={{marginTop:'25px'}} onClick={() => this.handleClickedContinue()}>
-              {this.props.settings.multiplayer && this.state.step === 1 ? 'Generate Access Code' : 'Continue'}
+              {this.state.isMultiplayer && this.state.step === 1 ? 'Generate Access Code' : 'Continue'}
             </Button.medium>
           </div>
         }
