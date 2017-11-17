@@ -1,27 +1,67 @@
 import React, { Component } from 'react';
+import queryString from 'query-string';
 import { Redirect } from 'react-router';
 import styled from 'styled-components';
+import Firebase from '../../Networking/Firebase';
 
 import Button from '../Common/button';
+import Textarea from '../Common/textarea';
 import { color } from '../../Library/Styles/index';
-
 import explorePng from '../../Library/Images/explore-white.png';
 import readPng from '../../Library/Images/read-white.png';
 import studyPng from '../../Library/Images/study-white.png';
+import competePng from '../../Library/Images/compete-color.png';
 import singlePlayerPng from '../../Library/Images/singleplayer.png';
 import setupMatchPng from '../../Library/Images/setupmatch.png';
+import User from '../../Models/User';
 
 class GameSelect extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      redirect: null
+      redirect: null,
+      errorMessage: ''
     };
+  }
+
+  async componentDidMount() {
+    const userId = localStorage.getItem('userId');
+    if (userId) { this.loadUser({ type: 'id', value: userId }) };
+  }
+
+  loadUser = async (query) => {
+    const result = await User.fetch(query);
+    if (result && result.data && result.data.user) {
+      const user = result.data.user;
+      const isTeacher = user.isTeacher;
+      this.setState({ loggedIn: true, isTeacher: isTeacher });
+    }
   }
 
   handleClick(game, multiplayer = false) {
     this.setState({ redirect: `/play/game=${game}&multiplayer=${multiplayer}&setup=true` });
+  }
+
+  joinMatch = async () => {
+    const name = localStorage.getItem('username') || '';
+    const accessCode = this.state.accessCode;
+    
+    const canEnterMatchResult = await Firebase.canEnterGame(name, accessCode);
+    const canEnterMatch = canEnterMatchResult[0];
+    if (!canEnterMatch) {
+      this.setState({ errorMessage: canEnterMatchResult[1] });
+    } else {
+
+      const joinMatchResult = await Firebase.joinGame(name, accessCode);
+      if (joinMatchResult) {
+        canEnterMatchResult[1].accessCode = accessCode;
+        const match = queryString.stringify(canEnterMatchResult[1]);
+        this.setState({ redirect: `/play/${match}` });
+      } else {
+        this.setState({ errorMessage: 'Unable to join game.' });
+      }      
+    }
   }
 
   render() {
@@ -29,17 +69,37 @@ class GameSelect extends Component {
       return <Redirect push to={this.state.redirect} />;
     }
 
-    const buttons = () => {
-      return <div>
-        <Button.small onClick={() => this.handleClick(this.state.hovering)}
-          color={'white'} style={{display:'block',color:'black',margin:'0 auto',fontSize:'1.25em'}}>
+    const isTeacher = this.state.isTeacher;
+    const isStudent = this.state.loggedIn && !this.state.isTeacher;
+
+    const buttons = (game) => {
+      const setupMatchDisplay = isTeacher && game !== 'read' ? 'block' : 'none';
+      return <div style={{display:'flex',justifyContent:'space-around',margin:'25px 10px 25px 10px'}}>
+        <Button.extraSmall onClick={() => this.handleClick(game)} color={'white'} style={{color:'black',margin:'5px'}}>
           {Button.imageAndText(singlePlayerPng, 'Single Player')}
-        </Button.small>
-        <Button.small onClick={() => this.handleClick(this.state.hovering, true)}
-          color={'white'} style={{display:'block',color:'black',margin:'0 auto',marginTop:'10px',fontSize:'1.25em'}}>
+        </Button.extraSmall>
+        <Button.extraSmall onClick={() => this.handleClick(game, true)} color={'white'} style={{color:'black',margin:'5px',display:setupMatchDisplay}}>
           {Button.imageAndText(setupMatchPng, 'Setup Match')}
-        </Button.small>
+        </Button.extraSmall>
       </div>
+    }      
+
+    const compete = () => {
+      const display = isStudent ? '' : 'none';
+      return <GameButton style={{display:display}} color={'white'} border={`1px solid ${color.orange}`}>
+        <Image src={competePng} />
+        <p style={{color:color.orange,fontSize:'2em',height:'10px',lineHeight:'10px'}}>Compete</p> 
+        <div style={{width:'250px'}}>      
+          <p style={{color:color.orange,width:'90%',margin:'0 auto',fontSize:'1.25em'}}>
+            Compete against your classmates.
+          </p>
+          <div style={{display:'flex',justifyContent:'space-around',margin:'25px 10px 25px 10px'}}>
+            <Textarea.medium onChange={(e) => this.setState({ accessCode: e.target.value.trim() })}
+              style={{textAlign:'center'}} placeholder={'access code'} />
+            <Button.extraSmall onClick={() => this.joinMatch()} color={color.orange} style={{marginLeft:'5px'}}>Play</Button.extraSmall>            
+          </div>
+        </div>            
+      </GameButton>
     }
 
     return (
@@ -47,47 +107,42 @@ class GameSelect extends Component {
         <Title>Choose Your Game</Title>
         <div style={{textAlign:'center'}}>
 
-          <GameButton color={color.blue} onMouseOver={() => this.setState({ hovering: 'study' })} onMouseLeave={() => this.setState({ hovering: null })}>
+          <GameButton color={color.blue}>
             <Image src={studyPng} />
             <p style={{color:'white',fontSize:'2em',height:'10px',lineHeight:'10px'}}>Study</p>
-            <div style={{width:'250px',height:'150px'}}>
-              {
-                this.state.hovering === 'study'
-                  ? buttons()
-                  : <p style={{color:'white',width:'90%',margin:'0 auto',fontSize:'1.25em'}}>
-                      Thousands of words grouped by curriculum.
-                    </p>          
-              }
+            <div style={{width:'250px'}}>
+              <p style={{color:'white',width:'90%',margin:'0 auto',fontSize:'1.25em'}}>
+                Thousands of words grouped by curriculum.
+              </p>          
+              {buttons('study')}
             </div>
           </GameButton>
 
-          <GameButton color={color.green} onMouseOver={() => this.setState({ hovering: 'explore' })} onMouseLeave={() => this.setState({ hovering: null })}>
+          <GameButton color={color.green}>
             <Image src={explorePng} />
             <p style={{color:'white',fontSize:'2em',height:'10px',lineHeight:'10px'}}>Explore</p>    
-            <div style={{width:'250px',height:'150px'}}>    
-              {
-                this.state.hovering === 'explore'
-                  ? buttons()
-                  : <p style={{color:'white',width:'90%',margin:'0 auto',fontSize:'1.25em'}}>
-                      The core vocabulary of dozens of subjects.
-                    </p>
-              }   
+            <div style={{width:'250px'}}>    
+              <p style={{color:'white',width:'90%',margin:'0 auto',fontSize:'1.25em'}}>
+                The core vocabulary of dozens of subjects.
+              </p>
+              {buttons('explore')}
             </div>         
           </GameButton>
 
-          <GameButton color={color.red} onMouseOver={() => this.setState({ hovering: 'read' })} onMouseLeave={() => this.setState({ hovering: null })}>
+          <GameButton color={color.red}>
             <Image src={readPng} />
             <p style={{color:'white',fontSize:'2em',height:'10px',lineHeight:'10px'}}>Read</p>  
-            <div style={{width:'250px',height:'150px'}}>      
-              {
-                this.state.hovering === 'read'
-                  ? buttons()
-                  : <p style={{color:'white',width:'90%',margin:'0 auto',fontSize:'1.25em'}}>
-                      Passages with vocabulary in context.
-                    </p>
-              }    
+            <div style={{width:'250px'}}>      
+              <p style={{color:'white',width:'90%',margin:'0 auto',fontSize:'1.25em'}}>
+                Passages with vocabulary in context.
+              </p>
+              {buttons('read')}
             </div>                    
           </GameButton>
+
+          {compete()}
+
+          <p style={{textAlign:'center',color:color.red}}>{this.state.errorMessage}</p>
 
         </div>
       </div>
@@ -116,11 +171,14 @@ const Image = styled.img`
 
 const GameButton = styled.div`
   background-color: ${props => props.color};
+  border: ${props => props.border};
   text-align: center;
   display: inline-block;
   margin: 10px;
   border-radius: 5px;
   vertical-align: top;
+  width: 250px;
+  height: 350px;
 `
 
 export default GameSelect;

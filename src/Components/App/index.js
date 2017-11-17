@@ -11,7 +11,6 @@ import Game2 from '../Game/index2';
 import GameSelect from '../GameSelect/index';
 import Header from '../Header/index';
 import Home from '../Home/index';
-import Join from '../Join/index';
 import Leaderboard from '../Leaderboard/index';
 import LessonsDashboard from '../Dashboard/lessons';
 import Lobby from '../Lobby/index';
@@ -54,27 +53,37 @@ class App extends Component {
       .catch((err) => console.log(err))
   }
 
+
   render() {
     return (
       <BrowserRouter>
         <Switch>
           <Route exact path='/' component={Home} />
+          
+          <Route exact path='/admin/:settings' component={({ match }) => {
+            return <Container component='admin' settings={queryString.parse(match.params.settings)} /> 
+          }} />
+
           <Route exact path='/lobby' component={() => <Container component='lobby' />} />
-          <Route exact path='/join' component={() => <Container component='join' />} />
           <Route exact path='/profile' component={() => <Container component='profile' />} />
 
           <Route exact path='/profile/:userId' component={({ match }) => {
             return <Container component='profile' userId={match.params.userId} />;
           }} />
-
           
           <Route exact path='/play' component={() => <Container component='gameSelect' />} />
           <Route path='/play/:settings' component={({ match }) => {
             const settings = queryString.parse(match.params.settings);
-            const component = settings.setup
-              ? `${settings.game === 'read' ? 'reading' : 'wordList'}GameSelect`
-              : 'game';
-            return <Container component={component} settings={settings} />
+            const status = parseInt(settings.status, 10);
+            if (settings.setup) {
+              const component = `${settings.game === 'read' ? 'reading' : 'wordList'}GameSelect`;
+              return <Container component={component} settings={settings} />
+            } else if (status !== undefined) {
+              if (status === 0) {
+                return <Container component={'waiting'} settings={settings} />  
+              }
+            }
+            return <Container component={'game'} settings={settings} />
           }} />
 
           <Route exact path='/lessons' component={() => <Container component='lessonsDashboard' />} />
@@ -89,7 +98,7 @@ class App extends Component {
 class Container extends Component {
 
   render() {
-    // Display not-mobile-compatable popup
+    // Display not-mobile-compatible popup
     if (mobilecheck() && this.props.component !== 'home') { 
       return <MobilePopup />
     };
@@ -100,7 +109,6 @@ class Container extends Component {
         case 'classesDashboard': return <ClassesDashboard />
         case 'game': return <Game2 settings={this.props.settings} />
         case 'gameSelect': return <GameSelect />
-        case 'join': return <Join />
         case 'leaderboard': return <Leaderboard settings={this.props.settings} />
         case 'lessonsDashboard': return <LessonsDashboard />
         case 'lobby': return <Lobby />

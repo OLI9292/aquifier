@@ -18,8 +18,8 @@ const Medium = Default.extend`
   width: ${props => props.long 
     ? '500px'
     : props.short ? '125px' : '250px'};
-  height: 55px;
-  line-height: 50px;
+  height: 50px;
+  line-height: 45px;
   font-size: 1.2em;
 
   @media (max-width: 768px) {

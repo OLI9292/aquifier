@@ -74,6 +74,12 @@ const SmallButton = Default.extend`
   font-size: 1.5em;
 `
 
+const ExtraSmallButton = Default.extend`
+  width: 120px;
+  height: 50px;
+  font-size: 1.25em;
+`
+
 const SmallestButton = Default.extend`
   width: 60px;
   height: 30px;
@@ -136,6 +142,7 @@ const Button = {
   medium: MediumButton,
   mediumLong: MediumLongButton,
   small: SmallButton,
+  extraSmall: ExtraSmallButton,
   smallest: SmallestButton,
   iOS: iOS,
   imageAndText: imageAndText

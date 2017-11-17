@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import _ from 'underscore';
 
+import { color } from '../../Library/Styles/index';
 import AWSs3 from '../../Networking/AWSs3.js';
 
 class OnCorrectImage extends Component {
@@ -25,6 +26,7 @@ class OnCorrectImage extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (_.isNull(nextProps.word) || (nextProps.word.value === this.state.word)) { return };
+    this.setState({ source: null });
 
     const image = _.find(this.state.data, (obj) => {
       let words = obj.Key.split('.')[0].split('-');
@@ -43,8 +45,6 @@ class OnCorrectImage extends Component {
         const imageSource = 'data:image/jpeg;base64,' + this.encode(response.data.Body);
         this.setState({ source: imageSource, word: nextProps.word.value });
       });
-    } else {
-      this.setState({ source: null });
     }
   }
 
@@ -56,16 +56,22 @@ class OnCorrectImage extends Component {
   render() {
     return (
       <Layout display={this.props.display}>
-        <Image src={this.state.source} />
+        {
+          this.state.source
+            ? <Image src={this.state.source} />
+            : <p style={{fontSize:'3.5em',textTransform:'uppercase',color:color.yellow}}>{this.props.word.value}</p>
+        }
       </Layout>
     );
   }
 }
 
 const Layout = styled.div`
-  display: ${props => props.display ? 'block' : 'none'};
+  display: ${props => props.display ? 'flex' : 'none'};
   height: 70%;
-  vertical-align: middle;
+  align-items: center;
+  justify-content: center;
+  margin-top: 15px;
 `
 
 const Image = styled.img`

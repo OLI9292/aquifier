@@ -8,7 +8,6 @@ import _ from 'underscore';
 import Button from '../Common/button';
 import Timer from '../Timer/index';
 import { color } from '../../Library/Styles/index';
-import { toArr } from '../../Library/helpers';
 
 class Admin extends Component {
   constructor(props) {
@@ -28,14 +27,10 @@ class Admin extends Component {
   }
 
   async componentDidMount() {
-    let data = { isDemo: !_.isUndefined(this.props.settings.demo) };
-
-    if (this.props.settings.demo) {
-      data.demo = this.props.settings.demo;
-    } else {
-      data = await Firebase.fetchWords();
-      const topics = toArr(this.props.settings.topic);
-      data.words = _.shuffle(_.pluck(data.filter((w) => this.matchesCategory(w.categories, topics)), 'value')).join(',');
+    const data = {
+      status: 0,
+      time: this.props.settings.time,
+      wordList: this.props.settings.wordList
     }
 
     this.createMatch(data);
@@ -60,24 +55,13 @@ class Admin extends Component {
   createMatch = async (data) => {
     Firebase.refs.games.once('value', (snapshot) => {
       const accessCodes = _.keys(snapshot.val());
-      const accessCode = this.generateAccessCode(accessCodes);
+      const accessCode = '8653' //this.generateAccessCode(accessCodes);
 
       const game = {};
+      game[accessCode] = data
 
-      game[accessCode] = data.isDemo
-        ? { 
-            status: 0,
-            demo: data.demo
-          }
-        : {
-            level: this.props.settings.level,
-            time: this.props.settings.time,
-            status: 0,
-            words: data.words
-          };
-
-      Firebase.refs.games.update(game, (e) => {
-        if (e) {
+      Firebase.refs.games.update(game, (error) => {
+        if (error) {
           this.setState({ errorMessage: 'Failed to create match.' });
         } else {
           this.setState({ accessCode: accessCode }, this.waitForPlayers.bind(this, accessCode));
@@ -94,10 +78,6 @@ class Admin extends Component {
   componentWillUnmount() {
     clearInterval(this.state.checkFocusInterval);    
     Firebase.refs.games.child(this.state.accessCode).child('players').off();
-  }
-
-  matchesCategory(a, b) {
-    return _.intersection(a.map((x) => x.toLowerCase()), b.map((y) => y.toLowerCase())).length > 0
   }
 
   generateAccessCode(exclude) {

@@ -41,9 +41,11 @@ class WordListGameSelect extends Component {
 
   async componentDidMount() {
     const result = await WordList.fetch();
+    
     const wordLists = (result.data || [])
       .filter((w) => this.props.settings.game === 'explore' ? !w.isStudy : w.isStudy);
     const reformatted = this.reformatWordLists(wordLists);
+
     if (!_.isEmpty(reformatted)) {
       const selected = reformatted[_.keys(reformatted)[0]][0].id;
       this.setState({ wordLists: reformatted, selected: selected });
@@ -66,15 +68,20 @@ class WordListGameSelect extends Component {
     if (this.state.step === 0) {
       this.setState({ step: 1 });
     } else {
-      this.setState({ redirect: this.gameLink() });
+      const gameLink = this.gameLink();
+      if (gameLink) { this.setState({ redirect: gameLink }) } ;
     }
   }
 
   gameLink() {
     const timeLimit = this.state.timeLimit;
-    const players = 'single';
+    const multiplayer = this.props.settings.multiplayer;
     const wordList = _.find(_.flatten(_.values(this.state.wordLists)), (w) => w.id === this.state.selected);
-    return wordList ? `/play/players=${players}&wordList=${wordList.id}&time=${timeLimit}` : null;
+    if (wordList) {
+      return multiplayer
+        ? `/admin/wordList=${wordList.id}&time=${timeLimit}`
+        : `/play/multiplayer=${multiplayer}&wordList=${wordList.id}&time=${timeLimit}`
+    }
   }
 
   handleClickedBack() {
@@ -157,7 +164,7 @@ class WordListGameSelect extends Component {
           <div style={{textAlign:'center'}}>
             {this.state.step === 0 ? wordListTable() : timeSelect()}
             <Button.medium color={color.blue} style={{marginTop:'25px'}} onClick={() => this.handleClickedContinue()}>
-              Continue
+              {this.props.settings.multiplayer && this.state.step === 1 ? 'Generate Access Code' : 'Continue'}
             </Button.medium>
           </div>
         }
