@@ -46,13 +46,9 @@ class WordListGameSelect extends Component {
       .filter((w) => this.props.settings.game === 'explore' ? !w.isStudy : w.isStudy);
     const reformatted = this.reformatWordLists(wordLists);
 
-    // TODO: - refactor, ugly
-    const multiplayer = this.props.settings.multiplayer === 'true';
-    console.log(multiplayer)
-
     if (!_.isEmpty(reformatted)) {
       const selected = reformatted[_.keys(reformatted)[0]][0].id;
-      this.setState({ wordLists: reformatted, selected: selected, isMultiplayer: multiplayer });
+      this.setState({ wordLists: reformatted, selected: selected });
     }
   }
 
@@ -79,12 +75,11 @@ class WordListGameSelect extends Component {
 
   gameLink() {
     const timeLimit = this.state.timeLimit;
-    const multiplayer = this.state.isMultiplayer;
     const wordList = _.find(_.flatten(_.values(this.state.wordLists)), (w) => w.id === this.state.selected);
     if (wordList) {
-      return multiplayer
+      return this.props.settings.players === 'multi'
         ? `/admin/wordList=${wordList.id}&time=${timeLimit}`
-        : `/play/multiplayer=${multiplayer}&wordList=${wordList.id}&time=${timeLimit}`
+        : `/play/players=${this.props.settings.players}&wordList=${wordList.id}&time=${timeLimit}`
     }
   }
 
@@ -155,6 +150,16 @@ class WordListGameSelect extends Component {
       </table>
     }
 
+    const continueButton = () => {
+      const continueText = this.props.settings.players === 'multi' && this.state.step === 1
+        ? 'Generate Access Code'
+        : 'Continue';
+
+      return <Button.medium color={color.blue} style={{marginTop:'25px'}} onClick={() => this.handleClickedContinue()}>
+        {continueText}
+      </Button.medium>
+    }
+
     return (
       <div style={{width:'95%',margin:'0 auto',paddingTop:'25px'}}>
         <Link.large onClick={() => this.handleClickedBack()} color={color.blue}>Back</Link.large>
@@ -167,9 +172,7 @@ class WordListGameSelect extends Component {
           this.state.wordLists &&
           <div style={{textAlign:'center'}}>
             {this.state.step === 0 ? wordListTable() : timeSelect()}
-            <Button.medium color={color.blue} style={{marginTop:'25px'}} onClick={() => this.handleClickedContinue()}>
-              {this.state.isMultiplayer && this.state.step === 1 ? 'Generate Access Code' : 'Continue'}
-            </Button.medium>
+            {continueButton()}
           </div>
         }
       </div>

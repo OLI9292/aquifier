@@ -2,10 +2,8 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import _ from 'underscore';
 
-import Button from '../Common/button';
 import { color } from '../../Library/Styles/index';
 import User from '../../Models/User';
-import Firebase from '../../Networking/Firebase';
 import { capitalizeOne, sum } from '../../Library/helpers'
 
 class Profile extends Component {
@@ -65,7 +63,8 @@ class Profile extends Component {
   }
 
   loadWords = async () => {
-    const words = await Firebase.fetchWords();
+    const words = JSON.parse(localStorage.getItem('words'));
+    
     this.setState({
       wordExperience: this.state.wordExperience.map((obj) => {
         const idx = _.findIndex(words, (w) => w.value === obj.name);
@@ -80,7 +79,6 @@ class Profile extends Component {
       return this.state.wordExperience.map((w, i) => {
         const stars = _.range(1, 11).map((n, i2) => {
           return <StarImage key={i * 10 + i2} src={require(`../../Library/Images/star-${n <= w.experience ? 'yellow': 'grey'}.png`)} />;
-
         });
         return <Row key={i} backgroundColor={i % 2 === 0 ? color.lightestGray : 'white'}>
           <WordCell>
@@ -115,7 +113,6 @@ class Profile extends Component {
           </ProgressTable>
         </ProgressSection>
         <Sidebar>
-          <ShareButton>Email Report</ShareButton>
           {stats()}
         </Sidebar>
       </div>
@@ -179,15 +176,7 @@ const Sidebar = styled.div`
   width: 27.5%;
   text-align: center;
   display: inline-block;
-`
-
-const ShareButton = Button.medium.extend`
-  background-color: ${color.blue};
-  font-size: 1.35em;
-  width: 140px;
-  height: 50px;
-  margin-top: 60px;
-  margin-bottom: 25px;
+  margin-top: 25px;
 `
 
 // Stats Section

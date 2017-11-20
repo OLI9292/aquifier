@@ -13,7 +13,6 @@ import Header from '../Header/index';
 import Home from '../Home/index';
 import Leaderboard from '../Leaderboard/index';
 import LessonsDashboard from '../Dashboard/lessons';
-import Lobby from '../Lobby/index';
 import MobilePopup from '../MobilePopup/index';
 import Profile from '../Profile/index';
 import ReadingGameSelect from '../GameSelect/readingGameSelect';
@@ -64,9 +63,6 @@ class App extends Component {
             return <Container component='admin' settings={queryString.parse(match.params.settings)} /> 
           }} />
 
-          <Route exact path='/lobby' component={() => <Container component='lobby' />} />
-          <Route exact path='/profile' component={() => <Container component='profile' />} />
-
           <Route exact path='/profile/:userId' component={({ match }) => {
             return <Container component='profile' userId={match.params.userId} />;
           }} />
@@ -84,6 +80,10 @@ class App extends Component {
               }
             }
             return <Container component={'game'} settings={settings} />
+          }} />
+
+          <Route exact path='/leaderboard/:gameId' component={({ match }) => {
+            return <Container component='leaderboard' gameId={match.params.gameId} />;
           }} />
 
           <Route exact path='/lessons' component={() => <Container component='lessonsDashboard' />} />
@@ -109,9 +109,8 @@ class Container extends Component {
         case 'classesDashboard': return <ClassesDashboard />
         case 'game': return <Game2 settings={this.props.settings} />
         case 'gameSelect': return <GameSelect />
-        case 'leaderboard': return <Leaderboard settings={this.props.settings} />
+        case 'leaderboard': return <Leaderboard gameId={this.props.gameId} />
         case 'lessonsDashboard': return <LessonsDashboard />
-        case 'lobby': return <Lobby />
         case 'profile': return <Profile userId={this.props.userId} />
         case 'readingGameSelect': return <ReadingGameSelect settings={this.props.settings} />
         case 'waiting': return <Waiting settings={this.props.settings} />

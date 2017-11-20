@@ -15,13 +15,20 @@ class Waiting extends Component {
 
     this.state = {
       text: 'Be patient while other players join...',
-      redirect: false
+      redirect: false,
+      game: {}
     }
   }
 
   componentDidMount() {
+    const name = localStorage.getItem('username');
+
     Firebase.refs.games.child(this.props.settings.accessCode).on('value', (snapshot) => {
-      const kicked = !_.includes(_.keys(snapshot.val().players), this.props.settings.name);
+      
+      const game = _.pick(snapshot.val(), 'wordList', 'time');
+      if (_.isEmpty(this.state.game)) { this.setState({ game }) };
+      
+      const kicked = !_.includes(_.keys(snapshot.val().players), name);
       const gameStarted = snapshot.val().status === 1;
 
       if (kicked) {
@@ -38,12 +45,11 @@ class Waiting extends Component {
 
   render() {
     if (this.state.redirect && !window.location.href.endsWith(this.state.redirect)) {
-      if (this.state.text.includes('kicked')) {
-        return <Redirect push to={'/join'} />;
-      } else {
-        const settings = _.mapObject(this.props.settings, (v, k) => k === 'component' ? 'game' : v);
-        return <Redirect push to={`/game/${queryString.stringify(settings)}`} />;
-      }
+      const multiplayerGame = _.extend(this.state.game, { players: 'multi', accessCode: this.props.settings.accessCode });
+      const redirect = this.state.text.includes('kicked')
+        ? '/play'
+        : `/play/${queryString.stringify(multiplayerGame)}`;
+      return <Redirect push to={redirect} />;
     }
 
     const joinButton = () => {

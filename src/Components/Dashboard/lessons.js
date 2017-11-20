@@ -409,7 +409,6 @@ const Layout = styled.div`
 const Header = styled.p`
   width: 100%;
   font-size: 2.75em;
-  padding-top: 25px;
   text-align: center;
   height: 25px;
 `

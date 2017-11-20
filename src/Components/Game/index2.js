@@ -1,3 +1,4 @@
+import Firebase from '../../Networking/Firebase';
 import React, { Component } from 'react';
 import { Redirect } from 'react-router';
 import styled from 'styled-components';
@@ -8,6 +9,7 @@ import ButtonQuestion from './Questions/button';
 import SpellQuestion from './Questions/spell';
 import OnCorrectImage from './onCorrectImage';
 import ProgressBar from '../ProgressBar/index';
+import Button from '../Common/button';
 import Timer from '../Timer/index';
 
 import WordList from '../../Models/WordList';
@@ -112,8 +114,7 @@ class Game extends Component {
     const state = { isInterlude: true };
     if (this.state.isTimed) { state.score = this.state.score + 1 };
     if (this.state.time < 5) { state.isSpeedy = true };
-    console.log(this.state.time)
-    console.log(state.isSpeedy)
+    
     this.setState(state);
     window.timeout = setTimeout(() => { this.nextQuestion() }, 300000);    
   }
@@ -141,6 +142,22 @@ class Game extends Component {
 
   difficultyFor(integer) {
     return _.contains([0,1,2], integer) ? ['button', 'spellEasy', 'spellHard'][integer] : 'button';
+  }
+
+  gameOver() {
+    const username = localStorage.getItem('username');
+    const isMultiplayer = this.props.settings.players === 'multi' && username;
+    
+    if (isMultiplayer) {
+      const ref = Firebase.refs.games.child(this.props.settings.accessCode).child('players').child(username);
+      if (ref) { ref.set(2) };  
+    }
+
+    this.setState({ gameOver: true });
+  }
+
+  multiplayerGameOver(username) {
+  
   }
 
   render() {
@@ -194,8 +211,20 @@ class Game extends Component {
       </div>
     }
 
-    return (
-      <Layout>
+    const gameOver = () => {
+      return <div style={{textAlign:'center',paddingTop:'25px'}}>
+        <p style={{fontSize:'3em',marginTop:'25px'}}>
+          <span style={{color:color.blue}}>{this.state.name}</span> Complete!
+        </p>
+        <h1>{`You scored ${this.state.score}`}.</h1>
+        <Button.medium style={{marginTop:'25px'}} color={color.blue} onClick={() => this.setState({ redirect: '/play' })}>
+          Return
+        </Button.medium>
+      </div>
+    }
+
+    const game = () => {
+      return <div>
         <div style={{height:'20%'}}>
           <h4 style={{fontSize:'1.2em',padding:'10px 0px 0px 10px'}}>{this.state.name}</h4>
           
@@ -208,11 +237,11 @@ class Game extends Component {
             {
               this.state.isTimed
               ?
-              <div style={{display:'flex',alignItems:'center',justifyContent:'space-around',marginTop:'-65px'}}>
+              <div style={{display:'flex',alignItems:'center',justifyContent:'space-around',marginTop:'-80px'}}>
                 <Timer
                   time={this.props.settings.time}
                   ref={instance => { this.timer = instance }}
-                  gameOver={() => this.setState({ gameOver: true })} />
+                  gameOver={() => this.gameOver()} />
                 <p style={{fontSize:'3em'}}>{this.state.score}</p>
               </div>    
               :
@@ -220,11 +249,17 @@ class Game extends Component {
             }
           </div>        
         </div>
-        <div style={{height:'77.5%',width:'85%',margin:'0 auto',paddingTop:'2.5%',textAlign:'center'}}>
+        <div style={{height:'77.5%',width:'85%',margin:'0 auto',paddingTop:'2.5%',textAlign:'center',marginTop:'-60px'}}>
           {this.state.question && !this.state.isInterlude && question()}
           {this.state.question && <OnCorrectImage word={this.state.question.word} display={this.state.isInterlude} />}
         </div>
-        {directions()}
+        {directions()}      
+      </div>
+    }
+
+    return (
+      <Layout>
+        {this.state.gameOver ? gameOver() : game()}
       </Layout>
     );
   }

@@ -1,4 +1,3 @@
-import queryString from 'query-string';
 import Firebase from '../../Networking/Firebase';
 import React, { Component } from 'react';
 import { Redirect } from 'react-router';
@@ -85,10 +84,11 @@ class Admin extends Component {
   }
 
   startMatch() {
-    if (_.isEmpty(this.state.players)) {
+    // TODO: - remove
+    /*if (_.isEmpty(this.state.players)) {
       this.setState({ errorMessage: 'Games require at least 1 player.' });
       return;
-    }
+    }*/
 
     const startTime = (new Date()).getTime();
     const startMatchUpdate = { status: 1, startTime: startTime };
@@ -104,8 +104,7 @@ class Admin extends Component {
   }
 
   gameOver() {
-    const endMatchUpdate = { status: 2 };
-    Firebase.refs.games.child(this.state.accessCode).update(endMatchUpdate);
+    Firebase.refs.games.child(this.state.accessCode).update({ status: 2 });
     this.setState({ redirect: true });
   }
 
@@ -115,24 +114,21 @@ class Admin extends Component {
 
   render() {
     if (this.state.redirect && !window.location.href.endsWith(this.state.redirect)) {
-      const settings = {
-        accessCode: this.state.accessCode,
-        multiplayer: true,
-        component: 'leaderboard'
-      };
-      return <Redirect push to={`/game/${queryString.stringify(settings)}`} />;
+      return <Redirect push to={`/leaderboard/${this.state.accessCode}`} />;
     }
 
     const playersTable = () => {
       return this.state.players.length === 0
         ? <Text color={color.gray}>Waiting for players to join...</Text>
         : <table>
-          {this.state.players.map((p) => {
-           return <tr style={{lineHeight: '0px'}}>
-            <td><SmallText style={{width: '150px'}}>{p}</SmallText></td>
-            <td onClick={() => this.kick(p)}><KickButton>Kick</KickButton></td>
-           </tr>
-          })}
+            <tbody>
+              {this.state.players.map((p,i) => {
+               return <tr style={{lineHeight: '0px'}} key={i}>
+                <td><SmallText style={{width: '150px'}}>{p}</SmallText></td>
+                <td onClick={() => this.kick(p)}><KickButton>Kick</KickButton></td>
+               </tr>
+              })}
+            </tbody>
         </table>
     }
 
@@ -149,10 +145,12 @@ class Admin extends Component {
               time={this.props.settings.time} 
               gameOver={this.gameOver.bind(this)} />
             <br/>
-            <StartButton onClick={this.startMatch}>Start Match</StartButton>
+            <Button.medium onClick={this.startMatch} style={{backgroundColor:color.blue,marginBottom:'1em'}}>
+              Start Match
+            </Button.medium>
           </LongCell>
         </tr>
-        <tr style={{height: '300px', marginBottom: '1em'}}>
+        <tr style={{marginBottom:'1em'}}>
           <ShortCell alignTop><Text>Players</Text></ShortCell>
           <LongCell alignTop>{playersTable()}</LongCell>
         </tr>
@@ -211,15 +209,6 @@ const AccessCode = styled.h1`
   color: ${color.red};
   font-size: 10em;
   line-height: 0;
-`
-
-const StartButton = Button.medium.extend`
-  margin-bottom: 1em;
-  background-color: ${color.blue};
-  &:hover {
-    background-color: ${color.blue10l};
-  }
-  font-size: 2.25em;
 `
 
 const KickButton = Button.small.extend`

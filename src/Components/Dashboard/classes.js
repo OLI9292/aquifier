@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import _ from 'underscore';
 
 import { color } from '../../Library/Styles/index';
-import User from '../../Models/User';
 import Class from '../../Models/Class';
 import { sum } from '../../Library/helpers';
 
@@ -13,57 +12,39 @@ class ClassesDashboard extends Component {
     super(props);
 
     this.state = {
-      title: null,
       students: [],
       redirect: null
     }
   }
 
   componentDidMount() {
-    this.loadUser()
-  }
-
-  loadUser = async () => {
-    const userId = localStorage.getItem('userId');
-
-    const query = { type: 'id', value: userId };
-    let result = await User.fetch(query);
-
-    if (_.has(result.data, 'user')) {
-      const user = result.data.user;
-      const title = this.formatName(user);
-      this.setState({
-        title: title
-      }, this.loadClass)
-    }
-  }
-
-  formatName(user) {
-    return `${user.gender === 'female' ? 'Ms.' : 'Mr.'} ${user.lastName}'s Class`
+    this.loadClass();
   }
 
   loadClass = async () => {
     const classId = localStorage.getItem('classId');
     const result = await Class.students(classId);
 
-    if (_.has(result.data, 'students')) {
-      const students = result.data.students.map((s) => {
-        const name = s.firstName + ' ' + s.lastName.charAt(0);
-        const mastery = sum(s.words, 'experience')/10;
-        const wordsLearned = s.words.length;
-        const wordsMastered = s.words.filter((w) => w.experience >= 7).length;
-        const timePlayed = Math.ceil(sum(s.words, 'timeSpent')/60);
-        return {
-          id: s._id,
-          name: name,
-          mastery: Math.ceil(mastery),
-          wordsLearned: wordsLearned,
-          wordsMastered: wordsMastered,
-          timePlayed: timePlayed
-        }
-      })
+    if (result && _.isArray(result.data)) {
+      const students = result.data.map(this.readStudent);
       this.setState({ students });
     }
+  }
+
+  readStudent(data) {
+    const name = data.firstName + ' ' + data.lastName.charAt(0);
+    const mastery = sum(data.words, 'experience')/10;
+    const wordsLearned = data.words.length;
+    const wordsMastered = data.words.filter((w) => w.experience >= 7).length;
+    const timePlayed = Math.ceil(sum(data.words, 'timeSpent')/60);
+    return {
+      id: data._id,
+      name: name,
+      mastery: Math.ceil(mastery),
+      wordsLearned: wordsLearned,
+      wordsMastered: wordsMastered,
+      timePlayed: timePlayed
+    }    
   }
 
   sortStudents(attr) {
@@ -80,7 +61,6 @@ class ClassesDashboard extends Component {
     if (this.state.redirect && !window.location.href.endsWith(this.state.redirect)) {
       return <Redirect push to={this.state.redirect} />;
     }
-
     const studentRows = this.state.students.map((s, i) => {
       return <Row dark={i % 2 === 0} key={s.name} onClick={() => this.setState({ redirect: `/profile/${s.id}` })}>
         <TableCell left>{s.name}</TableCell>
@@ -93,7 +73,7 @@ class ClassesDashboard extends Component {
 
     return (
       <div>
-        <Header>{this.state.title}</Header>
+        <Header>My Class</Header>
         <Table>
           <tbody>
             <Row>

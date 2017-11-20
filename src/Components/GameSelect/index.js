@@ -40,7 +40,8 @@ class GameSelect extends Component {
   }
 
   handleClick(game, multiplayer = false) {
-    this.setState({ redirect: `/play/game=${game}&multiplayer=${multiplayer}&setup=true` });
+    const players = multiplayer ? 'multi' : 'single';
+    this.setState({ redirect: `/play/game=${game}&players=${players}&setup=true` });
   }
 
   joinMatch = async () => {
