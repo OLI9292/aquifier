@@ -27,7 +27,7 @@ class Game extends Component {
     super(props);
 
     this.state = {
-      nextQuestionIndex: 0,
+      nextQuestionIndex: 2,
       question: null,
       questions: [],
       score: 0,
@@ -66,7 +66,7 @@ class Game extends Component {
     const result = await Lesson.fetch(id);
     const data = result.data.questions || [];
     const [questions, checkpoints] = this.lessonStages(data);
-
+    console.log(questions)
     this.setState({
       name: result.data.name,
       questions: questions,
@@ -156,10 +156,6 @@ class Game extends Component {
     this.setState({ gameOver: true });
   }
 
-  multiplayerGameOver(username) {
-  
-  }
-
   render() {
     if (this.state.redirect && !window.location.href.endsWith(this.state.redirect)) {
       return <Redirect push to={this.state.redirect} />;
@@ -223,10 +219,12 @@ class Game extends Component {
       </div>
     }
 
+    const displayOnCorrect = this.state.isInterlude && this.state.question.type !== 'sentenceCompletion';
+
     const game = () => {
       return <div>
-        <div style={{height:'20%'}}>
-          <h4 style={{fontSize:'1.2em',padding:'10px 0px 0px 10px'}}>{this.state.name}</h4>
+        <div style={{height:'100px'}}>
+          <h4 style={{fontSize:'1.2em',padding:'10px 0px 0px 10px',height:'0px'}}>{this.state.name}</h4>
           
           <SpeedyContainer display={this.state.isSpeedy}>
             <img src={speedyPng} alt='speedy-flame' style={{height:'100%',width:'auto'}} />
@@ -237,21 +235,21 @@ class Game extends Component {
             {
               this.state.isTimed
               ?
-              <div style={{display:'flex',alignItems:'center',justifyContent:'space-around',marginTop:'-80px'}}>
+              <div style={{display:'flex',alignItems:'center',justifyContent:'space-around',marginTop:'-35px'}}>
                 <Timer
                   time={this.props.settings.time}
                   ref={instance => { this.timer = instance }}
                   gameOver={() => this.gameOver()} />
-                <p style={{fontSize:'3em'}}>{this.state.score}</p>
+                <p style={{fontSize:'3em',height:'0px',lineHeight:'0px'}}>{this.state.score}</p>
               </div>    
               :
               <ProgressBar width={progress} checkpoints={this.state.checkpoints || []} />
             }
           </div>        
         </div>
-        <div style={{height:'77.5%',width:'85%',margin:'0 auto',paddingTop:'2.5%',textAlign:'center',marginTop:'-60px'}}>
-          {this.state.question && !this.state.isInterlude && question()}
-          {this.state.question && <OnCorrectImage word={this.state.question.word} display={this.state.isInterlude} />}
+        <div style={{width:'85%',margin:'0 auto',textAlign:'center'}}>
+          {this.state.question && !displayOnCorrect && question()}
+          {this.state.question && <OnCorrectImage word={this.state.question.word} display={displayOnCorrect} />}
         </div>
         {directions()}      
       </div>
@@ -279,7 +277,7 @@ const SpeedyContainer = styled.div`
   width: 150px;
   height: 35px;
   float: right;
-  margin: -50px 10px 0px 0px;
+  margin: -10px 10px 0px 0px;
 `
 
 export default Game;

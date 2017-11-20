@@ -29,13 +29,12 @@ class SentenceCompletion extends Component {
     let context = question.context; 
     context = context.replace(word.value, toUnderscore(word.value));
     const options = this.options(word.value);
-    this.setState({ correct: word, context: context, options: options, hintCount: 0, ready: true }); 
+    this.setState({ correct: word, context: context, options: options, hintCount: 0, ready: true, complete: false }); 
   }
 
   correct = async () => {
     const context = this.state.context.replace(toUnderscore(this.state.correct.value), this.state.correct.value);
-    this.setState({ context: context, hintCount: 0 });
-    await sleep(1000);
+    this.setState({ context: context, hintCount: 0, complete: true });
     this.props.nextQuestion();
   }
 
@@ -70,7 +69,7 @@ class SentenceCompletion extends Component {
 
   render() {
     const buttons = () => {
-      return <ButtonsContainer>
+      return <ButtonsContainer display={this.state.complete ? 'none' : 'flex'}>
         {this.state.options.map((o,i) => {
           const incorrect = this.state.incorrect === o;
           return <GameButton key={i} onClick={() => this.handleGuess(o)} incorrect={incorrect}>{o}</GameButton>;
@@ -78,10 +77,16 @@ class SentenceCompletion extends Component {
       </ButtonsContainer>
     }
 
+    const completedText = () => {
+      return this.state.context.split(this.state.correct.value)
+        .reduce((acc, x) => acc === null ? [x] : [acc, <span style={{color:color.yellow}}>{this.state.correct.value}</span>, x], null)  
+    }
+
     const prompt = () => {
       const context = this.state.context;
+
       if (this.state.hintCount === 0) {
-        return <Prompt>{context}</Prompt>;
+        return <Prompt>{this.state.complete ? completedText() : context}</Prompt>;
       } else {
         const showRoots = this.state.hintCount > 1;
         const split = context.split(toUnderscore(this.state.correct.value));
@@ -93,7 +98,7 @@ class SentenceCompletion extends Component {
       return <div>
         {prompt()}
         {buttons()}
-        <QuestionMark onClick={() => this.setState({ hintCount: this.state.hintCount + 1 })}>
+        <QuestionMark display={this.state.complete ? 'none' : ''}  onClick={() => this.setState({ hintCount: this.state.hintCount + 1 })}>
           <img style={{width:'100%'}} src={questionMark} alt='question-mark' />
         </QuestionMark>      
       </div>
@@ -116,17 +121,19 @@ const GameButton = Button.large.extend`
 `
 
 const Prompt = styled.p`
-  font-size: 1.4em;
+  font-size: 1.5em;
   line-height: 35px;
 `
 
 const ButtonsContainer = styled.div`
   flex-wrap: wrap;
   justify-content: center;
+  display: ${props => props.display};
 `
 
 const QuestionMark = styled.div`
   width: 50px;
+  display: ${props => props.display};
   height: 50px;
   border-radius: 5px;
   background-color: ${color.yellow};

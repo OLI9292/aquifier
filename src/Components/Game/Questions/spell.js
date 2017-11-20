@@ -216,7 +216,7 @@ class SpellQuestion extends Component {
     }
 
     return (
-      <div>
+      <div style={{marginTop:'25px'}}>
         <Definition>{definition()}</Definition>
         <div>{answerSpaces()}</div>
         <HintButton display={!this.props.isDisplayingImage} type='button' onClick={() => this.pressedHint()}>Hint</HintButton>
@@ -245,7 +245,8 @@ const AnswerSpace = styled.p`
 `
 
 const Definition = styled.div`
-  font-size: 2.5em;
+  font-size: 1.75em;
+  line-height: 35px;
   margin: auto;
   margin-bottom: 1em;
   width: 75%

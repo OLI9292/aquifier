@@ -54,28 +54,29 @@ class OnCorrectImage extends Component {
   }
 
   render() {
+    const definition = () => {
+      return this.props.word.definition.map((p, idx) => {
+        return <span key={idx} style={{color: p.isRoot ? '#F5A50E' : 'black'}}>{p.value}</span>
+      })
+    }
+
     return (
       <Layout display={this.props.display}>
-        {
-          this.state.source
-            ? <Image src={this.state.source} />
-            : <p style={{fontSize:'3.5em',textTransform:'uppercase',color:color.yellow}}>{this.props.word.value}</p>
-        }
+        <p style={{fontSize:'1.75em'}}>{definition()}</p>
+        <p style={{fontSize:'2.5em'}}>{this.props.word.value.toUpperCase()}</p>
+        {this.state.source && <Image src={this.state.source} /> }
       </Layout>
     );
   }
 }
 
 const Layout = styled.div`
-  display: ${props => props.display ? 'flex' : 'none'};
-  height: 70%;
-  align-items: center;
-  justify-content: center;
-  margin-top: 15px;
+  display: ${props => props.display ? '' : 'none'};
+  text-align: center;
 `
 
 const Image = styled.img`
-  height: 100%;
+  height: 200px;
   width: auto;
 `
 

@@ -107,7 +107,7 @@ class ButtonQuestion extends Component {
 
     return (
       <div>
-        <Definition>{definition()}</Definition>
+        <Definition><p>{definition()}</p></Definition>
         <div>{answerSpaces()}</div>
         <GameButtons display={!this.props.isDisplayingImage}>{buttons()}</GameButtons>      
       </div>
@@ -116,9 +116,10 @@ class ButtonQuestion extends Component {
 }
 
 const Definition = styled.div`
-  font-size: 2em;
   margin: auto;
   margin-bottom: 1em;
+  font-size: 1.75em;
+  line-height: 35px;  
   width: 75%;
   @media (max-width: 768px), (max-height: 700px ) {
     font-size: 1.75em;
