@@ -29,7 +29,7 @@ import './index.css';
 
 class App extends Component {
 
-  async componentDidMount() {
+  componentDidMount() {
     if (
       localStorage.getItem('words') &&
       localStorage.getItem('roots')

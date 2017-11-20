@@ -43,6 +43,8 @@ class Game extends Component {
 
     const words = JSON.parse(localStorage.getItem('words'));
     const roots = JSON.parse(localStorage.getItem('roots'));
+    
+
     const isTimed = Number.isInteger(parseInt(this.props.settings.time, 10));
     if (words && roots) {
       this.setState({ words: words, roots: roots, isTimed: isTimed }, this.setupGame);
@@ -66,7 +68,7 @@ class Game extends Component {
     const result = await Lesson.fetch(id);
     const data = result.data.questions || [];
     const [questions, checkpoints] = this.lessonStages(data);
-    console.log(questions)
+    
     this.setState({
       name: result.data.name,
       questions: questions,
