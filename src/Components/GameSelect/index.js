@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import queryString from 'query-string';
 import { Redirect } from 'react-router';
 import styled from 'styled-components';
+import _ from 'underscore';
 import Firebase from '../../Networking/Firebase';
 
 import Button from '../Common/button';
@@ -53,11 +54,10 @@ class GameSelect extends Component {
     if (!canEnterMatch) {
       this.setState({ errorMessage: canEnterMatchResult[1] });
     } else {
-
       const joinMatchResult = await Firebase.joinGame(name, accessCode);
       if (joinMatchResult) {
         canEnterMatchResult[1].accessCode = accessCode;
-        const match = queryString.stringify(canEnterMatchResult[1]);
+        const match = queryString.stringify(_.pick(canEnterMatchResult[1], 'status', 'accessCode'));
         this.setState({ redirect: `/play/${match}` });
       } else {
         this.setState({ errorMessage: 'Unable to join game.' });
