@@ -79,7 +79,7 @@ class SentenceCompletion extends Component {
 
     const completedText = () => {
       return this.state.context.split(this.state.correct.value)
-        .reduce((acc, x) => acc === null ? [x] : [acc, <span style={{color:color.yellow}}>{this.state.correct.value}</span>, x], null)  
+        .reduce((acc, x) => acc === null ? [x] : [acc, <span key={x} style={{color:color.yellow}}>{this.state.correct.value}</span>, x], null)  
     }
 
     const prompt = () => {
@@ -105,7 +105,7 @@ class SentenceCompletion extends Component {
     }    
 
     return (
-      <div>
+      <div style={{overflow:'hidden'}}>
         {this.state.ready && question()}
       </div>
     );
@@ -142,7 +142,7 @@ const QuestionMark = styled.div`
   }  
   cursor: pointer;
   float: right;
-  margin-top: 50px;
+  margin-top: 25px;
 `
 
 export default SentenceCompletion;

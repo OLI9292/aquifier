@@ -7,7 +7,7 @@ import styled from 'styled-components';
 
 import Admin from '../Admin/index';
 import ClassesDashboard from '../Dashboard/classes';
-import Game2 from '../Game/index2';
+import Game from '../Game/index';
 import GameSelect from '../GameSelect/index';
 import Header from '../Header/index';
 import Home from '../Home/index';
@@ -107,7 +107,7 @@ class Container extends Component {
       switch (this.props.component) {
         case 'admin': return <Admin settings={this.props.settings} />
         case 'classesDashboard': return <ClassesDashboard />
-        case 'game': return <Game2 settings={this.props.settings} />
+        case 'game': return <Game settings={this.props.settings} />
         case 'gameSelect': return <GameSelect />
         case 'leaderboard': return <Leaderboard gameId={this.props.gameId} />
         case 'lessonsDashboard': return <LessonsDashboard />

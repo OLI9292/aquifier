@@ -13,7 +13,6 @@ class RelatedWords extends Component {
       suggested: this.props.suggested || [],
       displayAddMore: false
     };
-    console.log(this.props.words)
   }
 
   componentWillReceiveProps(nextProps) {

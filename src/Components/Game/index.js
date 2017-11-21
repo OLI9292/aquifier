@@ -1,194 +1,194 @@
-/*import axios from 'axios';
+import Firebase from '../../Networking/Firebase';
 import React, { Component } from 'react';
 import { Redirect } from 'react-router';
-import queryString from 'query-string';
 import styled from 'styled-components';
 import _ from 'underscore';
 
-import ButtonQuestion from './buttonQuestion';
+import SentenceCompletionQuestion from './Questions/sentenceCompletion';
+import ButtonQuestion from './Questions/button';
+import SpellQuestion from './Questions/spell';
 import OnCorrectImage from './onCorrectImage';
-import SpellQuestion from './spellQuestion';
+import ProgressBar from '../ProgressBar/index';
+import Button from '../Common/button';
 import Timer from '../Timer/index';
+
+import WordList from '../../Models/WordList';
 import User from '../../Models/User';
-
-import Firebase from 'firebase';
-
-import Root from '../../Models/Root';
-import Word from '../../Models/Word';
-import { toArr } from '../../Library/helpers';
+import Lesson from '../../Models/Lesson';
 import { color } from '../../Library/Styles/index';
+
 import leftArrow from '../../Library/Images/left-arrow.png';
 import rightArrow from '../../Library/Images/right-arrow.png';
 import enterKey from '../../Library/Images/enter.png';
 import equalsKey from '../../Library/Images/equals.png';
-import demo1data from '../../Library/WordLists/Demo1';
-import demo2data from '../../Library/WordLists/Demo2';
-import demo3data from '../../Library/WordLists/Demo3';
+import speedyPng from '../../Library/Images/speedy.png';
 
 class Game extends Component {
   constructor(props) {
     super(props);
 
-    const isSinglePlayer = this.props.settings.accessCode === undefined;
-
     this.state = {
-      choices: [],
-      currentWord: null,
-      dataLoaded: false,
-      isQuestionInterlude: false,
-      gameOver: false,
-      questionCount: 0,
-      level: 'Beginner',
-      redirect: null,
-      roots: [],
+      nextQuestionIndex: 20,
+      question: null,
+      questions: [],
       score: 0,
-      isSinglePlayer: isSinglePlayer,
-      words: [],
-      wordOrder: [],
-      stats: [],
-      time: 0,
-      isSpeedy: false,
-      refreshInterval: null
+      time: 0  ,
+      stats: []  
     }
-  }
-
-  matchesCategory(a, b) {
-    return _.intersection(a.map((x) => x.toLowerCase()), toArr(b).map((y) => y.toLowerCase())).length > 0
   }
 
   async componentDidMount() {
     document.body.addEventListener('keydown', this.handleKeydown.bind(this), true);
 
     const refreshInterval = setInterval(() => this.setState({ time: this.state.time + 1 }), 1000);
-    this.setState({ refreshInterval });
+    this.setState({ refreshInterval });    
 
-    axios.all([Word.fetch(), Root.fetch()])
-      .then(axios.spread((res1, res2) => {
-        const words = res1.data.words;
-        const roots = res2.data.roots;
-        this.state.isSinglePlayer
-          ? this.startSinglePlayerGame(words, roots)
-          : this.startMultiplayerGame(words, roots);
-      }))
-      .catch((err) => console.log(err)) // TODO: - handle error
-  }
-
-  startSinglePlayerGame(words, roots) {
-    let wordOrder
+    const words = JSON.parse(localStorage.getItem('words'));
+    const roots = JSON.parse(localStorage.getItem('roots'));
     
-    if (this.props.settings.demo) {
-      wordOrder = [demo1data, demo2data, demo3data][parseInt(this.props.settings.demo) - 1] || [];
-    } else {
-      wordOrder = _.pluck(words.filter((w) => this.matchesCategory(w.categories, this.props.settings.topic)), 'value');
-      wordOrder = _.shuffle(wordOrder.map((w) => {{ let obj = {}; obj[w] = this.props.settings.level; return obj }}));
-    }
 
-    this.timer.track();
-    this.setState({ words: words, roots: roots, wordOrder: wordOrder }, this.nextQuestion);    
-  }
+    const isTimed = Number.isInteger(parseInt(this.props.settings.time, 10));
 
-  startMultiplayerGame(words, roots) {
-    Firebase.refs.games.child(this.props.settings.accessCode).on('value', (snapshot) => {
-      const snap = snapshot.val();
-      let wordOrder
-
-      if (snap.demo) {
-        wordOrder = [demo1data, demo2data, demo3data][parseInt(snap.demo) - 1] || [];
-      } else {
-        wordOrder = snap.words.length === 0
-          ? []
-          : snap.words.split(',').map((w) => {{ let obj = {}; obj[w] = snap.level; return obj }});
-      }
-
-      const lateness = this.secondsEnteredLate(snap.startTime);
-      this.timer.track(lateness);
-      this.setState({ words: words, roots: roots, wordOrder: wordOrder }, this.nextQuestion);
-    })    
-  }
-
-  handleKeydown(event) {
-    if (event.key === 'Enter' && this.state.isQuestionInterlude) {
-      this.skipAhead();
+    if (words && roots) {
+      this.setState({ words: words, roots: roots, isTimed: isTimed }, this.setupGame);
     }
   }
 
   componentWillUnmount() {
     clearInterval(this.state.refreshInterval);
-    document.body.removeEventListener('keydown', this.handleKeydown, true);
+    document.body.removeEventListener('keydown', this.handleKeydown.bind(this), true);
 
-    this.saveStats();
 
-    if (!this.state.isSinglePlayer) {
-      Firebase.refs.games.child(this.props.settings.accessCode).off();
-    }    
-  }
-
-  saveStats() {
     const userId = localStorage.getItem('userId');
     const stats = this.state.stats;
     if (userId && !_.isEmpty(stats)) { User.saveStats(userId, stats) };
   }
 
-  secondsEnteredLate(startTime) {
-    return Math.floor(((new Date()).getTime() - startTime) / 1000);
+  setupGame() {
+    if (this.props.settings.reading) {
+      this.setupLesson(this.props.settings.reading);
+    } else if (this.props.settings.wordList) {
+      this.setupWordList(this.props.settings.wordList)
+    }
+  }  
+
+  setupLesson = async (id) => {
+    const result = await Lesson.fetch(id);
+    const data = result.data.questions || [];
+    const [questions, checkpoints] = this.lessonStages(data);
+    
+    this.setState({
+      name: result.data.name,
+      questions: questions,
+      checkpoints: checkpoints
+    }, this.nextQuestion);
   }
 
-  skipAhead() {
-    clearTimeout(window.timeout);
-    this.nextQuestion();
-  }
+  handleKeydown(event) {
+    if (event.key === 'Enter' && this.state.isInterlude) {
+      clearTimeout(window.timeout);
+      this.nextQuestion();
+    }
+  }  
 
-  getWord() {
-    if (_.isEmpty(this.state.wordOrder)) {
-      return { word: this.randomItem(this.state.words), level: this.props.settings.level };
-    } else {
-      const next = this.state.wordOrder[0];
-      const word = _.find(this.state.words, (w) => w.value === _.keys(next)[0]);
-      this.setState({ wordOrder: this.state.wordOrder.slice(1, this.state.wordOrder.length )});
-      return !_.isUndefined(word) ? { word: word, level: next[word.value] }  : this.getWord();
+  setupWordList = async (id) => {
+    const result = await WordList.fetch(id);
+    if (result) {
+      const wordList = result.data;
+      const name = wordList.name;
+      const questions = wordList.questions.map((q) => {
+        const copy = q;
+        q.type = this.difficultyFor(q.difficulty); 
+        return copy 
+      });
+      
+      this.timer.track();
+      
+      this.setState({ 
+        name: name,
+        questions: questions,
+      }, this.nextQuestion)
     }
   }
 
+  lessonStages(data) {
+    const stage1 = _.shuffle(data.map((q) => ({ word: q.word, type: 'button' })));
+    const stage2 = data.map((q) => ({ word: q.word, context: q.context, type: 'sentenceCompletion' }));
+    const stage3 = _.flatten(data.map((q) => _.shuffle(_.union(q.related, [q.word]).map((w) => ({ word: w, type: 'button' })))));
+    const questions = _.flatten([stage1, stage2, stage3]);
+    const checkpoints = [stage1.length / questions.length, (stage1.length + stage2.length) / questions.length, 1]
+    return [questions, checkpoints];
+  }
+
   record(correct) {
-    const difficulty = {'Beginner': 4, 'Intermediate': 7, 'Advanced': 10 }[this.state.level];
-    const time = Math.min(this.state.time, 10);
-    const data = { word: this.state.currentWord.value, correct: correct, difficulty: difficulty, time: time };
-    const doublePoints = time < 5;
-    const points = correct ? doublePoints ? 2 : 1 : 0;
-    this.setState({stats: _.union(this.state.stats, [data]), score: this.state.score + points, isSpeedy: doublePoints });
+    const difficulties = {
+      'button': 3,
+      'spellEasy': 6,
+      'spellHard': 10,
+      'sentenceCompletion': 10
+    };
+
+    const data = {
+      word: this.state.question.word.value,
+      correct: correct,
+      time: Math.min(this.state.time, 10),
+      difficulty: difficulties[this.state.question.type] || 10
+    };
+
+    if (!_.contains(_.pluck(this.state.stats, 'word'), data.word)) {
+      this.setState({ stats: _.union(this.state.stats, [data]) });
+    }
   }
 
-  runQuestionInterlude = async () =>  {
-    this.setState({ isQuestionInterlude: true });
-    window.timeout = setTimeout(() => {
-      this.nextQuestion();
-    }, 4000);
+  runInterlude = async (correct = true) => {
+    this.record(correct);
+    const state = { isInterlude: true };
+    if (this.state.time < 5) { state.isSpeedy = true };
+    
+    this.setState(state);
+    window.timeout = setTimeout(() => { this.nextQuestion() }, 300000);
   }
 
-  nextQuestion() {
-    const next = this.getWord();
-    const level = ['Beginner', 'Intermediate', 'Advanced'][next.level] || 'Beginner';
-    this.setState({
-      currentWord: next.word,
-      isQuestionInterlude: false,
-      level: level,
-      questionCount: this.state.questionCount + 1,
-      time: 0,
-      isSpeedy: false
-    });
+  nextQuestion = async () => {
+    if (!this.state.isTimed && this.state.nextQuestionIndex === this.state.questions.length) {
+      this.gameOver();
+      return;
+    }
+
+    this.setState({ isInterlude: false, isSpeedy: false });
+
+    const questionIndex = this.state.nextQuestionIndex;
+    
+    if (questionIndex === this.state.questions.length) {
+      const questions = _.shuffle(this.state.questions);
+      this.setState({ nextQuestionIndex: 0, questions: questions }, this.nextQuestion);
+    } else {
+      const question = _.clone(this.state.questions[questionIndex]);
+      const word = _.find(this.state.words, (w) => w.value === question.word);
+      
+      if (word) {
+        question.word = word;
+        this.setState({ question: question, nextQuestionIndex: questionIndex + 1, time: 0 });
+      } else {
+        this.setState({ nextQuestionIndex: questionIndex + 1 }, this.nextQuestion);
+      }
+    }
   }
 
-  randomItem(arr) {
-    return arr[Math.floor(Math.random()*arr.length)];
+  difficultyFor(integer) {
+    return _.contains([0,1,2], integer) ? ['button', 'spellEasy', 'spellHard'][integer] : 'button';
   }
 
-  submitScore() {
-    const ref = Firebase.refs.games.child(this.props.settings.accessCode).child('players').child(this.props.settings.name);
-    ref.set(this.state.score);
-  }
+  gameOver() {
+    const username = localStorage.getItem('username');
+    const isMultiplayer = this.props.settings.players === 'multi' && username;
+    
+    if (isMultiplayer) {
+      const ref = Firebase.refs.games.child(this.props.settings.accessCode).child('players').child(username);
+      if (ref) { ref.set(2) };  
+    }
 
-  redirect(location) {
-    this.setState({ redirect: location })
+    this.setState({ gameOver: true });
   }
 
   render() {
@@ -196,178 +196,116 @@ class Game extends Component {
       return <Redirect push to={this.state.redirect} />;
     }
 
-    const gameOver = () => {
-      if (this.state.isSinglePlayer) {
-        return <GameOverContainer>
-          <Text>You scored {this.state.score}.</Text>
-        </GameOverContainer>
-      } else {
-        this.submitScore();
-        const settings = _.mapObject(this.props.settings, (v, k) => k === 'component' ? 'leaderboard' : v);
-        return <Redirect push to={`/game/${queryString.stringify(settings)}`} />;
-      }
-    }
+    const progress = this.state.nextQuestionIndex / this.state.questions.length || 0;    
 
     const question = () => {
-      if (this.state.level === 'Beginner') {
-        return <ButtonQuestion
-          level={this.state.level}
-          nextQuestion={this.runQuestionInterlude.bind(this)}
-          isDisplayingImage={this.state.isQuestionInterlude}
-          record={this.record.bind(this)}
-          roots={this.state.roots}
-          word={this.state.currentWord} />
-      } else {
+      const type = this.state.question.type;
+      if (type === 'sentenceCompletion') {
+        return <SentenceCompletionQuestion
+          question={this.state.question}
+          nextQuestion={this.runInterlude.bind(this)}
+          words={this.state.words}
+          roots={this.state.roots} />
+      } else if (type.startsWith('spell')) {
         return <SpellQuestion
-          level={this.state.level}
-          nextQuestion={this.runQuestionInterlude.bind(this)}
-          isDisplayingImage={this.state.isQuestionInterlude}
-          record={this.record.bind(this)}
-          roots={this.state.roots}
-          word={this.state.currentWord} />
+          word={this.state.question.word}
+          isEasy={type === 'spellEasy'}
+          nextQuestion={this.runInterlude.bind(this)}
+          words={this.state.words}
+          roots={this.state.roots} />        
+      } else {
+        return <ButtonQuestion 
+          word={this.state.question.word} 
+          nextQuestion={this.runInterlude.bind(this)} 
+          words={this.state.words} 
+          roots={this.state.roots} />
       }
     }
 
     const directions = () => {
-      return <Directions display={!this.state.isQuestionInterlude}>
-        <DirectionsCell>
-          <DirectionsText>Move</DirectionsText>
-          <Image src={leftArrow} />
-          <Image src={rightArrow} />
-        </DirectionsCell>
-        <DirectionsCell>
-          <DirectionsText>Hint</DirectionsText>
-          <Image src={equalsKey} />
-        </DirectionsCell>
-        <DirectionsCell>
-          <DirectionsText>Check Answer</DirectionsText>
-          <Image src={enterKey} />
-        </DirectionsCell>
-      </Directions>
+      return <div style={{position:'absolute',bottom:'0',margin:'0px 0px 10px 10px'}}>
+        <div style={{height:'25px', marginBottom:'30px'}}>
+          <h4 style={{textAlign:'left',color:color.gray,height:'5px',fontSize:'0.85em'}}>Move</h4>
+          <img src={leftArrow} alt='left-arrow' style={{height:'100%',width:'auto'}} />
+          <img src={rightArrow} alt='right-arrow' style={{height:'100%',width:'auto'}} />
+        </div>
+        <div style={{height:'25px', marginBottom:'30px'}}>
+          <h4 style={{textAlign:'left',color:color.gray,height:'5px',fontSize:'0.85em'}}>Hint</h4>
+          <img src={equalsKey} alt='equals-key' style={{height:'100%',width:'auto'}} />
+        </div>        
+        <div style={{height:'25px', marginBottom:'30px'}}>
+          <h4 style={{textAlign:'left',color:color.gray,height:'5px',fontSize:'0.85em'}}>
+            {this.state.isInterlude ? 'Skip to Next Question' : 'Check Answer'}
+          </h4>
+          <img src={enterKey} alt='enter-key' style={{height:'100%',width:'auto'}} />
+        </div>        
+      </div>
     }
 
-    const speedy = () => {
+    const gameOver = () => {
+      return <div style={{textAlign:'center',paddingTop:'25px'}}>
+        <p style={{fontSize:'3em',marginTop:'25px'}}>
+          <span style={{color:color.blue}}>{this.state.name}</span> Complete!
+        </p>
+        {this.state.score > 0 && <h1>{`You scored ${this.state.score}`}.</h1>}
+        <Button.medium style={{marginTop:'25px'}} color={color.blue} onClick={() => this.setState({ redirect: '/play' })}>
+          Return
+        </Button.medium>
+      </div>
+    }
+
+    const displayOnCorrect = this.state.isInterlude && this.state.question.type !== 'sentenceCompletion';
+
+    const game = () => {
       return <div>
-        <SpeedyImage src={require('../../Library/Images/speedy.png')} />
-        <Speedy>Speedy! +2</Speedy>
+        <div style={{height:'100px'}}>
+          <h4 style={{fontSize:'1.2em',padding:'10px 0px 0px 10px',height:'0px'}}>{this.state.name}</h4>
+          
+          <SpeedyContainer display={this.state.isSpeedy}>
+            <img src={speedyPng} alt='speedy-flame' style={{height:'100%',width:'auto'}} />
+            <p style={{color:color.red,fontStyle:'italic',fontSize:'1.25em'}}>Speedy! +2</p>
+          </SpeedyContainer>          
+
+          <div style={{width:'30%',margin:'0 auto'}}>
+            {
+              this.state.isTimed
+              ?
+              <div style={{display:'flex',alignItems:'center',justifyContent:'space-around',marginTop:'-35px'}}>
+                <Timer
+                  time={this.props.settings.time}
+                  ref={instance => { this.timer = instance }}
+                  gameOver={() => this.gameOver()} />
+                <p style={{fontSize:'3em',height:'0px',lineHeight:'0px'}}>{this.state.score}</p>
+              </div>    
+              :
+              <ProgressBar width={progress} checkpoints={this.state.checkpoints || []} />
+            }
+          </div>        
+        </div>
+        <div style={{width:'85%',margin:'0 auto',textAlign:'center'}}>
+          {this.state.question && !displayOnCorrect && question()}
+          {this.state.question && <OnCorrectImage word={this.state.question.word} display={displayOnCorrect} />}
+        </div>
+        {directions()}      
       </div>
     }
 
     return (
-      <Layout>
-        <GameInfo>
-          <SmallText display={this.state.isQuestionInterlude}>Press ENTER to skip ahead</SmallText>
-          {this.state.isSpeedy && speedy()}
-        </GameInfo>
-        <Scoreboard>
-          <Timer
-            time={this.props.settings.time}
-            ref={instance => { this.timer = instance }}
-            gameOver={() => this.setState({ gameOver: true })} />
-          <Score>{this.state.score}</Score>
-        </Scoreboard>
-        {
-          this.state.gameOver
-            ? gameOver()
-            : !_.isNull(this.state.currentWord) && question()
-        }
-        <OnCorrectImage
-          display={this.state.isQuestionInterlude}
-          ref={instance => { this.wordImage = instance }}
-          word={this.state.currentWord} />
-        {this.state.level !== 'Beginner' && directions()}
-      </Layout>
+      <div>
+        {this.state.gameOver ? gameOver() : game()}
+      </div>
     );
   }
 }
 
-const GameInfo = styled.div`
-  width: 92.5%;
-  height: 50px;
-  display: flex;
-  justify-content: space-between;
-  margin: auto;
-`
-
-const SpeedyImage = styled.img`
-  display: inline-block;
-  height: 40px;
-  width: 40px;
-  vertical-align: middle;
-`
-
-const Speedy = styled.p`
-  font-size: 1.3em;
-  display: inline-block;
-  color: ${color.red};
-  vertical-align: middle;
-  margin-left: 5px;
-`
-
-const SmallText = styled.p`
-  visibility: ${props => props.display ? 'visible' : 'hidden'};
-  color: ${color.gray};
-  display: inline-block;
-  font-size: 1.3em;
-`
-
-const Layout = styled.div`
-  text-align: center;
-  height: 100%;
-`
-
-const GameOverContainer = styled.div`
-`
-
-const Scoreboard = styled.div`
-  text-align: left;
-  margin: 0 auto;
-  margin-top: -30px;
-  width: 250px;
-`
-
-const Score = styled.p`
-  font-size: 4em;
-  display: inline-block;
-  float: right;
-  line-height: 0px;
-  margin-right: 10px;
-
-  @media (max-width: 1000px), ( max-height: 700px ) {
-    font-size: 3em;
-  }
-`
-
-const Text = styled.h4`
-  font-size: 2em;
-`
-
-// Directions components
-
-const Directions = styled.div`
-  display: ${props => props.display ? 'normal' : 'none'};
-  text-align: left;
-  margin: 0px 0px 80px 20px;
-  width: 400px;
-  bottom: 0;
-  position: absolute;
-`
-
-const DirectionsCell = styled.div`
-  display: inline-block;
-  height: 100px;
-  width: 125px;
-`
-
-const Image = styled.img`
+const SpeedyContainer = styled.div`
+  display: ${props => props.display ? 'flex' : 'none'};
+  justify-content: space-evenly;
+  align-items: center;
+  width: 150px;
   height: 35px;
-  width: auto;
-`
-
-const DirectionsText = styled.h4`
-  text-align: left;
-  color: ${color.gray};
+  float: right;
+  margin: -10px 10px 0px 0px;
 `
 
 export default Game;
-*/

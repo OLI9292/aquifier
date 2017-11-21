@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import _ from 'underscore';
 
-import { color } from '../../Library/Styles/index';
 import AWSs3 from '../../Networking/AWSs3.js';
 
 class OnCorrectImage extends Component {
