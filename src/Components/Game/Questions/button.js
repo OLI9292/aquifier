@@ -40,9 +40,7 @@ class ButtonQuestion extends Component {
 
   checkComplete() {
     if (_.contains(_.pluck(this.state.components, 'display'), false)) { return };
-    // TODO: - implement
-    // this.props.record(this.state.correct);
-    this.props.nextQuestion();
+    this.props.nextQuestion(this.state.correct);
   }  
 
   choicesFor(word) {

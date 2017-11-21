@@ -16,10 +16,8 @@ class Leaderboard extends Component {
   }
 
   componentDidMount() {
-    console.log(this.props)
     Firebase.refs.games.child(this.props.gameId).on('value', (snapshot) => {
       const snap = snapshot.val();
-      console.log(snap)
 
       if (snap.players) {
         const sorted = _.sortBy(_.keys(snap.players).map((p) => ({ 'name': p, 'score' : snap.players[p] })), 'score').reverse();
