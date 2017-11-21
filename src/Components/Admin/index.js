@@ -17,8 +17,6 @@ class Admin extends Component {
       errorMessage: null,
       players: [],
       redirect: false,
-      hasFocus: true,
-      checkFocusInterval: null,
       startTime: null
     }
 
@@ -33,22 +31,6 @@ class Admin extends Component {
     }
 
     this.createMatch(data);
-
-    const checkFocusInterval = setInterval(() => this.checkFocus(), 1000);
-    this.setState({ checkFocusInterval });
-  }
-
-  checkFocus() {
-    if (document.hasFocus() && !this.state.hasFocus && this.state.startTime) {
-      this.setState({ hasFocus: true }, this.resetTimer);
-    } else if (!document.hasFocus() && this.state.hasFocus) {
-      this.setState({ hasFocus: false });
-    }
-  }
-
-  resetTimer() {
-    const secondsOff = Math.floor(((new Date()).getTime() - this.state.startTime) / 1000);
-    this.timer.reset(secondsOff);
   }
 
   createMatch = async (data) => {
@@ -97,7 +79,7 @@ class Admin extends Component {
       if (e) {
         this.setState({ errorMessage: 'Failed to start match.' });
       } else {
-        this.timer.track();
+        this.timer.start(startTime);
         this.setState({ errorMessage: null, startTime: startTime });
       }
     });
