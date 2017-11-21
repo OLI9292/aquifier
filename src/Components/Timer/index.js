@@ -7,14 +7,15 @@ class Timer extends Component {
     super(props);
 
     this.state = {
-      timeLeft: '',
-      timeout: null
+      time: '',
+      timeout: null,
+      timeCheck: null
     }
   }
 
   componentDidMount() {
-    const timeLeft = this.props.time === '5' ? '5:00' : '3:00';
-    this.setState({ timeLeft });
+    const time = this.props.time === '5' ? '5:00' : '3:00';
+    this.setState({ time });
   }
 
   accountForLateness(secondsLate) {
@@ -24,45 +25,32 @@ class Timer extends Component {
     return `${minutes}:${seconds.length === 1 ? '0' + seconds : seconds}`;
   }
 
-  decrementSeconds(seconds) {
-    const updated = parseInt(seconds, 10) - 1;
-    return updated < 10 ? `0${updated}` : updated.toString()
-  }
-
   componentWillUnmount() {
-    clearTimeout(this.state.timeout)
+    clearInterval(this.state.timeCheck)
   }
 
-  reset(secondsLate) {
-    clearTimeout(this.state.timeout)
-    this.track(secondsLate)
+  start(startTime) {
+    const timeCheck = setInterval(() => { this.track(startTime) }, 100);
+    this.setState({ timeCheck });  
   }
 
-  track(secondsLate) {
-    const timeLeft = secondsLate ? this.accountForLateness(secondsLate) : this.state.timeLeft;
-    const minutes = timeLeft.split(':')[0];
-    const seconds = timeLeft.split(':')[1];
+  track(startTime)  {
+    const secondsLate = Math.floor(((new Date()).getTime() - startTime) / 1000);
+    const time = this.accountForLateness(secondsLate);
+    
+    const [minutes, seconds] = [time.split(':')[0], time.split(':')[1]];
+    const gameOver = seconds === '00' && minutes === '0';
 
-    if ((seconds === '00') && (minutes === '0')) {
+    if (gameOver) {
       this.props.gameOver();
     } else {
-      const time = seconds === '00'
-        ? `${parseInt(minutes, 10) - 1}:59`
-        : `${minutes}:${this.decrementSeconds(seconds)}`
-      
-      const timeout = setTimeout(() => { this.update(time) }, 1000);
-      this.setState({ timeout });
+      this.setState({ time });
     }
-  }
-
-  update(time) {
-    this.setState({ timeLeft: time });
-    this.track();
   }
 
   render() {
     return (
-      <Text>{this.state.timeLeft}</Text>
+      <Text>{this.state.time}</Text>
     );
   }
 }

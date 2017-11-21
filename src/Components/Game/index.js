@@ -28,7 +28,7 @@ class Game extends Component {
     super(props);
 
     this.state = {
-      nextQuestionIndex: 20,
+      nextQuestionIndex: 0,
       question: null,
       questions: [],
       score: 0,
@@ -102,7 +102,7 @@ class Game extends Component {
         return copy 
       });
       
-      this.timer.track();
+      this.timer.start(new Date());
       
       this.setState({ 
         name: name,

@@ -31,7 +31,7 @@ class Leaderboard extends Component {
   }
 
   componentWillUnmount() {
-    Firebase.refs.games.child(this.props.settings.accessCode).off();
+    Firebase.refs.games.child(this.props.gameId).off();
   }
 
   withPositions(players) {
