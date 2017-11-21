@@ -40,7 +40,6 @@ class ReadingGameSelect extends Component {
       const lessons = type === 'public' ? this.state.publicLessons : this.state.privateLessons;
       if (lessons.length) {
         return <LessonsContainer>
-          <p style={{fontSize:'2em'}}>{`${type === 'public' ? 'Wordcraft' : 'Teachers\''} Readings`}</p>
           {
             lessons.map((l, i) => {
               return <LessonButton onClick={() => this.setState({ selected: l._id })}
@@ -78,7 +77,6 @@ const LessonsContainer = styled.div`
   text-align: center;
   width: 90%;
   margin: 0 auto;
-  margin-top: 50px;
 `
 
 const LessonButton = Button.mediumLong.extend`

@@ -13,7 +13,7 @@ class Navigation extends Component {
 
     this.state = {
       displayDropdown: false,
-      hasWordListAccess: false
+      hasAdminAccess: false
     };
   }
 
@@ -21,13 +21,13 @@ class Navigation extends Component {
     document.addEventListener('click', this.handleClick, false);
 
     const userId = localStorage.getItem('userId');
-    const hasWordListAccess = userId === CONFIG.ADMIN_ID;
-    this.setState({ hasWordListAccess });
+    const hasAdminAccess = userId === CONFIG.ADMIN_ID;
+    this.setState({ hasAdminAccess });
   }
 
   componentWillUnmount() {
     document.removeEventListener('click', this.handleClick, false);
-  }    
+  }
 
   handleClick = e => {
     const displayDropdown = ReactDOM.findDOMNode(this).contains(e.target) ? !this.state.displayDropdown : false;
@@ -43,11 +43,11 @@ class Navigation extends Component {
       return <DropdownContainer visibility={this.state.displayDropdown ? 'visible' : 'hidden'}>
         <Link.default onClick={() => this.setState({ redirect: `/profile/${this.props.userId}`})} display={this.props.isTeacher ? 'none' : 'block'} color={color.green}>Progress</Link.default>
         <Link.default onClick={() => this.setState({ redirect: '/classes' })}  display={this.props.isTeacher ? 'block' : 'none'} color={color.purple}>Class</Link.default>
-        <Link.default onClick={() => this.setState({ redirect: '/lessons'})} display={this.props.isTeacher ? 'block' : 'none'} color={color.green}>Lessons</Link.default>
-        <Link.default onClick={() => this.setState({ redirect: '/word-lists'})} display={this.state.hasWordListAccess && this.props.isTeacher ? 'block' : 'none'} color={color.yellow}>Word Lists</Link.default>
+        <Link.default onClick={() => this.setState({ redirect: '/lessons'})} display={this.state.hasAdminAccess && this.props.isTeacher ? 'block' : 'none'} color={color.green}>Lessons</Link.default>
+        <Link.default onClick={() => this.setState({ redirect: '/word-lists'})} display={this.state.hasAdminAccess && this.props.isTeacher ? 'block' : 'none'} color={color.yellow}>Word Lists</Link.default>
         <Link.default color={color.red} onClick={() => this.props.logout()}>Logout</Link.default>
       </DropdownContainer>
-    }    
+    }
 
     const navigation = () => {
       if (this.props.loggedIn) {
@@ -82,7 +82,7 @@ const Layout = styled.div`
 const DropdownContainer = styled.div`
   width: 100px;
   position: relative;
-  z-index: ${props => props.visibility ? 2000 : 0};  
+  z-index: ${props => props.visibility ? 2000 : 0};
   background-color: white;
   border-radius: 10px;
   padding: 5px;
