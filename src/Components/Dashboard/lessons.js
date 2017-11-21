@@ -42,7 +42,7 @@ class LessonsDashboard extends Component {
     const userId = localStorage.getItem('userId');
     if (userId) {
       this.setState({ userId: userId }, this.loadData);
-      this.reset();      
+      this.reset();
     }
   }
 
@@ -54,7 +54,7 @@ class LessonsDashboard extends Component {
 
   loadLessons = async () => {
     const result = await Lesson.forTeacher(this.state.userId);
-    const lessons = result.data || [];   
+    const lessons = result.data || [];
     this.setState({ lessons });
   }
 
@@ -62,7 +62,7 @@ class LessonsDashboard extends Component {
     const result = await Class.forTeacher(this.state.userId);
     const classes = result.data || [];
     classes.forEach((c) => c.checked = false);
-    this.setState({ classes });      
+    this.setState({ classes });
   }
 
   loadWordData = async () => {
@@ -122,7 +122,7 @@ class LessonsDashboard extends Component {
 
     if (!this.state.lessonTitle) {
       errorMsg = 'Please enter a lesson title.'
-    } else if (!this.checkedClasses().length) { 
+    } else if (!this.checkedClasses().length) {
       errorMsg = 'Please check at least 1 class.'
     } else if (!this.state.textMatches.length) {
       errorMsg = 'Lessons require at least 1 WORD / PASSAGE.'
@@ -184,7 +184,7 @@ class LessonsDashboard extends Component {
     const questions = this.state.textMatches
       .filter((m) => m.context.includes(m.word.toLowerCase()))
       .map((m) => ({ word: m.word.toLowerCase(), context: m.context, related: m.related }));
-    
+
     const data = {
       name: name,
       filename: filename,
@@ -198,7 +198,7 @@ class LessonsDashboard extends Component {
       ? (await Lesson.create(data))
       : (await Lesson.update(this.state.lessonId, data));
 
-    result.data.error 
+    result.data.error
       ? this.setState({ errorMsg: 'There was an error saving the lesson.  Please try again.' })
       : this.setState({ isEditing: false }, this.loadLessons);
   }
@@ -283,14 +283,14 @@ class LessonsDashboard extends Component {
           <td style={{width:'35%'}}>
             <RelatedWords
               index={i}
-              updateRelatedWords={this.updateRelatedWords.bind(this)} 
+              updateRelatedWords={this.updateRelatedWords.bind(this)}
               words={this.state.words}
               added={m.related || []}
               suggested={this.state.relatedWords[m.word]}
             />
           </td>
         </tr>
-      })      
+      })
     }
 
     const textMatchesTable = () => {
@@ -316,7 +316,7 @@ class LessonsDashboard extends Component {
           <Link.large onClick={() => this.reset()} style={{display:'inline-block',float:'left'}} color={color.blue}>Back</Link.large>
           <Link.large onClick={() => this.handleSaveLesson()} style={{display: 'inline-block',float:'right'}} color={color.green}>Save</Link.large>
         </div>
-        <ErrorMessage>{this.state.errorMsg}</ErrorMessage>        
+        <ErrorMessage>{this.state.errorMsg}</ErrorMessage>
         <table>
           <tbody>
           <tr style={{verticalAlign:'top',height:'75px'}}>
@@ -348,7 +348,7 @@ class LessonsDashboard extends Component {
                 })
               }
             </td>
-          </tr>          
+          </tr>
           </tbody>
         </table>
         {!_.isEmpty(this.state.textMatches) && textMatchesTable()}
@@ -364,7 +364,7 @@ class LessonsDashboard extends Component {
 }
 
 const resizableTextAreastyles = (textareaBackgroundColor) => {
-  return { 
+  return {
     backgroundColor: textareaBackgroundColor,
     border: 'none',
     borderRadius: '5px',
