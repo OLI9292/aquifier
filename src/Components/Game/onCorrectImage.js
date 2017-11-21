@@ -39,7 +39,7 @@ class OnCorrectImage extends Component {
       };
 
       const request = AWSs3.object(params);
-    
+
       request.on('success', (response) => {
         const imageSource = 'data:image/jpeg;base64,' + this.encode(response.data.Body);
         this.setState({ source: imageSource, word: nextProps.word.value });
@@ -62,7 +62,7 @@ class OnCorrectImage extends Component {
     return (
       <Layout display={this.props.display}>
         <p style={{fontSize:'1.75em'}}>{definition()}</p>
-        <p style={{fontSize:'2.5em'}}>{this.props.word.value.toUpperCase()}</p>
+        <p style={{fontSize:'2.5em', letterSpacing: '0.2em'}}>{this.props.word.value.toUpperCase()}</p>
         {this.state.source && <Image src={this.state.source} /> }
       </Layout>
     );
