@@ -3,16 +3,12 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import _ from 'underscore';
 
-import Buttons from '../Buttons/default';
+import Button from '../Common/button';
 import { color } from '../../Library/Styles/index';
-import { sleep, get } from '../../Library/helpers';
 import User from '../../Models/User';
 
 class Login extends Component {
-  constructor(props) {
-    super(props);
-  }
-
+  
   handleFacebookLogin = async () => {
     var provider = new firebase.auth.FacebookAuthProvider();
     try {
@@ -100,9 +96,9 @@ class Login extends Component {
     return (
       <Layout>
         <Header>Create an Account or Login</Header>
-        <Button color={color.facebookBlue} onClick={() => this.handleFacebookLogin()}>Continue with Facebook</Button>
-        <Button color={color.googleRed} onClick={() => this.handleGoogleLogin()}>Continue with Google</Button>
-        <Button color={color.gray} onClick={() => this.props.displayEmailLogin()}>Continue with Email</Button>
+        <LoginButton color={color.facebookBlue} onClick={() => this.handleFacebookLogin()}>Continue with Facebook</LoginButton>
+        <LoginButton color={color.googleRed} onClick={() => this.handleGoogleLogin()}>Continue with Google</LoginButton>
+        <LoginButton color={color.gray} onClick={() => this.props.displayEmailLogin()}>Continue with Email</LoginButton>
         <ContinueButton onClick={() => this.props.exit()}>Continue without saving progress</ContinueButton>
       </Layout>
     );
@@ -128,12 +124,11 @@ const Layout = styled.div`
   border-radius: 15px;
 `
 
-const Button = Buttons.medium.extend`
-  width: 275px;
+const LoginButton = Button.medium.extend`
+  width: 275px !important;
   font-size: 1.3em;
   height: 50px;
   margin-top: 10px;
-  background-color: ${props => props.color};
 `
 
 const ContinueButton = styled.p`

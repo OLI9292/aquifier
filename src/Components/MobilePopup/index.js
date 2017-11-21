@@ -1,16 +1,25 @@
 import React, { Component } from 'react';
+import { Redirect } from 'react-router';
 import styled from 'styled-components';
 
-import ActionButton from '../Buttons/action';
-import Buttons from '../Buttons/default';
+import Button from '../Common/button';
 import { color } from '../../Library/Styles/index';
 
 class MobilePopup extends Component {
+  constructor(props) {
+    super(props);
+    this.state={}
+  }
+
   handleClick() {
     this.props.removeSelf();
   }
 
   render() {
+    if (this.state.redirect && !window.location.href.endsWith(this.state.redirect)) {
+      return <Redirect push to={this.state.redirect} />;
+    }
+
     return (
       <Layout>
         <Title>Sorry to interrupt!</Title>
@@ -18,8 +27,8 @@ class MobilePopup extends Component {
           We noticed you’re on a mobile device. You’ll have a much better time if you use the mobile app. Get it below. If that’s not possible, try it out on a laptop.
         </Text>
         <ButtonsContainer>
-          {ActionButton('ios')}
-          <ReturnButton onClick={this.handleClick.bind(this)}>Back</ReturnButton>
+          <Button.iOS style={{display:'block',margin:'0 auto'}}/>
+          <Button.medium style={{color:'black',backgroundColor:'white',display:'block',margin:'0 auto',marginTop:'10px'}} onClick={() => this.setState({ redirect: '/' })}>Back</Button.medium>
         </ButtonsContainer>
       </Layout>
     );
@@ -27,10 +36,11 @@ class MobilePopup extends Component {
 }
 
 const Layout = styled.div`
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
   position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
   background-color: rgba(47,128,237, 0.97);
 `
 
@@ -45,18 +55,12 @@ const Text = styled.p`
   height: 5%;
   text-align: center;
   width: 85%;
-  margin: auto;
+  margin: 0 auto;
 `
 
 const ButtonsContainer = styled.div`
   margin-top: 50%;
   text-align: center;
-`
-
-const ReturnButton = Buttons.medium.extend`
-  margin-top: 20px;
-  background-color: white;
-  color: black;
 `
 
 export default MobilePopup;

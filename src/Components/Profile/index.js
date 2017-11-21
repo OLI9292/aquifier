@@ -2,12 +2,9 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import _ from 'underscore';
 
-import Buttons from '../Buttons/default';
 import { color } from '../../Library/Styles/index';
 import User from '../../Models/User';
-import Word from '../../Models/Word';
-import Firebase from '../../Networking/Firebase';
-import { capitalizeOne, flatMap, sum } from '../../Library/helpers'
+import { capitalizeOne, sum } from '../../Library/helpers'
 
 class Profile extends Component {
   constructor(props) {
@@ -53,7 +50,7 @@ class Profile extends Component {
       const wordsLearned = wordExperience.length;
       const wordsMastered = wordExperience.filter((w) => w.experience >= 7).length;
 
-      const wordAccuracy = parseInt((100 * sum(wordExperience, 'correct'))/sum(wordExperience, 'seen')) || 0;
+      const wordAccuracy = parseInt(100 * sum(wordExperience, 'correct')/sum(wordExperience, 'seen'), 10) || 0;
 
       this.setState({
         name: capitalizeOne(user.firstName),
@@ -66,7 +63,8 @@ class Profile extends Component {
   }
 
   loadWords = async () => {
-    const words = await Firebase.fetchWords();
+    const words = JSON.parse(localStorage.getItem('words'));
+    
     this.setState({
       wordExperience: this.state.wordExperience.map((obj) => {
         const idx = _.findIndex(words, (w) => w.value === obj.name);
@@ -81,7 +79,6 @@ class Profile extends Component {
       return this.state.wordExperience.map((w, i) => {
         const stars = _.range(1, 11).map((n, i2) => {
           return <StarImage key={i * 10 + i2} src={require(`../../Library/Images/star-${n <= w.experience ? 'yellow': 'grey'}.png`)} />;
-
         });
         return <Row key={i} backgroundColor={i % 2 === 0 ? color.lightestGray : 'white'}>
           <WordCell>
@@ -97,7 +94,6 @@ class Profile extends Component {
 
     const stats = () => {
       return _.keys(this.state.stats).map((k) => {
-        const statDescription = k.replace(/([A-Z])/g, ' $1').toLowerCase();
         return <StatContainer key={k}>
           <div>
             <StatImage src={require(`../../Library/Images/${this.state.stats[k].image}.png`)} />
@@ -117,7 +113,6 @@ class Profile extends Component {
           </ProgressTable>
         </ProgressSection>
         <Sidebar>
-          <ShareButton>Email Report</ShareButton>
           {stats()}
         </Sidebar>
       </div>
@@ -181,15 +176,7 @@ const Sidebar = styled.div`
   width: 27.5%;
   text-align: center;
   display: inline-block;
-`
-
-const ShareButton = Buttons.medium.extend`
-  background-color: ${color.blue};
-  font-size: 1.35em;
-  width: 140px;
-  height: 50px;
-  margin-top: 60px;
-  margin-bottom: 25px;
+  margin-top: 25px;
 `
 
 // Stats Section

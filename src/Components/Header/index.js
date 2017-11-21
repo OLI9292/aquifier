@@ -1,96 +1,134 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import logo from '../../Library/Images/logo.png';
-import { color } from '../../Library/Styles/index';
 import { Redirect } from 'react-router';
 import _ from 'underscore';
 
-const IOSURL = "https://bit.ly/playwordcraft";
+import { color } from '../../Library/Styles/index';
+import { isHome } from '../../Library/helpers';
+import Login from '../Login/index';
+import EmailLogin from '../Login/emailLogin';
+import Navigation from './navigation';
 
 class Header extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      redirect: null,
-      userId: localStorage.getItem('userId'),
-      isTeacher: !_.isNull(localStorage.getItem('classId'))
+      displayLogin: false
     };
   }
 
-  handleClick() {
-    if (!window.location.href.match(/dashboard|profile/g)) {
-      const redirect = this.state.isTeacher ? '/dashboard' : `/profile/${this.state.userId}`;
-      this.setState({ redirect });
+  componentDidMount() {
+    const userId = localStorage.getItem('userId');
+    const classId = localStorage.getItem('classId');
+    
+    this.setState({
+      userId: userId,
+      isTeacher: !_.isNull(classId),
+      loggedIn: !_.isNull(userId)
+    })
+  }
+
+  exitLogin() {
+    const userId = localStorage.getItem('userId');
+    const classId = localStorage.getItem('classId');
+
+    if (isHome()) {
+      this.setState({ redirect: '/play' })
+    } else {
+      this.setState({
+        displayLogin: false,
+        displayEmailLogin: false,
+        loggedIn: !_.isNull(userId),
+        userId: userId,
+        isTeacher: !_.isNull(classId)
+      });      
     }
   }
 
+  displayEmailLogin() {
+    this.setState({ displayEmailLogin: true });
+  }
+
+  handleLogout() {
+    localStorage.removeItem('userId');
+    localStorage.removeItem('username');
+    this.setState({ redirect: '/', loggedIn: false });
+  }
+
+  handleBackgroundClick() {
+    this.setState({ displayLogin: false, displayEmailLogin: false });
+  }  
+
   render() {
-    if (this.state.redirect) {
+    if (this.state.redirect && !window.location.href.endsWith(this.state.redirect)) {
       return <Redirect push to={this.state.redirect} />;
     }
 
+    const login = () => {
+      if (this.state.displayEmailLogin) {
+        return <EmailLogin exit={this.exitLogin.bind(this)}/>
+      } else if (this.state.displayLogin) {
+        return <Login displayEmailLogin={this.displayEmailLogin.bind(this)} exit={this.exitLogin.bind(this)} />
+      }
+    }    
+
     return (
-      <Layout>
-        <Title onClick={() => this.setState({ redirect: '/' })}>WORDCRAFT</Title>
-        <Nav>
-          <Link color={color.green} colorHover={color.green10l} onClick={() => this.setState({ redirect: '/' })}>Home</Link>
-          {
-            this.state.userId &&
-            <Link color={color.orange} colorHover={color.orange10l} onClick={() => this.handleClick()}>
-              {this.state.isTeacher ? 'My Class' : 'My Progress'}
-            </Link>
-          }
-          <Link color={color.red} colorHover={color.red10l}>
-            <a style={{color: 'inherit', textDecoration: 'inherit'}} href='mailto:support@playwordraft.com'>Support</a>
-          </Link>
-        </Nav>
-      </Layout>
+      <Container>
+        <Content>
+          <Title onClick={() => this.setState({ redirect: '/' })}>WORDCRAFT</Title>
+          {login()}
+          <DarkBackground display={this.state.displayLogin} onClick={() => this.handleBackgroundClick()} />
+          <Navigation
+            loggedIn={this.state.loggedIn}
+            isTeacher={this.state.isTeacher}
+            userId={this.state.userId}
+            login={() => this.setState({ displayLogin: true })}
+            logout={this.handleLogout.bind(this)}
+          />
+        </Content>
+      </Container>
     );
   }
 }
 
+const Container = styled.div`
+  background-color: white;
+  height: 90px;
+  width: 100%;
+`
+
+const Content = styled.div`
+  width: 95%;
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+`
+
+const DarkBackground = styled.div`
+  display: ${props => props.display ? '' : 'none'};
+  z-index: 5;
+  background-color: rgb(0, 0, 0);
+  opacity: 0.7;
+  -moz-opacity: 0.7;
+  filter: alpha(opacity=70);
+  height: 100%;
+  width: 100%;
+  background-repeat: repeat;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+`
+
 const Title = styled.h1`
   color: ${color.yellow};
-  font-size: 2.25em;
+  font-size: 2.5em;
   cursor: pointer;
-  margin-top: 15px;
-`
-
-const Layout = styled.div`
-  background-color: white;
-  position: fixed;
-  height: 75px;
-  width: 100%;
-  min-width: 600px;
-  display: flex;
-  justify-content:space-around;
-`
-
-const Logo = styled.img`
-  float: left;
-  cursor: pointer;
-  height: 50%;
-  padding-left: 2%;
-  position: relative;
-  top: 50%;
-  transform: translateY(-50%);
-`
-
-const Nav = styled.div`
-  margin-top: 25px;
-`
-
-const Link = styled.a`
-  color: ${props => props.color};
-  &:hover {
-    color: ${props => props.colorHover};
-  }
-  cursor: pointer;
-  text-decoration: none;
-  font-size: 1.5em;
-  font-weight: 300;
-  margin-left: 25px;
+  margin-top: 20px;
+  @media (max-width: 600px) {
+    font-size: 1.5em;
+  }  
 `
 
 export default Header;

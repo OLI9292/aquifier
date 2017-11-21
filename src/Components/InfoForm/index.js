@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import _ from 'underscore';
 
-import TextAreas from '../TextAreas/index';
+import TextArea from '../Common/textarea';
 import lightGrayCheckmark from '../../Library/Images/Checkmark-LightGray.png';
 import greenCheckmark from '../../Library/Images/Checkmark-Green.png';
 import { color } from '../../Library/Styles/index';
@@ -93,7 +93,7 @@ class InfoForm extends Component {
     const smallInputs = this.state.smallInputs.map((input, idx) => {
       return <SmallInput key={idx}>
         <Image src={this.isValid(input) ? greenCheckmark : lightGrayCheckmark} className="checkmark" />
-        <TextAreas.medium
+        <TextArea.medium
           name={input.name}
           placeholder={input.placeholder}
           onChange={this.handleInputChange.bind(this)} />
@@ -163,7 +163,7 @@ const InputsContainer = styled.div`
   justify-content: center;
 `
 
-const CommentsTextArea = TextAreas.medium.extend`
+const CommentsTextArea = TextArea.medium.extend`
   width: 80%;
   height: 150px;
   margin-left: 10%;
@@ -196,10 +196,6 @@ const SubmitButton = styled.input`
   @media (max-width: 450px) {
     font-size: 0.9em;
   }
-`
-
-const Higlighted = styled.span`
-  color: ${color.yellow};
 `
 
 const ErrorMessage = styled.p`

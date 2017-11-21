@@ -14,12 +14,12 @@ class Timer extends Component {
 
   componentDidMount() {
     const timeLeft = this.props.time === '5' ? '5:00' : '3:00';
-    this.setState({ timeLeft: timeLeft });
+    this.setState({ timeLeft });
   }
 
   accountForLateness(secondsLate) {
     const totalSeconds = (this.props.time === '5' ? 300 : 180) - secondsLate;
-    const minutes = parseInt(totalSeconds / 60);
+    const minutes = parseInt(totalSeconds / 60, 10);
     const seconds = (totalSeconds % 60).toString();
     return `${minutes}:${seconds.length === 1 ? '0' + seconds : seconds}`;
   }
@@ -70,12 +70,8 @@ class Timer extends Component {
 const Text = styled.p`
   display: inline-block;
   line-height: 0px;
-  font-size: 4em;
+  font-size: 3em;
   color: ${color.red};
-
-  @media (max-width: 1000px), ( max-height: 700px ) {
-    font-size: 3em;
-  }
 `
 
 export default Timer;
