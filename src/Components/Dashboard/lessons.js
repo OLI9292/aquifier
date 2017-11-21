@@ -56,7 +56,6 @@ class LessonsDashboard extends Component {
     const result = await Lesson.forTeacher(this.state.userId);
     const lessons = result.data || [];
     this.setState({ lessons });
-    console.log("lessons are", this.state.lessons);
   }
 
   loadClasses = async () => {
