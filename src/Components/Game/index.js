@@ -33,7 +33,7 @@ class Game extends Component {
       questions: [],
       score: 0,
       time: 0  ,
-      stats: []  
+      stats: []
     }
   }
 
@@ -41,7 +41,7 @@ class Game extends Component {
     document.body.addEventListener('keydown', this.handleKeydown.bind(this), true);
 
     const refreshInterval = setInterval(() => this.setState({ time: this.state.time + 1 }), 1000);
-    this.setState({ refreshInterval });    
+    this.setState({ refreshInterval });
 
     const words = JSON.parse(localStorage.getItem('words'));
     const roots = JSON.parse(localStorage.getItem('roots'));
@@ -52,7 +52,7 @@ class Game extends Component {
 
     if (words && roots) {
       this.setState(
-        { words: words, roots: roots, isTimed: isTimed, isMultiplayer: isMultiplayer, username: username }, 
+        { words: words, roots: roots, isTimed: isTimed, isMultiplayer: isMultiplayer, username: username },
         this.setupGame);
     }
   }
@@ -76,13 +76,13 @@ class Game extends Component {
     } else if (this.props.settings.wordList) {
       this.setupWordList(this.props.settings.wordList)
     }
-  }  
+  }
 
   setupLesson = async (id) => {
     const result = await Lesson.fetch(id);
     const data = result.data.questions || [];
     const [questions, checkpoints] = this.lessonStages(data);
-    
+
     this.setState({
       name: result.data.name,
       questions: questions,
@@ -95,7 +95,7 @@ class Game extends Component {
       clearTimeout(window.timeout);
       this.nextQuestion();
     }
-  }  
+  }
 
   setupWordList = async (id) => {
     const result = await WordList.fetch(id);
@@ -104,14 +104,14 @@ class Game extends Component {
       const name = wordList.name;
       const questions = wordList.questions.map((q) => {
         const copy = q;
-        q.type = this.difficultyFor(q.difficulty); 
-        return copy 
+        q.type = this.difficultyFor(q.difficulty);
+        return copy
       });
-      
+
       const time = this.props.settings.startTime || new Date();
       this.timer.start(time);
-      
-      this.setState({ 
+
+      this.setState({
         name: name,
         questions: questions,
       }, this.nextQuestion)
@@ -145,13 +145,17 @@ class Game extends Component {
     if (!_.contains(_.pluck(this.state.stats, 'word'), data.word)) {
       this.setState({ stats: _.union(this.state.stats, [data]) });
     }
+
+    if (this.state.isTimed && correct) {
+      this.setState({ score: this.state.score + 1 })
+    }
   }
 
   runInterlude = async (correct = true) => {
     this.record(correct);
     const state = { isInterlude: true };
     if (this.state.time < 5) { state.isSpeedy = true };
-    
+
     this.setState(state);
     window.timeout = setTimeout(() => { this.nextQuestion() }, 300000);
   }
@@ -165,14 +169,14 @@ class Game extends Component {
     this.setState({ isInterlude: false, isSpeedy: false });
 
     const questionIndex = this.state.nextQuestionIndex;
-    
+
     if (questionIndex === this.state.questions.length) {
       const questions = _.shuffle(this.state.questions);
       this.setState({ nextQuestionIndex: 0, questions: questions }, this.nextQuestion);
     } else {
       const question = _.clone(this.state.questions[questionIndex]);
       const word = _.find(this.state.words, (w) => w.value === question.word);
-      
+
       if (word) {
         question.word = word;
         this.setState({ question: question, nextQuestionIndex: questionIndex + 1, time: 0 });
@@ -189,7 +193,7 @@ class Game extends Component {
   gameOver() {
     if (this.state.isMultiplayer && this.state.username) {
       const ref = Firebase.refs.games.child(this.props.settings.accessCode).child('players').child(this.state.username);
-      if (ref) { ref.set(2) };  
+      if (ref) { ref.set(2) };
     }
 
     this.setState({ gameOver: true });
@@ -200,7 +204,7 @@ class Game extends Component {
       return <Redirect push to={this.state.redirect} />;
     }
 
-    const progress = this.state.nextQuestionIndex / this.state.questions.length || 0;    
+    const progress = this.state.nextQuestionIndex / this.state.questions.length || 0;
 
     const question = () => {
       const type = this.state.question.type;
@@ -216,12 +220,12 @@ class Game extends Component {
           isEasy={type === 'spellEasy'}
           nextQuestion={this.runInterlude.bind(this)}
           words={this.state.words}
-          roots={this.state.roots} />        
+          roots={this.state.roots} />
       } else {
-        return <ButtonQuestion 
-          word={this.state.question.word} 
-          nextQuestion={this.runInterlude.bind(this)} 
-          words={this.state.words} 
+        return <ButtonQuestion
+          word={this.state.question.word}
+          nextQuestion={this.runInterlude.bind(this)}
+          words={this.state.words}
           roots={this.state.roots} />
       }
     }
@@ -236,13 +240,13 @@ class Game extends Component {
         <div style={{height:'25px', marginBottom:'30px'}}>
           <h4 style={{textAlign:'left',color:color.gray,height:'5px',fontSize:'0.85em'}}>Hint</h4>
           <img src={equalsKey} alt='equals-key' style={{height:'100%',width:'auto'}} />
-        </div>        
+        </div>
         <div style={{height:'25px', marginBottom:'30px'}}>
           <h4 style={{textAlign:'left',color:color.gray,height:'5px',fontSize:'0.85em'}}>
-            {this.state.isInterlude ? 'Skip to Next Question' : 'Check Answer'}
+            {this.state.isInterlude ? 'Next Question' : 'Check Answer'}
           </h4>
           <img src={enterKey} alt='enter-key' style={{height:'100%',width:'auto'}} />
-        </div>        
+        </div>
       </div>
     }
 
@@ -264,11 +268,11 @@ class Game extends Component {
       return <div>
         <div style={{height:'100px'}}>
           <h4 style={{fontSize:'1.2em',padding:'10px 0px 0px 10px',height:'0px'}}>{this.state.name}</h4>
-          
+
           <SpeedyContainer display={this.state.isSpeedy}>
             <img src={speedyPng} alt='speedy-flame' style={{height:'100%',width:'auto'}} />
-            <p style={{color:color.red,fontStyle:'italic',fontSize:'1.25em'}}>Speedy! +2</p>
-          </SpeedyContainer>          
+            <p style={{color:color.red,fontSize:'1.25em'}}>Speedy! +2</p>
+          </SpeedyContainer>
 
           <div style={{width:'30%',margin:'0 auto'}}>
             {
@@ -280,17 +284,17 @@ class Game extends Component {
                   ref={instance => { this.timer = instance }}
                   gameOver={() => this.gameOver()} />
                 <p style={{fontSize:'3em',height:'0px',lineHeight:'0px'}}>{this.state.score}</p>
-              </div>    
+              </div>
               :
               <ProgressBar width={progress} checkpoints={this.state.checkpoints || []} />
             }
-          </div>        
+          </div>
         </div>
         <div style={{width:'85%',margin:'0 auto',textAlign:'center'}}>
           {this.state.question && !displayOnCorrect && question()}
           {this.state.question && <OnCorrectImage word={this.state.question.word} display={displayOnCorrect} />}
         </div>
-        {directions()}      
+        {directions()}
       </div>
     }
 
