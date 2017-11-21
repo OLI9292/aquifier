@@ -191,7 +191,7 @@ class LessonsDashboard extends Component {
       updatedOn: createdOn,
       questions: questions,
       classes: this.checkedClasses(),
-      public: this.state.userId === '59e5026f30616e001f1268e1'
+      public: this.state.userId === CONFIG.ADMIN_ID
     }
 
     const result = this.state.isNewLesson
