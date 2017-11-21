@@ -1,14 +1,12 @@
-import queryString from 'query-string';
 import Firebase from '../../Networking/Firebase';
 import React, { Component } from 'react';
 import { Redirect } from 'react-router';
 import styled from 'styled-components';
 import _ from 'underscore';
 
-import Buttons from '../Buttons/default';
+import Button from '../Common/button';
 import Timer from '../Timer/index';
 import { color } from '../../Library/Styles/index';
-import { toArr } from '../../Library/helpers';
 
 class Admin extends Component {
   constructor(props) {
@@ -28,24 +26,16 @@ class Admin extends Component {
   }
 
   async componentDidMount() {
-    let data = { isDemo: !_.isUndefined(this.props.settings.demo) };
-
-    if (this.props.settings.demo) {
-      data.demo = this.props.settings.demo;
-    } else {
-      data = await Firebase.fetchWords();
-      const topics = toArr(this.props.settings.topic);
-      data.words = _.shuffle(_.pluck(data.filter((w) => this.matchesCategory(w.categories, topics)), 'value')).join(',');
+    const data = {
+      status: 0,
+      time: this.props.settings.time,
+      wordList: this.props.settings.wordList
     }
 
     this.createMatch(data);
 
     const checkFocusInterval = setInterval(() => this.checkFocus(), 1000);
     this.setState({ checkFocusInterval });
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.state.checkFocusInterval);
   }
 
   checkFocus() {
@@ -64,24 +54,13 @@ class Admin extends Component {
   createMatch = async (data) => {
     Firebase.refs.games.once('value', (snapshot) => {
       const accessCodes = _.keys(snapshot.val());
-      const accessCode = this.generateAccessCode(accessCodes);
+      const accessCode = '8653' //this.generateAccessCode(accessCodes);
 
       const game = {};
+      game[accessCode] = data
 
-      game[accessCode] = data.isDemo
-        ? { 
-            status: 0,
-            demo: data.demo
-          }
-        : {
-            level: this.props.settings.level,
-            time: this.props.settings.time,
-            status: 0,
-            words: data.words
-          };
-
-      Firebase.refs.games.update(game, (e) => {
-        if (e) {
+      Firebase.refs.games.update(game, (error) => {
+        if (error) {
           this.setState({ errorMessage: 'Failed to create match.' });
         } else {
           this.setState({ accessCode: accessCode }, this.waitForPlayers.bind(this, accessCode));
@@ -96,11 +75,8 @@ class Admin extends Component {
   }
 
   componentWillUnmount() {
+    clearInterval(this.state.checkFocusInterval);    
     Firebase.refs.games.child(this.state.accessCode).child('players').off();
-  }
-
-  matchesCategory(a, b) {
-    return _.intersection(a.map((x) => x.toLowerCase()), b.map((y) => y.toLowerCase())).length > 0
   }
 
   generateAccessCode(exclude) {
@@ -108,10 +84,11 @@ class Admin extends Component {
   }
 
   startMatch() {
-    if (_.isEmpty(this.state.players)) {
+    // TODO: - remove
+    /*if (_.isEmpty(this.state.players)) {
       this.setState({ errorMessage: 'Games require at least 1 player.' });
       return;
-    }
+    }*/
 
     const startTime = (new Date()).getTime();
     const startMatchUpdate = { status: 1, startTime: startTime };
@@ -127,8 +104,7 @@ class Admin extends Component {
   }
 
   gameOver() {
-    const endMatchUpdate = { status: 2 };
-    Firebase.refs.games.child(this.state.accessCode).update(endMatchUpdate);
+    Firebase.refs.games.child(this.state.accessCode).update({ status: 2 });
     this.setState({ redirect: true });
   }
 
@@ -137,25 +113,22 @@ class Admin extends Component {
   }
 
   render() {
-    if (this.state.redirect) {
-      const settings = {
-        accessCode: this.state.accessCode,
-        multiplayer: true,
-        component: 'leaderboard'
-      };
-      return <Redirect push to={`/game/${queryString.stringify(settings)}`} />;
+    if (this.state.redirect && !window.location.href.endsWith(this.state.redirect)) {
+      return <Redirect push to={`/leaderboard/${this.state.accessCode}`} />;
     }
 
     const playersTable = () => {
       return this.state.players.length === 0
         ? <Text color={color.gray}>Waiting for players to join...</Text>
         : <table>
-          {this.state.players.map((p) => {
-           return <tr style={{lineHeight: '0px'}}>
-            <td><SmallText style={{width: '150px'}}>{p}</SmallText></td>
-            <td onClick={() => this.kick(p)}><KickButton>Kick</KickButton></td>
-           </tr>
-          })}
+            <tbody>
+              {this.state.players.map((p,i) => {
+               return <tr style={{lineHeight: '0px'}} key={i}>
+                <td><SmallText style={{width: '150px'}}>{p}</SmallText></td>
+                <td onClick={() => this.kick(p)}><KickButton>Kick</KickButton></td>
+               </tr>
+              })}
+            </tbody>
         </table>
     }
 
@@ -172,10 +145,12 @@ class Admin extends Component {
               time={this.props.settings.time} 
               gameOver={this.gameOver.bind(this)} />
             <br/>
-            <StartButton onClick={this.startMatch}>Start Match</StartButton>
+            <Button.medium onClick={this.startMatch} style={{backgroundColor:color.blue,marginBottom:'1em'}}>
+              Start Match
+            </Button.medium>
           </LongCell>
         </tr>
-        <tr style={{height: '300px', marginBottom: '1em'}}>
+        <tr style={{marginBottom:'1em'}}>
           <ShortCell alignTop><Text>Players</Text></ShortCell>
           <LongCell alignTop>{playersTable()}</LongCell>
         </tr>
@@ -236,19 +211,7 @@ const AccessCode = styled.h1`
   line-height: 0;
 `
 
-const Container = styled.div`
-`
-
-const StartButton = Buttons.medium.extend`
-  margin-bottom: 1em;
-  background-color: ${color.blue};
-  &:hover {
-    background-color: ${color.blue10l};
-  }
-  font-size: 2.25em;
-`
-
-const KickButton = Buttons.small.extend`
+const KickButton = Button.small.extend`
   background-color: ${color.red};
   &:hover {
     background-color: ${color.red10l};

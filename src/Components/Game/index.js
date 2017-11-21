@@ -1,20 +1,20 @@
-import axios from 'axios';
+/*import axios from 'axios';
 import React, { Component } from 'react';
 import { Redirect } from 'react-router';
 import queryString from 'query-string';
 import styled from 'styled-components';
 import _ from 'underscore';
 
-import ActionButton from '../Buttons/action';
-import Firebase from '../../Networking/Firebase';
-
-import ButtonQuestion from '../Question/button';
-import OnCorrectImage from '../OnCorrectImage/index';
-import SpellQuestion from '../Question/spell';
-import Word from '../../Models/Word';
+import ButtonQuestion from './buttonQuestion';
+import OnCorrectImage from './onCorrectImage';
+import SpellQuestion from './spellQuestion';
 import Timer from '../Timer/index';
 import User from '../../Models/User';
 
+import Firebase from 'firebase';
+
+import Root from '../../Models/Root';
+import Word from '../../Models/Word';
 import { toArr } from '../../Library/helpers';
 import { color } from '../../Library/Styles/index';
 import leftArrow from '../../Library/Images/left-arrow.png';
@@ -62,10 +62,15 @@ class Game extends Component {
     const refreshInterval = setInterval(() => this.setState({ time: this.state.time + 1 }), 1000);
     this.setState({ refreshInterval });
 
-    const words = await Firebase.fetchWords();
-    const roots = _.uniq(_.flatten(words.map((w) => w.roots)), 'value');
-
-    this.state.isSinglePlayer ? this.startSinglePlayerGame(words, roots) : this.startMultiplayerGame(words, roots);
+    axios.all([Word.fetch(), Root.fetch()])
+      .then(axios.spread((res1, res2) => {
+        const words = res1.data.words;
+        const roots = res2.data.roots;
+        this.state.isSinglePlayer
+          ? this.startSinglePlayerGame(words, roots)
+          : this.startMultiplayerGame(words, roots);
+      }))
+      .catch((err) => console.log(err)) // TODO: - handle error
   }
 
   startSinglePlayerGame(words, roots) {
@@ -187,7 +192,7 @@ class Game extends Component {
   }
 
   render() {
-    if (this.state.redirect) {
+    if (this.state.redirect && !window.location.href.endsWith(this.state.redirect)) {
       return <Redirect push to={this.state.redirect} />;
     }
 
@@ -195,9 +200,6 @@ class Game extends Component {
       if (this.state.isSinglePlayer) {
         return <GameOverContainer>
           <Text>You scored {this.state.score}.</Text>
-          <ButtonContainer>{ActionButton('singlePlayer', this.redirect.bind(this))}</ButtonContainer>
-          <ButtonContainer>{ActionButton('ios')}</ButtonContainer>
-          <ButtonContainer>{ActionButton('android')}</ButtonContainer>
         </GameOverContainer>
       } else {
         this.submitScore();
@@ -317,10 +319,6 @@ const Layout = styled.div`
 const GameOverContainer = styled.div`
 `
 
-const ButtonContainer = styled.div`
-  display: block;
-`
-
 const Scoreboard = styled.div`
   text-align: left;
   margin: 0 auto;
@@ -372,3 +370,4 @@ const DirectionsText = styled.h4`
 `
 
 export default Game;
+*/
