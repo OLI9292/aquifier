@@ -36,7 +36,7 @@ class Admin extends Component {
   createMatch = async (data) => {
     Firebase.refs.games.once('value', (snapshot) => {
       const accessCodes = _.keys(snapshot.val());
-      const accessCode = '8653' //this.generateAccessCode(accessCodes);
+      const accessCode = this.generateAccessCode(accessCodes);
 
       const game = {};
       game[accessCode] = data
@@ -66,11 +66,10 @@ class Admin extends Component {
   }
 
   startMatch() {
-    // TODO: - remove
-    /*if (_.isEmpty(this.state.players)) {
+    if (_.isEmpty(this.state.players)) {
       this.setState({ errorMessage: 'Games require at least 1 player.' });
       return;
-    }*/
+    }
 
     const startTime = (new Date()).getTime();
     const startMatchUpdate = { status: 1, startTime: startTime };

@@ -74,7 +74,7 @@ class App extends Component {
               const component = `${settings.game === 'read' ? 'reading' : 'wordList'}GameSelect`;
               return <Container component={component} settings={settings} />
             } else if (status !== undefined) {
-              if (status === 0) {
+              if (status < 2) {
                 return <Container component={'waiting'} settings={settings} />  
               }
             }
