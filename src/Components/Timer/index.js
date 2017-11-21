@@ -20,6 +20,10 @@ class Timer extends Component {
 
   accountForLateness(secondsLate) {
     const totalSeconds = (this.props.time === '5' ? 300 : 180) - secondsLate;
+    // TODO: refactor
+    if (totalSeconds < 0) {
+      this.props.gameOver();
+    }
     const minutes = parseInt(totalSeconds / 60, 10);
     const seconds = (totalSeconds % 60).toString();
     return `${minutes}:${seconds.length === 1 ? '0' + seconds : seconds}`;

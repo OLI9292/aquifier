@@ -45,19 +45,25 @@ class Game extends Component {
 
     const words = JSON.parse(localStorage.getItem('words'));
     const roots = JSON.parse(localStorage.getItem('roots'));
-    
 
     const isTimed = Number.isInteger(parseInt(this.props.settings.time, 10));
+    const isMultiplayer = this.props.settings.players === 'multi';
+    const username = localStorage.getItem('username');
 
     if (words && roots) {
-      this.setState({ words: words, roots: roots, isTimed: isTimed }, this.setupGame);
+      this.setState(
+        { words: words, roots: roots, isTimed: isTimed, isMultiplayer: isMultiplayer, username: username }, 
+        this.setupGame);
     }
   }
 
   componentWillUnmount() {
+    if (this.state.isMultiplayer) {
+      Firebase.refs.games.child(this.props.settings.accessCode).child('players').child(this.state.username).remove();
+    }
+
     clearInterval(this.state.refreshInterval);
     document.body.removeEventListener('keydown', this.handleKeydown.bind(this), true);
-
 
     const userId = localStorage.getItem('userId');
     const stats = this.state.stats;
@@ -102,7 +108,8 @@ class Game extends Component {
         return copy 
       });
       
-      this.timer.start(new Date());
+      const time = this.props.settings.startTime || new Date();
+      this.timer.start(time);
       
       this.setState({ 
         name: name,
@@ -180,11 +187,8 @@ class Game extends Component {
   }
 
   gameOver() {
-    const username = localStorage.getItem('username');
-    const isMultiplayer = this.props.settings.players === 'multi' && username;
-    
-    if (isMultiplayer) {
-      const ref = Firebase.refs.games.child(this.props.settings.accessCode).child('players').child(username);
+    if (this.state.isMultiplayer && this.state.username) {
+      const ref = Firebase.refs.games.child(this.props.settings.accessCode).child('players').child(this.state.username);
       if (ref) { ref.set(2) };  
     }
 

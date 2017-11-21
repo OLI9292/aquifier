@@ -25,7 +25,7 @@ class Waiting extends Component {
 
     Firebase.refs.games.child(this.props.settings.accessCode).on('value', (snapshot) => {
       
-      const game = _.pick(snapshot.val(), 'wordList', 'time');
+      const game = _.pick(snapshot.val(), 'wordList', 'time', 'startTime');
       if (_.isEmpty(this.state.game)) { this.setState({ game }) };
       
       const kicked = !_.includes(_.keys(snapshot.val().players), name);
