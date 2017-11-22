@@ -193,7 +193,9 @@ class Game extends Component {
   gameOver() {
     if (this.state.isMultiplayer && this.state.username) {
       const ref = Firebase.refs.games.child(this.props.settings.accessCode).child('players').child(this.state.username);
-      if (ref) { ref.set(2) };
+      if (ref) {
+        ref.set(this.state.score);
+      };
     }
 
     this.setState({ gameOver: true });
