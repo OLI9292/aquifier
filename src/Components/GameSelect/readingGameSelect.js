@@ -23,7 +23,7 @@ class ReadingGameSelect extends Component {
     const userId = localStorage.getItem('userId');
     const result = await Lesson.forStudent(userId);
     const [publicLessons, privateLessons] = _.partition((result.data || []), (l) => l.public);
-    const selected = userId ? _.flatten(privateLessons, publicLessons)[0] : publicLessons[0];
+    const selected = publicLessons[0];
     if (selected) {
       const state = { publicLessons: publicLessons, selected: selected._id };
       if (userId) { state.privateLessons = privateLessons };
