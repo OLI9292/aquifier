@@ -67,7 +67,7 @@ class Leaderboard extends Component {
       <Layout>
         <Header>Game Over!</Header>
         {
-          this.state.dataLoaded && 
+          this.state.dataLoaded &&
           <Container>
             <ResultsHeader>Results</ResultsHeader>
             <Table>
