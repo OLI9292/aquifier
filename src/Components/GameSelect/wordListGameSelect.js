@@ -41,7 +41,7 @@ class WordListGameSelect extends Component {
 
   async componentDidMount() {
     const result = await WordList.fetch();
-    
+
     const wordLists = (result.data || [])
       .filter((w) => this.props.settings.game === 'explore' ? !w.isStudy : w.isStudy);
     const reformatted = this.reformatWordLists(wordLists);
@@ -110,18 +110,18 @@ class WordListGameSelect extends Component {
                 <td>
                   {
                     this.state.wordLists[k].map((w) => {
-                      const [fColor, bColor] = this.state.selected === w.id 
+                      const [fColor, bColor] = this.state.selected === w.id
                         ? ['white', color.green]
                         : ['black', color.lightestGray];
                       return <Button.small key={w.name} color={bColor}
-                        style={{color:fColor,margin:'0px 5px 0px 5px'}}
+                        style={{color:fColor,margin:'5px'}}
                         onClick={() => this.setState({ selected: w.id })}
                       >{w.name}</Button.small>
                     })
                   }
-                </td>          
+                </td>
               </tr>
-            })        
+            })
           }
         </tbody>
       </table>
@@ -137,7 +137,7 @@ class WordListGameSelect extends Component {
           <td>
             {
               timeLimits.map((t,i) => {
-                const [fColor, bColor] = this.state.timeLimit === t ? ['white', color.green] : ['black', color.lightestGray];                
+                const [fColor, bColor] = this.state.timeLimit === t ? ['white', color.green] : ['black', color.lightestGray];
                 return <Button.small key={i} color={bColor}
                   style={{color:fColor,margin:'0px 5px 0px 5px'}}
                   onClick={() => this.setState({ timeLimit: t })}
