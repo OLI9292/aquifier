@@ -195,8 +195,6 @@ class Game extends Component {
       const ref = Firebase.refs.games.child(this.props.settings.accessCode).child('players').child(this.state.username);
       if (ref) {
         ref.set(this.state.score);
-        console.log("ref is", ref);
-        console.log("this.state.score is", this.state.score);
       };
     }
 
