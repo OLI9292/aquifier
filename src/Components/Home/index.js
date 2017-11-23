@@ -229,7 +229,7 @@ const Container = styled.div`
   margin-top: 40px;
   padding-top: 15px;
   border-radius: 10px;
-  height: 700px;
+  height: 750px;
   background-color: white;
   @media (max-width: 1100px) {
     height: fit-content;
