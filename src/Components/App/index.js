@@ -11,6 +11,7 @@ import Game from '../Game/index';
 import GameSelect from '../GameSelect/index';
 import Header from '../Header/index';
 import Home from '../Home/index';
+import InfoForm from '../InfoForm/index';
 import Leaderboard from '../Leaderboard/index';
 import LessonsDashboard from '../Dashboard/lessons';
 import MobilePopup from '../MobilePopup/index';
@@ -36,7 +37,7 @@ class App extends Component {
     ) { return }
 
     this.fetchData();
-  }  
+  }
 
   fetchData = async () => {
     axios.all([Word.fetch(), Root.fetch()])
@@ -46,7 +47,7 @@ class App extends Component {
         } else {
           console.log('words/roots saved.')
           localStorage.setItem('words', JSON.stringify(res1.data));
-          localStorage.setItem('roots', JSON.stringify(res2.data));          
+          localStorage.setItem('roots', JSON.stringify(res2.data));
         }
       }))
       .catch((err) => console.log(err))
@@ -57,16 +58,17 @@ class App extends Component {
       <BrowserRouter>
         <Switch>
           <Route exact path='/' component={Home} />
-          
+
           <Route exact path='/admin/:settings' component={({ match }) => {
-            return <Container component='admin' settings={queryString.parse(match.params.settings)} /> 
+            return <Container component='admin' settings={queryString.parse(match.params.settings)} />
           }} />
 
           <Route exact path='/profile/:userId' component={({ match }) => {
             return <Container component='profile' userId={match.params.userId} />;
           }} />
-          
+
           <Route exact path='/play' component={() => <Container component='gameSelect' />} />
+          <Route exact path='/startfreetrial' component={() => <Container component='infoForm' />} />
           <Route path='/play/:settings' component={({ match }) => {
             const settings = queryString.parse(match.params.settings);
             const status = parseInt(settings.status, 10);
@@ -75,7 +77,7 @@ class App extends Component {
               return <Container component={component} settings={settings} />
             } else if (status !== undefined) {
               if (status < 2) {
-                return <Container component={'waiting'} settings={settings} />  
+                return <Container component={'waiting'} settings={settings} />
               }
             }
             return <Container component={'game'} settings={settings} />
@@ -98,16 +100,17 @@ class Container extends Component {
 
   render() {
     // Display not-mobile-compatible popup
-    if (mobilecheck() && this.props.component !== 'home') { 
+    if (mobilecheck() && this.props.component !== 'home') {
       return <MobilePopup />
     };
-    
+
     const component = () => {
       switch (this.props.component) {
         case 'admin': return <Admin settings={this.props.settings} />
         case 'classesDashboard': return <ClassesDashboard />
         case 'game': return <Game settings={this.props.settings} />
         case 'gameSelect': return <GameSelect />
+        case 'infoForm': return <InfoForm />
         case 'leaderboard': return <Leaderboard gameId={this.props.gameId} />
         case 'lessonsDashboard': return <LessonsDashboard />
         case 'profile': return <Profile userId={this.props.userId} />
@@ -142,7 +145,7 @@ const InnerFrame = styled.div`
   width: 1000px;
   ${breakpoints.largeW} {
     width: 900px;
-  }  
+  }
   ${breakpoints.mediumW} {
     width: 800px;
   }

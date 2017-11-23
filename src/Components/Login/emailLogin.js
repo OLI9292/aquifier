@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Redirect } from 'react-router';
 import styled from 'styled-components';
 import _ from 'underscore';
 
@@ -112,23 +113,26 @@ class EmailLogin extends Component {
     return e.target.value.replace(/ /g,'')
   }
 
+  handleNoAccount() {
+    this.setState({ redirect: '/startfreetrial' })
+  }
+
+  redirect(location) {
+    this.setState({ redirect: location });
+  }
+
   render() {
+    if (this.state.redirect && !window.location.href.endsWith(this.state.redirect)) {
+      return <Redirect push to={this.state.redirect} />;
+    }
     return (
       <Layout>
-        <CreateAccount>
-          <Header>Create Account</Header>
-          <Textarea.medium style={{marginTop:'5px'}} placeholder={'first name'} onChange={(e) => this.setState({ 'firstName': this.trim(e) })}></Textarea.medium>
-          <Textarea.medium style={{marginTop:'5px'}} placeholder={'last name'} onChange={(e) => this.setState({ 'lastName': this.trim(e) })}></Textarea.medium>
-          <Textarea.medium style={{marginTop:'5px'}} placeholder={'email'} onChange={(e) => this.setState({ 'createAccountEmail': this.trim(e) })}></Textarea.medium>
-          <Textarea.medium style={{marginTop:'5px'}} placeholder={'password'} onChange={(e) => this.setState({ 'createAccountPw': this.trim(e) })}></Textarea.medium>
-          <LoginButton onClick={() => this.handleCreateAccount()}>create account</LoginButton>
-        </CreateAccount>
         <LoginWithEmail>
           <Header>Login</Header>
-          <Textarea.medium style={{marginTop:'5px'}} placeholder={'email'} onChange={(e) => this.setState({ 'loginEmail': this.trim(e) })}></Textarea.medium>
-          <Textarea.medium style={{marginTop:'5px'}} placeholder={'password'} onChange={(e) => this.setState({ 'loginPw': this.trim(e) })}></Textarea.medium>
+          <Textarea.medium style={{marginTop:'5px', width: '90%'}} placeholder={'username or email'} onChange={(e) => this.setState({ 'loginEmail': this.trim(e) })}></Textarea.medium>
+          <Textarea.medium style={{marginTop:'5px', width: '90%'}} placeholder={'password'} onChange={(e) => this.setState({ 'loginPw': this.trim(e) })}></Textarea.medium>
           <LoginButton onClick={() => this.handleLogin()}>login</LoginButton>
-          <ForgotPassword>forgot password</ForgotPassword>
+          <NoAccount onClick={() => this.handleNoAccount()}>No account? Start Free Trial Now!</NoAccount>
         </LoginWithEmail>
         <Message isError={this.state.isError}>{this.state.message}</Message>
       </Layout>
@@ -139,8 +143,7 @@ class EmailLogin extends Component {
 const Layout = styled.div`
   position: fixed;
   z-index: 10;
-  width: 600px;
-  height: 450px;
+  min-width: 600px;
   text-align: center;
   background-color: white;
   top: 50%;
@@ -155,27 +158,21 @@ const Header = styled.h1`
   margin-bottom: 20px;
 `
 
-const CreateAccount = styled.div`
-  width: 50%;
-  height: 90%;
-  display: inline-block;
-`
-
 const LoginWithEmail = styled.div`
-  width: 50%;
+  width: 90%;
   height: 90%;
   display: inline-block;
   vertical-align: top;
 `
 
 const LoginButton = Button.medium.extend`
-  width: 250px;
+  width: 90%;
   font-size: 1.2em;
   height: 50px;
   margin-top: 10px;
 `
 
-const ForgotPassword = styled.p`
+const NoAccount = styled.p`
   color: ${color.blue};
   font-size: 1.2em;
   cursor: pointer;

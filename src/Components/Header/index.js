@@ -5,7 +5,6 @@ import _ from 'underscore';
 
 import { color } from '../../Library/Styles/index';
 import { isHome } from '../../Library/helpers';
-import Login from '../Login/index';
 import EmailLogin from '../Login/emailLogin';
 import Navigation from './navigation';
 
@@ -37,7 +36,6 @@ class Header extends Component {
       this.setState({ redirect: '/play' })
     } else {
       this.setState({
-        displayLogin: false,
         displayEmailLogin: false,
         loggedIn: !_.isNull(userId),
         userId: userId,
@@ -58,7 +56,7 @@ class Header extends Component {
   }
 
   handleBackgroundClick() {
-    this.setState({ displayLogin: false, displayEmailLogin: false });
+    this.setState({ displayEmailLogin: false });
   }
 
   render() {
@@ -76,7 +74,7 @@ class Header extends Component {
       if (!this.state.loggedIn && window.location.href.endsWith('/')) {
         return <NavLink color={color.green} colorHover={color.green10l} display onClick={() => window.scrollTo({ top: 2875, left: 0, behavior: 'smooth'})}>Start Free Trial</NavLink>
       } else if (!this.state.loggedIn) {
-
+        return <NavLink color={color.green} colorHover={color.green10l} display onClick={() => this.setState({ redirect: '/startfreetrial' })}>Start Free Trial</NavLink>
       }
     }
 
@@ -86,12 +84,12 @@ class Header extends Component {
           <Title onClick={() => this.setState({ redirect: '/' })}>WORDCRAFT</Title>
           {startFreeTrial()}
           {login()}
-          <DarkBackground display={this.state.displayLogin} onClick={() => this.handleBackgroundClick()} />
+          <DarkBackground display={this.state.displayEmailLogin} onClick={() => this.handleBackgroundClick()} />
           <Navigation
             loggedIn={this.state.loggedIn}
             isTeacher={this.state.isTeacher}
             userId={this.state.userId}
-            login={() => this.setState({ displayLogin: true })}
+            login={() => this.setState({ displayEmailLogin: true })}
             logout={this.handleLogout.bind(this)}
           />
         </Content>
