@@ -74,10 +74,18 @@ class Header extends Component {
       }
     }
 
+    const startFreeTrial = () => {
+      if (!this.state.loggedIn) {
+        return <NavLink display onClick={() => window.scrollTo({ top: 2875, left: 0, behavior: 'smooth'})}
+        color={color.green} colorHover={color.green10l}>Start Free Trial</NavLink>
+      }
+    }
+
     return (
       <Container>
         <Content>
           <Title onClick={() => this.setState({ redirect: '/' })}>WORDCRAFT</Title>
+          {startFreeTrial()}
           {login()}
           <DarkBackground display={this.state.displayLogin} onClick={() => this.handleBackgroundClick()} />
           <Navigation
@@ -129,6 +137,22 @@ const Title = styled.h1`
   margin-top: 20px;
   @media (max-width: 600px) {
     font-size: 1.5em;
+  }
+`
+const NavLink = styled.p`
+  flex: auto;
+  padding-top: 18px;
+  line-height: 10px;
+  color: ${props => props.color};
+  display: ${props => props.display ? 'inline-block' : 'none'};
+  font-size: 1.5em;
+  margin-right: 40px;
+  text-align: right;
+  &:hover {
+    color: ${props => props.colorHover};
+  }
+  @media (max-width: 450px) {
+    font-size: 0.9em;
   }
 `
 
