@@ -67,17 +67,16 @@ class Header extends Component {
     }
 
     const login = () => {
-      if (this.state.displayEmailLogin) {
+      if (this.state.displayEmailLogin){
         return <EmailLogin exit={this.exitLogin.bind(this)}/>
-      } else if (this.state.displayLogin) {
-        return <Login displayEmailLogin={this.displayEmailLogin.bind(this)} exit={this.exitLogin.bind(this)} />
       }
     }
 
     const startFreeTrial = () => {
-      if (!this.state.loggedIn) {
-        return <NavLink display onClick={() => window.scrollTo({ top: 2875, left: 0, behavior: 'smooth'})}
-        color={color.green} colorHover={color.green10l}>Start Free Trial</NavLink>
+      if (!this.state.loggedIn && window.location.href.endsWith('/')) {
+        return <NavLink color={color.green} colorHover={color.green10l} display onClick={() => window.scrollTo({ top: 2875, left: 0, behavior: 'smooth'})}>Start Free Trial</NavLink>
+      } else if (!this.state.loggedIn) {
+
       }
     }
 
