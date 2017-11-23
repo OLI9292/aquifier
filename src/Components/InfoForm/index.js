@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import _ from 'underscore';
 
 import TextArea from '../Common/textarea';
+import Heading from '../Common/heading';
+import Container from '../Common/container';
 import lightGrayCheckmark from '../../Library/Images/Checkmark-LightGray.png';
 import greenCheckmark from '../../Library/Images/Checkmark-Green.png';
 import { color } from '../../Library/Styles/index';
@@ -101,8 +103,13 @@ class InfoForm extends Component {
     });
 
     return (
+      <Container>
+      <Heading color={color.green}>
+        START FREE TRIAL
+      </Heading>
       <Layout>
-        <Text>Bring the full <span style={{color: color.yellow}}><b>WORDCRAFT</b></span> curriculum to your school with tracked progress, custom curriculum, and multiplayer "spelling bee" matches. <br></br>Send us the following information and we'll get you set up as soon as possible.</Text>
+        <Text>Bring the full <span style={{color: color.yellow}}><b>WORDCRAFT</b></span> curriculum to your school with tracked progress, custom curriculum, and multiplayer "spelling bee" matches. <br></br>Send us the following information and we'll get you set up as soon as possible.
+        </Text>
         <form onSubmit={this.handleSubmit}>
           <InputsContainer>
             {smallInputs}
@@ -113,7 +120,8 @@ class InfoForm extends Component {
             {this.state.success ? 'Submitted.  We\'ll be in touch soon!' : this.state.errorMessage}
           </ErrorMessage>
         </form>
-      </Layout>
+        </Layout>
+        </Container>
     );
   }
 }
@@ -123,21 +131,29 @@ const Layout = styled.div`
   width: 80%;
 `
 
-const Text = styled.p`
-  font-size: 1.75em;
-  color: ${color.darkGray};
-  line-height: 40px;
-
+const TextContainer = styled.div`
+  display: inline-block;
+  width: 35%;
+  margin-left: 7.5%;
+  vertical-align: top;
+  text-align: center;
   @media (max-width: 1100px) {
-    font-size: 1.2em;
-    line-height: 30px;
-    margin-top: 20px;
-  }
-
-  @media (max-width: 450px) {
-    font-size: 0.9em;
+    width: 90%;
   }
 `
+const Text = styled.p`
+  line-height: 40px;
+  text-align: left;
+  font-size: 1.5em;
+  color: ${color.darkGray};
+  @media (max-width: 1100px) {
+    line-height: 30px;
+    text-align: left !important;
+    font-size: 1.2em;
+  }
+  @media (max-width: 450px) {
+    font-size: 0.9em;
+  }`
 
 const Image = styled.img`
   height: 40px;

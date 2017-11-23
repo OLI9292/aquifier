@@ -48,7 +48,7 @@ class GameSelect extends Component {
   joinMatch = async () => {
     const name = localStorage.getItem('username') || '';
     const accessCode = this.state.accessCode;
-    
+
     const canEnterMatchResult = await Firebase.canEnterGame(name, accessCode);
     const canEnterMatch = canEnterMatchResult[0];
     if (!canEnterMatch) {
@@ -61,7 +61,7 @@ class GameSelect extends Component {
         this.setState({ redirect: `/play/${match}` });
       } else {
         this.setState({ errorMessage: 'Unable to join game.' });
-      }      
+      }
     }
   }
 
@@ -76,30 +76,30 @@ class GameSelect extends Component {
     const buttons = (game) => {
       const setupMatchDisplay = isTeacher && game !== 'read' ? 'block' : 'none';
       return <div style={{display:'flex',justifyContent:'space-around',margin:'25px 10px 25px 10px'}}>
-        <Button.extraSmall onClick={() => this.handleClick(game)} color={'white'} style={{color:'black',margin:'5px'}}>
+        <PlayButton onClick={() => this.handleClick(game)} color={'white'}>
           {Button.imageAndText(singlePlayerPng, 'Single Player')}
-        </Button.extraSmall>
-        <Button.extraSmall onClick={() => this.handleClick(game, true)} color={'white'} style={{color:'black',margin:'5px',display:setupMatchDisplay}}>
+        </PlayButton>
+        <PlayButton onClick={() => this.handleClick(game, true)} color={'white'} style={{display:setupMatchDisplay}}>
           {Button.imageAndText(setupMatchPng, 'Setup Match')}
-        </Button.extraSmall>
+        </PlayButton>
       </div>
-    }      
+    }
 
     const compete = () => {
       const display = isStudent ? '' : 'none';
       return <GameButton style={{display:display}} color={'white'} border={`1px solid ${color.orange}`}>
         <Image src={competePng} />
-        <p style={{color:color.orange,fontSize:'2em',height:'10px',lineHeight:'10px'}}>Compete</p> 
-        <div style={{width:'250px'}}>      
+        <p style={{color:color.orange,fontSize:'2em',height:'10px',lineHeight:'10px'}}>Compete</p>
+        <div style={{width:'250px'}}>
           <p style={{color:color.orange,width:'90%',margin:'0 auto',fontSize:'1.25em'}}>
             Compete against your classmates.
           </p>
           <div style={{display:'flex',justifyContent:'space-around',margin:'25px 10px 25px 10px'}}>
             <Textarea.medium onChange={(e) => this.setState({ accessCode: e.target.value.trim() })}
               style={{textAlign:'center'}} placeholder={'access code'} />
-            <Button.extraSmall onClick={() => this.joinMatch()} color={color.orange} style={{marginLeft:'5px'}}>Play</Button.extraSmall>            
+            <Button.extraSmall onClick={() => this.joinMatch()} color={color.orange} style={{marginLeft:'5px'}}>Play</Button.extraSmall>
           </div>
-        </div>            
+        </div>
       </GameButton>
     }
 
@@ -114,31 +114,31 @@ class GameSelect extends Component {
             <div style={{width:'250px'}}>
               <p style={{color:'white',width:'90%',margin:'0 auto',fontSize:'1.25em'}}>
                 Thousands of words grouped by curriculum.
-              </p>          
+              </p>
               {buttons('study')}
             </div>
           </GameButton>
 
           <GameButton color={color.green}>
             <Image src={explorePng} />
-            <p style={{color:'white',fontSize:'2em',height:'10px',lineHeight:'10px'}}>Explore</p>    
-            <div style={{width:'250px'}}>    
+            <p style={{color:'white',fontSize:'2em',height:'10px',lineHeight:'10px'}}>Explore</p>
+            <div style={{width:'250px'}}>
               <p style={{color:'white',width:'90%',margin:'0 auto',fontSize:'1.25em'}}>
                 The core vocabulary of dozens of subjects.
               </p>
               {buttons('explore')}
-            </div>         
+            </div>
           </GameButton>
 
           <GameButton color={color.red}>
             <Image src={readPng} />
-            <p style={{color:'white',fontSize:'2em',height:'10px',lineHeight:'10px'}}>Read</p>  
-            <div style={{width:'250px'}}>      
+            <p style={{color:'white',fontSize:'2em',height:'10px',lineHeight:'10px'}}>Read</p>
+            <div style={{width:'250px'}}>
               <p style={{color:'white',width:'90%',margin:'0 auto',fontSize:'1.25em'}}>
                 Passages with vocabulary in context.
               </p>
               {buttons('read')}
-            </div>                    
+            </div>
           </GameButton>
 
           {compete()}
@@ -169,7 +169,13 @@ const Image = styled.img`
   width: 75px;
   padding-top: 20px;
 `
-
+const PlayButton = Button.extraSmall.extend`
+  color: black;
+  margin: 5px;
+  &:hover {
+    background-color: ${color.lightGray};
+  }
+`
 const GameButton = styled.div`
   background-color: ${props => props.color};
   border: ${props => props.border};
@@ -181,5 +187,4 @@ const GameButton = styled.div`
   width: 250px;
   height: 350px;
 `
-
 export default GameSelect;

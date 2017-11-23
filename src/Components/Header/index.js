@@ -5,7 +5,6 @@ import _ from 'underscore';
 
 import { color } from '../../Library/Styles/index';
 import { isHome } from '../../Library/helpers';
-import Login from '../Login/index';
 import EmailLogin from '../Login/emailLogin';
 import Navigation from './navigation';
 
@@ -37,7 +36,6 @@ class Header extends Component {
       this.setState({ redirect: '/play' })
     } else {
       this.setState({
-        displayLogin: false,
         displayEmailLogin: false,
         loggedIn: !_.isNull(userId),
         userId: userId,
@@ -58,7 +56,7 @@ class Header extends Component {
   }
 
   handleBackgroundClick() {
-    this.setState({ displayLogin: false, displayEmailLogin: false });
+    this.setState({ displayEmailLogin: false });
   }
 
   render() {
@@ -67,10 +65,16 @@ class Header extends Component {
     }
 
     const login = () => {
-      if (this.state.displayEmailLogin) {
+      if (this.state.displayEmailLogin){
         return <EmailLogin exit={this.exitLogin.bind(this)}/>
-      } else if (this.state.displayLogin) {
-        return <Login displayEmailLogin={this.displayEmailLogin.bind(this)} exit={this.exitLogin.bind(this)} />
+      }
+    }
+
+    const startFreeTrial = () => {
+      if (!this.state.loggedIn && window.location.href.endsWith('/')) {
+        return <NavLink color={color.green} colorHover={color.green10l} display onClick={() => window.scrollTo({ top: 2875, left: 0, behavior: 'smooth'})}>Start Free Trial</NavLink>
+      } else if (!this.state.loggedIn) {
+        return <NavLink color={color.green} colorHover={color.green10l} display onClick={() => this.setState({ redirect: '/startfreetrial' })}>Start Free Trial</NavLink>
       }
     }
 
@@ -78,13 +82,14 @@ class Header extends Component {
       <Container>
         <Content>
           <Title onClick={() => this.setState({ redirect: '/' })}>WORDCRAFT</Title>
+          {startFreeTrial()}
           {login()}
-          <DarkBackground display={this.state.displayLogin} onClick={() => this.handleBackgroundClick()} />
+          <DarkBackground display={this.state.displayEmailLogin} onClick={() => this.handleBackgroundClick()} />
           <Navigation
             loggedIn={this.state.loggedIn}
             isTeacher={this.state.isTeacher}
             userId={this.state.userId}
-            login={() => this.setState({ displayLogin: true })}
+            login={() => this.setState({ displayEmailLogin: true })}
             logout={this.handleLogout.bind(this)}
           />
         </Content>
@@ -129,6 +134,22 @@ const Title = styled.h1`
   margin-top: 20px;
   @media (max-width: 600px) {
     font-size: 1.5em;
+  }
+`
+const NavLink = styled.p`
+  flex: auto;
+  padding-top: 18px;
+  line-height: 10px;
+  color: ${props => props.color};
+  display: ${props => props.display ? 'inline-block' : 'none'};
+  font-size: 1.5em;
+  margin-right: 40px;
+  text-align: right;
+  &:hover {
+    color: ${props => props.colorHover};
+  }
+  @media (max-width: 450px) {
+    font-size: 0.9em;
   }
 `
 

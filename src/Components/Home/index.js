@@ -3,6 +3,8 @@ import { Redirect } from 'react-router';
 import styled from 'styled-components';
 
 import Button from '../Common/button';
+import Heading from '../Common/heading';
+import Container from '../Common/container';
 import DaisyChain from './daisyChain';
 import InfoForm from '../InfoForm/index';
 import Header from '../Header/index';
@@ -43,10 +45,6 @@ class Home extends Component {
       return <Redirect push to={this.state.redirect} />;
     }
 
-    if (localStorage.getItem('userId') !== null) {
-      this.setState({ redirect: '/play'});
-    }
-
     const introSection = () => {
       return <TopLeftContainer>
         <Subtitle>
@@ -78,15 +76,6 @@ class Home extends Component {
          </Container>
        }
 
-    const StartFreeTrialForm = () => {
-      return <Container>
-        <Heading color={color.green}>
-          START FREE TRIAL
-        </Heading>
-        <InfoForm />
-      </Container>
-    }
-
     return (
       <OuterContainer>
         <Header />
@@ -94,7 +83,7 @@ class Home extends Component {
           {introSection()}
           {!this.state.isSmallScreen && <DaisyChainContainer><DaisyChain /></DaisyChainContainer>}
           {howItWorksSection()}
-          {StartFreeTrialForm()}
+          <InfoForm />
         </InnerContainer>
       </OuterContainer>
     );
@@ -117,23 +106,6 @@ const InnerContainer = styled.div`
     text-align: center;
     width: 90%;
     min-width: 300px;
-  }
-`
-const Heading = styled.h1`
-  color: ${props => props.color};
-  background-color: ${props => props.backgroundColor || 'transparent'};
-  paddingTop: 25px;
-  padding-left: 5%;
-  font-size: 2.75em;
-  letter-spacing: 2px;
-  margin-bottom: 0px;
-  line-height: 50px;
-  padding-bottom: 10px;
-  @media (max-width: 1100px) {
-    font-size: 2em;
-  }
-  @media (max-width: 450px) {
-    font-size: 1.25em;
   }
 `
 
@@ -222,25 +194,6 @@ const BlackSpan = styled.span`
 const GoldSpan = styled.span`
   color: ${color.yellow};
 `
-
-const Container = styled.div`
-  width: 100%;
-  margin: auto;
-  margin-top: 40px;
-  padding-top: 15px;
-  border-radius: 10px;
-  height: 750px;
-  background-color: white;
-  @media (max-width: 1100px) {
-    height: fit-content;
-    margin-top: 15px;
-  }
-  @media (max-width: 450px) {
-    margin-top: 10px;
-    height: fit-content;
-  }
-`
-
 const ScreenshotContainer = styled.div`
   display: inline-block;
   width: 40%;
