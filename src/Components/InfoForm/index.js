@@ -71,7 +71,7 @@ class InfoForm extends Component {
     if (this.state.success) {
       return;
     }
-    
+
     const invalid = this.invalidField();
 
     if (invalid) {
@@ -102,7 +102,7 @@ class InfoForm extends Component {
 
     return (
       <Layout>
-        <Text>To bring the full <span style={{color: color.yellow}}><b>WORDCRAFT</b></span> curriculum to your school, send us the following information and we'll be in touch as soon as possible.</Text>
+        <Text>Bring the full <span style={{color: color.yellow}}><b>WORDCRAFT</b></span> curriculum to your school with tracked progress, custom curriculum, and multiplayer "spelling bee" matches. <br></br>Send us the following information and we'll get you set up as soon as possible.</Text>
         <form onSubmit={this.handleSubmit}>
           <InputsContainer>
             {smallInputs}
@@ -202,7 +202,7 @@ const ErrorMessage = styled.p`
   font-size: 1.25em;
   position: relative;
   padding-left: 10%;
-  color: ${props => props.success ? color.green : color.red};  
+  color: ${props => props.success ? color.green : color.red};
   visibility: ${props => props.display ? 'visible' : 'hidden'}
 
   @media (max-width: 1100px) {
