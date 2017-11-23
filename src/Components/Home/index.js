@@ -52,6 +52,9 @@ class Home extends Component {
         <Subtitle>
           Learn English vocabulary through Greek and Latin root words.
         </Subtitle>
+        <Explanation>
+          Prepare for a test. Explore a subject. Learn vocabulary in context with reading comprehension. Compete against classmates in a multiplayer spelling bee.
+        </Explanation>
         {this.state.isSmallScreen && <DaisyChain />}
         <div style={{textAlign:'center'}}>
           <Button.medium color={color.green} style={{width:'90%'}} onClick={() => this.setState({ redirect: '/play' })}>Play Now</Button.medium>
@@ -60,10 +63,25 @@ class Home extends Component {
       </TopLeftContainer>
     }
 
-    const bringToYourClassroomForm = () => {
+    const howItWorksSection = () => {
+         return <Container>
+           <Heading color={color.blue}>
+             HOW IT WORKS
+           </Heading>
+           <ScreenshotContainer>
+            <Screenshot src={require('../../Library/Images/example.png')} />
+           </ScreenshotContainer>
+           <TextContainer>
+             <Text><BlackSpan><b>60% of English words</b></BlackSpan> have Greek or Latin roots.  In the fields of science and technology, that number is <BlackSpan><b>above 90%.</b></BlackSpan><br /><br />By solving fast-paced puzzles, students learn hundreds of roots and thousands of words.  Wordcraft is the most fun and efficient way to acquire a large vocabulary.</Text>
+             <Button.medium color={color.green} style={{width:'90%'}} onClick={() => this.setState({ redirect: '/play' })}>Play Now</Button.medium>
+           </TextContainer>
+         </Container>
+       }
+
+    const StartFreeTrialForm = () => {
       return <Container>
         <Heading color={color.green}>
-          BRING TO YOUR CLASSROOM
+          START FREE TRIAL
         </Heading>
         <InfoForm />
       </Container>
@@ -75,7 +93,8 @@ class Home extends Component {
         <InnerContainer>
           {introSection()}
           {!this.state.isSmallScreen && <DaisyChainContainer><DaisyChain /></DaisyChainContainer>}
-          {bringToYourClassroomForm()}
+          {howItWorksSection()}
+          {StartFreeTrialForm()}
         </InnerContainer>
       </OuterContainer>
     );
@@ -162,7 +181,48 @@ const Subtitle = styled.p`
     line-height: 30px;
   }
 `
+const Explanation = styled.p`
+  color: ${color.darkGray};
+  font-size: 1.25em;
+  width: 90%;
+  margin-left: 5%;
+  line-height: 35px;
+  -webkit-margin-before: -1em;
+  @media (max-width: 1100px) {
+    font-size: 1.2em;
+    line-height: 30px;
+    -webkit-margin-before: 1em;
+  }
+  @media (max-width: 450px) {
+    font-size: 0.9em;
+    line-height: 25px;
+  }`
 // Other Section Components
+
+const LinkContent = styled.div`
+  width: 90%;
+  height: 90%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`
+const Link = styled.a`
+  color: inherit;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+`
+const LinkText = styled.p`
+  display: table-cell;
+  vertical-align: middle;
+`
+const BlackSpan = styled.span`
+  color: black;
+`
+const GoldSpan = styled.span`
+  color: ${color.yellow};
+`
+
 const Container = styled.div`
   width: 100%;
   margin: auto;
@@ -180,5 +240,51 @@ const Container = styled.div`
     height: fit-content;
   }
 `
+
+const ScreenshotContainer = styled.div`
+  display: inline-block;
+  width: 40%;
+  height: 70%;
+  text-align: center;
+  margin: 0% 5% 0% 5%;
+  margin-top: 35px;
+  @media (max-width: 1100px) {
+    width: 50%;
+    max-width: 300px;
+    display: block;
+    margin: auto;
+  }
+`
+const Screenshot = styled.img`
+  height: 100%;
+  width: auto;
+  @media (max-width: 1100px) {
+    height: auto;
+    width: 100%;
+  }
+`
+const TextContainer = styled.div`
+  display: inline-block;
+  width: 35%;
+  margin-left: 7.5%;
+  vertical-align: top;
+  text-align: center;
+  @media (max-width: 1100px) {
+    width: 90%;
+  }
+`
+const Text = styled.p`
+  line-height: 40px;
+  text-align: left;
+  font-size: 1.5em;
+  color: ${color.darkGray};
+  @media (max-width: 1100px) {
+    line-height: 30px;
+    text-align: left !important;
+    font-size: 1.2em;
+  }
+  @media (max-width: 450px) {
+    font-size: 0.9em;
+  }`
 
 export default Home;

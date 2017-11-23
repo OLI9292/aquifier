@@ -21,7 +21,7 @@ class Header extends Component {
   componentDidMount() {
     const userId = localStorage.getItem('userId');
     const classId = localStorage.getItem('classId');
-    
+
     this.setState({
       userId: userId,
       isTeacher: !_.isNull(classId),
@@ -42,7 +42,7 @@ class Header extends Component {
         loggedIn: !_.isNull(userId),
         userId: userId,
         isTeacher: !_.isNull(classId)
-      });      
+      });
     }
   }
 
@@ -59,7 +59,7 @@ class Header extends Component {
 
   handleBackgroundClick() {
     this.setState({ displayLogin: false, displayEmailLogin: false });
-  }  
+  }
 
   render() {
     if (this.state.redirect && !window.location.href.endsWith(this.state.redirect)) {
@@ -72,7 +72,7 @@ class Header extends Component {
       } else if (this.state.displayLogin) {
         return <Login displayEmailLogin={this.displayEmailLogin.bind(this)} exit={this.exitLogin.bind(this)} />
       }
-    }    
+    }
 
     return (
       <Container>
@@ -129,7 +129,7 @@ const Title = styled.h1`
   margin-top: 20px;
   @media (max-width: 600px) {
     font-size: 1.5em;
-  }  
+  }
 `
 
 export default Header;
