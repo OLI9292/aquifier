@@ -108,7 +108,7 @@ class InfoForm extends Component {
         START FREE TRIAL
       </Heading>
       <Layout>
-        <Text>Bring the full <span style={{color: color.yellow}}><b>WORDCRAFT</b></span> curriculum to your school with tracked progress, custom curriculum, and multiplayer "spelling bee" matches. <br></br>Send us the following information and we'll get you set up as soon as possible.
+        <Text>Bring the full <span style={{color: color.yellow}}><b>WORDCRAFT</b></span> curriculum to your school with progress reports, full curriculum, and multiplayer "spelling bee" matches. Send us the following and we'll set you up right away.
         </Text>
         <form onSubmit={this.handleSubmit}>
           <InputsContainer>
@@ -143,7 +143,6 @@ const TextContainer = styled.div`
 `
 const Text = styled.p`
   line-height: 40px;
-  text-align: left;
   font-size: 1.5em;
   color: ${color.darkGray};
   @media (max-width: 1100px) {

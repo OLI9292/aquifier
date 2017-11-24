@@ -7,6 +7,7 @@ import Button from '../Common/button';
 import Link from '../Common/link';
 import { color } from '../../Library/Styles/index';
 import Lesson from '../../Models/Lesson';
+import lockPng from '../../Library/Images/lock.png';
 
 class ReadingGameSelect extends Component {
   constructor(props) {
@@ -29,6 +30,9 @@ class ReadingGameSelect extends Component {
       if (userId) { state.privateLessons = privateLessons };
       this.setState(state);
     }
+    if (userId) {
+      this.setState({ loggedIn: true });
+    }
   }
 
   render() {
@@ -42,9 +46,16 @@ class ReadingGameSelect extends Component {
         return <LessonsContainer>
           {
             lessons.map((l, i) => {
-              return <LessonButton onClick={() => this.setState({ selected: l._id })}
-                selected={l._id === this.state.selected} key={i}
-              >{l.name}</LessonButton>
+              const isEnabled = (l.name.startsWith("Demo") || this.state.loggedIn);
+              if (isEnabled) {
+                return <LessonButton onClick={() => this.setState({ selected: l._id })}
+                  selected={l._id === this.state.selected} key={i}
+                >{l.name}</LessonButton>
+              } else {
+                return <LessonButtonDisabled onClick={() => this.setState({ redirect: '/startfreetrial' })}
+                  selected={l._id === this.state.selected} key={i}
+                ><Image style={{height: '16px',marginRight:'5px'}} src={lockPng} />{l.name}</LessonButtonDisabled>
+              }
             })
           }
         </LessonsContainer>
@@ -79,8 +90,14 @@ const LessonsContainer = styled.div`
   margin: 0 auto;
 `
 
+const Image = styled.img`
+  height: 100%;
+  width: auto;
+`
+
 const LessonButton = Button.mediumLong.extend`
   color: ${props => props.selected ? 'white' : 'black'};
+  height: 80px;
   background-color: ${props => props.selected ? color.green : color.lightestGray};
   margin: 0.5em;
   vertical-align: top;
@@ -88,6 +105,10 @@ const LessonButton = Button.mediumLong.extend`
     background-color: ${color.green};
     color: white;
   }
+`
+
+const LessonButtonDisabled = LessonButton.extend`
+  color: ${props => props.selected ? 'white' : 'grey'};
 `
 
 export default ReadingGameSelect;
