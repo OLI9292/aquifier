@@ -61,8 +61,8 @@ class OnCorrectImage extends Component {
 
     return (
       <Layout display={this.props.display}>
-        <p style={{fontSize:'1.75em'}}>{definition()}</p>
-        <p style={{fontSize:'2.5em', letterSpacing: '0.2em'}}>{this.props.word.value.toUpperCase()}</p>
+        <Definition>{definition()}</Definition>
+        <p style={{fontSize:'2.5em', webkitMarginBefore: '0em'}}>{this.props.word.value.toUpperCase()}</p>
         {this.state.source && <Image src={this.state.source} /> }
       </Layout>
     );
@@ -72,6 +72,17 @@ class OnCorrectImage extends Component {
 const Layout = styled.div`
   display: ${props => props.display ? '' : 'none'};
   text-align: center;
+  width: 75%;
+  margin: auto;
+  line-height: 35px;
+  margin-bottom: 1em;
+`
+
+const Definition = styled.p`
+  font-size: 1.75em;
+  -webkit-margin-before: 0em;
+  margin: 25px auto auto;
+  margin-bottom: 1em;
 `
 
 const Image = styled.img`

@@ -108,7 +108,7 @@ class InfoForm extends Component {
         START FREE TRIAL
       </Heading>
       <Layout>
-        <Text>Bring the full <span style={{color: color.yellow}}><b>WORDCRAFT</b></span> curriculum to your school with progress reports, full curriculum, and multiplayer "spelling bee" matches. Send us the following and we'll set you up right away.
+        <Text>Bring the full <span style={{color: color.yellow}}><b>WORDCRAFT</b></span> curriculum to your school with progress tracking, test prep, in-class multiplayer games, and worldwide competition. Send us the following and we'll set you up right away.
         </Text>
         <form onSubmit={this.handleSubmit}>
           <InputsContainer>
