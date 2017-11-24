@@ -145,17 +145,17 @@ class Game extends Component {
     if (!_.contains(_.pluck(this.state.stats, 'word'), data.word)) {
       this.setState({ stats: _.union(this.state.stats, [data]) });
     }
-
-    if (this.state.isTimed && correct) {
-      this.setState({ score: this.state.score + 1 })
-    }
   }
 
   runInterlude = async (correct = true) => {
     this.record(correct);
     const state = { isInterlude: true };
-    if (this.state.time < 5) { state.isSpeedy = true };
-
+    if (this.state.time < 5) {
+      state.isSpeedy = true,
+      state.score = this.state.score + 2
+    } else {
+      state.score = this.state.score + 1
+    }
     this.setState(state);
     window.timeout = setTimeout(() => { this.nextQuestion() }, 300000);
   }
@@ -268,7 +268,7 @@ class Game extends Component {
 
     const game = () => {
       return <div>
-        <div style={{height:'100px'}}>
+        <div >
           <h4 style={{fontSize:'1.2em',padding:'10px 0px 0px 10px',height:'0px'}}>{this.state.name}</h4>
 
           <SpeedyContainer display={this.state.isSpeedy}>
