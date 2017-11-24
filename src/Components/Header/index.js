@@ -35,11 +35,13 @@ class Header extends Component {
     if (isHome()) {
       this.setState({ redirect: '/play' })
     } else {
+      // better would be to reload the component
+      window.location.reload()
       this.setState({
         displayEmailLogin: false,
         loggedIn: !_.isNull(userId),
         userId: userId,
-        isTeacher: !_.isNull(classId)
+        isTeacher: !_.isNull(classId),
       });
     }
   }

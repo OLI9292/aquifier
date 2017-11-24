@@ -10,6 +10,7 @@ import WordList from '../../Models/WordList';
 
 import studyPng from '../../Library/Images/study-color.png';
 import explorePng from '../../Library/Images/explore-color.png';
+import lockPng from '../../Library/Images/lock.png';
 
 const params = {
   study: {
@@ -31,15 +32,15 @@ const timeLimits = [3, 5];
 class WordListGameSelect extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
       redirect: null,
       step: 0,
-      timeLimit: timeLimits[0]
+      timeLimit: timeLimits[0],
     };
   }
 
   async componentDidMount() {
+
     const result = await WordList.fetch();
 
     const wordLists = (result.data || [])
@@ -49,6 +50,11 @@ class WordListGameSelect extends Component {
     if (!_.isEmpty(reformatted)) {
       const selected = reformatted[_.keys(reformatted)[0]][0].id;
       this.setState({ wordLists: reformatted, selected: selected });
+    }
+
+    const userId = localStorage.getItem('userId');
+    if (userId) {
+      this.setState({ loggedIn: true });
     }
   }
 
@@ -113,10 +119,19 @@ class WordListGameSelect extends Component {
                       const [fColor, bColor] = this.state.selected === w.id
                         ? ['white', color.green]
                         : ['black', color.lightestGray];
-                      return <Button.small key={w.name} color={bColor}
-                        style={{color:fColor,margin:'5px'}}
-                        onClick={() => this.setState({ selected: w.id })}
-                      >{w.name}</Button.small>
+                        // contains demo
+                        const isEnabled = (_.contains([1,2], w.name) || this.state.loggedIn);
+                        if (isEnabled) {
+                          return <Button.small key={w.name} color={bColor}
+                            style={{color:fColor,margin:'5px'}}
+                            onClick={() => this.setState({ selected: w.id })}
+                          >{w.name}</Button.small>
+                        } else {
+                          return <Button.small key={w.name} color={bColor}
+                            style={{color:color.gray,margin:'5px'}}
+                            onClick={() => this.setState({ redirect: '/startfreetrial' })}
+                          ><Image style={{height: '16px',marginRight:'5px'}} src={lockPng} />{w.name}</Button.small>
+                        }
                     })
                   }
                 </td>
