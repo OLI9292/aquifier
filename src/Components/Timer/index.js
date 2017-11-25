@@ -14,7 +14,7 @@ class Timer extends Component {
   }
 
   componentDidMount() {
-    const time = this.props.time === '5' ? '5:00' : '0:05';
+    const time = this.props.time === '5' ? '5:00' : '3:00';
     this.setState({ time });
   }
 
