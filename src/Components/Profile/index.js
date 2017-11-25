@@ -38,6 +38,7 @@ class Profile extends Component {
 
   componentDidMount() {
     this.loadUser()
+    console.log("this.state", this.state)
   }
 
   loadUser = async () => {
@@ -51,7 +52,7 @@ class Profile extends Component {
       const wordsMastered = wordExperience.filter((w) => w.experience >= 7).length;
 
       const wordAccuracy = parseInt(100 * sum(wordExperience, 'correct')/sum(wordExperience, 'seen'), 10) || 0;
-
+      console.log("user", user);
       this.setState({
         name: capitalizeOne(user.firstName),
         wordExperience: _.sortBy(user.words, 'name'),
@@ -64,7 +65,7 @@ class Profile extends Component {
 
   loadWords = async () => {
     const words = JSON.parse(localStorage.getItem('words'));
-    
+
     this.setState({
       wordExperience: this.state.wordExperience.map((obj) => {
         const idx = _.findIndex(words, (w) => w.value === obj.name);
