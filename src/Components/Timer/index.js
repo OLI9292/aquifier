@@ -35,13 +35,13 @@ class Timer extends Component {
 
   start(startTime) {
     const timeCheck = setInterval(() => { this.track(startTime) }, 100);
-    this.setState({ timeCheck });  
+    this.setState({ timeCheck });
   }
 
   track(startTime)  {
     const secondsLate = Math.floor(((new Date()).getTime() - startTime) / 1000);
     const time = this.accountForLateness(secondsLate);
-    
+
     const [minutes, seconds] = [time.split(':')[0], time.split(':')[1]];
     const gameOver = seconds === '00' && minutes === '0';
 

@@ -252,16 +252,29 @@ class Game extends Component {
       </div>
     }
 
+    const userId = localStorage.getItem('userId');
+
     const gameOver = () => {
       return <div style={{textAlign:'center',paddingTop:'25px'}}>
-        <p style={{fontSize:'3em',marginTop:'25px'}}>
-          <span style={{color:color.blue}}>{this.state.name}</span> Complete!
-        </p>
-        {this.state.score > 0 && <h1>{`You scored ${this.state.score}`}.</h1>}
-        <Button.medium style={{marginTop:'25px'}} color={color.blue} onClick={() => this.setState({ redirect: '/play' })}>
-          Return
-        </Button.medium>
-      </div>
+          <p style={{fontSize:'3em',marginTop:'25px'}}>
+            <span style={{color:color.blue}}>{this.state.name}</span> Complete!
+          </p>
+          {this.state.score > 0 && <h1>{`You scored ${this.state.score}`}.</h1>}
+            {!userId &&
+            <div>
+              <Text style={{fontSize:'2em'}}>Thanks for trying <span style={{color: color.yellow}}><b>WORDCRAFT!</b></span><br></br></Text>
+              <Text> Create an account for the full curriculum, progress tracking,<br></br> and in-class multiplayer games.</Text>
+            <Button.medium style={{marginTop:'25px'}} color={color.green} onClick={() => this.setState({ redirect: '/startfreetrial' })}>
+              Start Free Trial
+            </Button.medium>
+            </div>
+          }
+            <div>
+              <Button.medium style={{marginTop:'25px'}} color={color.blue} onClick={() => this.setState({ redirect: '/play' })}>
+                Return
+              </Button.medium>
+            </div>
+          </div>
     }
 
     const displayOnCorrect = this.state.isInterlude && this.state.question.type !== 'sentenceCompletion';
@@ -317,5 +330,31 @@ const SpeedyContainer = styled.div`
   float: right;
   margin: -10px 10px 0px 0px;
 `
+
+const TextContainer = styled.div`
+  display: inline-block;
+  width: 35%;
+  margin-left: 7.5%;
+  vertical-align: top;
+  text-align: center;
+  @media (max-width: 1100px) {
+    width: 90%;
+  }
+`
+
+const Text = styled.p`
+  width: 80%;
+  margin-left: 10%;
+  line-height: 40px;
+  font-size: 1.5em;
+  color: ${color.darkGray};
+  @media (max-width: 1100px) {
+    line-height: 30px;
+    text-align: left !important;
+    font-size: 1.2em;
+  }
+  @media (max-width: 450px) {
+    font-size: 0.9em;
+  }`
 
 export default Game;
