@@ -19,9 +19,11 @@ import { color } from '../../Library/Styles/index';
 
 import leftArrow from '../../Library/Images/left-arrow.png';
 import rightArrow from '../../Library/Images/right-arrow.png';
-import enterKey from '../../Library/Images/enter.png';
+import returnKey from '../../Library/Images/return.png';
+import returnKeyGreen from '../../Library/Images/return-green.png';
 import equalsKey from '../../Library/Images/equals.png';
 import speedyPng from '../../Library/Images/speedy.png';
+import nextButton from '../../Library/Images/next-button.png';
 
 class Game extends Component {
   constructor(props) {
@@ -232,6 +234,24 @@ class Game extends Component {
       }
     }
 
+    const nextQuestionDirection = () => {
+      if (this.state.isInterlude) {
+        return <div style={{height:'25px', marginBottom:'30px'}}>
+          <h4 style={{textAlign:'left',color:color.green,height:'5px',fontSize:'0.85em'}}>
+            Next Question
+          </h4>
+            <img src={returnKeyGreen} alt='enter-key' style={{height:'100%',width:'auto'}} />
+          </div>
+      } else {
+        return <div style={{height:'25px', marginBottom:'30px'}}>
+          <h4 style={{textAlign:'left',color:color.gray,height:'5px',fontSize:'0.85em'}}>
+              Check Answer
+          </h4>
+            <img src={returnKey} alt='enter-key' style={{height:'100%',width:'auto'}} />
+        </div>
+      }
+    }
+
     const directions = () => {
       return <div style={{position:'absolute',bottom:'0',margin:'0px 0px 10px 10px'}}>
         <div style={{height:'25px', marginBottom:'30px'}}>
@@ -243,12 +263,7 @@ class Game extends Component {
           <h4 style={{textAlign:'left',color:color.gray,height:'5px',fontSize:'0.85em'}}>Hint</h4>
           <img src={equalsKey} alt='equals-key' style={{height:'100%',width:'auto'}} />
         </div>
-        <div style={{height:'25px', marginBottom:'30px'}}>
-          <h4 style={{textAlign:'left',color:color.gray,height:'5px',fontSize:'0.85em'}}>
-            {this.state.isInterlude ? 'Next Question' : 'Check Answer'}
-          </h4>
-          <img src={enterKey} alt='enter-key' style={{height:'100%',width:'auto'}} />
-        </div>
+          {nextQuestionDirection()}
       </div>
     }
 
@@ -310,6 +325,9 @@ class Game extends Component {
           {this.state.question && <OnCorrectImage word={this.state.question.word} display={displayOnCorrect} />}
         </div>
         {directions()}
+        <NextButtonContainer display={this.state.isInterlude} onClick={() => this.nextQuestion()}>
+          <img src={nextButton} alt='next-Button' style={{height:'50px',width:'auto'}} />
+        </NextButtonContainer>
       </div>
     }
 
@@ -342,6 +360,16 @@ const TextContainer = styled.div`
   }
 `
 
+const NextButtonContainer = styled.div`
+  display: ${props => props.display ? 'flex' : 'none'};
+  position: absolute;
+  right: 25px;
+  cursor: pointer;
+  bottom: 20px;
+  &:hover {
+    opacity: 0.8;
+  }
+`
 const Text = styled.p`
   width: 80%;
   margin-left: 10%;
