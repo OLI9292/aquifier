@@ -119,8 +119,7 @@ class WordListGameSelect extends Component {
                       const [fColor, bColor] = this.state.selected === w.id
                         ? ['white', color.green]
                         : ['black', color.lightestGray];
-                        // contains demo
-                        const isEnabled = (_.contains([1,2], w.name) || this.state.loggedIn);
+                        const isEnabled = ((_.contains([1,2], w.name) && !_.contains(["Advanced"], k)) || this.state.loggedIn);
                         if (isEnabled) {
                           return <Button.small key={w.name} color={bColor}
                             style={{color:fColor,margin:'5px'}}
