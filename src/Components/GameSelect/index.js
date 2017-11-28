@@ -8,6 +8,7 @@ import Firebase from '../../Networking/Firebase';
 import Button from '../Common/button';
 import Textarea from '../Common/textarea';
 import { color } from '../../Library/Styles/index';
+import { lighten10 } from '../../Library/helpers';
 import explorePng from '../../Library/Images/explore-white.png';
 import readPng from '../../Library/Images/read-white.png';
 import studyPng from '../../Library/Images/study-white.png';
@@ -45,6 +46,12 @@ class GameSelect extends Component {
     this.setState({ redirect: `/play/game=${game}&players=${players}&setup=true` });
   }
 
+  handleGameButtonClick(game) {
+    if (!this.state.isTeacher) {
+      this.setState({ redirect: `/play/game=${game}&players=single&setup=true` });
+    }
+  }
+
   joinMatch = async () => {
     const name = localStorage.getItem('username') || '';
     const accessCode = this.state.accessCode;
@@ -75,14 +82,21 @@ class GameSelect extends Component {
 
     const buttons = (game) => {
       const setupMatchDisplay = isTeacher && game !== 'read' ? 'block' : 'none';
-      return <div style={{display:'flex',justifyContent:'space-around',margin:'25px 10px 25px 10px'}}>
+      return this.state.isTeacher ?
+      <div style={{display:'flex',justifyContent:'space-around',margin:'25px 10px 25px 10px'}}>
         <PlayButton onClick={() => this.handleClick(game)} color={'white'}>
-          {Button.imageAndText(singlePlayerPng, 'Single Player')}
+          {Button.imageAndText(singlePlayerPng, 'Preview Game')}
         </PlayButton>
         <PlayButton onClick={() => this.handleClick(game, true)} color={'white'} style={{display:setupMatchDisplay}}>
           {Button.imageAndText(setupMatchPng, 'Setup Match')}
         </PlayButton>
       </div>
+        :
+        <div style={{display:'flex',justifyContent:'space-around',margin:'25px 10px 25px 10px'}}>
+          <Button.medium onClick={() => this.handleClick(game)} style={{backgroundColor: 'white', color: color.darkGray}}>
+          Play
+          </Button.medium>
+        </div>
     }
 
     const compete = () => {
@@ -108,7 +122,7 @@ class GameSelect extends Component {
         <Title>Choose Your Game</Title>
         <div style={{textAlign:'center'}}>
 
-          <GameButton color={color.blue}>
+          <GameButton color={color.blue} onClick={() => this.handleGameButtonClick('study') }>
             <Image src={studyPng} />
             <p style={{color:'white',fontSize:'2em',height:'10px',lineHeight:'10px'}}>Study</p>
             <div style={{width:'250px'}}>
@@ -119,7 +133,7 @@ class GameSelect extends Component {
             </div>
           </GameButton>
 
-          <GameButton color={color.green}>
+          <GameButton color={color.green} onClick={() => this.handleGameButtonClick('explore') }>
             <Image src={explorePng} />
             <p style={{color:'white',fontSize:'2em',height:'10px',lineHeight:'10px'}}>Explore</p>
             <div style={{width:'250px'}}>
@@ -130,7 +144,7 @@ class GameSelect extends Component {
             </div>
           </GameButton>
 
-          <GameButton color={color.red}>
+          <GameButton color={color.red} onClick={() => this.handleGameButtonClick('read') }>
             <Image src={readPng} />
             <p style={{color:'white',fontSize:'2em',height:'10px',lineHeight:'10px'}}>Read</p>
             <div style={{width:'250px'}}>
@@ -178,6 +192,11 @@ const PlayButton = Button.extraSmall.extend`
 `
 const GameButton = styled.div`
   background-color: ${props => props.color};
+  &:hover {
+   background-color: ${props => lighten10(props.color)};
+  }
+  transition: 0.2s;
+  cursor: pointer;
   border: ${props => props.border};
   text-align: center;
   display: inline-block;
