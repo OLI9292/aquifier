@@ -131,16 +131,6 @@ const Layout = styled.div`
   width: 80%;
 `
 
-const TextContainer = styled.div`
-  display: inline-block;
-  width: 35%;
-  margin-left: 7.5%;
-  vertical-align: top;
-  text-align: center;
-  @media (max-width: 1100px) {
-    width: 90%;
-  }
-`
 const Text = styled.p`
   line-height: 40px;
   font-size: 1.5em;

@@ -30,12 +30,13 @@ class Game extends Component {
     super(props);
 
     this.state = {
-      nextQuestionIndex: 0,
+      gameOver: false,
       question: null,
       questions: [],
+      nextQuestionIndex: 0,
       score: 0,
-      time: 0  ,
-      stats: []
+      stats: [],
+      time: 0
     }
   }
 
@@ -60,7 +61,7 @@ class Game extends Component {
   }
 
   componentWillUnmount() {
-    if (this.state.isMultiplayer) {
+    if (this.state.isMultiplayer && !this.state.gameOver) {
       Firebase.refs.games.child(this.props.settings.accessCode).child('players').child(this.state.username).remove();
     }
 
@@ -153,7 +154,7 @@ class Game extends Component {
     this.record(correct);
     const state = { isInterlude: true };
     if (this.state.time < 5) {
-      state.isSpeedy = true,
+      state.isSpeedy = true
       state.score = this.state.score + 2
     } else {
       state.score = this.state.score + 1
@@ -347,17 +348,6 @@ const SpeedyContainer = styled.div`
   height: 35px;
   float: right;
   margin: -10px 10px 0px 0px;
-`
-
-const TextContainer = styled.div`
-  display: inline-block;
-  width: 35%;
-  margin-left: 7.5%;
-  vertical-align: top;
-  text-align: center;
-  @media (max-width: 1100px) {
-    width: 90%;
-  }
 `
 
 const NextButtonContainer = styled.div`
