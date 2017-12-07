@@ -22,7 +22,6 @@ import { unixTime } from '../../../Library/helpers';
 const fileUploadState = {
   unchosen: { text: 'Choose File', backgroundColor: '#f1f1f1', color: color.darkGray },
   uploading: { text: 'Uploading' , backgroundColor: color.red, color: 'white' },
-  complete: { backgroundColor: color.green, color: 'white' },
   uneditable: { backgroundColor: color.green, color: 'white' },
 }
 
@@ -33,13 +32,12 @@ class LessonEdit extends Component {
     this.state = {
       classes: [],
       errorMsg: '',
-      filename: '',
+      filenames: [],
       fileUploadStatus: 'unchosen',
       isNewLesson: true,
       lessonTitle: '',
       questions: [],
       relatedWords: [],
-      questions: [],
       words: []
     }
   }
@@ -63,9 +61,11 @@ class LessonEdit extends Component {
       const result = await Lesson.fetch(id);
       if (result.data) {
         const lesson = result.data;
+        console.log(lesson)
+        console.log(lesson.filename)
         this.setState({
           lessonTitle: lesson.name,
-          filename: lesson.filename,
+          filenames: [lesson.filename],
           questions: lesson.questions.map((q) => { q.include = true; return q; }),
           classes: this.state.classes.map((c) => {
             const copy = c; copy.checked = _.includes(lesson.classes, copy._id); return copy;
@@ -82,15 +82,6 @@ class LessonEdit extends Component {
     if (result.data) { this.setState({ relatedWords: result.data }) }
   }  
 
-  handleDeleteFile() {
-    this.setState({
-      questions: [],
-      fileUploadStatus: 'unchosen',
-      filename: null,
-      questions: []
-    });
-  }
-
   checkedClasses() {
     return this.state.classes.filter((c) => c.checked).map((c) => c._id);
   }  
@@ -98,25 +89,24 @@ class LessonEdit extends Component {
   handleSaveLesson() {
     let errorMsg
 
-    if      (!this.state.lessonTitle) { errorMsg = 'Please enter a lesson title.' }
-    else if (!this.checkedClasses().length) { errorMsg = 'Please check at least 1 class.' }
-    else if (!this.state.questions.length) { errorMsg = 'Lessons require at least 1 WORD / PASSAGE.' }
+    if (!this.state.lessonTitle)       { errorMsg = 'Please enter a lesson title.' };
+    if (!this.checkedClasses().length) { errorMsg = 'Please check at least 1 class.' };
+    if (!this.state.questions.length)  { errorMsg = 'Lessons require at least 1 WORD / PASSAGE.' };
 
-    errorMsg ? this.setState({ errorMsg }) : this.save();
+    errorMsg
+      ? this.setState({ errorMsg })
+      : this.save();
   }
 
   save = async () => {
-    const name = this.state.lessonTitle;
-    const filename = this.state.filename;
-    const createdOn = unixTime();
     const questions = this.state.questions
       .filter((q) => q.context.includes(q.word.toLowerCase()) && q.include)
       .map((q) => ({ word: q.word.toLowerCase(), context: q.context, related: q.related }));
 
     const data = {
-      name: name,
-      filename: filename,
-      updatedOn: createdOn,
+      name: this.state.lessonTitle,
+      filename: _.last(this.state.filename),
+      updatedOn: unixTime(),
       questions: questions,
       classes: this.checkedClasses(),
       public: this.state.userId === CONFIG.ADMIN_ID
@@ -189,7 +179,7 @@ class LessonEdit extends Component {
     const fileUploadStatus = this.state.fileUploadStatus;
     const state = fileUploadState[fileUploadStatus];
     const fileIsUploaded = fileUploadStatus === 'complete';
-    const deleteTextVisibility = fileIsUploaded ? 'visible' : 'hidden';
+    console.log(fileUploadStatus)
 
     const navigation = (() => {
       return <div style={{height:'50px'}}>
@@ -276,21 +266,17 @@ class LessonEdit extends Component {
           <SettingsRow>
             <SettingsHeader>Text</SettingsHeader>
             <td>
-              <FileUploadLabel backgroundColor={state.backgroundColor} color={state.color}>
-                {this.state.filename || state.text}
+              {this.state.filenames.map((name,i) => <FileLabel key={i} color={'white'} bColor={color.green}>{name}</FileLabel>)} 
+              <FileLabel color={state.color} bColor={state.backgroundColor}>
+                {state.text}
                 <input 
                   type='file' 
                   onChange={(e) => { if (!fileIsUploaded) { this.handleFiles(e.target.files) } }}
                   style={{visibility:'hidden'}}
                   ref={ref => this.fileInput = ref }
                   disabled={!this.state.isNewLesson} />
-              </FileUploadLabel>
+              </FileLabel>
             </td>
-            <img
-              src={deletePng}
-              onClick={() => this.handleDeleteFile()}
-              style={{height:'30px',cursor:'pointer',marginLeft:'10px',visibility:deleteTextVisibility}}
-              alt='delete' />
           </SettingsRow>
 
           <SettingsRow>
@@ -352,11 +338,11 @@ const ErrorMessage = styled.p`
   text-align: right;
 `
 
-const FileUploadLabel = styled.label`
+const FileLabel = styled.label`
   height: 50px;
   line-height: 50px;
   font-size: 1.25em;
-  background-color: ${props => props.backgroundColor};
+  background-color: ${props => props.bColor};
   color: ${props => props.color};
   transition-duration: 0.2s;
   border-radius: 5px;
