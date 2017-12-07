@@ -169,31 +169,13 @@ const Explanation = styled.p`
     font-size: 0.9em;
     line-height: 25px;
   }`
+
 // Other Section Components
 
-const LinkContent = styled.div`
-  width: 90%;
-  height: 90%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`
-const Link = styled.a`
-  color: inherit;
-  width: 100%;
-  height: 100%;
-  text-decoration: none;
-`
-const LinkText = styled.p`
-  display: table-cell;
-  vertical-align: middle;
-`
 const BlackSpan = styled.span`
   color: black;
 `
-const GoldSpan = styled.span`
-  color: ${color.yellow};
-`
+
 const ScreenshotContainer = styled.div`
   display: inline-block;
   width: 40%;
