@@ -13,7 +13,8 @@ import Header from '../Header/index';
 import Home from '../Home/index';
 import InfoForm from '../InfoForm/index';
 import Leaderboard from '../Leaderboard/index';
-import LessonsDashboard from '../Dashboard/lessons';
+import LessonsTable from '../Dashboard/Lessons/table';
+import LessonEdit from '../Dashboard/Lessons/edit';
 import MobilePopup from '../MobilePopup/index';
 import Profile from '../Profile/index';
 import ReadingGameSelect from '../GameSelect/readingGameSelect';
@@ -87,7 +88,8 @@ class App extends Component {
             return <Container component='leaderboard' gameId={match.params.gameId} />;
           }} />
 
-          <Route exact path='/lessons' component={() => <Container component='lessonsDashboard' />} />
+          <Route exact path='/lessons' component={() => <Container component='lessonsTable' />} />
+          <Route exact path='/lessons/:id' component={() => <Container component='lessonEdit' />} />
           <Route exact path='/word-lists' component={() => <Container component='wordListsDashboard' />} />
           <Route exact path='/classes' component={() => <Container component='classesDashboard' />} />
         </Switch>
@@ -112,7 +114,8 @@ class Container extends Component {
         case 'gameSelect': return <GameSelect />
         case 'infoForm': return <InfoForm />
         case 'leaderboard': return <Leaderboard gameId={this.props.gameId} />
-        case 'lessonsDashboard': return <LessonsDashboard />
+        case 'lessonsTable': return <LessonsTable />
+        case 'lessonEdit': return <LessonEdit />
         case 'profile': return <Profile userId={this.props.userId} />
         case 'readingGameSelect': return <ReadingGameSelect settings={this.props.settings} />
         case 'waiting': return <Waiting settings={this.props.settings} />
