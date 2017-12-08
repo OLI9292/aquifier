@@ -10,8 +10,9 @@ import questionMark from '../../../Library/Images/question-mark-white.png';
 class SentenceCompletion extends Component {
   constructor(props) {
     super(props);
-
-    this.state = {}
+    
+    this.state = {
+    }
   }
 
   componentDidMount() {
@@ -40,13 +41,16 @@ class SentenceCompletion extends Component {
 
   formattedDefinition(showRoots) {
     return this.state.correct.definition.map((d,i) => {
-      const c = d.isRoot ? color.yellow : color.gray;
-      let value = d.isRoot ? d.value.toUpperCase() : d.value;
+      let [_color, value] = d.isRoot
+        ? [color.yellow, d.value.toUpperCase()]
+        : [color.gray, d.value];
+
       if (showRoots && d.isRoot) {
         const rootComponent = _.find(this.state.correct.components, (c) => c.definition === d.value);
-        if (rootComponent) { value += ` (${rootComponent.value.toUpperCase()})` };
+        if (rootComponent) { value += ` (${rootComponent.value.toUpperCase()})`; }
       }
-      return <span key={i} style={{color:c,textDecoration:'underline'}}>{value}</span>
+
+      return <span key={i} style={{color:_color,textDecoration:'underline'}}>{value}</span>
     })
   }
 
