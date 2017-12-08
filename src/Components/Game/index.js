@@ -33,7 +33,7 @@ class Game extends Component {
       gameOver: false,
       question: null,
       questions: [],
-      nextQuestionIndex: 0,
+      nextQuestionIndex: 10,
       score: 0,
       stats: [],
       time: 0
@@ -151,13 +151,11 @@ class Game extends Component {
   }
 
   runInterlude = async (correct = true) => {
-    this.record(correct);
     const state = { isInterlude: true };
-    if (this.state.time < 5) {
-      state.isSpeedy = true
-      state.score = this.state.score + 2
-    } else {
-      state.score = this.state.score + 1
+    if (correct) {
+      const isSpeedy = this.state.time < 5;
+      state.isSpeedy = isSpeedy;
+      state.score = this.state.score + (isSpeedy ? 2 : 1);
     }
     this.setState(state);
     window.timeout = setTimeout(() => { this.nextQuestion() }, 300000);

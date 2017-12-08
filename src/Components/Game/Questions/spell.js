@@ -22,7 +22,7 @@ class SpellQuestion extends Component {
       displayRootDefs: false,
       displayErrors: false,
       hintDisabled: false,
-      rootsInDefinitionsShown: false,
+      hintCount: 0,
       guess: '',
       word: null
     }
@@ -79,7 +79,11 @@ class SpellQuestion extends Component {
   checkIfComplete = async () => {
     const answerComplete = _.isEmpty(this.state.components.filter(this.isIncorrect));
     if (answerComplete && !this.state.answerComplete) {
-      this.setState({ answerComplete: true, cursor: -1 }, () => this.props.nextQuestion());
+      const correct = this.state.hintCount < 3;
+      this.setState({
+        answerComplete: true,
+        cursor: -1
+      },() => this.props.nextQuestion(correct));
     }
   }
 
@@ -128,7 +132,7 @@ class SpellQuestion extends Component {
       cursorEndpoints: params.cursorEndpoints,
       definition: word.definition,
       displayErrors: false,
-      rootsInDefinitionsShown: false,
+      hintCount: 0,
       word: word
     });
   }
@@ -152,13 +156,14 @@ class SpellQuestion extends Component {
   }
 
   pressedHint = async () => {
-    if (this.state.hintDisabled) {
-      return;
-    }
-    !this.state.rootsInDefinitionsShown ? this.revealRootsinDefinition() : this.giveAwayLetter();
-    this.toggleHintDisabled();
-    await sleep(1000);
-    this.toggleHintDisabled();
+    if (this.state.hintDisabled) { return; }
+
+    this.state.hintCount === 0
+      ? this.revealRootsinDefinition()
+      : this.giveAwayLetter();
+
+    this.setState({ hintCount: this.state.hintCount + 1 });
+    this.toggleHintDisabled(); await sleep(1000); this.toggleHintDisabled();
   }
 
   toggleHintDisabled() {
@@ -178,13 +183,13 @@ class SpellQuestion extends Component {
   }
 
   revealRootsinDefinition() {
-    const updated = this.state.definition.map((part) => {
+    const definition = this.state.definition.map((part) => {
       const rootComponent = _.find(this.state.word.components, (c) => c.definition === part.value);
       return part.isRoot && rootComponent
         ? { isRoot: true, value: `${part.value} (${rootComponent.value.toUpperCase()})` }
         : part
     });
-    this.setState({ definition: updated, rootsInDefinitionsShown: true });
+    this.setState({ definition });
   }
 
   handleClick(idx) {
