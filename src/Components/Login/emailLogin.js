@@ -6,6 +6,7 @@ import _ from 'underscore';
 import Button from '../Common/button';
 import { color } from '../../Library/Styles/index';
 import Textarea from '../Common/textarea';
+import InputStyles from '../Common/inputStyles';
 import { validateEmail, sleep } from '../../Library/helpers';
 import User from '../../Models/User';
 
@@ -14,26 +15,46 @@ class EmailLogin extends Component {
     super(props);
 
     this.state = {
-      isError: false,
-      message: '',
+      createEmail: '',
+      createPw: '',
       firstName: '',
+      isError: false,
       lastName: '',
-      createAccountEmail: '',
-      createAccountPw: '',
       loginEmail: '',
-      loginPw: ''
+      loginPw: '',
+      message: ''
+    }
+  }
+
+  componentDidMount() {
+    document.body.addEventListener('keydown', this.handleKeydown.bind(this), true);
+  }
+
+  componentWillUnmount() {
+    document.body.removeEventListener('keydown', this.handleKeydown.bind(this), true);
+  }    
+
+  handleKeydown(event) {
+    if (event.key !== 'Enter') { return; }
+
+    if (this.state.focusedOn === 'email') {
+      this.passwordInput.focus();
+      this.setState({ focusedOn: 'password' });
+    } else if (this.state.focusedOn === 'password') {
+      this.handleLogin();
     }
   }
 
   validateCreateAccount() {
-    if (!this.state.firstName.length) {
-      this.setState({ message: 'First name is missing' });
-    } else if (!this.state.lastName.length) {
-      this.setState({ message: 'Last name is missing' });
-    } else if (!validateEmail(this.state.createAccountEmail)) {
-      this.setState({ message: 'Please enter a valid email' });
-    } else if ((this.state.createAccountPw.length < 6) || (this.state.createAccountPw.length > 26)) {
-      this.setState({ message: 'Passwords must be between 6 and 26 characters' });
+    let message
+
+    if      (!this.state.firstName.length)                           { message = 'First name is missing'; }
+    else if (!this.state.lastName.length)                            { message = 'Last name is missing'; }
+    else if (!validateEmail(this.state.createEmail))                 { message = 'Please enter a valid email'; }
+    else if (!_.contains(_.range(6,27), this.state.createPw.length)) { message = 'Passwords must be between 6 and 26 characters'; }
+
+    if (message) {
+      this.setState({ message });
     } else {
       return true;
     }
@@ -56,8 +77,8 @@ class EmailLogin extends Component {
       const data = {
         firstName: this.state.firstName,
         lastName: this.state.lastName,
-        email: this.state.createAccountEmail.toLowerCase(),
-        password: this.state.createAccountPw,
+        email: this.state.createEmail.toLowerCase(),
+        password: this.state.createPw,
         signUpMethod: 'email'
       }
 
@@ -109,32 +130,40 @@ class EmailLogin extends Component {
     }
   }
 
-  trim(e) {
-    return e.target.value.replace(/ /g,'')
-  }
-
-  handleNoAccount() {
-    this.setState({ redirect: '/startfreetrial' })
-  }
-
-  redirect(location) {
-    this.setState({ redirect: location });
-  }
-
   render() {
     if (this.state.redirect && !window.location.href.endsWith(this.state.redirect)) {
       return <Redirect push to={this.state.redirect} />;
     }
+
     return (
       <Layout>
-        <LoginWithEmail>
-          <Header>Login</Header>
-          <Textarea.medium style={{marginTop:'5px', width: '90%'}} placeholder={'username or email'} onChange={(e) => this.setState({ 'loginEmail': this.trim(e) })}></Textarea.medium>
-          <Textarea.medium style={{marginTop:'5px', width: '90%'}} placeholder={'password'} onChange={(e) => this.setState({ 'loginPw': this.trim(e) })}></Textarea.medium>
-          <LoginButton onClick={() => this.handleLogin()}>login</LoginButton>
-          <NoAccount onClick={() => this.handleNoAccount()}>No account? Start Free Trial Now!</NoAccount>
-        </LoginWithEmail>
-        <Message isError={this.state.isError}>{this.state.message}</Message>
+        <div style={{width:'90%',margin:'0 auto'}}>
+          <h1 style={{fontSize:'1.75em',marginBottom:'20px'}}>Login</h1>
+
+          <input
+            style={_.extend(InputStyles.default, {width:'100%',marginBottom:'10px'})}
+            placeholder={'username or email'} 
+            onChange={(e) => this.setState({ 'loginEmail': e.target.value.replace(/ /g,'') })}
+            onClick={() => this.setState({ focusedOn: 'email'})} />
+
+          <input
+            style={_.extend(InputStyles.default, {width:'100%'})}
+            placeholder={'password'}
+            onChange={(e) => this.setState({ 'loginPw': e.target.value.replace(/ /g,'') })}
+            ref={(input) => { this.passwordInput = input; }}
+            onClick={() => this.setState({ focusedOn: 'password'})} />
+
+          <LoginButton onClick={this.handleLogin}>login</LoginButton>
+
+          <p 
+            onClick={() => this.setState({ redirect: '/startfreetrial' })} 
+            style={{color:color.blue,fontSize:'1.2em',cursor:'pointer'}}>
+            No account? Start Free Trial Now!
+          </p>
+        </div>
+        <p style={{marginTop:'0',color:(this.state.isError ? color.red : color.green)}}>
+          {this.state.message}
+        </p>
       </Layout>
     );
   }
@@ -153,34 +182,10 @@ const Layout = styled.div`
   border-radius: 15px;
 `
 
-const Header = styled.h1`
-  font-size: 1.75em;
-  margin-bottom: 20px;
-`
-
-const LoginWithEmail = styled.div`
-  width: 90%;
-  height: 90%;
-  display: inline-block;
-  vertical-align: top;
-`
-
 const LoginButton = Button.medium.extend`
-  width: 90%;
-  font-size: 1.2em;
+  font-size: 1.25em;
   height: 50px;
-  margin-top: 10px;
-`
-
-const NoAccount = styled.p`
-  color: ${color.blue};
-  font-size: 1.2em;
-  cursor: pointer;
-`
-
-const Message = styled.p`
-  margin-top: 0px;
-  color: ${props => props.isError ? color.red : color.green};
+  width: 100%;
 `
 
 export default EmailLogin;
