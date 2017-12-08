@@ -34,6 +34,19 @@ class Navigation extends Component {
     this.setState({ displayDropdown });
   }
 
+  display(link) {
+    const shouldDisplay = (() => {
+      switch (link) {
+        case 'profile': return !this.props.isTeacher
+        case 'classes': return this.props.isTeacher
+        case 'lessons': return this.state.hasAdminAccess
+        case 'wordLists': return this.state.hasAdminAccess
+        default: return false
+      }
+    })()
+    return shouldDisplay ? 'block' : 'none';
+  }
+
   render() {
     if (this.state.redirect && !window.location.href.endsWith(this.state.redirect)) {
       return <Redirect push to={this.state.redirect} />;
@@ -41,10 +54,22 @@ class Navigation extends Component {
 
     const dropdown = () => {
       return <DropdownContainer visibility={this.state.displayDropdown ? 'visible' : 'hidden'}>
-        <Link.default onClick={() => this.setState({ redirect: `/profile/${this.props.userId}`})} display={this.props.isTeacher ? 'none' : 'block'} color={color.green}>Progress</Link.default>
-        <Link.default onClick={() => this.setState({ redirect: '/classes' })}  display={this.props.isTeacher ? 'block' : 'none'} color={color.purple}>Class</Link.default>
-        <Link.default onClick={() => this.setState({ redirect: '/lessons'})} display={this.state.hasAdminAccess && this.props.isTeacher ? 'block' : 'none'} color={color.green}>Lessons</Link.default>
-        <Link.default onClick={() => this.setState({ redirect: '/word-lists'})} display={this.state.hasAdminAccess && this.props.isTeacher ? 'block' : 'none'} color={color.yellow}>Word Lists</Link.default>
+        <Link.default style={{color:color.purple,display:this.display('profile')}}
+          onClick={() => this.setState({ redirect: `/profile/${this.props.userId}`})} 
+          >Progress</Link.default>
+
+        <Link.default style={{color:color.purple,display:this.display('classes')}}
+          onClick={() => this.setState({ redirect: '/classes' })}
+          >Class</Link.default>
+
+        <Link.default style={{color:color.purple,display:this.display('lessons')}}
+          onClick={() => this.setState({ redirect: '/lessons'})}
+          >Lessons</Link.default>
+
+        <Link.default style={{color:color.purple,display:this.display('wordLists')}}
+          onClick={() => this.setState({ redirect: '/word-lists'})}
+          >Word Lists</Link.default>
+
         <Link.default color={color.red} onClick={() => this.props.logout()}>Logout</Link.default>
       </DropdownContainer>
     }
@@ -53,7 +78,9 @@ class Navigation extends Component {
       if (this.props.loggedIn) {
         return <NavigationContainer>
           <div>
-            <Link.default style={{display: 'inline-block', verticalAlign: 'top'}} color={color.blue}>Me</Link.default>
+            <Link.default style={{display: 'inline-block',verticalAlign:'top',color:color.blue}}>
+              Me
+            </Link.default>
             <DropdownImage src={require('../../Library/Images/dropdown.png')} />
           </div>
           {dropdown()}
