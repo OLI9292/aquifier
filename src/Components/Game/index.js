@@ -33,7 +33,7 @@ class Game extends Component {
       gameOver: false,
       question: null,
       questions: [],
-      nextQuestionIndex: 10,
+      nextQuestionIndex: 0,
       score: 0,
       stats: [],
       time: 0
