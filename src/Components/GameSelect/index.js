@@ -28,8 +28,22 @@ class GameSelect extends Component {
   }
 
   async componentDidMount() {
+    document.body.addEventListener('keydown', this.handleKeydown.bind(this), true);
     const userId = localStorage.getItem('userId');
     if (userId) { this.loadUser({ type: 'id', value: userId }) };
+  }
+
+  componentWillUnmount() {
+    document.body.removeEventListener('keydown', this.handleKeydown.bind(this), true);
+  }    
+
+  handleKeydown(event) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      if (this.state.accessCode.trim().length === 4) {
+        this.joinMatch();
+      }
+    }
   }
 
   loadUser = async (query) => {

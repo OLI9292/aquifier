@@ -3,7 +3,8 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import _ from 'underscore';
 
-import TextArea from '../Common/textarea';
+import Textarea from '../Common/textarea';
+import InputStyles from '../Common/inputStyles';
 import Heading from '../Common/heading';
 import Container from '../Common/container';
 import lightGrayCheckmark from '../../Library/Images/Checkmark-LightGray.png';
@@ -14,7 +15,7 @@ class InfoForm extends Component {
   constructor(props) {
     super(props);
 
-    const smallInputs = [
+    const inputs = [
       { name: 'firstName', placeholder: 'first name', value: '' },
       { name: 'lastName', placeholder: 'last name', value: '' },
       { name: 'email', placeholder: 'email address', value: '' },
@@ -23,43 +24,67 @@ class InfoForm extends Component {
 
     this.state = {
       allValid: false,
+      focusedOn: -1,
       comments: '',
       displayError: false,
       errorMessage: null,
-      smallInputs: smallInputs,
+      inputs: inputs,
       success: false
     }
 
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
+  componentDidMount() {
+    document.body.addEventListener('keydown', this.handleKeydown.bind(this), true);
+  }
+
+  componentWillUnmount() {
+    document.body.removeEventListener('keydown', this.handleKeydown.bind(this), true);
+  }  
+
+  handleKeydown(event) {
+    if (event.key === 'Enter' && _.contains(_.range(5), this.state.focusedOn)) {
+      event.preventDefault();
+
+      this.state.focusedOn === 3
+        ? this.handleSubmit()
+        : this.switchFocusTo(this.state.focusedOn + 1);
+    }
+  }
+
+  switchFocusTo(idx) {
+    this.inputs[idx].focus();
+    this.setState({ focusedOn: idx });    
+  }
+
   formInput() {
     let obj = {};
-    this.state.smallInputs.forEach((i) => obj[i.name] = i.value );
+    this.state.inputs.forEach((i) => obj[i.name] = i.value );
     obj.comments = this.state.comments;
     obj.date = Date.now();
     return obj;
   }
 
   handleInputChange(event) {
-    const updatedInputs = this.state.smallInputs.map((i) => {
+    const updatedInputs = this.state.inputs.map((i) => {
       return i.name === event.target.name
         ? { name: i.name, placeholder: i.placeholder, value: event.target.value }
         : i
     });
 
     const allValid = _.isUndefined(this.invalidField());
-    this.setState({ smallInputs: updatedInputs, allValid: allValid, displayError: !allValid });
+    this.setState({ inputs: updatedInputs, allValid: allValid, displayError: !allValid });
   }
 
   invalidField() {
-    return _.find(this.state.smallInputs, (input) => !this.isValid(input));
+    return _.find(this.state.inputs, (input) => !this.isValid(input));
   }
 
   isValid(input) {
     return input.name === "email"
       ? this.isValidEmail(input.value)
-      : input.value.length > 3
+      : input.value.length > 2
   }
 
   isValidEmail(email) {
@@ -68,11 +93,9 @@ class InfoForm extends Component {
   }
 
   handleSubmit = async (event) => {
-    event.preventDefault();
+    if (event) { event.preventDefault(); }
 
-    if (this.state.success) {
-      return;
-    }
+    if (this.state.success) { return; }
 
     const invalid = this.invalidField();
 
@@ -85,6 +108,7 @@ class InfoForm extends Component {
     }
 
     const inputs = this.formInput();
+
     const success = await Firebase.sendForm(inputs);
     success
       ? this.setState({ success: true })
@@ -92,14 +116,21 @@ class InfoForm extends Component {
   }
 
   render() {
-    const smallInputs = this.state.smallInputs.map((input, idx) => {
-      return <SmallInput key={idx}>
-        <Image src={this.isValid(input) ? greenCheckmark : lightGrayCheckmark} className="checkmark" />
-        <TextArea.medium
+    const inputs = this.state.inputs.map((input, idx) => {
+      return <div style={{margin:'1%'}} key={idx}>
+        <img
+          className='checkmark'
+          src={this.isValid(input) ? greenCheckmark : lightGrayCheckmark}
+          style={{height:'50px',width:'auto',marginRight:'5px'}}/>
+        <input
+          type='text'
+          style={_.extend(InputStyles.default, {'verticalAlign':'top'})}
           name={input.name}
           placeholder={input.placeholder}
+          ref={(input) => { this.inputs = _.union(this.inputs, [input]); }}
+          onClick={() => this.setState({ focusedOn: idx })}
           onChange={this.handleInputChange.bind(this)} />
-      </SmallInput>
+      </div>
     });
 
     return (
@@ -107,29 +138,27 @@ class InfoForm extends Component {
       <Heading color={color.green}>
         START FREE TRIAL
       </Heading>
-      <Layout>
-        <Text>Bring the full <span style={{color: color.yellow}}><b>WORDCRAFT</b></span> curriculum to your school with progress tracking, test prep, in-class multiplayer games, and worldwide competition. Send us the following and we'll set you up right away.
-        </Text>
-        <form onSubmit={this.handleSubmit}>
-          <InputsContainer>
-            {smallInputs}
-          </InputsContainer>
-          <CommentsTextArea name="comments" placeholder="comments" onChange={(e) => this.setState({ comments: e.target.value })} />
-          <SubmitButton valid={this.state.allValid} type="submit" value="submit" />
-          <ErrorMessage success={this.state.success} display={this.state.displayError || this.state.success}>
-            {this.state.success ? 'Submitted.  We\'ll be in touch soon!' : this.state.errorMessage}
-          </ErrorMessage>
-        </form>
-        </Layout>
-        </Container>
+        <div style={{width:'90%',margin:'0 auto'}}>
+          <Text>Bring the full <span style={{color: color.yellow}}><b>WORDCRAFT</b></span> curriculum to your school with progress tracking, test prep, in-class multiplayer games, and worldwide competition. Send us the following and we'll set you up right away.</Text>
+          <form onSubmit={this.handleSubmit}>
+            <div style={{display:'flex',flexWrap:'wrap',justifyContent:'center'}}>
+              {inputs}
+              <Textarea.default
+                style={{width:'80%',height:'200px',float:'left',padding:'10px','fontSize':'1.25em'}}
+                name='comments'
+                placeholder='comments'
+                onChange={(e) => this.setState({ comments: e.target.value })} />
+            </div>
+            <SubmitButton valid={this.state.allValid} type='submit' value='submit' />
+            <ErrorMessage success={this.state.success} display={this.state.displayError || this.state.success}>
+              {this.state.success ? 'Submitted.  We\'ll be in touch soon!' : this.state.errorMessage}
+            </ErrorMessage>
+          </form>
+        </div>
+      </Container>
     );
   }
 }
-
-const Layout = styled.div`
-  margin-left: 10%;
-  width: 80%;
-`
 
 const Text = styled.p`
   line-height: 40px;
@@ -142,40 +171,10 @@ const Text = styled.p`
   }
   @media (max-width: 450px) {
     font-size: 0.9em;
-  }`
-
-const Image = styled.img`
-  height: 40px;
-  padding: 10px 5px 10px 0px;
-  width: auto;
-
-  @media (max-width: 768px) {
-    height: 30px;
-  }
-
-  @media (max-width: 480px) {
-    height: 20px;
   }
 `
 
-const SmallInput = styled.div`
-  margin: 1%;
-`
-
-const InputsContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-`
-
-const CommentsTextArea = TextArea.medium.extend`
-  width: 80%;
-  height: 150px;
-  margin-left: 10%;
-  margin-top: 2%;
-  line-height: 1.5;
-`
-
+// TODO: - move to inputStyles.js
 const SubmitButton = styled.input`
   &:focus {
     outline: 0;
