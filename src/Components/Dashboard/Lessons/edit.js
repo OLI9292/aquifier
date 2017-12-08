@@ -21,8 +21,7 @@ import { unixTime } from '../../../Library/helpers';
 
 const fileUploadState = {
   unchosen: { text: 'Choose File', backgroundColor: '#f1f1f1', color: color.darkGray },
-  uploading: { text: 'Uploading' , backgroundColor: color.red, color: 'white' },
-  uneditable: { backgroundColor: color.green, color: 'white' },
+  uploading: { text: 'Uploading' , backgroundColor: color.red, color: 'white' }
 }
 
 class LessonEdit extends Component {
@@ -61,11 +60,9 @@ class LessonEdit extends Component {
       const result = await Lesson.fetch(id);
       if (result.data) {
         const lesson = result.data;
-        console.log(lesson)
-        console.log(lesson.filename)
         this.setState({
           lessonTitle: lesson.name,
-          filenames: [lesson.filename],
+          filenames: lesson.filenames,
           questions: lesson.questions.map((q) => { q.include = true; return q; }),
           classes: this.state.classes.map((c) => {
             const copy = c; copy.checked = _.includes(lesson.classes, copy._id); return copy;
@@ -105,7 +102,7 @@ class LessonEdit extends Component {
 
     const data = {
       name: this.state.lessonTitle,
-      filename: _.last(this.state.filename),
+      filenames: this.state.filenames,
       updatedOn: unixTime(),
       questions: questions,
       classes: this.checkedClasses(),
@@ -131,11 +128,15 @@ class LessonEdit extends Component {
       const result = await axios.post(`${CONFIG.WORDS_API}/texts/parse`, formData, options);
       if (_.isEmpty(result.data)) { return };
 
+      const filenames = _.union(this.state.filenames, [files[0].name]);
+      const questions = _.union(this.state.questions, result.data.map((q) => { q.include = false; return q; }));
+
       this.setState({
-        fileUploadStatus: 'complete',
-        filename: files[0].name,
-        questions: result.data.map((q) => { q.include = false; return q; })
-      }, () => this.loadRelatedWords(_.pluck(result.data, 'word')));
+        fileUploadStatus: 'unchosen',
+        filenames: filenames,
+        questions: questions
+      }, () => this.loadRelatedWords(_.pluck(questions, 'word')));
+
       this.fileInput.value = '';
     }
   }
@@ -175,11 +176,6 @@ class LessonEdit extends Component {
     if (this.state.redirect && !window.location.href.endsWith(this.state.redirect)) {
       return <Redirect push to={this.state.redirect} />;
     }
-
-    const fileUploadStatus = this.state.fileUploadStatus;
-    const state = fileUploadState[fileUploadStatus];
-    const fileIsUploaded = fileUploadStatus === 'complete';
-    console.log(fileUploadStatus)
 
     const navigation = (() => {
       return <div style={{height:'50px'}}>
@@ -251,11 +247,12 @@ class LessonEdit extends Component {
     })()
 
     const settings = (() => {
+      const state = fileUploadState[this.state.fileUploadStatus];
       return <table>
         <tbody>
           <SettingsRow>
             <SettingsHeader>Title</SettingsHeader>
-            <td>
+            <td style={{paddingLeft:'20px'}}>
               <Textarea.medium
                 placeholder={'ex. The Giver'}
                 value={this.state.lessonTitle}
@@ -265,23 +262,21 @@ class LessonEdit extends Component {
 
           <SettingsRow>
             <SettingsHeader>Text</SettingsHeader>
-            <td>
+            <td style={{paddingLeft:'20px'}}>
               {this.state.filenames.map((name,i) => <FileLabel key={i} color={'white'} bColor={color.green}>{name}</FileLabel>)} 
               <FileLabel color={state.color} bColor={state.backgroundColor}>
                 {state.text}
-                <input 
-                  type='file' 
-                  onChange={(e) => { if (!fileIsUploaded) { this.handleFiles(e.target.files) } }}
-                  style={{visibility:'hidden'}}
+                <input type='file' 
                   ref={ref => this.fileInput = ref }
-                  disabled={!this.state.isNewLesson} />
+                  onChange={(e) => this.handleFiles(e.target.files)}
+                  style={{visibility:'hidden'}} />
               </FileLabel>
             </td>
           </SettingsRow>
 
           <SettingsRow>
             <SettingsHeader>Classes</SettingsHeader>
-            <td>
+            <td style={{paddingLeft:'20px'}}>
               {this.state.classes.map((c,i) => {
                 return <ClassesContainer onClick={() => this.handleClassClick(i)} key={i}>
                   <img alt={c.checked ? 'checked' : 'un-checked'} style={{height:'20px'}}
@@ -341,6 +336,7 @@ const ErrorMessage = styled.p`
 const FileLabel = styled.label`
   height: 50px;
   line-height: 50px;
+  margin-bottom: 10px;
   font-size: 1.25em;
   background-color: ${props => props.bColor};
   color: ${props => props.color};
