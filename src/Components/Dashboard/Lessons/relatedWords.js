@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import _ from 'underscore';
 
-import { color } from '../../Library/Styles/index';
-import Textarea from '../Common/textarea';
+import { color } from '../../../Library/Styles/index';
+import Textarea from '../../Common/textarea';
 
 class RelatedWords extends Component {
   constructor(props) {
