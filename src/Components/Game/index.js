@@ -51,7 +51,7 @@ class Game extends Component {
 
     const isTimed = Number.isInteger(parseInt(this.props.settings.time, 10));
     const isMultiplayer = this.props.settings.players === 'multi';
-    const username = localStorage.getItem('username');
+    const username = User.username();
 
     if (words && roots) {
       this.setState(
@@ -68,21 +68,31 @@ class Game extends Component {
     clearInterval(this.state.refreshInterval);
     document.body.removeEventListener('keydown', this.handleKeydown.bind(this), true);
 
-    const userId = localStorage.getItem('userId');
+    const userId = User.loggedIn('_id');
+    
     const stats = this.state.stats;
-    if (userId && !_.isEmpty(stats)) { User.saveStats(userId, stats) };
+
+    if (userId && !_.isEmpty(stats)) {
+      User.saveStats(userId, stats);
+      const user = JSON.parse(localStorage.getItem('user'));
+      user.wordListsCompleted = _.uniq(_.union(User.loggedIn('wordListsCompleted') || [], [this.props.settings.wordList]));
+      console.log(user)
+      User.update(userId, user);
+    };
   }
 
   setupGame() {
     if (this.props.settings.reading) {
-      this.setupLesson(this.props.settings.reading);
+      const gameId = this.props.settings.reading;
+      this.setState({ gameId }, this.setupLesson);
     } else if (this.props.settings.wordList) {
-      this.setupWordList(this.props.settings.wordList)
+      const gameId = this.props.settings.wordList;
+      this.setState({ gameId }, this.setupWordList);
     }
   }
 
-  setupLesson = async (id) => {
-    const result = await Lesson.fetch(id);
+  setupLesson = async () => {
+    const result = await Lesson.fetch(this.state.gameId);
     const data = result.data.questions || [];
     const [questions, checkpoints] = this.lessonStages(data);
 
@@ -100,8 +110,8 @@ class Game extends Component {
     }
   }
 
-  setupWordList = async (id) => {
-    const result = await WordList.fetch(id);
+  setupWordList = async () => {
+    const result = await WordList.fetch(this.state.gameId);
     if (result) {
       const wordList = result.data;
       const name = wordList.name;
@@ -266,7 +276,7 @@ class Game extends Component {
       </div>
     }
 
-    const userId = localStorage.getItem('userId');
+    const userId = User.loggedIn('_id');
 
     const gameOver = () => {
       return <div style={{textAlign:'center',paddingTop:'25px'}}>

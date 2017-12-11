@@ -7,6 +7,7 @@ import { color } from '../../Library/Styles/index';
 import { isHome } from '../../Library/helpers';
 import EmailLogin from '../Login/emailLogin';
 import Navigation from './navigation';
+import User from '../../Models/User';
 
 class Header extends Component {
   constructor(props) {
@@ -18,7 +19,7 @@ class Header extends Component {
   }
 
   componentDidMount() {
-    const userId = localStorage.getItem('userId');
+    const userId = User.loggedIn('_id');
     const classId = localStorage.getItem('classId');
 
     this.setState({
@@ -29,7 +30,7 @@ class Header extends Component {
   }
 
   exitLogin() {
-    const userId = localStorage.getItem('userId');
+    const userId = User.loggedIn('_id');
     const classId = localStorage.getItem('classId');
 
     if (isHome()) {

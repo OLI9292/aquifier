@@ -8,6 +8,7 @@ import Link from '../Common/link';
 import { color } from '../../Library/Styles/index';
 import Lesson from '../../Models/Lesson';
 import lockPng from '../../Library/Images/lock.png';
+import User from '../../Models/User';
 
 class ReadingGameSelect extends Component {
   constructor(props) {
@@ -21,7 +22,8 @@ class ReadingGameSelect extends Component {
   }
 
   async componentDidMount() {
-    const userId = localStorage.getItem('userId');
+    const userId = User.loggedIn('_id');
+    if (userId === null) { return; }
     const result = await Lesson.forStudent(userId);
     const [publicLessons, privateLessons] = _.partition((result.data || []), (l) => l.public);
     const selected = publicLessons[0];

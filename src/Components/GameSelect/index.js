@@ -29,7 +29,7 @@ class GameSelect extends Component {
 
   async componentDidMount() {
     document.body.addEventListener('keydown', this.handleKeydown.bind(this), true);
-    const userId = localStorage.getItem('userId');
+    const userId = User.loggedIn('_id');
     if (userId) { this.loadUser({ type: 'id', value: userId }) };
   }
 
@@ -67,7 +67,7 @@ class GameSelect extends Component {
   }
 
   joinMatch = async () => {
-    const name = localStorage.getItem('username') || '';
+    const name = User.username();
     const accessCode = this.state.accessCode;
 
     const canEnterMatchResult = await Firebase.canEnterGame(name, accessCode);

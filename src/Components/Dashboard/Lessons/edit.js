@@ -17,6 +17,7 @@ import Link from '../../Common/link';
 import RelatedWords from './relatedWords';
 import Textarea from '../../Common/textarea';
 import Word from '../../../Models/Word';
+import User from '../../../Models/User';
 import { unixTime } from '../../../Library/helpers';
 
 const fileUploadState = {
@@ -42,7 +43,7 @@ class LessonEdit extends Component {
   }
 
   async componentDidMount() {
-    const userId = localStorage.getItem('userId');
+    const userId = User.loggedIn('_id');
     const words = _.pluck(JSON.parse(localStorage.getItem('words')), 'value');
     this.setState({ userId: userId, words: words }, this.loadClasses);
   }

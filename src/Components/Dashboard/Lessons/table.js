@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import Button from '../../Common/button';
 import { color } from '../../../Library/Styles/index';
 import Lesson from '../../../Models/Lesson';
+import User from '../../../Models/User';
 
 class LessonsTable extends Component {
   constructor(props) {
@@ -17,7 +18,7 @@ class LessonsTable extends Component {
   }
 
   async componentDidMount() {
-    const userId = localStorage.getItem('userId');
+    const userId = User.loggedIn('_id');
     this.setState({ userId }, this.loadlessons);
   }
 
