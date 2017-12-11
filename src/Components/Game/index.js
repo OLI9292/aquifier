@@ -41,7 +41,6 @@ class Game extends Component {
   }
 
   async componentDidMount() {
-    console.log('componentDidMount')
     document.body.addEventListener('keydown', this.handleKeydown.bind(this), true);
 
     const refreshInterval = setInterval(() => this.setState({ time: this.state.time + 1 }), 1000);
@@ -70,7 +69,7 @@ class Game extends Component {
     document.body.removeEventListener('keydown', this.handleKeydown.bind(this), true);
 
     const userId = User.loggedIn('_id');
-    const stats = this.stats.stats;
+    const stats = this.state.stats;
     const wordList = this.state.gameOver ? this.props.settings.wordList : null;
 
     if (userId && stats.length) { User.saveStats(userId, stats, wordList); }
