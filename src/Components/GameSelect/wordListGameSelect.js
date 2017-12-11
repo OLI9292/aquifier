@@ -43,9 +43,7 @@ class WordListGameSelect extends Component {
   }
 
   async componentDidMount() {
-
     const completed = User.loggedIn('wordListsCompleted') || [];
-    console.log(completed)
 
     const result = await WordList.fetch();
 
@@ -131,6 +129,7 @@ class WordListGameSelect extends Component {
       return <Button.small key={wordList.name} color={bColor}
         style={{color:fColor,margin:'5px',verticalAlign:'top'}}
         onClick={() => this.setState(enabled ? { selected: wordList.id } : { redirect: '/startfreetrial'})}
+        onDoubleClick={() => this.handleClickedContinue()}
       >{content}</Button.small>;
     }
 
