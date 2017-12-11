@@ -185,7 +185,6 @@ class Game extends Component {
     } else {
       const question = _.clone(this.state.questions[questionIndex]);
       const word = _.find(this.state.words, (w) => w.value === question.word);
-
       if (word) {
         question.word = word;
         this.setState({ question: question, nextQuestionIndex: questionIndex + 1, time: 0 });
