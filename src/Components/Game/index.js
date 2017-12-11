@@ -69,13 +69,11 @@ class Game extends Component {
     clearInterval(this.state.refreshInterval);
     document.body.removeEventListener('keydown', this.handleKeydown.bind(this), true);
 
-    if (User.loggedIn() && this.state.stats.length) {
-      User.saveStats(
-        User.loggedIn('_id'),
-        this.state.stats, 
-        this.props.settings.wordList
-      );
-    };
+    const userId = User.loggedIn('_id');
+    const stats = this.stats.stats;
+    const wordList = this.state.gameOver ? this.props.settings.wordList : null;
+
+    if (userId && stats.length) { User.saveStats(userId, stats, wordList); }
   }
 
   setupGame() {
