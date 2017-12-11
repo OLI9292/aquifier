@@ -26,11 +26,11 @@ class EmailLogin extends Component {
   }
 
   componentDidMount() {
-    document.body.addEventListener('keydown', this.handleKeydown.bind(this), true);
+    document.body.addEventListener('keydown', this.handleKeydown, true);
   }
 
   componentWillUnmount() {
-    document.body.removeEventListener('keydown', this.handleKeydown.bind(this), true);
+    document.body.removeEventListener('keydown', this.handleKeydown, true);
   }    
 
   handleKeydown(event) {

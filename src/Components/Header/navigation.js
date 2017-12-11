@@ -18,7 +18,7 @@ class Navigation extends Component {
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     document.addEventListener('click', this.handleClick, false);
 
     const userId = User.loggedIn('_id');
