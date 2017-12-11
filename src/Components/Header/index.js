@@ -52,8 +52,7 @@ class Header extends Component {
   }
 
   handleLogout() {
-    localStorage.removeItem('userId');
-    localStorage.removeItem('username');
+    localStorage.removeItem('user');
     localStorage.removeItem('classId');
     this.setState({ redirect: '/', loggedIn: false });
   }
