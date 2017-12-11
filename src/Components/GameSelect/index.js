@@ -40,7 +40,7 @@ class GameSelect extends Component {
   handleKeydown(event) {
     if (event.key === 'Enter') {
       event.preventDefault();
-      if (this.state.accessCode.trim().length === 4) {
+      if (this.state.accessCode && (this.state.accessCode.trim().length === 4)) {
         this.joinMatch();
       }
     }

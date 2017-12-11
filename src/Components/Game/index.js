@@ -41,6 +41,7 @@ class Game extends Component {
   }
 
   async componentDidMount() {
+    console.log('componentDidMount')
     document.body.addEventListener('keydown', this.handleKeydown.bind(this), true);
 
     const refreshInterval = setInterval(() => this.setState({ time: this.state.time + 1 }), 1000);
@@ -69,16 +70,10 @@ class Game extends Component {
     document.body.removeEventListener('keydown', this.handleKeydown.bind(this), true);
 
     const userId = User.loggedIn('_id');
-    
-    const stats = this.state.stats;
+    const stats = this.stats.stats;
+    const wordList = this.state.gameOver ? this.props.settings.wordList : null;
 
-    if (userId && !_.isEmpty(stats)) {
-      User.saveStats(userId, stats);
-      const user = JSON.parse(localStorage.getItem('user'));
-      user.wordListsCompleted = _.uniq(_.union(User.loggedIn('wordListsCompleted') || [], [this.props.settings.wordList]));
-      console.log(user)
-      User.update(userId, user);
-    };
+    if (userId && stats.length) { User.saveStats(userId, stats, wordList); }
   }
 
   setupGame() {
@@ -161,12 +156,16 @@ class Game extends Component {
   }
 
   runInterlude = async (correct = true) => {
+    this.record(correct);
+    
     const state = { isInterlude: true };
+    
     if (correct) {
       const isSpeedy = this.state.time < 5;
       state.isSpeedy = isSpeedy;
       state.score = this.state.score + (isSpeedy ? 2 : 1);
     }
+
     this.setState(state);
     window.timeout = setTimeout(() => { this.nextQuestion() }, 300000);
   }
