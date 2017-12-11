@@ -30,13 +30,15 @@ const login = async (data) => {
   }
 }
 
-const saveStats = (id, stats) => {
+const saveStats = (id, stats, wordList) => {
   try {
     const params = {
       id: id,
       stats: stats,
-      platform: 'web'
+      platform: 'web',
+      wordList: wordList
     }
+    console.log(params)
     axios.patch(href, params);
   } catch (e) {
     console.log(e)
