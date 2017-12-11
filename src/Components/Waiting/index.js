@@ -6,8 +6,8 @@ import _ from 'underscore';
 
 import Button from '../Common/button';
 import Firebase from '../../Networking/Firebase';
-
 import { color } from '../../Library/Styles/index';
+import User from '../../Models/User';
 
 class Waiting extends Component {
   constructor(props) {
@@ -21,14 +21,14 @@ class Waiting extends Component {
   }
 
   componentDidMount() {
-    const name = localStorage.getItem('username');
+    const username = User.username();
 
     Firebase.refs.games.child(this.props.settings.accessCode).on('value', (snapshot) => {
       
       const game = _.pick(snapshot.val(), 'wordList', 'time', 'startTime');
       if (_.isEmpty(this.state.game)) { this.setState({ game }) };
       
-      const kicked = !_.includes(_.keys(snapshot.val().players), name);
+      const kicked = !_.includes(_.keys(snapshot.val().players), username);
       const gameStarted = snapshot.val().status === 1;
 
       if (kicked) {

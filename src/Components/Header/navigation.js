@@ -6,6 +6,7 @@ import CONFIG from '../../Config/main';
 
 import { color, breakpoints } from '../../Library/Styles/index';
 import Link from '../Common/link';
+import User from '../../Models/User';
 
 class Navigation extends Component {
   constructor(props) {
@@ -20,7 +21,7 @@ class Navigation extends Component {
   componentWillMount() {
     document.addEventListener('click', this.handleClick, false);
 
-    const userId = localStorage.getItem('userId');
+    const userId = User.loggedIn('_id');
     const hasAdminAccess = userId === CONFIG.ADMIN_ID;
     this.setState({ hasAdminAccess });
   }

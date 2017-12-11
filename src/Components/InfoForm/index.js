@@ -119,6 +119,7 @@ class InfoForm extends Component {
     const inputs = this.state.inputs.map((input, idx) => {
       return <div style={{margin:'1%'}} key={idx}>
         <img
+          alt='checkmark'
           className='checkmark'
           src={this.isValid(input) ? greenCheckmark : lightGrayCheckmark}
           style={{height:'50px',width:'auto',marginRight:'5px'}}/>

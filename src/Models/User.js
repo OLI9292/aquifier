@@ -43,11 +43,52 @@ const saveStats = (id, stats) => {
   }
 }
 
+const loggedIn = (attr) => {
+  if (attr) {
+    const user = localStorage.getItem('user');
+    if (user) {
+      const parsed = JSON.parse(user);
+      if (parsed) {
+        return parsed[attr];
+      }
+    }
+    return null;
+  }
+  return localStorage.getItem('user') !== null;
+}
+
+const update = async (id, data) => {
+  try {
+    const result = await axios.patch(`${href}/${id}`, data);
+    User.saveLocally(data);
+    return result;
+  } catch (error) {
+    return { error: error.message };
+  }
+}
+
+const username = () => {
+  if (User.loggedIn()) {
+    return `${User.loggedIn('firstName')} ${User.loggedIn('lastName')}`;
+  }
+  return null;
+}
+
+const saveLocally = (data) => {
+  if (data) {
+    localStorage.setItem('user', JSON.stringify(data));
+  }
+}
+
 const User = {
   createAccount: createAccount,
   login: login,
   fetch: fetch,
-  saveStats: saveStats
+  saveStats: saveStats,
+  saveLocally: saveLocally,
+  loggedIn: loggedIn,
+  update: update,
+  username: username
 }
 
 export default User;

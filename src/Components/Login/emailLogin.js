@@ -5,7 +5,6 @@ import _ from 'underscore';
 
 import Button from '../Common/button';
 import { color } from '../../Library/Styles/index';
-import Textarea from '../Common/textarea';
 import InputStyles from '../Common/inputStyles';
 import { validateEmail, sleep } from '../../Library/helpers';
 import User from '../../Models/User';
@@ -111,13 +110,9 @@ class EmailLogin extends Component {
       const result = await User.login(data);
 
       if (result.data && result.data.user) {
-        const userId = result.data.user._id;
-        localStorage.setItem('userId', userId);
-        localStorage.setItem('username', `${result.data.user.firstName} ${result.data.user.lastName}`);
+        localStorage.setItem('user', JSON.stringify(result.data.user));
         const klass = _.first(result.data.user.classes.filter((c) => c.role === 'teacher'))
-        if (!_.isUndefined(klass)) {
-          localStorage.setItem('classId', klass.id);
-        }
+        if (klass) { localStorage.setItem('classId', klass.id); }
         this.setState({ isError: false, message: 'Logged in' });
         await sleep(500);
         this.props.exit();

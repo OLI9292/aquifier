@@ -8,9 +8,12 @@ import Link from '../Common/link';
 import { color } from '../../Library/Styles/index';
 import WordList from '../../Models/WordList';
 
+import whiteCheckmark from '../../Library/Images/Checkmark-White.png';
+import greenCheckmark from '../../Library/Images/Checkmark-Green.png';
 import studyPng from '../../Library/Images/study-color.png';
 import explorePng from '../../Library/Images/explore-color.png';
 import lockPng from '../../Library/Images/lock.png';
+import User from '../../Models/User';
 
 const params = {
   study: {
@@ -35,37 +38,46 @@ class WordListGameSelect extends Component {
     this.state = {
       redirect: null,
       step: 0,
-      timeLimit: timeLimits[0],
+      timeLimit: timeLimits[0]
     };
   }
 
   async componentDidMount() {
 
+    const completed = User.loggedIn('wordListsCompleted') || [];
+    console.log(completed)
+
     const result = await WordList.fetch();
 
     const wordLists = (result.data || [])
-      .filter((w) => this.props.settings.game === 'explore' ? !w.isStudy : w.isStudy);
-    const reformatted = this.reformatWordLists(wordLists);
+      .filter((w) => this.props.settings.game === 'explore' ? !w.isStudy : w.isStudy);    
 
-    if (!_.isEmpty(reformatted)) {
+    const reformatted = this.reformatWordLists(wordLists, completed);
+
+    if (reformatted) {
       const selected = reformatted[_.keys(reformatted)[0]][0].id;
       this.setState({ wordLists: reformatted, selected: selected });
     }
 
-    const userId = localStorage.getItem('userId');
-    if (userId) {
-      this.setState({ loggedIn: true });
-    }
+    this.setState({ loggedIn: User.loggedIn() });
   }
 
   // Temporary solution until better data modeling is agreed on - @akiva, @oliver
-  reformatWordLists(wordLists) {
+  reformatWordLists(wordLists, completed) {
     return _.groupBy(_.sortBy(wordLists
       .map((w) => {
         const split = w.name.split(' ');
         const [category, name] = [split.slice(0, split.length - 1).join(' '), parseInt(split[split.length - 1], 10)];
         const valid = split.length > 1 && Number.isInteger(name);
-        return valid ? { category: category, name: name, questions: w.questions, id: w._id } : null;
+        return valid
+          ? { 
+              category: category, 
+              completed: _.contains(completed, w._id),
+              name: name,
+              questions: w.questions,
+              id: w._id
+            }
+          : null;
       })
       .filter((w) => w), 'name'), 'category')
   }
@@ -104,6 +116,24 @@ class WordListGameSelect extends Component {
 
     const p = params[this.props.settings.game];
 
+    const wordListButton = (enabled, completed, selected, wordList) => {
+      const content = (() => {
+        if      (completed && selected) { return Button.imageAndText(whiteCheckmark, wordList.name); } 
+        else if (completed)             { return Button.imageAndText(greenCheckmark, wordList.name); }
+        else if (!enabled)              { return Button.imageAndText(lockPng, wordList.name); }
+        else                            { return wordList.name; }
+      })();
+
+      const [fColor, bColor] = selected
+        ? ['white', color.green]
+          : completed ? [color.green, color.lightestGray] : ['black', color.lightestGray];
+
+      return <Button.small key={wordList.name} color={bColor}
+        style={{color:fColor,margin:'5px',verticalAlign:'top'}}
+        onClick={() => this.setState(enabled ? { selected: wordList.id } : { redirect: '/startfreetrial'})}
+      >{content}</Button.small>;
+    }
+
     const wordListTable = () => {
       return <table style={{borderSpacing:'2em',textAlign:'left'}}>
         <tbody>
@@ -114,25 +144,11 @@ class WordListGameSelect extends Component {
                   <b>{k}</b>
                 </td>
                 <td>
-                  {
-                    this.state.wordLists[k].map((w) => {
-                      const [fColor, bColor] = this.state.selected === w.id
-                        ? ['white', color.green]
-                        : ['black', color.lightestGray];
-                        const isEnabled = ((_.contains([1,2], w.name) && !_.contains(["Advanced"], k)) || this.state.loggedIn);
-                        if (isEnabled) {
-                          return <Button.small key={w.name} color={bColor}
-                            style={{color:fColor,margin:'5px'}}
-                            onClick={() => this.setState({ selected: w.id })}
-                          >{w.name}</Button.small>
-                        } else {
-                          return <Button.small key={w.name} color={bColor}
-                            style={{color:color.gray,margin:'5px'}}
-                            onClick={() => this.setState({ redirect: '/startfreetrial' })}
-                          ><Image style={{height: '16px',marginRight:'5px'}} src={lockPng} />{w.name}</Button.small>
-                        }
-                    })
-                  }
+                  {this.state.wordLists[k].map((wordList) => {
+                    const enabled = ((_.contains([1,2], wordList.name) && !_.contains(["Advanced"], k)) || this.state.loggedIn);
+                    const selected = this.state.selected === wordList.id;
+                    return wordListButton(enabled, wordList.completed, selected, wordList);
+                  })}
                 </td>
               </tr>
             })

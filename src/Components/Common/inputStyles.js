@@ -1,7 +1,3 @@
-import _ from 'underscore';
-
-import { color } from '../../Library/Styles/index';
-
 const Default = {
   backgroundColor: '#f1f1f1',
   border: '0px',
