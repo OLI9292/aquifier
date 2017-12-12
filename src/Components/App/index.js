@@ -3,8 +3,10 @@ import queryString from 'query-string';
 import React, { Component } from 'react';
 import { Route, Switch } from 'react-router';
 import { BrowserRouter } from 'react-router-dom';
+import { Provider } from 'react-redux'
 import styled from 'styled-components';
 
+// COMPONENTS
 import Admin from '../Admin/index';
 import ClassesDashboard from '../Dashboard/classes';
 import Game from '../Game/index';
@@ -22,12 +24,23 @@ import Waiting from '../Waiting/index';
 import WordListsDashboard from '../Dashboard/wordLists';
 import WordListGameSelect from '../GameSelect/wordListGameSelect';
 
+// MODELS
 import Word from '../../Models/Word';
 import Root from '../../Models/Root';
 
+// ETC
 import { color, breakpoints } from '../../Library/Styles/index';
 import { mobilecheck } from '../../Library/helpers';
 import './index.css';
+
+
+// ACTIONS
+import { fetchWord, fetchWords, loadWords } from '../../Actions/index';
+
+// STORE
+import configureStore from '../../Store/configureStore';
+const store = configureStore()
+store.subscribe(() => console.log(store.getState()))
 
 class App extends Component {
 
@@ -56,50 +69,67 @@ class App extends Component {
 
   render() {
     return (
-      <BrowserRouter>
-        <Switch>
-          <Route exact path='/' component={Home} />
+      <Provider store={store}>
+        <BrowserRouter>
+          <Switch>
+            {/*** SIMPLE ROUTES ***/}
 
-          <Route exact path='/admin/:settings' component={({ match }) => {
-            return <Container component='admin' settings={queryString.parse(match.params.settings)} />
-          }} />
+            <Route exact path='/'               component={Home} />
+            <Route exact path='/classes'        component={contained('classesDashboard')} />            
+            <Route exact path='/lessons'        component={contained('lessonsTable')} />
+            <Route exact path='/lessons/:id'    component={contained('lessonEdit')} />
+            <Route exact path='/play'           component={contained('gameSelect')} />
+            <Route exact path='/startfreetrial' component={contained('infoForm')} />
+            <Route exact path='/word-lists'     component={contained('wordListsDashboard')} />
 
-          <Route exact path='/profile/:userId' component={({ match }) => {
-            return <Container component='profile' userId={match.params.userId} />;
-          }} />
+            
+            {/* ADMIN */}
+            <Route exact path='/admin/:settings' component={({ match }) => {
+              return <Container
+                component='admin' 
+                settings={queryString.parse(match.params.settings)} /> 
+            }} />
 
-          <Route exact path='/play' component={() => <Container component='gameSelect' />} />
-          <Route exact path='/startfreetrial' component={() => <Container component='infoForm' />} />
-          <Route path='/play/:settings' component={({ match }) => {
-            const settings = queryString.parse(match.params.settings);
-            const status = parseInt(settings.status, 10);
-            if (settings.setup) {
-              const component = `${settings.game === 'read' ? 'reading' : 'wordList'}GameSelect`;
-              return <Container component={component} settings={settings} />
-            } else if (status !== undefined) {
-              if (status < 2) {
-                return <Container component={'waiting'} settings={settings} />
-              }
-            }
-            return <Container component={'game'} settings={settings} />
-          }} />
+            {/* GAME */}
+            <Route path='/play/:settings' component={({ match }) => {
+              const settings = queryString.parse(match.params.settings)
+              const waiting = settings.status && parseInt(settings.status, 10) < 2
+              let component
 
-          <Route exact path='/leaderboard/:gameId' component={({ match }) => {
-            return <Container component='leaderboard' gameId={match.params.gameId} />;
-          }} />
+              if      (settings.setup) { component = `${settings.game === 'read' ? 'reading' : 'wordList'}GameSelect` }
+              else if (waiting)        { component = 'waiting' }
+              else                     { component = 'game' }
 
-          <Route exact path='/lessons' component={() => <Container component='lessonsTable' />} />
-          <Route exact path='/lessons/:id' component={() => <Container component='lessonEdit' />} />
-          <Route exact path='/word-lists' component={() => <Container component='wordListsDashboard' />} />
-          <Route exact path='/classes' component={() => <Container component='classesDashboard' />} />
-        </Switch>
-      </BrowserRouter>
+              console.log(store.getState())
+              console.log('heyyyy')
+
+              return <Container component={component} settings={settings} words={store.getState().words} />
+            }} />
+
+            {/* LEADERBOARD */}
+            <Route exact path='/leaderboard/:gameId' component={({ match }) => {
+              return <Container
+                component='leaderboard'
+                gameId={match.params.gameId} />
+            }} />            
+
+            {/* PROFILE */}
+            <Route exact path='/profile/:userId' component={({ match }) => {
+              return <Container 
+                component='profile' 
+                userId={match.params.userId} /> 
+            }} />            
+
+          </Switch>
+        </BrowserRouter>
+      </Provider>
     );
   }
 }
 
-class Container extends Component {
+const contained = (component) => () => <Container component={component} />
 
+class Container extends Component {
   render() {
     // Display not-mobile-compatible popup
     if (mobilecheck() && this.props.component !== 'home') {
@@ -108,20 +138,20 @@ class Container extends Component {
 
     const component = () => {
       switch (this.props.component) {
-        case 'admin': return <Admin settings={this.props.settings} />
-        case 'classesDashboard': return <ClassesDashboard />
-        case 'game': return <Game settings={this.props.settings} />
-        case 'gameSelect': return <GameSelect />
-        case 'infoForm': return <InfoForm />
-        case 'leaderboard': return <Leaderboard gameId={this.props.gameId} />
-        case 'lessonsTable': return <LessonsTable />
-        case 'lessonEdit': return <LessonEdit />
-        case 'profile': return <Profile userId={this.props.userId} />
-        case 'readingGameSelect': return <ReadingGameSelect settings={this.props.settings} />
-        case 'waiting': return <Waiting settings={this.props.settings} />
+        case 'admin':              return <Admin settings={this.props.settings} />
+        case 'classesDashboard':   return <ClassesDashboard />
+        case 'game':               return <Game settings={this.props.settings} words={this.props.words} />
+        case 'gameSelect':         return <GameSelect />
+        case 'infoForm':           return <InfoForm />
+        case 'leaderboard':        return <Leaderboard gameId={this.props.gameId} />
+        case 'lessonsTable':       return <LessonsTable />
+        case 'lessonEdit':         return <LessonEdit />
+        case 'profile':            return <Profile userId={this.props.userId} />
+        case 'readingGameSelect':  return <ReadingGameSelect settings={this.props.settings} />
+        case 'waiting':            return <Waiting settings={this.props.settings} />
         case 'wordListsDashboard': return <WordListsDashboard />
         case 'wordListGameSelect': return <WordListGameSelect settings={this.props.settings} />
-        default: return <Home />
+        default:                   return <Home />
       }
     }
 

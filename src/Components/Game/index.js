@@ -1,6 +1,7 @@
 import Firebase from '../../Networking/Firebase';
 import React, { Component } from 'react';
 import { Redirect } from 'react-router';
+import { connect } from 'react-redux'
 import styled from 'styled-components';
 import _ from 'underscore';
 
@@ -24,6 +25,13 @@ import returnKeyGreen from '../../Library/Images/return-green.png';
 import equalsKey from '../../Library/Images/equals.png';
 import speedyPng from '../../Library/Images/speedy.png';
 import nextButton from '../../Library/Images/next-button.png';
+
+// ACTIONS
+import { loadWords } from '../../Actions/index';
+
+const loadData = props => {
+  props.loadWords()
+}
 
 class Game extends Component {
   constructor(props) {
@@ -210,6 +218,8 @@ class Game extends Component {
   }
 
   render() {
+    console.log('PROPS')
+    console.log(this.props)
     if (this.state.redirect && !window.location.href.endsWith(this.state.redirect)) {
       return <Redirect push to={this.state.redirect} />;
     }
@@ -378,6 +388,17 @@ const Text = styled.p`
   }
   @media (max-width: 450px) {
     font-size: 0.9em;
-  }`
+  }
+`
 
-export default Game;
+const mapStateToProps = (state, ownProps) => {
+  const {
+    entities: { words }
+  } = state
+
+  return {
+    words: _.values(words)
+  }
+}
+
+export default connect(mapStateToProps, { loadWords })(Game)
