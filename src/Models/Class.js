@@ -1,14 +1,6 @@
 import axios from 'axios';
 import CONFIG from '../Config/main';
 
-const fetch = async (id) => {
-  try {
-    return await axios.get(`${CONFIG.ACCOUNTS_API}/class/${id}`);
-  } catch (e) {
-    return e.response.data;
-  }
-}
-
 const forTeacher = async (id) => {
   try {
     return await axios.get(`${CONFIG.ACCOUNTS_API}/class?teacher=${id}`);
@@ -26,7 +18,6 @@ const studentsInClass = async (id) => {
 }
 
 const Class = {
-  fetch: fetch,
   forTeacher: forTeacher,
   students: studentsInClass
 }
