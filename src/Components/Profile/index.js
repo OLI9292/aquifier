@@ -44,8 +44,8 @@ class Profile extends Component {
     const query = { type: 'id', value: this.props.userId };
     let result = await User.fetch(query);
 
-    if (_.has(result.data, 'user')) {
-      const user = result.data.user;
+    if (result.data) {
+      const user = result.data;
       const wordExperience = user.words.map((obj) => { obj.definition = ''; return obj });
       const wordsLearned = wordExperience.length;
       const wordsMastered = wordExperience.filter((w) => w.experience >= 7).length;
