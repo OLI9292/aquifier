@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import _ from 'underscore';
+import { color } from '../../Library/Styles/index';
 
 class Dropdown extends Component {
   constructor(props) {
@@ -16,25 +17,35 @@ class Dropdown extends Component {
   }
 
   render() {
-    const split = _.partition(this.props.choices, (c) => c === this.props.selected);
-    const choices = _.union(split[0], split[1]);
+    const choices = _.union(..._.partition(this.props.choices, (c) => c === this.props.selected));
 
     return (
-      <div>
+      <div style={{display:'inline-block',verticalAlign:'top',margin:'0px 5px 0px 5px'}}>
         {
           this.state.opened
           ?
           <div>
             {choices.map((c) => {
-              return <p onClick={() => this.handleSelect(c)}>{c}</p>;
+              return <Button onClick={() => this.handleSelect(c)}>{c}</Button>;
             })}
           </div>
           :
-          <p onClick={() => this.setState({ opened: true })}>{choices[0]}</p>
+          <Button selected onClick={() => this.setState({ opened: true })}>{choices[0]}</Button>
         }
       </div>
     );
   }
 }
+
+const Button = styled.h3`
+  background-color: ${props => props.selected ? color.blue : color.lightestGray};
+  color: ${props => props.selected ? 'white' : color.darkGray};
+  cursor: pointer;
+  border-radius: 5px;
+  line-height: 50px;
+  margin: 0;
+  height: 50px;
+  width: 125px;
+`
 
 export default Dropdown;

@@ -30,7 +30,7 @@ class GameSelect extends Component {
   async componentDidMount() {
     document.body.addEventListener('keydown', this.handleKeydown.bind(this), true);
     const userId = User.loggedIn('_id');
-    if (userId) { this.loadUser({ type: 'id', value: userId }) };
+    if (userId) { this.loadUser(userId) };
   }
 
   componentWillUnmount() {
@@ -48,8 +48,9 @@ class GameSelect extends Component {
 
   loadUser = async (query) => {
     const result = await User.fetch(query);
-    if (result && result.data && result.data.user) {
-      const user = result.data.user;
+    console.log(result)
+    if (result && result.data) {
+      const user = result.data;
       const isTeacher = user.isTeacher;
       this.setState({ loggedIn: true, isTeacher: isTeacher });
     }

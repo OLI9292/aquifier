@@ -41,8 +41,7 @@ class Profile extends Component {
   }
 
   loadUser = async () => {
-    const query = { type: 'id', value: this.props.userId };
-    let result = await User.fetch(query);
+    let result = await User.fetch(this.props.userId);
 
     if (result.data) {
       const user = result.data;

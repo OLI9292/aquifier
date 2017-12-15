@@ -6,11 +6,9 @@ const href = `${CONFIG.ACCOUNTS_API}/user`
 
 const fetch = async (query) => {
   try {
-    return query.type === 'id'
-      ? await axios.get(`${href}/${query.value}`)
-      : await axios.get(`${href}${query.value}`);
+    return await axios.get(`${href}/${query}`)
   } catch (error) {
-    return { error: error };
+    return { error: error.message }
   }
 }
 
@@ -18,7 +16,7 @@ const createAccount = async (data) => {
   try {
     return await axios.post(`${href}/create`, data);
   } catch (error) {
-    return { error: error }
+    return { error: error.message }
   }
 }
 
@@ -26,7 +24,7 @@ const login = async (data) => {
   try {
     return await axios.post(`${href}/login`, data)
   } catch (error) {
-    return { error: error }
+    return { error: error.message }
   }
 }
 
@@ -39,7 +37,7 @@ const saveStats = async (id, stats, wordList) => {
       wordList: wordList
     })
   } catch (error) {
-    return { error: error }
+    return { error: error.message }
   }
 }
 
