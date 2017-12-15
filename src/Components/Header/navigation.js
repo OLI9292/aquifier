@@ -55,10 +55,6 @@ class Navigation extends Component {
 
     const dropdown = () => {
       return <DropdownContainer visibility={this.state.displayDropdown ? 'visible' : 'hidden'}>
-        <Link.default style={{color:color.purple,display:this.display('leaderboards')}}
-          onClick={() => this.setState({ redirect: `/leaderboards`})} 
-          >Leaderboards</Link.default>
-
         <Link.default style={{color:color.purple,display:this.display('profile')}}
           onClick={() => this.setState({ redirect: `/profile/${this.props.userId}`})} 
           >Progress</Link.default>
