@@ -9,39 +9,37 @@ const fetch = async (query) => {
     return query.type === 'id'
       ? await axios.get(`${href}/${query.value}`)
       : await axios.get(`${href}${query.value}`);
-  } catch (e) {
-    return e.response.data;
+  } catch (error) {
+    return { error: error };
   }
 }
 
 const createAccount = async (data) => {
   try {
     return await axios.post(`${href}/create`, data);
-  } catch (e) {
-    return e.response.data;
+  } catch (error) {
+    return { error: error }
   }
 }
 
 const login = async (data) => {
   try {
-    return await axios.post(`${href}/login`, data);
-  } catch (e) {
-    return e.response.data;
+    return await axios.post(`${href}/login`, data)
+  } catch (error) {
+    return { error: error }
   }
 }
 
-const saveStats = (id, stats, wordList) => {
+const saveStats = async (id, stats, wordList) => {
   try {
-    const params = {
+    return await axios.patch(href, {
       id: id,
       stats: stats,
       platform: 'web',
       wordList: wordList
-    }
-    console.log(params)
-    axios.patch(href, params);
-  } catch (e) {
-    console.log(e)
+    })
+  } catch (error) {
+    return { error: error }
   }
 }
 

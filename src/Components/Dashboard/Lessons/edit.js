@@ -6,10 +6,7 @@ import styled from 'styled-components';
 import TextareaAutosize from 'react-autosize-textarea';
 
 import addPng from '../../../Library/Images/add.png';
-import Class from '../../../Models/Class';
 import CONFIG from '../../../Config/main';
-import checkboxChecked from '../../../Library/Images/checkbox-checked.png';
-import checkboxUnchecked from '../../../Library/Images/checkbox-unchecked.png';
 import { color } from '../../../Library/Styles/index';
 import deletePng from '../../../Library/Images/delete.png';
 import Lesson from '../../../Models/Lesson';
@@ -30,7 +27,6 @@ class LessonEdit extends Component {
     super(props);
 
     this.state = {
-      classes: [],
       errorMsg: '',
       filenames: [],
       fileUploadStatus: 'unchosen',
@@ -45,15 +41,8 @@ class LessonEdit extends Component {
   async componentDidMount() {
     const userId = User.loggedIn('_id');
     const words = _.pluck(JSON.parse(localStorage.getItem('words')), 'value');
-    this.setState({ userId: userId, words: words }, this.loadClasses);
+    this.setState({ userId: userId, words: words }, this.loadLesson);
   }
-
-  loadClasses = async () => {
-    const result = await Class.forTeacher(this.state.userId);
-    const classes = result.data || [];
-    classes.forEach((c) => c.checked = false);
-    this.setState({ classes }, this.loadLesson);
-  }  
 
   loadLesson = async () => {
     const id = _.last(window.location.href.split('/'));
@@ -65,9 +54,6 @@ class LessonEdit extends Component {
           lessonTitle: lesson.name,
           filenames: lesson.filenames,
           questions: lesson.questions.map((q) => { q.include = true; return q; }),
-          classes: this.state.classes.map((c) => {
-            const copy = c; copy.checked = _.includes(lesson.classes, copy._id); return copy;
-          }),
           isNewLesson: false,
           lessonId: id
         }, () => this.loadRelatedWords(_.pluck(lesson.questions, 'word')));
@@ -80,15 +66,10 @@ class LessonEdit extends Component {
     if (result.data) { this.setState({ relatedWords: result.data }) }
   }  
 
-  checkedClasses() {
-    return this.state.classes.filter((c) => c.checked).map((c) => c._id);
-  }  
-
   handleSaveLesson() {
     let errorMsg
 
     if (!this.state.lessonTitle)       { errorMsg = 'Please enter a lesson title.' };
-    if (!this.checkedClasses().length) { errorMsg = 'Please check at least 1 class.' };
     if (!this.state.questions.length)  { errorMsg = 'Lessons require at least 1 WORD / PASSAGE.' };
 
     errorMsg
@@ -106,7 +87,6 @@ class LessonEdit extends Component {
       filenames: this.state.filenames,
       updatedOn: unixTime(),
       questions: questions,
-      classes: this.checkedClasses(),
       public: this.state.userId === CONFIG.ADMIN_ID
     }
 
@@ -140,12 +120,6 @@ class LessonEdit extends Component {
 
       this.fileInput.value = '';
     }
-  }
-
-  handleClassClick(i) {
-    const classes = this.state.classes;
-    classes[i].checked = !classes[i].checked;
-    this.setState({ classes });
   }
 
   handleAddRow(i) {
@@ -274,19 +248,6 @@ class LessonEdit extends Component {
               </FileLabel>
             </td>
           </SettingsRow>
-
-          <SettingsRow>
-            <SettingsHeader>Classes</SettingsHeader>
-            <td style={{paddingLeft:'20px'}}>
-              {this.state.classes.map((c,i) => {
-                return <ClassesContainer onClick={() => this.handleClassClick(i)} key={i}>
-                  <img alt={c.checked ? 'checked' : 'un-checked'} style={{height:'20px'}}
-                    src={c.checked ? checkboxChecked : checkboxUnchecked} />
-                  <p style={{marginLeft:'5px'}}>{c.name}</p>
-                </ClassesContainer>
-              })}
-            </td>
-          </SettingsRow>
         </tbody>
       </table>
     })()
@@ -317,15 +278,6 @@ const resizableTextAreastyles = (textareaBackgroundColor) => {
     margin: '10px'
   }
 }
-
-const ClassesContainer = styled.div`
-  height: 20px;
-  marginBottom: 10px;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  font-family: BrandonGrotesque;
-`
 
 const ErrorMessage = styled.p`
   color: ${color.red};

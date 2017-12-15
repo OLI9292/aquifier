@@ -3,11 +3,7 @@ import axios from 'axios';
 
 const fetch = async (query) => {
   try {
-    if (query) {
-
-    } else {
-      return await axios.get(`${CONFIG.WORDS_API}/roots`);
-    }
+    return await axios.get(`${CONFIG.WORDS_API}/roots`);
   } catch (e) {
     return e.response.data;
   }

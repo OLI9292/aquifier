@@ -24,14 +24,11 @@ class ClassesDashboard extends Component {
   loadClass = async () => {
     const classId = localStorage.getItem('classId');
     const result = await Class.students(classId);
-
-    if (result && _.isArray(result.data)) {
-      const students = result.data.map(this.readStudent);
-      this.setState({ students });
-    }
+    const students = result.data.map(this.student);
+    if (_.isArray(result.data)) { this.setState({ students }) }
   }
 
-  readStudent(data) {
+  student(data) {
     const name = data.firstName + ' ' + data.lastName.charAt(0);
     const mastery = sum(data.words, 'experience')/10;
     const wordsLearned = data.words.length;

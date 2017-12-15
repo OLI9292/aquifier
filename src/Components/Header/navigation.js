@@ -20,7 +20,6 @@ class Navigation extends Component {
 
   componentDidMount() {
     document.addEventListener('click', this.handleClick, false);
-
     const userId = User.loggedIn('_id');
     const hasAdminAccess = userId === CONFIG.ADMIN_ID;
     this.setState({ hasAdminAccess });
@@ -39,6 +38,7 @@ class Navigation extends Component {
     const shouldDisplay = (() => {
       switch (link) {
         case 'profile': return !this.props.isTeacher
+        case 'leaderboards': return !this.props.isTeacher
         case 'classes': return this.props.isTeacher
         case 'lessons': return this.state.hasAdminAccess
         case 'wordLists': return this.state.hasAdminAccess
@@ -55,6 +55,10 @@ class Navigation extends Component {
 
     const dropdown = () => {
       return <DropdownContainer visibility={this.state.displayDropdown ? 'visible' : 'hidden'}>
+        <Link.default style={{color:color.purple,display:this.display('leaderboards')}}
+          onClick={() => this.setState({ redirect: `/leaderboards`})} 
+          >Leaderboards</Link.default>
+
         <Link.default style={{color:color.purple,display:this.display('profile')}}
           onClick={() => this.setState({ redirect: `/profile/${this.props.userId}`})} 
           >Progress</Link.default>
