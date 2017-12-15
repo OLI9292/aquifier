@@ -21,15 +21,14 @@ class Leaderboard extends Component {
   componentDidMount() {
     if (!User.loggedIn()) { return; }
     const user = JSON.parse(localStorage.getItem('user'));
-
   }
 
   render() {
     return (
-      <div>
-        <h1>Leaderboards</h1>
+      <div style={{paddingTop:'25px',margin:'0 auto',width:'95%',textAlign:'center'}}>
+        <p style={{fontSize:'3em',lineHeight:'0px'}}>Leaderboards</p>
         <div>
-          <Dropdown 
+          <Dropdown
             choices={TIME_CHOICES} 
             handleSelect={(time) => this.setState({ selectedTime: time })}
             selected={this.state.selectedTime} />

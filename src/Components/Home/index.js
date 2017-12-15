@@ -9,6 +9,7 @@ import DaisyChain from './daisyChain';
 import InfoForm from '../InfoForm/index';
 import Header from '../Header/index';
 import { color } from '../../Library/Styles/index';
+import User from '../../Models/User';
 
 class Home extends Component {
   constructor(props) {
@@ -30,6 +31,7 @@ class Home extends Component {
   componentDidMount() {
     this.checkWindowSize();
     window.addEventListener('resize', this.checkWindowSize.bind(this));
+    if (User.loggedIn()) { this.setState({ redirect: '/play' })};
   }
 
   componentWillUnmount() {
