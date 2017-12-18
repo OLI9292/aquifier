@@ -23,11 +23,13 @@ const callApi = (endpoint, schema) => {
 // JSON objects are replaced with their IDs
 
 const wordSchema = new schema.Entity('words', {}, { idAttribute: '_id' })
+const relatedWordSchema = new schema.Entity('relatedWords', {}, { idAttribute: '_id' })
 
 // Schemas for API responses.
 export const Schemas = {
   WORD: wordSchema,
-  WORD_ARRAY: [wordSchema]
+  WORD_ARRAY: [wordSchema],
+  RELATED_WORDS: relatedWordSchema
 }
 
 // Action key that carries API call info interpreted by this Redux middleware.

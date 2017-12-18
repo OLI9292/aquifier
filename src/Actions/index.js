@@ -12,13 +12,29 @@ export const fetchWords = (id = null) => ({
   }
 })
 
+export const RELATED_WORDS_REQUEST = 'RELATED_WORDS_REQUEST'
+export const RELATED_WORDS_SUCCESS = 'RELATED_WORDS_SUCCESS'
+export const RELATED_WORDS_FAILURE = 'RELATED_WORDS_FAILURE'
+
+export const fetchRelatedWords = (data) => ({
+  [CALL_API]: {
+    types: [ RELATED_WORDS_REQUEST, RELATED_WORDS_REQUEST, RELATED_WORDS_REQUEST ],
+    endpoint: `related-words?words=${data}`,
+    schema: Schemas.RELATED_WORDS
+  }
+})
+
 export const loadWords = (id) => (dispatch, getState) => {
   return dispatch(fetchWords(id))
+}
+
+export const loadRelatedWords = (id) => (dispatch, getState) => {
+  return dispatch(fetchRelatedWords(id))
 }
 
 export const RESET_ERROR_MESSAGE = 'RESET_ERROR_MESSAGE'
 
 // Resets the currently visible error message.
 export const resetErrorMessage = () => ({
-    type: RESET_ERROR_MESSAGE
+  type: RESET_ERROR_MESSAGE
 })
