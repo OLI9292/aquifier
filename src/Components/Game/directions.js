@@ -1,7 +1,4 @@
 import React, { Component } from 'react';
-import { Redirect } from 'react-router';
-import styled from 'styled-components';
-import _ from 'underscore';
 
 import leftArrow from '../../Library/Images/left-arrow.png';
 import rightArrow from '../../Library/Images/right-arrow.png';
@@ -11,10 +8,6 @@ import returnKeyGreen from '../../Library/Images/return-green.png';
 import { color } from '../../Library/Styles/index';
 
 class Directions extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     const nextQparams = this.props.isInterlude
         ? { color: color.green, text: 'Next Question', image: returnKeyGreen }

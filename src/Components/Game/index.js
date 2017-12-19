@@ -5,7 +5,6 @@ import { connect } from 'react-redux'
 import styled from 'styled-components';
 import _ from 'underscore';
 
-import Button from '../Common/button';
 import ButtonQuestion from './Questions/button';
 import Directions from './directions';
 import GameOver from './gameOver';
@@ -25,10 +24,6 @@ import nextButton from '../../Library/Images/next-button.png';
 
 // ACTIONS
 import { loadWords } from '../../Actions/index';
-
-const loadData = props => {
-  props.loadWords()
-}
 
 class Game extends Component {
   constructor(props) {

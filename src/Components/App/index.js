@@ -25,6 +25,7 @@ import WordListsDashboard from '../Dashboard/wordLists';
 import WordListGameSelect from '../GameSelect/wordListGameSelect';
 
 // MODELS
+import LocalStorage from '../../Models/LocalStorage'
 import Word from '../../Models/Word';
 import Root from '../../Models/Root';
 
@@ -34,8 +35,7 @@ import { mobilecheck } from '../../Library/helpers';
 import './index.css';
 
 
-// ACTIONS
-import { fetchWord, fetchWords, loadWords } from '../../Actions/index';
+import { activateSession } from '../../Actions/index';
 
 // STORE
 import configureStore from '../../Store/configureStore';
@@ -45,27 +45,11 @@ store.subscribe(() => console.log(store.getState()))
 class App extends Component {
 
   componentDidMount() {
-    if (
-      localStorage.getItem('words') &&
-      localStorage.getItem('roots')
-    ) { return }
-
-    this.fetchData();
-  }
-
-  fetchData = async () => {
-    axios.all([Word.fetch(), Root.fetch()])
-      .then(axios.spread((res1, res2) => {
-        if (!res1.data || !res2.data) {
-          console.log('words/roots not found.')
-        } else {
-          console.log('words/roots saved.')
-          localStorage.setItem('words', JSON.stringify(res1.data));
-          localStorage.setItem('roots', JSON.stringify(res2.data));
-        }
-      }))
-      .catch((err) => console.log(err))
-  }
+    const session = LocalStorage.getSession();
+    if (session) { 
+      store.dispatch(activateSession(session))
+    };
+  }  
 
   render() {
     return (
@@ -100,10 +84,7 @@ class App extends Component {
               else if (waiting)        { component = 'waiting' }
               else                     { component = 'game' }
 
-              console.log(store.getState())
-              console.log('heyyyy')
-
-              return <Container component={component} settings={settings} words={store.getState().words} />
+              return <Container component={component} settings={settings} />
             }} />
 
             {/* LEADERBOARD */}
@@ -165,6 +146,31 @@ class Container extends Component {
     );
   }
 }
+
+/*
+  componentDidMount() {
+    if (
+      localStorage.getItem('words') &&
+      localStorage.getItem('roots')
+    ) { return }
+
+    this.fetchData();
+  }
+
+  fetchData = async () => {
+    axios.all([Word.fetch(), Root.fetch()])
+      .then(axios.spread((res1, res2) => {
+        if (!res1.data || !res2.data) {
+          console.log('words/roots not found.')
+        } else {
+          console.log('words/roots saved.')
+          localStorage.setItem('words', JSON.stringify(res1.data));
+          localStorage.setItem('roots', JSON.stringify(res2.data));
+        }
+      }))
+      .catch((err) => console.log(err))
+  }
+*/
 
 const OuterFrame = styled.div`
   height: 100%;

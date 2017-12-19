@@ -49,15 +49,9 @@ const LargeButton = Default.extend`
 `
 
 const MediumButton = Default.extend`
-  width: 180px;
-  height: 60px;
-  font-size: 1.75em;
-
-  ${breakpoints.largeWH} {
-    width: 150px;
-    height: 50px;
-    font-size: 1.5em;
-  }
+  width: 150px;
+  height: 50px;
+  font-size: 1.5em;
 `
 
 const MediumLongButton = MediumButton.extend`

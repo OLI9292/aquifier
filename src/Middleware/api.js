@@ -1,19 +1,25 @@
-import { normalize, schema, arrayOf } from 'normalizr'
+import { normalize, schema } from 'normalizr'
+import _ from 'underscore';
 
-const API_ROOT = 'https://rocky-garden-48841.herokuapp.com/api/v2/'
+const API_ROOT = {
+  'accounts': 'https://dry-ocean-39738.herokuapp.com/api/v2/',
+  'curriculum': 'https://rocky-garden-48841.herokuapp.com/api/v2/'
+}
 
 // Fetches an API response and normalizes the result JSON according to schema.
 // This makes every API response have the same shape, regardless of how nested it was.
-const callApi = (endpoint, schema) => {
-  const fullUrl = (endpoint.indexOf(API_ROOT) === -1) ? API_ROOT + endpoint : endpoint
-  console.log(fullUrl)
-
-  return fetch(fullUrl)
+const callApi = (api, endpoint, schema, method, data) => {
+  const fullUrl = API_ROOT[api] + endpoint
+  const body = { method: method, body: JSON.stringify(data), headers: { 'Content-Type': 'application/json' } };
+  
+  return fetch(fullUrl, body)
     .then(response =>
       response.json().then(json => {
-        return response.ok
-          ? Object.assign({},normalize(json, schema))
-          : Promise.reject(json)
+        if (!response.ok) { return Promise.reject(json) }
+        const normalized = Object.assign({},normalize(json, schema))
+        // Removes undefined keys
+        normalized.entities = _.mapObject(normalized.entities, (v, k) => v.undefined ? v.undefined : v )
+        return normalized
       })
     )
 }
@@ -24,12 +30,16 @@ const callApi = (endpoint, schema) => {
 
 const wordSchema = new schema.Entity('words', {}, { idAttribute: '_id' })
 const relatedWordSchema = new schema.Entity('relatedWords', {}, { idAttribute: '_id' })
+const userSchema = new schema.Entity('user', {}, { idAttribute: '_id' })
+const sessionSchema = new schema.Entity('session', { user: userSchema })
 
 // Schemas for API responses.
 export const Schemas = {
   WORD: wordSchema,
   WORD_ARRAY: [wordSchema],
-  RELATED_WORDS: relatedWordSchema
+  RELATED_WORDS: relatedWordSchema,
+  USER: userSchema,
+  SESSION: sessionSchema
 }
 
 // Action key that carries API call info interpreted by this Redux middleware.
@@ -45,7 +55,7 @@ export default store => next => action => {
   }
 
   let { endpoint } = callAPI
-  const { schema, types } = callAPI
+  const { api, schema, types, method, data } = callAPI
 
   if (typeof endpoint === 'function')                 { endpoint = endpoint(store.getState()) }
   if (typeof endpoint !== 'string')                   { throw new Error('Specify a string endpoint URL.') }
@@ -62,7 +72,7 @@ export default store => next => action => {
   const [ requestType, successType, failureType ] = types
   next(actionWith({ type: requestType }))
 
-  return callApi(endpoint, schema).then(
+  return callApi(api, endpoint, schema, method, data).then(
     response => next(actionWith({
       response,
       type: successType

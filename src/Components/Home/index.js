@@ -1,3 +1,4 @@
+import { connect } from 'react-redux'
 import React, { Component } from 'react';
 import { Redirect } from 'react-router';
 import styled from 'styled-components';
@@ -9,22 +10,16 @@ import DaisyChain from './daisyChain';
 import InfoForm from '../InfoForm/index';
 import Header from '../Header/index';
 import { color } from '../../Library/Styles/index';
+import { shouldRedirect } from '../../Library/helpers'
 
 class Home extends Component {
   constructor(props) {
     super(props);
-
-    this.state = {
-      redirect: null,
-      isSmallScreen: false,
-      iosIdx: 0,
-      isTeacher: false
-    };
+    this.state = {};
   }
 
   checkWindowSize() {
-    const isSmallScreen = window.innerWidth <= 1100
-    this.setState({ isSmallScreen });
+    if (window.innerWidth <= 1100) { this.setState({ isSmallScreen: true }); }
   }
 
   componentDidMount() {
@@ -36,16 +31,10 @@ class Home extends Component {
     window.removeEventListener('resize', this.checkWindowSize.bind(this));
   }
 
-  redirect(location) {
-    this.setState({ redirect: location });
-  }
-
   render() {
-    if (this.state.redirect && !window.location.href.endsWith(this.state.redirect)) {
-      return <Redirect push to={this.state.redirect} />;
-    }
+    if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }
 
-    const introSection = () => {
+    const introSection = (() => {
       return <TopLeftContainer>
         <Subtitle>
           Learn English vocabulary through Greek and Latin root words.
@@ -59,30 +48,35 @@ class Home extends Component {
           {Button.iOS({width:'90%',marginTop:'15px'})}
         </div>
       </TopLeftContainer>
-    }
+    })();
 
-    const howItWorksSection = () => {
-         return <Container>
-           <Heading color={color.blue}>
-             HOW IT WORKS
-           </Heading>
-           <ScreenshotContainer>
-            <Screenshot src={require('../../Library/Images/example.png')} />
-           </ScreenshotContainer>
-           <TextContainer>
-             <Text><BlackSpan><b>60% of English words</b></BlackSpan> have Greek or Latin roots.  In the fields of science and technology, that number is <BlackSpan><b>above 90%.</b></BlackSpan><br /><br />By solving fast-paced puzzles, students learn hundreds of roots and thousands of words.  Wordcraft is the most fun and efficient way to acquire a large vocabulary.</Text>
-             <Button.medium color={color.green} style={{width:'90%'}} onClick={() => this.setState({ redirect: '/play' })}>Play Now</Button.medium>
-           </TextContainer>
-         </Container>
-       }
+    const howItWorksSection = (() => {
+       return <Container>
+         <Heading color={color.blue}>
+           HOW IT WORKS
+         </Heading>
+         <ScreenshotContainer>
+          <Screenshot src={require('../../Library/Images/example.png')} />
+         </ScreenshotContainer>
+         <TextContainer>
+           <Text><BlackSpan><b>60% of English words</b></BlackSpan> have Greek or Latin roots.  In the fields of science and technology, that number is <BlackSpan><b>above 90%.</b></BlackSpan><br /><br />By solving fast-paced puzzles, students learn hundreds of roots and thousands of words.  Wordcraft is the most fun and efficient way to acquire a large vocabulary.</Text>
+           <Button.medium color={color.green} style={{width:'90%'}} onClick={() => this.setState({ redirect: '/play' })}>Play Now</Button.medium>
+         </TextContainer>
+       </Container>
+     })();
 
     return (
       <OuterContainer>
         <Header />
         <InnerContainer>
-          {introSection()}
-          {!this.state.isSmallScreen && <DaisyChainContainer><DaisyChain /></DaisyChainContainer>}
-          {howItWorksSection()}
+          {introSection}
+          {
+            !this.state.isSmallScreen && 
+            <DaisyChainContainer>
+              <DaisyChain />
+            </DaisyChainContainer>
+          }
+          {howItWorksSection}
           <InfoForm />
         </InnerContainer>
       </OuterContainer>
@@ -220,6 +214,11 @@ const Text = styled.p`
   }
   @media (max-width: 450px) {
     font-size: 0.9em;
-  }`
+  }
+`
 
-export default Home;
+const mapStateToProps = (state, ownProps) => ({
+  session: state.entities.session
+});
+
+export default connect(mapStateToProps)(Home);

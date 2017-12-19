@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router';
-import styled from 'styled-components';
-import _ from 'underscore';
 
 import Button from '../Common/button';
 import { color } from '../../Library/Styles/index';

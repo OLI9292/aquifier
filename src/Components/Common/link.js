@@ -6,11 +6,10 @@ const Default = styled.a`
   &:hover {
     color: ${props => lighten10(props.color) || 'white'};
   }
-  display: ${props => props.display};
   cursor: pointer;
-  text-decoration: none;
+  margin: 10px;
   font-size: 1.5em;
-  font-weight: 300;
+  text-decoration: none;
 `
 
 const Large = Default.extend`

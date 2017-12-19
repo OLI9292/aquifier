@@ -1,11 +1,22 @@
 import * as ActionTypes from '../Actions'
-import merge from 'lodash/merge'
 import { combineReducers } from 'redux'
+import merge from 'lodash/merge'
+import _ from 'underscore';
 
 // Updates an entity cache in response to any action with response.entities.
-const entities = (state = { words: {} }, action) => {
-  if (action.response && action.response.entities) {
-    return merge({}, state, action.response.entities)
+const entities = (state = {}, action) => {
+  const response = action.response
+
+  if (response) {
+    const [remove, entities] = [response.remove, response.entities]
+
+    if (remove) {
+      return _.omit(state, remove) 
+    }
+
+    if (entities) {
+      return merge({}, state, entities)
+    }
   }
 
   return state
@@ -17,7 +28,9 @@ const errorMessage = (state = null, action) => {
 
   if (type === ActionTypes.RESET_ERROR_MESSAGE) {
     return null
-  } else if (error) {
+  }
+
+  if (error) {
     return error
   }
 
@@ -26,7 +39,7 @@ const errorMessage = (state = null, action) => {
 
 const rootReducer = combineReducers({
   entities,
-  errorMessage,
+  errorMessage
 })
 
 export default rootReducer
