@@ -1,3 +1,4 @@
+import { connect } from 'react-redux'
 import queryString from 'query-string';
 import React, { Component } from 'react';
 import { Redirect } from 'react-router';
@@ -7,7 +8,6 @@ import _ from 'underscore';
 import Button from '../Common/button';
 import Firebase from '../../Networking/Firebase';
 import { color } from '../../Library/Styles/index';
-import User from '../../Models/User';
 
 class Waiting extends Component {
   constructor(props) {
@@ -21,7 +21,8 @@ class Waiting extends Component {
   }
 
   componentDidMount() {
-    const username = User.username();
+    // TODO: - check this is a consistent username
+    const username = this.props.user && `${this.props.user.firstName} ${this.props.user.lastName.charAt(0)}`;
 
     Firebase.refs.games.child(this.props.settings.accessCode).on('value', (snapshot) => {
       
@@ -52,37 +53,25 @@ class Waiting extends Component {
       return <Redirect push to={redirect} />;
     }
 
-    const joinButton = () => {
-      return <JoinButton onClick={() => this.setState({ redirect: true })}>
-        Join Again
-      </JoinButton>
-    }
-
     return (
-      <Layout>
-        <Text>{this.state.text}</Text>
-        {this.state.text.includes('kicked') && joinButton()}
-      </Layout>
+      <div style={{margin:'0 auto',paddingTop:'5%',textAlign:'center',width:'65%'}}>
+        <p style={{fontSize:'3em'}}>
+          {this.state.text}
+        </p>
+        {
+          this.state.text.includes('kicked') && 
+          <Button.medium color={color.blue} onClick={() => this.setState({ redirect: true })}>
+            Join Again
+          </Button.medium>
+        }
+      </div>
     );
   }
 }
 
-const Layout = styled.div`
-  padding-top: 5%;
-  margin: auto;
-  text-align: center;
-  width: 65%;
-`
+const mapStateToProps = (state, ownProps) => ({
+  user: _.first(_.values(state.entities.user)),
+  session: state.entities.session
+});
 
-const Text = styled.p`
-  font-size: 3em;
-`
-
-const JoinButton = Button.medium.extend`
-  background-color: ${color.blue};
-  &:hover {
-    background-color: ${color.blue10l};
-  }
-`
-
-export default Waiting;
+export default connect(mapStateToProps)(Waiting);

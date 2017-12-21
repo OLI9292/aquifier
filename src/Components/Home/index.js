@@ -32,6 +32,7 @@ class Home extends Component {
   }
 
   render() {
+    if (this.props.session) { return <Redirect push to={'/play'} />; }
     if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }
 
     const introSection = (() => {

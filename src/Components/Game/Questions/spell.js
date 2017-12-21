@@ -1,3 +1,4 @@
+import { connect } from 'react-redux'
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import _ from 'underscore';
@@ -264,4 +265,9 @@ const HintButton = Button.medium.extend`
   }
 `
 
-export default SpellQuestion;
+const mapStateToProps = (state, ownProps) => ({
+  roots: _.values(state.entities.roots),
+  words: _.values(state.entities.words) 
+});
+
+export default connect(mapStateToProps)(SpellQuestion)

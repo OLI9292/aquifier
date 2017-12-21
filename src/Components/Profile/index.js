@@ -1,10 +1,11 @@
+import { connect } from 'react-redux'
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import _ from 'underscore';
 
 import { color } from '../../Library/Styles/index';
-import User from '../../Models/User';
 import { capitalizeOne, sum } from '../../Library/helpers'
+import { loadUser } from '../../Actions/index';
 
 class Profile extends Component {
   constructor(props) {
@@ -36,49 +37,39 @@ class Profile extends Component {
     }
   }
 
-  componentDidMount() {
-    this.loadUser()
-  }
+  async componentDidMount() {
+    const id = _.last(window.location.href.split('/'));
 
-  loadUser = async () => {
-    const query = { type: 'id', value: this.props.userId };
-    let result = await User.fetch(query);
+    const result = await this.props.dispatch(loadUser(id, false));
 
-    if (_.has(result.data, 'user')) {
-      const user = result.data.user;
-      const wordExperience = user.words.map((obj) => { obj.definition = ''; return obj });
-      const wordsLearned = wordExperience.length;
-      const wordsMastered = wordExperience.filter((w) => w.experience >= 7).length;
+    if (!result.error) {
+      const user = _.first(_.values(result.response.entities.user));
 
-      const wordAccuracy = parseInt(100 * sum(wordExperience, 'correct')/sum(wordExperience, 'seen'), 10) || 0;
       this.setState({
         name: capitalizeOne(user.firstName),
         wordExperience: _.sortBy(user.words, 'name'),
-        wordsLearned: wordsLearned,
-        wordsMastered: wordsMastered,
-        wordAccuracy: `${wordAccuracy}%`
-      }, this.loadWords)
+        wordsLearned: user.words.length,
+        wordsMastered: user.words.filter((w) => w.experience >= 7).length,
+        wordAccuracy: `${parseInt(100 * sum(user.words, 'correct')/sum(user.words, 'seen'), 10) || 0}%`
+      });
     }
   }
 
-  loadWords = async () => {
-    const words = JSON.parse(localStorage.getItem('words'));
-
-    this.setState({
-      wordExperience: this.state.wordExperience.map((obj) => {
-        const idx = _.findIndex(words, (w) => w.value === obj.name);
-        if (idx) { obj.definition = _.pluck(words[idx].definition, 'value').join('') };
-        return obj;
-      })
-    })
-  }
-
   render() {
+    const wordExperience = this.state.wordExperience.map((obj) => {
+      const idx = _.findIndex(this.props.words, (w) => w.value === obj.name);
+      if (idx >= 0) { obj.definition = _.pluck(this.props.words[idx].definition, 'value').join('') };
+      return obj;      
+    })
+
     const wordProgress = () => {
-      return this.state.wordExperience.map((w, i) => {
+      return wordExperience.map((w, i) => {
         const stars = _.range(1, 11).map((n, i2) => {
-          return <StarImage key={i * 10 + i2} src={require(`../../Library/Images/star-${n <= w.experience ? 'yellow': 'grey'}.png`)} />;
-        });
+          return <StarImage 
+            key={i * 10 + i2}
+            src={require(`../../Library/Images/star-${n <= w.experience ? 'yellow': 'grey'}.png`)} />;
+        })
+
         return <Row key={i} backgroundColor={i % 2 === 0 ? color.lightestGray : 'white'}>
           <WordCell>
             <WordValue>{w.name}</WordValue>
@@ -86,7 +77,9 @@ class Profile extends Component {
               {stars}
             </div>
           </WordCell>
-          <DefinitionCell>{w.definition}</DefinitionCell>
+          <DefinitionCell>
+            {w.definition}
+          </DefinitionCell>
         </Row>
       })
     }
@@ -96,9 +89,13 @@ class Profile extends Component {
         return <StatContainer key={k}>
           <div>
             <StatImage src={require(`../../Library/Images/${this.state.stats[k].image}.png`)} />
-            <Stat color={this.state.stats[k].color}>{this.state[k]}</Stat>
+            <Stat color={this.state.stats[k].color}>
+              {this.state[k]}
+            </Stat>
           </div>
-          <StatDescription>{this.state.stats[k].name}</StatDescription>
+          <StatDescription>
+            {this.state.stats[k].name}
+          </StatDescription>
         </StatContainer>
       })
     }
@@ -106,7 +103,9 @@ class Profile extends Component {
     return (
       <div>
         <ProgressSection>
-          <Header>{this.state.name}'s Progress</Header>
+          <Header>
+            {this.state.name}'s Progress
+          </Header>
           <ProgressTable>
             {wordProgress()}
           </ProgressTable>
@@ -207,4 +206,9 @@ const StatDescription = styled.h4`
   font-size: 1em;
 `
 
-export default Profile;
+const mapStateToProps = (state, ownProps) => ({
+  session: state.entities.session,
+  words: _.values(state.entities.words),
+})
+
+export default connect(mapStateToProps)(Profile)

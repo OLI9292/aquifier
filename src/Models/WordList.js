@@ -1,16 +1,6 @@
 import axios from 'axios';
 import CONFIG from '../Config/main';
 
-const fetch = async (id) => {
-  try {
-    let url = `${CONFIG.WORDS_API}/word-lists`
-    if (id) { url += `/${id}`};
-    return await axios.get(url);
-  } catch (e) {
-    return e.response.data;
-  }
-}
-
 const create = async (data) => {
   try {
     return await axios.post(`${CONFIG.WORDS_API}/word-lists`, data);
@@ -37,7 +27,6 @@ const update = async (id, data) => {
 
 const WordList = {
   create: create,
-  fetch: fetch,
   delete: deleteWordList,
   update: update
 }

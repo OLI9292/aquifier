@@ -11,7 +11,8 @@ const API_ROOT = {
 const callApi = (api, endpoint, schema, method, data) => {
   const fullUrl = API_ROOT[api] + endpoint
   const body = { method: method, body: JSON.stringify(data), headers: { 'Content-Type': 'application/json' } };
-  
+  console.log(`${method} ${api} ${endpoint}`)
+
   return fetch(fullUrl, body)
     .then(response =>
       response.json().then(json => {
@@ -28,18 +29,31 @@ const callApi = (api, endpoint, schema, method, data) => {
 // to a flat form where models are placed in `entities`, and nested
 // JSON objects are replaced with their IDs
 
+// CURRICULUM
 const wordSchema = new schema.Entity('words', {}, { idAttribute: '_id' })
-const relatedWordSchema = new schema.Entity('relatedWords', {}, { idAttribute: '_id' })
+const rootSchema = new schema.Entity('roots', {}, { idAttribute: '_id' })
+const wordListSchema = new schema.Entity('wordLists', {}, { idAttribute: '_id' })
+const lessonSchema = new schema.Entity('lessons', {}, { idAttribute: '_id' })
+const relatedWordSchema = new schema.Entity('relatedWords', {}, { idAttribute: 'word' })
+
+// ACCOUNTS
 const userSchema = new schema.Entity('user', {}, { idAttribute: '_id' })
 const sessionSchema = new schema.Entity('session', { user: userSchema })
+const studentsSchema = new schema.Entity('students', { students: [userSchema] })
 
 // Schemas for API responses.
 export const Schemas = {
   WORD: wordSchema,
   WORD_ARRAY: [wordSchema],
-  RELATED_WORDS: relatedWordSchema,
+  WORD_LIST: wordListSchema,
+  WORD_LIST_ARRAY: [wordListSchema],
+  LESSON: lessonSchema,
+  LESSON_ARRAY: [lessonSchema],
   USER: userSchema,
-  SESSION: sessionSchema
+  ROOT_ARRAY: [rootSchema],
+  SESSION: sessionSchema,
+  STUDENTS: studentsSchema,
+  RELATED_WORDS_ARRAY: [relatedWordSchema]
 }
 
 // Action key that carries API call info interpreted by this Redux middleware.

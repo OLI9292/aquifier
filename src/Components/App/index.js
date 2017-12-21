@@ -1,4 +1,3 @@
-import axios from 'axios';
 import queryString from 'query-string';
 import React, { Component } from 'react';
 import { Route, Switch } from 'react-router';
@@ -21,34 +20,36 @@ import MobilePopup from '../MobilePopup/index';
 import Profile from '../Profile/index';
 import ReadingGameSelect from '../GameSelect/readingGameSelect';
 import Waiting from '../Waiting/index';
-import WordListsDashboard from '../Dashboard/wordLists';
+import WordListsEdit from '../Dashboard/WordLists/edit';
+import WordListsTable from '../Dashboard/WordLists/table';
 import WordListGameSelect from '../GameSelect/wordListGameSelect';
 
 // MODELS
 import LocalStorage from '../../Models/LocalStorage'
-import Word from '../../Models/Word';
-import Root from '../../Models/Root';
 
 // ETC
 import { color, breakpoints } from '../../Library/Styles/index';
 import { mobilecheck } from '../../Library/helpers';
 import './index.css';
 
-
-import { activateSession } from '../../Actions/index';
-
 // STORE
+import { activateSession, loadUser, loadWords, loadRoots } from '../../Actions/index';
 import configureStore from '../../Store/configureStore';
-const store = configureStore()
-store.subscribe(() => console.log(store.getState()))
+const store = configureStore();
+store.subscribe(() => console.log(store.getState()));
 
 class App extends Component {
 
   componentDidMount() {
     const session = LocalStorage.getSession();
+    
     if (session) { 
-      store.dispatch(activateSession(session))
+      store.dispatch(activateSession(session));
+      store.dispatch(loadUser(session.user));
     };
+
+    store.dispatch(loadWords());
+    store.dispatch(loadRoots());
   }  
 
   render() {
@@ -56,15 +57,17 @@ class App extends Component {
       <Provider store={store}>
         <BrowserRouter>
           <Switch>
-            {/*** SIMPLE ROUTES ***/}
-
-            <Route exact path='/'               component={Home} />
-            <Route exact path='/classes'        component={contained('classesDashboard')} />            
-            <Route exact path='/lessons'        component={contained('lessonsTable')} />
-            <Route exact path='/lessons/:id'    component={contained('lessonEdit')} />
-            <Route exact path='/play'           component={contained('gameSelect')} />
-            <Route exact path='/startfreetrial' component={contained('infoForm')} />
-            <Route exact path='/word-lists'     component={contained('wordListsDashboard')} />
+            <Route exact path='/'                component={Home} />
+            <Route exact path='/classes'         component={contained('classesDashboard')} />            
+            {/***  TODO: - fix ***/}
+            <Route exact path='/leaderboard/:id' component={contained('leaderboard')} />
+            <Route exact path='/lessons'         component={contained('lessonsTable')} />
+            <Route exact path='/lessons/:id'     component={contained('lessonEdit')} />
+            <Route exact path='/play'            component={contained('gameSelect')} />
+            <Route exact path='/profile/:id'     component={contained('profile')} />
+            <Route exact path='/startfreetrial'  component={contained('infoForm')} />
+            <Route exact path='/word-lists'      component={contained('wordListsTable')} />
+            <Route exact path='/word-lists/:id'  component={contained('wordListsEdit')} />
 
             
             {/* ADMIN */}
@@ -87,20 +90,6 @@ class App extends Component {
               return <Container component={component} settings={settings} />
             }} />
 
-            {/* LEADERBOARD */}
-            <Route exact path='/leaderboard/:gameId' component={({ match }) => {
-              return <Container
-                component='leaderboard'
-                gameId={match.params.gameId} />
-            }} />            
-
-            {/* PROFILE */}
-            <Route exact path='/profile/:userId' component={({ match }) => {
-              return <Container 
-                component='profile' 
-                userId={match.params.userId} /> 
-            }} />            
-
           </Switch>
         </BrowserRouter>
       </Provider>
@@ -121,16 +110,17 @@ class Container extends Component {
       switch (this.props.component) {
         case 'admin':              return <Admin settings={this.props.settings} />
         case 'classesDashboard':   return <ClassesDashboard />
-        case 'game':               return <Game settings={this.props.settings} words={this.props.words} />
+        case 'game':               return <Game settings={this.props.settings} />
         case 'gameSelect':         return <GameSelect />
         case 'infoForm':           return <InfoForm />
-        case 'leaderboard':        return <Leaderboard gameId={this.props.gameId} />
+        case 'leaderboard':        return <Leaderboard />
         case 'lessonsTable':       return <LessonsTable />
         case 'lessonEdit':         return <LessonEdit />
-        case 'profile':            return <Profile userId={this.props.userId} />
+        case 'profile':            return <Profile />
         case 'readingGameSelect':  return <ReadingGameSelect settings={this.props.settings} />
         case 'waiting':            return <Waiting settings={this.props.settings} />
-        case 'wordListsDashboard': return <WordListsDashboard />
+        case 'wordListsEdit':      return <WordListsEdit />
+        case 'wordListsTable':     return <WordListsTable />
         case 'wordListGameSelect': return <WordListGameSelect settings={this.props.settings} />
         default:                   return <Home />
       }
@@ -146,31 +136,6 @@ class Container extends Component {
     );
   }
 }
-
-/*
-  componentDidMount() {
-    if (
-      localStorage.getItem('words') &&
-      localStorage.getItem('roots')
-    ) { return }
-
-    this.fetchData();
-  }
-
-  fetchData = async () => {
-    axios.all([Word.fetch(), Root.fetch()])
-      .then(axios.spread((res1, res2) => {
-        if (!res1.data || !res2.data) {
-          console.log('words/roots not found.')
-        } else {
-          console.log('words/roots saved.')
-          localStorage.setItem('words', JSON.stringify(res1.data));
-          localStorage.setItem('roots', JSON.stringify(res2.data));
-        }
-      }))
-      .catch((err) => console.log(err))
-  }
-*/
 
 const OuterFrame = styled.div`
   height: 100%;

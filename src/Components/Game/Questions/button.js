@@ -1,3 +1,4 @@
+import { connect } from 'react-redux'
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import _ from 'underscore';
@@ -164,4 +165,9 @@ const SmallText = styled.span`
   animation-duration: 4.5s;
 `
 
-export default ButtonQuestion;
+const mapStateToProps = (state, ownProps) => ({
+  roots: _.values(state.entities.roots),
+  words: _.values(state.entities.words) 
+});
+
+export default connect(mapStateToProps)(ButtonQuestion)

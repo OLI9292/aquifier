@@ -45,11 +45,11 @@ class Navigation extends Component {
   display(link) {
     const shouldDisplay = (() => {
       switch (link) {
-        case 'profile': return this.props.user && !this.props.user.isTeacher
-        case 'classes': return this.props.user && this.props.user.isTeacher
-        case 'lessons': return this.props.user && this.props.user.role === 'admin'
+        case 'profile':   return this.props.user && !this.props.user.isTeacher
+        case 'classes':   return this.props.user && this.props.user.isTeacher
+        case 'lessons':   return this.props.user && this.props.user.role === 'admin'
         case 'wordLists': return this.props.user && this.props.user.role === 'admin'
-        default: return false
+        default:          return false
       }
     })()
     return shouldDisplay ? 'block' : 'none';
@@ -60,31 +60,31 @@ class Navigation extends Component {
 
     const dropdown = (() => {
       return <DropdownContainer hide={!this.state.displayDropdown}>
-        <Link.default style={{color:color.purple,display:this.display('profile')}}
-          onClick={() => this.setState({ redirect: `/profile/${this.props.userId}`})} 
-          >Progress</Link.default>
+        <Link.small margin={'5px'} hoverColor={color.green} style={{display:this.display('profile')}}
+          onClick={() => this.setState({ redirect: `/profile/${this.props.user._id}`})} 
+          >Progress</Link.small>
 
-        <Link.default style={{color:color.purple,display:this.display('classes')}}
+        <Link.small margin={'5px'} hoverColor={color.green} style={{display:this.display('classes')}}
           onClick={() => this.setState({ redirect: '/classes' })}
-          >Class</Link.default>
+          >Class</Link.small>
 
-        <Link.default style={{color:color.purple,display:this.display('lessons')}}
+        <Link.small margin={'5px'} hoverColor={color.green} style={{display:this.display('lessons')}}
           onClick={() => this.setState({ redirect: '/lessons'})}
-          >Lessons</Link.default>
+          >Lessons</Link.small>
 
-        <Link.default style={{color:color.purple,display:this.display('wordLists')}}
+        <Link.small margin={'5px'} hoverColor={color.green} style={{display:this.display('wordLists')}}
           onClick={() => this.setState({ redirect: '/word-lists'})}
-          >Word Lists</Link.default>
+          >Word Lists</Link.small>
 
-        <Link.default color={color.red} onClick={this.clickedLogout.bind(this)}>
+        <Link.small margin={'5px'} hoverColor={color.red} onClick={this.clickedLogout.bind(this)}>
           Logout
-        </Link.default>
+        </Link.small>
       </DropdownContainer>
     })();
 
     const loggedInNavigation = (() => {
       return <div style={{marginTop:'30px',cursor:'pointer'}}>
-        <Link.default color={color.blue}>
+        <Link.default margin={'5px'} color={color.blue}>
           Me
         </Link.default>
         <img alt='dropdown' src={require('../../Library/Images/dropdown.png')}
@@ -95,7 +95,7 @@ class Navigation extends Component {
 
     const loggedOutNavigation = (() => {
       return <div style={{marginTop:'30px'}}>
-        <Link.default color={color.green} onClick={this.clickedStartFreeTrial.bind(this)}>
+        <Link.default color={color.green}  margin={'0px 15px 0px 0px'} onClick={this.clickedStartFreeTrial.bind(this)}>
           Start Free Trial
         </Link.default>
         <Link.default color={color.blue} onClick={this.props.clickedLogin}>
@@ -114,11 +114,12 @@ class Navigation extends Component {
 
 const DropdownContainer = styled.div`
   background-color: white;
-  border: 5px solid ${color.lightGray};
-  border-radius: 10px;
+  border: 5px solid ${color.lightestGray};
+  border-radius: 5px;
+  margin-top: 10px;
   padding: 5px;
   position: relative;
-  width: 100px;
+  width: 115px;
   visibility: ${props => props.hide ? 'hidden' : 'visible'};
   z-index: 2000;
 `
@@ -126,6 +127,6 @@ const DropdownContainer = styled.div`
 const mapStateToProps = (state, ownProps) => ({
   session: state.entities.session,
   user: _.first(_.values(state.entities.user))
-});
+})
 
-export default connect(mapStateToProps)(Navigation);
+export default connect(mapStateToProps)(Navigation)

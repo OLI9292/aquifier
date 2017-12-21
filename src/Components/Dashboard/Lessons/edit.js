@@ -1,3 +1,4 @@
+import { connect } from 'react-redux'
 import axios from 'axios';
 import React, { Component } from 'react';
 import { Redirect } from 'react-router';
@@ -6,19 +7,15 @@ import styled from 'styled-components';
 import TextareaAutosize from 'react-autosize-textarea';
 
 import addPng from '../../../Library/Images/add.png';
-import Class from '../../../Models/Class';
 import CONFIG from '../../../Config/main';
-import checkboxChecked from '../../../Library/Images/checkbox-checked.png';
-import checkboxUnchecked from '../../../Library/Images/checkbox-unchecked.png';
 import { color } from '../../../Library/Styles/index';
 import deletePng from '../../../Library/Images/delete.png';
-import Lesson from '../../../Models/Lesson';
 import Link from '../../Common/link';
 import RelatedWords from './relatedWords';
 import Textarea from '../../Common/textarea';
-import Word from '../../../Models/Word';
-import User from '../../../Models/User';
 import { unixTime } from '../../../Library/helpers';
+import { loadRelatedWords, createAndLoadLesson, updateAndLoadLesson } from '../../../Actions/index';
+import { shouldRedirect } from '../../../Library/helpers'
 
 const fileUploadState = {
   unchosen: { text: 'Choose File', backgroundColor: '#f1f1f1', color: color.darkGray },
@@ -30,70 +27,46 @@ class LessonEdit extends Component {
     super(props);
 
     this.state = {
-      classes: [],
-      errorMsg: '',
+      error: '',
       filenames: [],
       fileUploadStatus: 'unchosen',
       isNewLesson: true,
       lessonTitle: '',
       questions: [],
-      relatedWords: [],
-      words: []
+      relatedWords: []
     }
   }
 
-  async componentDidMount() {
-    const userId = User.loggedIn('_id');
-    const words = _.pluck(JSON.parse(localStorage.getItem('words')), 'value');
-    this.setState({ userId: userId, words: words }, this.loadClasses);
-  }
+  componentDidMount() {
+    const lesson = _.find(this.props.lessons, (l) => l._id === _.last(window.location.href.split('/')));
 
-  loadClasses = async () => {
-    const result = await Class.forTeacher(this.state.userId);
-    const classes = result.data || [];
-    classes.forEach((c) => c.checked = false);
-    this.setState({ classes }, this.loadLesson);
-  }  
-
-  loadLesson = async () => {
-    const id = _.last(window.location.href.split('/'));
-    if (id !== 'new') {
-      const result = await Lesson.fetch(id);
-      if (result.data) {
-        const lesson = result.data;
-        this.setState({
-          lessonTitle: lesson.name,
-          filenames: lesson.filenames,
-          questions: lesson.questions.map((q) => { q.include = true; return q; }),
-          classes: this.state.classes.map((c) => {
-            const copy = c; copy.checked = _.includes(lesson.classes, copy._id); return copy;
-          }),
-          isNewLesson: false,
-          lessonId: id
-        }, () => this.loadRelatedWords(_.pluck(lesson.questions, 'word')));
-      }
+    if (lesson) {
+      this.setState({
+        lessonTitle: lesson.name,
+        filenames: lesson.filenames,
+        questions: lesson.questions.map((q) => { q.include = true; return q; }),
+        isNewLesson: false,
+        lessonId: lesson._id
+      }, () => this.loadRelatedWords(_.pluck(lesson.questions, 'word')));      
     }
   }
 
-  loadRelatedWords = async (words) => {
-    const result = await Word.relatedWords(words.join(','));
-    if (result.data) { this.setState({ relatedWords: result.data }) }
-  }  
+  loadRelatedWords = async words => {
+    const result = await this.props.dispatch(loadRelatedWords(words));
 
-  checkedClasses() {
-    return this.state.classes.filter((c) => c.checked).map((c) => c._id);
+    if (!result.error) {
+      const relatedWords = _.values(result.response.entities.relatedWords);
+      this.setState({ relatedWords });
+    }
   }  
 
   handleSaveLesson() {
-    let errorMsg
+    let error
 
-    if (!this.state.lessonTitle)       { errorMsg = 'Please enter a lesson title.' };
-    if (!this.checkedClasses().length) { errorMsg = 'Please check at least 1 class.' };
-    if (!this.state.questions.length)  { errorMsg = 'Lessons require at least 1 WORD / PASSAGE.' };
+    if (!this.state.lessonTitle)       { error = 'Please enter a lesson title.' };
+    if (!this.state.questions.length)  { error = 'Lessons require at least 1 WORD / PASSAGE.' };
 
-    errorMsg
-      ? this.setState({ errorMsg })
-      : this.save();
+    error ? this.setState({ error }) : this.save();
   }
 
   save = async () => {
@@ -106,17 +79,16 @@ class LessonEdit extends Component {
       filenames: this.state.filenames,
       updatedOn: unixTime(),
       questions: questions,
-      classes: this.checkedClasses(),
-      public: this.state.userId === CONFIG.ADMIN_ID
+      public: this.props.user && this.props.user.role === 'admin'
     }
 
-    const result = this.state.isNewLesson
-      ? (await Lesson.create(data))
-      : (await Lesson.update(this.state.lessonId, data));
-
-    result.data.error
-      ? this.setState({ errorMsg: 'There was an error saving the lesson.  Please try again.' })
-      : this.setState({ redirect: '/lessons' });
+    if (this.state.isNewLesson) {
+      const result = await this.props.dispatch(createAndLoadLesson(data, this.props.session));
+      result.error ? this.setState({ error: 'Server error.' }) : this.setState({ redirect: '/lessons' });
+    } else {
+      const result = await this.props.dispatch(updateAndLoadLesson(data, this.state.lessonId, this.props.session));
+      result.error ? this.setState({ error: 'Server error.' }) : this.setState({ redirect: '/lessons' });
+    }
   }  
 
   handleFiles = async (files) => {
@@ -140,12 +112,6 @@ class LessonEdit extends Component {
 
       this.fileInput.value = '';
     }
-  }
-
-  handleClassClick(i) {
-    const classes = this.state.classes;
-    classes[i].checked = !classes[i].checked;
-    this.setState({ classes });
   }
 
   handleAddRow(i) {
@@ -174,9 +140,8 @@ class LessonEdit extends Component {
   }  
 
   render() {
-    if (this.state.redirect && !window.location.href.endsWith(this.state.redirect)) {
-      return <Redirect push to={this.state.redirect} />;
-    }
+    if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }
+
 
     const navigation = (() => {
       return <div style={{height:'50px'}}>
@@ -189,7 +154,7 @@ class LessonEdit extends Component {
           style={{display: 'inline-block',float:'right',color:color.green}}
           >Save</Link.large>
       </div>
-    })()
+    })();
 
     const questions = () => {
       return this.state.questions.map((m, i) => {
@@ -201,6 +166,8 @@ class LessonEdit extends Component {
           : even ? color.lightestGray : 'white'
         const rowBackgroundColor = even ? color.lightestGray : 'white';
 
+        const suggested = _.find(this.state.relatedWords, (r) => r.word === m.word);
+
         return <tr style={{width:'100%',backgroundColor:rowBackgroundColor}} key={i}>
           <th style={{width:'15%'}}>
             <img alt='delete' src={m.include ? deletePng : addPng}
@@ -208,6 +175,7 @@ class LessonEdit extends Component {
               onClick={() => m.include ? this.handleDeleteRow(i) : this.handleAddRow(i)}/>
             {m.word}
           </th>
+
           <td style={{width:'50%'}}>
             <TextareaAutosize
               spellCheck={'false'}
@@ -216,17 +184,16 @@ class LessonEdit extends Component {
               onMouseLeave={() => this.setState({ hovered: null })}
               onFocus={() => this.setState({ focused: i })}
               value={m.context}
-              onChange={(e) => this.updateContext(i, e.target.value)}
-            />
+              onChange={(e) => this.updateContext(i, e.target.value)} />
           </td>
+
           <td style={{width:'35%'}}>
             <RelatedWords
               index={i}
               updateRelatedWords={this.updateRelatedWords.bind(this)}
-              words={this.state.words}
+              words={this.props.words}
               added={m.related || []}
-              suggested={this.state.relatedWords[m.word]}
-            />
+              suggested={suggested ? suggested.related : []} />
           </td>
         </tr>
       })
@@ -274,19 +241,6 @@ class LessonEdit extends Component {
               </FileLabel>
             </td>
           </SettingsRow>
-
-          <SettingsRow>
-            <SettingsHeader>Classes</SettingsHeader>
-            <td style={{paddingLeft:'20px'}}>
-              {this.state.classes.map((c,i) => {
-                return <ClassesContainer onClick={() => this.handleClassClick(i)} key={i}>
-                  <img alt={c.checked ? 'checked' : 'un-checked'} style={{height:'20px'}}
-                    src={c.checked ? checkboxChecked : checkboxUnchecked} />
-                  <p style={{marginLeft:'5px'}}>{c.name}</p>
-                </ClassesContainer>
-              })}
-            </td>
-          </SettingsRow>
         </tbody>
       </table>
     })()
@@ -294,7 +248,7 @@ class LessonEdit extends Component {
     return (
       <div style={{width:'95%',margin:'0 auto',paddingTop:'25px'}}>
         {navigation}
-        <ErrorMessage>{this.state.errorMsg}</ErrorMessage>
+        <ErrorMessage>{this.state.error}</ErrorMessage>
         {settings}
         {questionsTable}
       </div>
@@ -317,15 +271,6 @@ const resizableTextAreastyles = (textareaBackgroundColor) => {
     margin: '10px'
   }
 }
-
-const ClassesContainer = styled.div`
-  height: 20px;
-  marginBottom: 10px;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  font-family: BrandonGrotesque;
-`
 
 const ErrorMessage = styled.p`
   color: ${color.red};
@@ -367,4 +312,11 @@ const Table = styled.table`
   border-spacing: 0 1em;
 `
 
-export default LessonEdit;
+const mapStateToProps = (state, ownProps) => ({
+  lessons: _.values(state.entities.lessons),
+  words: _.pluck(_.values(state.entities.words), 'value'),
+  session: state.entities.session,
+  user: _.first(_.values(state.entities.user))
+});
+
+export default connect(mapStateToProps)(LessonEdit);

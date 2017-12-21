@@ -1,9 +1,11 @@
+import { connect } from 'react-redux'
 import React, { Component } from 'react';
 import { Redirect } from 'react-router';
+import _ from 'underscore';
 
 import Button from '../Common/button';
 import { color } from '../../Library/Styles/index';
-import User from '../../Models/User';
+import { shouldRedirect } from '../../Library/helpers';
 
 class GameOver extends Component {
   constructor(props) {
@@ -13,9 +15,7 @@ class GameOver extends Component {
   }
 
   render() {
-    if (this.state.redirect && !window.location.href.endsWith(this.state.redirect)) {
-      return <Redirect push to={this.state.redirect} />;
-    }
+    if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }
 
     return (
       <div style={{width:'60%',margin:'0 auto',textAlign:'center',paddingTop:'25px'}}>
@@ -26,11 +26,13 @@ class GameOver extends Component {
 
         {
           this.props.score > 0 && 
-          <h1>{`You scored ${this.props.score}`}.</h1>
+          <h1>
+            {`You scored ${this.props.score}`}.
+          </h1>
         }
 
         {
-          !User.loggedIn() &&
+          this.props.user &&
           <div style={{color:color.darkGray}}>
             <p style={{fontSize:'2em'}}>
               Thanks for trying <span style={{color: color.yellow}}><b>WORDCRAFT!</b></span>
@@ -57,4 +59,8 @@ class GameOver extends Component {
   }
 }
 
-export default GameOver;
+const mapStateToProps = (state, ownProps) => ({
+  user: _.first(_.values(state.entities.user))
+});
+
+export default connect(mapStateToProps)(GameOver)

@@ -1,7 +1,7 @@
+import { connect } from 'react-redux'
 import Firebase from '../../Networking/Firebase';
 import React, { Component } from 'react';
 import { Redirect } from 'react-router';
-import { connect } from 'react-redux'
 import styled from 'styled-components';
 import _ from 'underscore';
 
@@ -14,16 +14,13 @@ import SentenceCompletionQuestion from './Questions/sentenceCompletion';
 import SpellQuestion from './Questions/spell';
 import Timer from '../Timer/index';
 
-import WordList from '../../Models/WordList';
 import User from '../../Models/User';
-import Lesson from '../../Models/Lesson';
 import { color } from '../../Library/Styles/index';
 
 import speedyPng from '../../Library/Images/speedy.png';
 import nextButton from '../../Library/Images/next-button.png';
-
-// ACTIONS
-import { loadWords } from '../../Actions/index';
+import { shouldRedirect } from '../../Library/helpers';
+import { loadWordLists, loadLessons } from '../../Actions/index';
 
 class Game extends Component {
   constructor(props) {
@@ -46,18 +43,21 @@ class Game extends Component {
     const refreshInterval = setInterval(() => this.setState({ time: this.state.time + 1 }), 1000);
     this.setState({ refreshInterval });
 
-    const words = JSON.parse(localStorage.getItem('words'));
-    const roots = JSON.parse(localStorage.getItem('roots'));
-
     const isTimed = Number.isInteger(parseInt(this.props.settings.time, 10));
     const isMultiplayer = this.props.settings.players === 'multi';
-    const username = User.username();
+    
+    // TODO: - check this is a consistent username
+    const username = this.props.user && `${this.props.user.firstName} ${this.props.user.lastName.charAt(0)}`;
 
-    if (words && roots) {
-      this.setState(
-        { words: words, roots: roots, isTimed: isTimed, isMultiplayer: isMultiplayer, username: username },
-        this.setupGame);
-    }
+    this.setState({
+      isTimed: isTimed,
+      isMultiplayer: isMultiplayer,
+      username: username 
+    }, () => this.setupGame(this.props));
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.setupGame(nextProps);
   }
 
   componentWillUnmount() {
@@ -68,11 +68,12 @@ class Game extends Component {
     clearInterval(this.state.refreshInterval);
     document.body.removeEventListener('keydown', this.handleKeydown.bind(this), true);
 
-    const userId = User.loggedIn('_id');
     const stats = this.state.stats;
     const wordList = this.state.gameOver ? this.props.settings.wordList : null;
 
-    if (userId && stats.length) { User.saveStats(userId, stats, wordList); }
+    if (this.props.user && stats.length) { 
+      User.saveStats(this.props.user._id, stats, wordList);
+    }
   }
 
   currentProgress() {
@@ -127,7 +128,7 @@ class Game extends Component {
       this.setState({ nextQuestionIndex: 0, questions: questions }, this.nextQuestion);
     } else {
       const question = _.clone(this.state.questions[questionIndex]);
-      const word = _.find(this.state.words, (w) => w.value === question.word);
+      const word = _.find(this.props.words, (w) => w.value === question.word);
       if (word) {
         question.word = word;
         this.setState({ question: question, nextQuestionIndex: questionIndex + 1, time: 0 });
@@ -172,78 +173,75 @@ class Game extends Component {
     window.timeout = setTimeout(() => { this.nextQuestion() }, 3000000);
   }  
 
-  setupGame() {
-    if (this.props.settings.reading) {
-      const gameId = this.props.settings.reading;
-      this.setState({ gameId }, this.setupLesson);
-    } else if (this.props.settings.wordList) {
-      const gameId = this.props.settings.wordList;
-      this.setState({ gameId }, this.setupWordList);
+  setupGame = async (props) => {
+    if (!this.state.loaded && props.words.length && props.roots.length) {
+      this.setState({ loaded: true });
+
+      if (this.props.settings.reading) {
+        let lesson
+        lesson = _.find(this.props.lessons, (l) => l._id === this.props.settings.reading);
+
+        if (!lesson) {
+          const result = await this.props.dispatch(loadLessons(this.state.gameId));
+          if (!result.error) { lesson = _.first(_.values(result.response.entities.lessons)); }
+        }
+
+        if (lesson) {
+          const [questions, checkpoints] = this.lessonStages(lesson.questions);
+
+          this.setState({
+            name: lesson.name,
+            gameId: this.props.settings.reading,
+            questions: questions,
+            checkpoints: checkpoints
+          },this.nextQuestion);
+        }
+      }
+
+      if (this.props.settings.wordList) {
+        let wordList
+        wordList = _.find(this.props.wordLists, (w) => w._id === this.props.settings.wordList);
+
+        if (!wordList) {
+          const result = await this.props.dispatch(loadWordLists(this.state.gameId));
+          if (!result.error) { wordList = _.first(_.values(result.response.entities.wordLists)); }
+        }
+
+        if (wordList) {
+          this.startTimer();
+
+          this.setState({
+            name: wordList.name,
+            questions: wordList.questions.map((q) => { q.type = this.difficultyFor(q.difficulty); return q }),
+          }, this.nextQuestion)
+        }
+      }      
     }
   }
 
-  setupLesson = async () => {
-    const result = await Lesson.fetch(this.state.gameId);
-    const data = result.data.questions || [];
-    const [questions, checkpoints] = this.lessonStages(data);
-
-    this.setState({
-      name: result.data.name,
-      questions: questions,
-      checkpoints: checkpoints
-    }, this.nextQuestion);
-  }  
-
-  setupWordList = async () => {
-    const result = await WordList.fetch(this.state.gameId);
-
-    if (result) {
-      const wordList = result.data;
-      const name = wordList.name;
-      const questions = wordList.questions.map((q) => {
-        const copy = q;
-        q.type = this.difficultyFor(q.difficulty);
-        return copy
-      });
-
-      const time = this.props.settings.startTime || new Date();
-      this.timer.start(time);
-
-      this.setState({
-        name: name,
-        questions: questions,
-      }, this.nextQuestion)
-    }
-  }  
+  startTimer() {
+    const time = this.props.settings.startTime || new Date();
+    this.timer.start(time);    
+  }
 
   render() {
-    console.log('PROPS')
-    console.log(this.props)
-    if (this.state.redirect && !window.location.href.endsWith(this.state.redirect)) {
-      return <Redirect push to={this.state.redirect} />;
-    }
+    if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }
 
     const question = () => {
       const type = this.state.question.type;
       if (type === 'sentenceCompletion') {
         return <SentenceCompletionQuestion
           question={this.state.question}
-          nextQuestion={this.runInterlude.bind(this)}
-          words={this.state.words}
-          roots={this.state.roots} />
+          nextQuestion={this.runInterlude.bind(this)} />
       } else if (type.startsWith('spell')) {
         return <SpellQuestion
           word={this.state.question.word}
           isEasy={type === 'spellEasy'}
-          nextQuestion={this.runInterlude.bind(this)}
-          words={this.state.words}
-          roots={this.state.roots} />
+          nextQuestion={this.runInterlude.bind(this)} />
       } else {
         return <ButtonQuestion
           word={this.state.question.word}
-          nextQuestion={this.runInterlude.bind(this)}
-          words={this.state.words}
-          roots={this.state.roots} />
+          nextQuestion={this.runInterlude.bind(this)} />
       }
     }
 
@@ -268,7 +266,9 @@ class Game extends Component {
                   time={this.props.settings.time}
                   ref={instance => { this.timer = instance }}
                   gameOver={() => this.gameOver()} />
-                <p style={{fontSize:'3em',height:'0px',lineHeight:'0px'}}>{this.state.score}</p>
+                <p style={{fontSize:'3em',height:'0px',lineHeight:'0px'}}>
+                  {this.state.score}
+                </p>
               </div>
               :
               <ProgressBar width={this.currentProgress()} checkpoints={this.state.checkpoints || []} />
@@ -329,14 +329,12 @@ const NextButton = styled.img`
   }
 `
 
-const mapStateToProps = (state, ownProps) => {
-  const {
-    entities: { words }
-  } = state
+const mapStateToProps = (state, ownProps) => ({
+  lessons: _.values(state.entities.lessons),
+  roots: _.values(state.entities.roots),
+  user: _.first(_.values(state.entities.user)),
+  words: _.values(state.entities.words),
+  wordLists: _.values(state.entities.wordLists)
+});
 
-  return {
-    words: _.values(words)
-  }
-}
-
-export default connect(mapStateToProps, { loadWords })(Game)
+export default connect(mapStateToProps)(Game)
