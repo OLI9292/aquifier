@@ -19,7 +19,7 @@ class Timer extends Component {
   }
 
   accountForLateness(secondsLate) {
-    const totalSeconds = (this.props.time === '5' ? 300 : 10) - secondsLate;
+    const totalSeconds = (this.props.time === '5' ? 300 : 180) - secondsLate;
     // TODO: refactor
     if (totalSeconds < 0) {
       this.props.gameOver();
