@@ -36,7 +36,6 @@ import './index.css';
 import { activateSession, loadUser, loadWords, loadRoots } from '../../Actions/index';
 import configureStore from '../../Store/configureStore';
 const store = configureStore();
-store.subscribe(() => console.log(store.getState()));
 
 class App extends Component {
 
@@ -59,7 +58,6 @@ class App extends Component {
           <Switch>
             <Route exact path='/'                component={Home} />
             <Route exact path='/classes'         component={contained('classesDashboard')} />            
-            {/***  TODO: - fix ***/}
             <Route exact path='/leaderboard/:id' component={contained('leaderboard')} />
             <Route exact path='/lessons'         component={contained('lessonsTable')} />
             <Route exact path='/lessons/:id'     component={contained('lessonEdit')} />

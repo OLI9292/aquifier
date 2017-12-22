@@ -10,7 +10,6 @@ import { shouldRedirect } from '../../Library/helpers';
 class GameOver extends Component {
   constructor(props) {
     super(props);
-
     this.state = {}
   }
 
@@ -32,7 +31,7 @@ class GameOver extends Component {
         }
 
         {
-          this.props.user &&
+          !this.props.user &&
           <div style={{color:color.darkGray}}>
             <p style={{fontSize:'2em'}}>
               Thanks for trying <span style={{color: color.yellow}}><b>WORDCRAFT!</b></span>

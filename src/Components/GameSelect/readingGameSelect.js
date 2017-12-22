@@ -7,7 +7,6 @@ import _ from 'underscore';
 import Button from '../Common/button';
 import Link from '../Common/link';
 import lockPng from '../../Library/Images/lock.png';
-import User from '../../Models/User';
 import { color } from '../../Library/Styles/index';
 import { loadLessons } from '../../Actions/index';
 import { shouldRedirect } from '../../Library/helpers'

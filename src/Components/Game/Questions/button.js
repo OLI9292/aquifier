@@ -128,6 +128,7 @@ const Definition = styled.div`
 const AnswerSpace = styled.p`
   margin: 0% 1% 0% 1%;
   font-size: 2.5em;
+  letter-spacing: 15px;
   display: inline-block;
   @media (max-width: 768px), (max-height: 700px ) {
     font-size: 2em;

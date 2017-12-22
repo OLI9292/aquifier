@@ -2,7 +2,6 @@ import { connect } from 'react-redux'
 import queryString from 'query-string';
 import React, { Component } from 'react';
 import { Redirect } from 'react-router';
-import styled from 'styled-components';
 import _ from 'underscore';
 
 import Button from '../Common/button';

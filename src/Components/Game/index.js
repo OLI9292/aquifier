@@ -97,8 +97,10 @@ class Game extends Component {
     }
   }
 
-  handleKeydown(event) {
-    if (event.key === 'Enter' && this.state.isInterlude) {
+  handleKeydown(e) {
+    e.preventDefault();
+    
+    if (e.key === 'Enter' && this.state.isInterlude) {
       clearTimeout(window.timeout);
       this.nextQuestion();
     }

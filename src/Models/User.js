@@ -12,8 +12,6 @@ const saveStats = (id, stats, wordList) => {
       platform: 'web',
       wordList: wordList
     }
-    console.log(href)
-    console.log(params)
     axios.patch(href, params);
   } catch (e) {
     console.log(e)

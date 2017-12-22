@@ -15,30 +15,15 @@ import { shouldRedirect } from '../../Library/helpers'
 class GameSelect extends Component {
   constructor(props) {
     super(props);
-
-    this.state = {
-      error: '',
-      loggedIn: false
-    };
+    this.state = {};
   }
 
   componentDidMount() {
     document.body.addEventListener('keydown', this.handleKeydown.bind(this), true);
-    this.setup(this.props);
-  }
-
-  componentWillReceiveProps(nextProps) {
-    this.setup(nextProps);
   }
 
   componentWillUnmount() {
     document.body.removeEventListener('keydown', this.handleKeydown.bind(this), true);
-  }
-
-  setup(props) {
-    if (props.user && !this.state.loggedIn) {
-      this.setState({ loggedIn: true, isTeacher: props.user.isTeacher });
-    }
   }
 
   handleKeydown(event) {
@@ -54,7 +39,7 @@ class GameSelect extends Component {
   }
 
   handleGameButtonClick(game) {
-    if (this.state.isTeacher) { return; }
+    if (this.props.user && this.props.user.isTeacher) { return; }
     this.setState({ redirect: `/play/game=${game}&players=single&setup=true` });
   }
 
@@ -83,13 +68,13 @@ class GameSelect extends Component {
   render() {
     if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }
 
-    const isTeacher = this.state.isTeacher;
-    const isStudent = this.state.loggedIn && !this.state.isTeacher;
+    const isTeacher = this.props.user && this.props.user.isTeacher;
+    const isStudent = this.props.user && !this.props.user.isTeacher;
 
     const buttons = (game) => {
       const display = isTeacher && game !== 'read' ? 'block' : 'none';
 
-      return this.state.isTeacher 
+      return isTeacher 
       ?
       <div style={{display:'flex',justifyContent:'space-around',margin:'25px 10px 25px 10px'}}>
         <PlayButton onClick={() => this.handleClick(game)} color={'white'}>
@@ -110,29 +95,29 @@ class GameSelect extends Component {
     }
 
     const compete = () => {
-      const display = isStudent ? '' : 'none';
-      return <GameButton style={{display:display}} color={'white'} border={`1px solid ${color.orange}`}>
-        <Image src={require('../../Library/Images/compete-color.png')} />
-        <p style={{color:color.orange,fontSize:'2em',height:'10px',lineHeight:'10px'}}>
-          Compete
-        </p>
-        <div style={{width:'250px'}}>
-          <p style={{color:color.orange,width:'90%',margin:'0 auto',fontSize:'1.25em'}}>
-            Compete against your classmates.
+      return isStudent && 
+        <GameButton color={'white'} border={`1px solid ${color.orange}`}>
+          <Image src={require('../../Library/Images/compete-color.png')} />
+          <p style={{color:color.orange,fontSize:'2em',height:'10px',lineHeight:'10px'}}>
+            Compete
           </p>
-          <div style={{display:'flex',justifyContent:'space-around',margin:'25px 10px 25px 10px'}}>
-            <Textarea.medium 
-              onChange={(e) => this.setState({ accessCode: e.target.value.trim() })}
-              style={{textAlign:'center'}} 
-              placeholder={'access code'} />
-            <Button.extraSmall
-              color={color.orange}
-              onClick={() => this.joinMatch()}
-              style={{marginLeft:'5px'}}>
-              Play
-            </Button.extraSmall>
+          <div style={{width:'250px'}}>
+            <p style={{color:color.orange,width:'90%',margin:'0 auto',fontSize:'1.25em'}}>
+              Compete against your classmates.
+            </p>
+            <div style={{display:'flex',justifyContent:'space-around',margin:'25px 10px 25px 10px'}}>
+              <Textarea.medium 
+                onChange={(e) => this.setState({ accessCode: e.target.value.trim() })}
+                style={{textAlign:'center'}} 
+                placeholder={'access code'} />
+              <Button.extraSmall
+                color={color.orange}
+                onClick={() => this.joinMatch()}
+                style={{marginLeft:'5px'}}>
+                Play
+              </Button.extraSmall>
+            </div>
           </div>
-        </div>
       </GameButton>
     }
 

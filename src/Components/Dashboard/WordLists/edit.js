@@ -14,18 +14,27 @@ import checkboxUnchecked from '../../../Library/Images/checkbox-unchecked.png';
 import Link from '../../Common/link';
 import Textarea from '../../Common/textarea';
 import { unixTime, move } from '../../../Library/helpers';
-import WordList from '../../../Models/WordList';
 import { shouldRedirect } from '../../../Library/helpers'
+import { createAndLoadWordList, updateAndLoadWordList } from '../../../Actions/index';
 
 class WordListsEdit extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      wordList: {
+        name: '',
+        category: '',
+        description: '',
+        isStudy: true,
+        questions: []
+      },
+      isNewWordList: true
+    };
   }
 
   componentDidMount() {
     const wordList = _.find(this.props.wordLists, (l) => l._id === _.last(window.location.href.split('/')));
-    this.setState({ wordList: wordList });
+    if (wordList) { this.setState({ wordList: wordList, wordListId: wordList._id, isNewWordList: false }); }
   }
 
   handleSaveWordList = async () => {
@@ -39,10 +48,14 @@ class WordListsEdit extends Component {
     } else {
       const wordList = this.state.wordList;
       wordList.updatedOn = unixTime();
-      this.state.isNewWordList
-        ? (await WordList.create(wordList))
-        : (await WordList.update(this.state.wordListId, wordList));
-      this.reset()
+      
+      if (this.state.isNewWordList) {
+        const result = await this.props.dispatch(createAndLoadWordList(wordList, this.props.session));
+        result.error ? this.setState({ error: 'Server error.' }) : this.setState({ redirect: '/word-lists' });
+      } else {
+        const result = await this.props.dispatch(updateAndLoadWordList(wordList, this.state.wordListId, this.props.session));
+        result.error ? this.setState({ error: 'Server error.' }) : this.setState({ redirect: '/word-lists' });
+      }
     }
   }
 
@@ -233,23 +246,25 @@ class WordListsEdit extends Component {
       <div style={{width:'95%',margin:'0 auto',paddingTop:'25px'}}>
         {links}
 
-        <ErrorMessage>{this.state.error}</ErrorMessage>
+        <ErrorMessage>
+          {this.state.error}
+        </ErrorMessage>
 
-        {
-          this.state.wordList &&
-          <div style={{textAlign:'center'}}>
-            {settingsTable()}
-            {questionsTable()}
-            {wordSearch()}
-    
-            <DarkBackground display={this.state.displayWordSearch}
-              onClick={() => this.setState({ displayWordSearch: false })} />
+        <div style={{textAlign:'center'}}>
+          
+          {settingsTable()}
 
-            <Button.medium onClick={() => this.setState({ displayWordSearch: true })}>
-              ADD
-            </Button.medium>
-          </div>
-        }
+          {questionsTable()}
+
+          {wordSearch()}
+  
+          <DarkBackground display={this.state.displayWordSearch}
+            onClick={() => this.setState({ displayWordSearch: false })} />
+
+          <Button.medium onClick={() => this.setState({ displayWordSearch: true })}>
+            ADD
+          </Button.medium>
+        </div>
       </div>
     );
   }
@@ -313,6 +328,7 @@ const Searched = styled.span`
 const mapStateToProps = (state, ownProps) => ({
   wordLists: _.values(state.entities.wordLists),
   words: _.pluck(_.values(state.entities.words), 'value'),
+  session: state.entities.session,
   user: _.first(_.values(state.entities.user))
 });
 

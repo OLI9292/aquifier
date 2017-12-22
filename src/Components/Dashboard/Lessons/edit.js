@@ -219,7 +219,9 @@ class LessonEdit extends Component {
       return <table>
         <tbody>
           <SettingsRow>
-            <SettingsHeader>Title</SettingsHeader>
+            <SettingsHeader>
+              Title
+            </SettingsHeader>
             <td style={{paddingLeft:'20px'}}>
               <Textarea.medium
                 placeholder={'ex. The Giver'}
@@ -229,7 +231,9 @@ class LessonEdit extends Component {
           </SettingsRow>
 
           <SettingsRow>
-            <SettingsHeader>Text</SettingsHeader>
+            <SettingsHeader>
+              Text
+            </SettingsHeader>
             <td style={{paddingLeft:'20px'}}>
               {this.state.filenames.map((name,i) => <FileLabel key={i} color={'white'} bColor={color.green}>{name}</FileLabel>)} 
               <FileLabel color={state.color} bColor={state.backgroundColor}>
@@ -299,8 +303,8 @@ const SettingsRow = styled.tr`
   height: 75px;
 `
 
-const SettingsHeader = styled.tr`
-  width: 100px;
+const SettingsHeader = styled.td`
+  width: 50px;
   font-size: 1.5em;
   text-align: left;
 `

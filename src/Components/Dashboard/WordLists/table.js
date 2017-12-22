@@ -9,7 +9,7 @@ import Button from '../../Common/button';
 import { color } from '../../../Library/Styles/index';
 
 import { shouldRedirect } from '../../../Library/helpers'
-import { loadWordLists } from '../../../Actions/index';
+import { loadWordLists, removeEntity, deleteAndRemoveWordList } from '../../../Actions/index';
 
 class WordListsTable extends Component {
   constructor(props) {
@@ -27,17 +27,10 @@ class WordListsTable extends Component {
   }  
 
   handleDeleteWordList = async wordList => {
-    if (!window.confirm(`Are you sure you want to delete ${wordList.name}?`)) { return; }
-
-    // TODO: - fix
-    /*const result = await WordList.delete(wordList._id);
-
-    if (!result.error) {
-      wordLists.splice(i, 1);
-      this.setState({ wordLists });
-    } else {
-      alert(`Error: ${result.error}`);
-    }*/
+    if (window.confirm(`Are you sure you want to delete ${wordList.name}?`)) {
+      const result = await this.props.dispatch(deleteAndRemoveWordList(wordList._id, this.props.session));
+      if (!result.error) { this.props.dispatch(removeEntity({ wordLists: wordList._id })); }      
+    }
   }
 
   render() {
@@ -109,6 +102,7 @@ const LessonButton = styled.p`
 `
 
 const mapStateToProps = (state, ownProps) => ({
+  session: state.entities.session,
   wordLists: _.values(state.entities.wordLists),
   user: _.first(_.values(state.entities.user))
 });

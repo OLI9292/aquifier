@@ -11,13 +11,24 @@ import questionMark from '../../../Library/Images/question-mark-white.png';
 class SentenceCompletion extends Component {
   constructor(props) {
     super(props);
-    
-    this.state = {
-    }
+    this.state = {}
   }
 
   componentDidMount() {
     this.reset(this.props.question);
+    document.body.addEventListener('keydown', this.handleKeydown.bind(this), true);
+  }
+
+  componentWillUnmount() {
+    document.body.removeEventListener('keydown', this.handleKeydown, true);
+  }  
+
+  handleKeydown(e) {
+    const pressedEquals = e.keyCode === 187 || e.keyCode === 61;
+
+    if (pressedEquals) {
+      this.setState({ hintCount: this.state.hintCount + 1 });
+    }
   }
 
   componentWillReceiveProps(nextProps) {

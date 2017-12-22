@@ -11,10 +11,14 @@ const entities = (state = {}, action) => {
     const [remove, entities] = [response.remove, response.entities]
 
     if (remove) {
-      return _.omit(state, remove) 
-    }
+      if (_.isArray(remove)) { // Removes matching keys from state tree
+        return _.omit(state, remove)
+      }
 
-    if (entities) {
+      if (_.isObject(remove)) { // For matching keys remove matching ids
+        return _.mapObject(state, (v, k) => remove[k] ? _.omit(v, remove[k]) : v)
+      }
+    } else if (entities) {
       return merge({}, state, entities)
     }
   }

@@ -96,6 +96,56 @@ export const fetchWordLists = (id) => ({
   }
 })
 
+export const CREATE_WORD_LIST_REQUEST = 'CREATE_WORD_LIST_REQUEST'
+export const CREATE_WORD_LIST_SUCCESS = 'CREATE_WORD_LIST_SUCCESS'
+export const CREATE_WORD_LIST_FAILURE = 'CREATE_WORD_LIST_FAILURE'
+
+export const createAndLoadWordList = (data, session) => (dispatch, getState) => dispatch(createWordList(data, session))
+
+export const createWordList = (data, session) => ({
+  [CALL_API]: {
+    api: 'curriculum',
+    data: data,
+    endpoint: `admin/word-lists?x_key=${session.user}&access_token=${session.token}`,
+    method: 'POST',    
+    types: [ CREATE_WORD_LIST_REQUEST, CREATE_WORD_LIST_SUCCESS, CREATE_WORD_LIST_FAILURE ],
+    schema: Schemas.WORD_LIST
+  }
+})
+
+export const DELETE_WORD_LIST_REQUEST = 'DELETE_WORD_LIST_REQUEST'
+export const DELETE_WORD_LIST_SUCCESS = 'DELETE_WORD_LIST_SUCCESS'
+export const DELETE_WORD_LIST_FAILURE = 'DELETE_WORD_LIST_FAILURE'
+
+export const deleteAndRemoveWordList = (id, session) => (dispatch, getState) => dispatch(deleteWordList(id, session))
+
+export const deleteWordList = (id, session) => ({
+  [CALL_API]: {
+    api: 'curriculum',
+    endpoint: `admin/word-lists/${id}?x_key=${session.user}&access_token=${session.token}`,
+    method: 'DELETE',    
+    types: [ DELETE_WORD_LIST_REQUEST, DELETE_WORD_LIST_SUCCESS, DELETE_WORD_LIST_FAILURE ],
+    schema: Schemas.WORD_LIST
+  }
+})
+
+export const UPDATE_WORD_LIST_REQUEST = 'UPDATE_WORD_LIST_REQUEST'
+export const UPDATE_WORD_LIST_SUCCESS = 'UPDATE_WORD_LIST_SUCCESS'
+export const UPDATE_WORD_LIST_FAILURE = 'UPDATE_WORD_LIST_FAILURE'
+
+export const updateAndLoadWordList = (data, id, session) => (dispatch, getState) => dispatch(updateWordList(data, id, session))
+
+export const updateWordList = (data, id, session) => ({
+  [CALL_API]: {
+    api: 'curriculum',
+    data: data,
+    endpoint: `admin/word-lists/${id}?x_key=${session.user}&access_token=${session.token}`,
+    method: 'PATCH',
+    types: [ UPDATE_WORD_LIST_REQUEST, UPDATE_WORD_LIST_SUCCESS, UPDATE_WORD_LIST_FAILURE ],
+    schema: Schemas.WORD_LIST
+  }
+})
+
 //
 // LESSONS
 //
@@ -210,7 +260,7 @@ export const LOGOUT_USER = 'LOGOUT_USER'
 
 export const logoutUser = () => ({
   type: LOGOUT_USER,
-  response: { remove: ['session', 'user'] }
+  response: { remove: ['session', 'user', 'students'] }
 })
 
 
@@ -231,4 +281,12 @@ export const RESET_ERROR_MESSAGE = 'RESET_ERROR_MESSAGE'
 // Resets the currently visible error message.
 export const resetErrorMessage = () => ({
   type: RESET_ERROR_MESSAGE
+})
+
+export const REMOVE_ENTITY = 'REMOVE_ENTITY'
+
+// Resets the currently visible error message.
+export const removeEntity = (entity) => ({
+  type: REMOVE_ENTITY,
+  response: { remove: entity }
 })

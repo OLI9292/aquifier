@@ -8,7 +8,7 @@ import _ from 'underscore';
 import Button from '../../Common/button';
 import { color } from '../../../Library/Styles/index';
 import { shouldRedirect } from '../../../Library/helpers'
-import { deleteAndRemoveLesson, loadLessons } from '../../../Actions/index';
+import { deleteAndRemoveLesson, loadLessons, removeEntity } from '../../../Actions/index';
 
 class LessonsTable extends Component {
   constructor(props) {
@@ -24,7 +24,7 @@ class LessonsTable extends Component {
   deleteLesson = async lesson => {
     if (window.confirm(`Are you sure you want to delete ${lesson.name}?`)) {
       const result = await this.props.dispatch(deleteAndRemoveLesson(lesson._id, this.props.session));
-      // TODO: - figure out how to remove from state tree
+      if (!result.error) { this.props.dispatch(removeEntity({ lessons: lesson._id })); }
     }
   }
 
