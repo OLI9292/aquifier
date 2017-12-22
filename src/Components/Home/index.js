@@ -25,7 +25,7 @@ class Home extends Component {
   componentDidMount() {
     this.checkWindowSize();
     window.addEventListener('resize', this.checkWindowSize.bind(this));
-    if (User.loggedIn()) { this.setState({ redirect: '/play' })};
+    if (this.props.session) { this.setState({ redirect: '/play' })};
   }
 
   componentWillUnmount() {
