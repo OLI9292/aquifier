@@ -61,8 +61,12 @@ class OnCorrectImage extends Component {
 
     return (
       <Layout display={this.props.display}>
-        <Definition>{definition()}</Definition>
-        <p style={{fontSize:'2.5em', webkitMarginBefore: '0em'}}>{this.props.word.value.toUpperCase()}</p>
+        <Definition>
+          {definition()}
+        </Definition>
+        <p style={{fontSize:'2.5em', webkitMarginBefore: '0em',letterSpacing:'15px'}}>
+          {this.props.word.value.toUpperCase()}
+        </p>
         {this.state.source && <Image src={this.state.source} /> }
       </Layout>
     );

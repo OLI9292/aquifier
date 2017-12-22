@@ -125,7 +125,7 @@ class InfoForm extends Component {
           style={{height:'50px',width:'auto',marginRight:'5px'}}/>
         <input
           type='text'
-          style={_.extend(InputStyles.default, {'verticalAlign':'top'})}
+          style={_.extend({}, InputStyles.default, {'verticalAlign':'top'})}
           name={input.name}
           placeholder={input.placeholder}
           ref={(input) => { this.inputs = _.union(this.inputs, [input]); }}

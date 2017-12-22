@@ -1,3 +1,4 @@
+import { connect } from 'react-redux'
 import React, { Component } from 'react';
 import { Redirect } from 'react-router';
 import styled from 'styled-components';
@@ -5,15 +6,15 @@ import _ from 'underscore';
 
 import Button from '../Common/button';
 import Link from '../Common/link';
+import { loadWordLists } from '../../Actions/index';
 import { color } from '../../Library/Styles/index';
-import WordList from '../../Models/WordList';
+import { shouldRedirect } from '../../Library/helpers'
 
 import whiteCheckmark from '../../Library/Images/Checkmark-White.png';
 import greenCheckmark from '../../Library/Images/Checkmark-Green.png';
 import studyPng from '../../Library/Images/study-color.png';
 import explorePng from '../../Library/Images/explore-color.png';
 import lockPng from '../../Library/Images/lock.png';
-import User from '../../Models/User';
 
 const params = {
   study: {
@@ -30,38 +31,45 @@ const params = {
   }
 }
 
-const timeLimits = [3, 5];
+const TIME_LIMITS = [3, 5];
 
 class WordListGameSelect extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
-      redirect: null,
       step: 0,
-      timeLimit: timeLimits[0]
+      timeLimit: TIME_LIMITS[0]
     };
   }
 
-  async componentDidMount() {
-    const completed = User.loggedIn('wordListsCompleted') || [];
-
-    const result = await WordList.fetch();
-
-    const wordLists = (result.data || [])
-      .filter((w) => this.props.settings.game === 'explore' ? !w.isStudy : w.isStudy);    
-
-    const reformatted = this.reformatWordLists(wordLists, completed);
-
-    if (reformatted) {
-      const selected = reformatted[_.keys(reformatted)[0]][0].id;
-      this.setState({ wordLists: reformatted, selected: selected });
+  componentDidMount() {
+    if (this.props.wordLists.length) {
+      this.setState({ loaded: true }, () => this.setup(this.props.wordLists));
+    } else {
+      this.props.dispatch(loadWordLists());
     }
+  }
 
-    this.setState({ loggedIn: User.loggedIn() });
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.wordLists.length && !this.state.loaded) {
+      this.setState({ loaded: true }, () => this.setup(nextProps.wordLists));
+    }
+  }
+
+  setup(wordLists) {
+    const game = this.props.settings.game;
+    const filtered = wordLists.filter((w) => game === 'study' ? w.isStudy : !w.isStudy);
+    const reformatted = this.reformatWordLists(filtered);
+    const selected = reformatted[_.keys(reformatted)[0]][0].id;
+    const loggedIn = !_.isUndefined(this.props.user);
+    this.setState({ loggedIn: loggedIn, wordLists: reformatted, selected: selected });
   }
 
   // Temporary solution until better data modeling is agreed on - @akiva, @oliver
-  reformatWordLists(wordLists, completed) {
+  reformatWordLists(wordLists) {
+    const completed = this.props.user ? this.props.user.wordListsCompleted : [];
+
     return _.groupBy(_.sortBy(wordLists
       .map((w) => {
         const split = w.name.split(' ');
@@ -92,6 +100,7 @@ class WordListGameSelect extends Component {
   gameLink() {
     const timeLimit = this.state.timeLimit;
     const wordList = _.find(_.flatten(_.values(this.state.wordLists)), (w) => w.id === this.state.selected);
+
     if (wordList) {
       return this.props.settings.players === 'multi'
         ? `/admin/wordList=${wordList.id}&time=${timeLimit}`
@@ -108,9 +117,7 @@ class WordListGameSelect extends Component {
   }
 
   render() {
-    if (this.state.redirect && !window.location.href.endsWith(this.state.redirect)) {
-      return <Redirect push to={this.state.redirect} />;
-    }
+    if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }
 
     const p = params[this.props.settings.game];
 
@@ -165,7 +172,7 @@ class WordListGameSelect extends Component {
           </td>
           <td>
             {
-              timeLimits.map((t,i) => {
+              TIME_LIMITS.map((t,i) => {
                 const [fColor, bColor] = this.state.timeLimit === t ? ['white', color.green] : ['black', color.lightestGray];
                 return <Button.small key={i} color={bColor}
                   style={{color:fColor,margin:'0px 5px 0px 5px'}}
@@ -219,4 +226,9 @@ const Image = styled.img`
   width: auto;
 `
 
-export default WordListGameSelect;
+const mapStateToProps = (state, ownProps) => ({
+  wordLists: _.values(state.entities.wordLists),
+  user: _.first(_.values(state.entities.user))
+});
+
+export default connect(mapStateToProps)(WordListGameSelect);

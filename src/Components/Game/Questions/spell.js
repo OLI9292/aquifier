@@ -1,3 +1,4 @@
+import { connect } from 'react-redux'
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import _ from 'underscore';
@@ -48,14 +49,13 @@ class SpellQuestion extends Component {
     }
 
     const pressedEnter = e.key === 'Enter';
-    const pressedEquals = e.keyCode === 187;
+    const pressedEquals = e.keyCode === 187 || e.keyCode === 61;
     const pressedLetter = isLetter(e.key);
     const pressedLeft = e.keyCode === 37;
     const pressedRight = e.keyCode === 39;
     const pressedDelete = e.keyCode === 8;
 
     if (pressedEnter) {
-      e.preventDefault();
       this.checkAnswer(true);
     } else if (pressedEquals) {
       this.pressedHint();
@@ -264,4 +264,9 @@ const HintButton = Button.medium.extend`
   }
 `
 
-export default SpellQuestion;
+const mapStateToProps = (state, ownProps) => ({
+  roots: _.values(state.entities.roots),
+  words: _.values(state.entities.words) 
+});
+
+export default connect(mapStateToProps)(SpellQuestion)

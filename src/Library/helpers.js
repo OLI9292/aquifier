@@ -68,3 +68,5 @@ export const unixTime = () => {
 }
 
 export const isHome = () => window.location.pathname === '/'
+
+export const shouldRedirect = (state, currentLocation) => state.redirect && !currentLocation.href.endsWith(state.redirect)
