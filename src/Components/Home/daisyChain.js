@@ -30,8 +30,7 @@ class DaisyChain extends Component {
 
     this.state = {
       words: words,
-      idx: 0,
-      interval: null
+      idx: 0
     }
   }
 
@@ -40,16 +39,17 @@ class DaisyChain extends Component {
       .append('g')
       .attr('transform', 'translate(0,50)');
 
-    const interval = setInterval(() => {
+    this.interval = setInterval(() => {
       const idx = this.state.idx === this.state.words.length - 1 ? 0 : this.state.idx + 1;
       this.setState({ idx: idx }, this.update);
     }, 5000);
-    this.setState({ interval });
+
     this.update();
   }
 
   componentWillUnmount() {
-    clearTimeout(this.state.interval)
+    this.interval && clearInterval(this.interval);
+    this.interval = false;
   }
 
   update() {

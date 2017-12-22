@@ -10,13 +10,16 @@ class Leaderboard extends Component {
     super(props);
 
     this.state = {
-      dataLoaded: true,
       players: []
     }
   }
 
   componentDidMount() {
-    Firebase.refs.games.child(this.props.gameId).on('value', (snapshot) => {
+    this.setState({ gameId: _.last(window.location.href.split('/')) }, this.setup);
+  }
+
+  setup() {
+    Firebase.refs.games.child(this.state.gameId).on('value', (snapshot) => {
       const snap = snapshot.val();
 
       if (snap.players) {
@@ -31,7 +34,7 @@ class Leaderboard extends Component {
   }
 
   componentWillUnmount() {
-    Firebase.refs.games.child(this.props.gameId).off();
+    Firebase.refs.games.child(this.state.gameId).off();
   }
 
   withPositions(players) {
@@ -56,9 +59,15 @@ class Leaderboard extends Component {
     const rows = () => {
       return this.state.players.map((p) => {
         return <Row>
-          <LeftAlignCell style={{ color: colors[p.position] || 'black' }}>{p.position}.</LeftAlignCell>
-          <LeftAlignCell>{p.name}</LeftAlignCell>
-          <RightAlignCell>{p.score}</RightAlignCell>
+          <LeftAlignCell style={{ color: colors[p.position] || 'black' }}>
+            {p.position}.
+          </LeftAlignCell>
+          <LeftAlignCell>
+            {p.name}
+          </LeftAlignCell>
+          <RightAlignCell>
+            {p.score}
+          </RightAlignCell>
         </Row>
       })
     }

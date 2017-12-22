@@ -1,3 +1,4 @@
+import { connect } from 'react-redux'
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import _ from 'underscore';
@@ -127,6 +128,7 @@ const Definition = styled.div`
 const AnswerSpace = styled.p`
   margin: 0% 1% 0% 1%;
   font-size: 2.5em;
+  letter-spacing: 15px;
   display: inline-block;
   @media (max-width: 768px), (max-height: 700px ) {
     font-size: 2em;
@@ -164,4 +166,9 @@ const SmallText = styled.span`
   animation-duration: 4.5s;
 `
 
-export default ButtonQuestion;
+const mapStateToProps = (state, ownProps) => ({
+  roots: _.values(state.entities.roots),
+  words: _.values(state.entities.words) 
+});
+
+export default connect(mapStateToProps)(ButtonQuestion)
