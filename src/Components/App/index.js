@@ -60,6 +60,7 @@ class App extends Component {
             <Route exact path='/'                component={Home} />
             <Route exact path='/classes'         component={contained('classesDashboard')} />            
             <Route exact path='/leaderboard/:id' component={contained('leaderboard')} />
+            <Route exact path='/leaderboards'    component={contained('leaderboards')} />
             <Route exact path='/lessons'         component={contained('lessonsTable')} />
             <Route exact path='/lessons/:id'     component={contained('lessonEdit')} />
             <Route exact path='/play'            component={contained('gameSelect')} />
@@ -112,6 +113,7 @@ class Container extends Component {
         case 'gameSelect':         return <GameSelect />
         case 'infoForm':           return <InfoForm />
         case 'leaderboard':        return <Leaderboard />
+        case 'leaderboards':       return <Leaderboards />
         case 'lessonsTable':       return <LessonsTable />
         case 'lessonEdit':         return <LessonEdit />
         case 'profile':            return <Profile />

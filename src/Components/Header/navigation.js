@@ -45,11 +45,12 @@ class Navigation extends Component {
   display(link) {
     const shouldDisplay = (() => {
       switch (link) {
-        case 'profile':   return this.props.user && !this.props.user.isTeacher
-        case 'classes':   return this.props.user && this.props.user.isTeacher
-        case 'lessons':   return this.props.user && this.props.user.role === 'admin'
-        case 'wordLists': return this.props.user && this.props.user.role === 'admin'
-        default:          return false
+        case 'profile':      return this.props.user && !this.props.user.isTeacher
+        case 'leaderboards': return this.props.user
+        case 'classes':      return this.props.user && this.props.user.isTeacher
+        case 'lessons':      return this.props.user && this.props.user.role === 'admin'
+        case 'wordLists':    return this.props.user && this.props.user.role === 'admin'
+        default:             return false
       }
     })()
     return shouldDisplay ? 'block' : 'none';
@@ -63,6 +64,10 @@ class Navigation extends Component {
         <Link.small margin={'5px'} hoverColor={color.green} style={{display:this.display('profile')}}
           onClick={() => this.setState({ redirect: `/profile/${this.props.user._id}`})} 
           >Progress</Link.small>
+
+        <Link.small margin={'5px'} hoverColor={color.green} style={{display:this.display('leaderboards')}}
+          onClick={() => this.setState({ redirect: 'leaderboards'})} 
+          >Leaderboards</Link.small>
 
         <Link.small margin={'5px'} hoverColor={color.green} style={{display:this.display('classes')}}
           onClick={() => this.setState({ redirect: '/classes' })}

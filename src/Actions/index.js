@@ -147,6 +147,26 @@ export const updateWordList = (data, id, session) => ({
 })
 
 //
+// LEADERBOARDS
+//
+
+export const loadLeaderboards = (schoolId) => (dispatch, getState) => dispatch(fetchLeaderboards(schoolId))
+
+export const LEADERBOARDS_REQUEST = 'LEADERBOARDS_REQUEST'
+export const LEADERBOARDS_SUCCESS = 'LEADERBOARDS_SUCCESS'
+export const LEADERBOARDS_FAILURE = 'LEADERBOARDS_FAILURE'
+
+export const fetchLeaderboards = (schoolId) => ({
+  [CALL_API]: {
+    api: 'accounts',
+    endpoint: `auth/school/${schoolId}/leaderboards`,
+    method: 'GET',    
+    types: [ LEADERBOARDS_REQUEST, LEADERBOARDS_SUCCESS, LEADERBOARDS_FAILURE ],
+    schema: Schemas.LEADERBOARDS
+  }
+})
+
+//
 // LESSONS
 //
 

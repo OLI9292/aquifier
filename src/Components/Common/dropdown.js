@@ -26,7 +26,7 @@ class Dropdown extends Component {
           ?
           <div>
             {choices.map((c) => {
-              return <Button onClick={() => this.handleSelect(c)}>{c}</Button>;
+              return <Button key={c} onClick={() => this.handleSelect(c)}>{c}</Button>;
             })}
           </div>
           :
