@@ -34,7 +34,7 @@ class Leaderboards extends Component {
   loadData(props) {
     if (props.user && props.user.school && !this.state.loading) {
       const schoolId = props.user.school;
-      this.setState({ loading: true }, () => this.props.dispatch(loadLeaderboards(schoolId)));
+      this.setState({ loading: true }, () => this.props.dispatch(loadLeaderboards(schoolId, props.user._id)));
     }
   }
 
@@ -47,13 +47,13 @@ class Leaderboards extends Component {
         return leaderboards[location][period[0]].map((user, i) => {
           return <Row key={i} even={i % 2 === 0}>
             <td style={{width:'25%'}}>
-              <Rank>
-                {i + 1}
+              <Rank isUser={this.props.user._id === user._id}>
+                {user.position}
               </Rank>
             </td>
             <td style={{width:'50%',textAlign:'left'}}>
               <h3>
-                {user.name}
+                {this.state.location === 'Earth' ? `${user.name}, ${user.school}` : user.name}
               </h3>
             </td>
             <td style={{width:'25%',textAlign:'center',fontSize:'1.1em'}}>
@@ -66,23 +66,29 @@ class Leaderboards extends Component {
 
     return (
       <div style={{paddingTop:'25px',margin:'0 auto',width:'95%',textAlign:'center'}}>
-        <p style={{fontSize:'3em',lineHeight:'0px'}}>Leaderboards</p>
-        <div>
-          <Dropdown
-            choices={PERIOD_CHOICES.map((c) => c[1])} 
-            handleSelect={(period) => this.setState({ period: _.find(PERIOD_CHOICES, (p) => p[1] === period) })}
-            selected={this.state.period[1]} />
-          <Dropdown 
-            choices={_.keys(this.props.leaderboards)} 
-            handleSelect={(location) => this.setState({ location })}
-            selected={this.state.location} />
-
-          <Table>  
-            <tbody>
-              {leaderboard}
-            </tbody>
-          </Table>
+        <div style={{width:'80%',margin:'0 auto',textAlign:'left'}}>
+          <p style={{fontSize:'3em',lineHeight:'0px',display:'inline-block'}}>
+            Leaderboards
+          </p>
+          <div style={{display:'inline-block',textAlign:'center',verticalAlign:'top',margin:'20px 0px 0px 30px'}}>
+            <Dropdown
+              choices={PERIOD_CHOICES.map((c) => c[1])} 
+              handleSelect={(period) => this.setState({ period: _.find(PERIOD_CHOICES, (p) => p[1] === period) })}
+              selected={this.state.period[1]} />
+            <Dropdown 
+              choices={_.keys(this.props.leaderboards)} 
+              handleSelect={(location) => this.setState({ location })}
+              selected={this.state.location} />
+          </div>
         </div>
+        <p style={{color:color.gray,textAlign:'left',marginLeft:'10%',marginTop:'-15px'}}>
+          Tracked by count of stars
+        </p>
+        <Table>  
+          <tbody>
+            {leaderboard}
+          </tbody>
+        </Table>
       </div>
     );
   }
@@ -107,7 +113,7 @@ const Row = styled.tr`
 `
 
 const Rank = styled.h3`
-  background-color: ${color.blue};
+  background-color: ${props => props.isUser ? color.green : color.blue};
   border-radius: 5px;
   color: white;
   height: 50px;
