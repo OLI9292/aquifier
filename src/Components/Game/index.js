@@ -206,7 +206,10 @@ class Game extends Component {
 
         if (!wordList) {
           const result = await this.props.dispatch(loadWordLists(this.state.gameId));
-          if (!result.error) { wordList = _.first(_.values(result.response.entities.wordLists)); }
+          if (!result.error) {
+            const wordLists = result.response.entities.wordLists;
+            wordList = _.find(wordLists, (w) => w._id === this.props.settings.wordList);
+          }
         }
 
         if (wordList) {
