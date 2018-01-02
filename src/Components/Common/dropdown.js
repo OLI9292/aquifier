@@ -19,7 +19,7 @@ class Dropdown extends Component {
     const choices = _.union(..._.partition(this.props.choices, (c) => c === this.props.selected));
 
     return (
-      <div style={{display:'inline-block',verticalAlign:'top',width:'140px',marginLeft:'20px'}}>
+      <div style={{display:'inline-block',verticalAlign:'top',width:'140px'}}>
         {
           this.state.opened
           ?
@@ -41,12 +41,12 @@ const Button = styled.p`
   background-color: ${props => props.selected ? color.blue : 'white'};
   color: ${props => props.selected ? 'white' : 'black'};
   cursor: pointer;
-  justify-content: ${props => props.selected ? 'center' : 'left'};
+  justify-content: left;
   display: flex;
   border-radius: 5px;
   line-height: 50px;
   margin: 0;
-  padding-left: ${props => props.selected ? '0px' : '10px'};
+  padding-left: 10px;
   height: 50px;
   width: 125px;
   font-size: 1.1em;
