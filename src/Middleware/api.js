@@ -16,6 +16,7 @@ const callApi = (api, endpoint, schema, method, data) => {
   return fetch(fullUrl, body)
     .then(response =>
       response.json().then(json => {
+        console.log(json)
         if (!response.ok) { return Promise.reject(json) }
         const normalized = Object.assign({},normalize(json, schema))
         // Removes undefined keys
@@ -35,7 +36,7 @@ const rootSchema = new schema.Entity('roots', {}, { idAttribute: '_id' })
 const wordListSchema = new schema.Entity('wordLists', {}, { idAttribute: '_id' })
 const lessonSchema = new schema.Entity('lessons', {}, { idAttribute: '_id' })
 const relatedWordSchema = new schema.Entity('relatedWords', {}, { idAttribute: 'word' })
-const leaderboardsSchema = new schema.Entity('leaderboards', {}, { idAttribute: 'name' })
+const rankSchema = new schema.Entity('ranks')
 
 // ACCOUNTS
 const userSchema = new schema.Entity('user', {}, { idAttribute: '_id' })
@@ -54,7 +55,7 @@ export const Schemas = {
   ROOT_ARRAY: [rootSchema],
   SESSION: sessionSchema,
   STUDENTS: studentsSchema,
-  LEADERBOARDS: leaderboardsSchema,
+  LEADERBOARDS: [rankSchema],
   RELATED_WORDS_ARRAY: [relatedWordSchema]
 }
 

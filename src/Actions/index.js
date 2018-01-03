@@ -150,16 +150,16 @@ export const updateWordList = (data, id, session) => ({
 // LEADERBOARDS
 //
 
-export const loadLeaderboards = (schoolId, userId) => (dispatch, getState) => dispatch(fetchLeaderboards(schoolId, userId))
+export const loadLeaderboards = query => (dispatch, getState) => dispatch(fetchLeaderboards(query))
 
 export const LEADERBOARDS_REQUEST = 'LEADERBOARDS_REQUEST'
 export const LEADERBOARDS_SUCCESS = 'LEADERBOARDS_SUCCESS'
 export const LEADERBOARDS_FAILURE = 'LEADERBOARDS_FAILURE'
 
-export const fetchLeaderboards = (schoolId, userId) => ({
+export const fetchLeaderboards = query => ({
   [CALL_API]: {
     api: 'accounts',
-    endpoint: `auth/school/${schoolId}/leaderboards?id=${userId}`,
+    endpoint: `auth/leaderboard?${query}`,
     method: 'GET',    
     types: [ LEADERBOARDS_REQUEST, LEADERBOARDS_SUCCESS, LEADERBOARDS_FAILURE ],
     schema: Schemas.LEADERBOARDS

@@ -3,15 +3,16 @@ import moment from 'moment';
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import _ from 'underscore';
+import queryString from 'query-string';
 
 import { color } from '../../../Library/Styles/index';
 import Dropdown from '../../Common/dropdown';
 import { loadLeaderboards } from '../../../Actions/index';
 
-const LOCATION = 'Earth'
+const LOCATION = ['Earth', 'Earth']
 const PERIOD_CHOICES = [
   ['weekly', 'Weekly'],
-  ['allTime', 'All Time']
+  ['all', 'All Time']
 ]
 
 class Leaderboards extends Component {
@@ -33,9 +34,9 @@ class Leaderboards extends Component {
   }
 
   loadData(props) {
-    if (props.user && props.user.school && !this.state.loading) {
-      const schoolId = props.user.school;
-      this.setState({ loading: true }, () => this.props.dispatch(loadLeaderboards(schoolId, props.user._id)));
+    if (props.user && !this.state.loading) {
+      const query = queryString.stringify({ user: props.user._id });
+      this.setState({ loading: true }, () => this.props.dispatch(loadLeaderboards(query)));
     }
   }
 
@@ -48,35 +49,37 @@ class Leaderboards extends Component {
     }
   }
 
+  leaderboard() {
+    return this.props.ranks.filter(r => r.schoolName === this.state.location && r.period === this.state.period[0])
+  }
+
   loadMore() {
-    console.log('load more')
-    //this.props.dispatch(loadLeaderboards(schoolId, props.user._id,)));
+    const position = Math.max(_.first(_.pluck(this.leaderboard(), 'position')), 0);
+    const rank = _.find(this.props.ranks, (r) => r.schoolName === this.state.location);
+    const school = rank && rank.school;
+    const query = queryString.stringify({ period: this.state.period[0], school: school, start: position - 20 });
+    this.props.dispatch(loadLeaderboards(query));
   }
 
   render() {
-    const { leaderboards } = this.props;
-    const { location, period } = this.state;
-
     const leaderboard = (() => {
-      if (_.has(leaderboards, location) && leaderboards[location][period[0]]) {
-        return leaderboards[location][period[0]].map((user, i) => {
-          return <Row key={i} even={i % 2 === 0}>
-            <td style={{width:'25%'}}>
-              <Rank isUser={this.props.user._id === user._id}>
-                {user.position}
-              </Rank>
-            </td>
-            <td style={{width:'50%',textAlign:'left'}}>
-              <h3>
-                {this.state.location === 'Earth' ? `${user.name}, ${user.school}` : user.name}
-              </h3>
-            </td>
-            <td style={{width:'25%',textAlign:'center',fontSize:'1.1em'}}>
-              {user.score}
-            </td>
-          </Row>
-        })
-      }
+      return _.sortBy(this.leaderboard(), 'position').map((user, i) => {
+        return <Row key={i} even={i % 2 === 0}>
+          <td style={{width:'25%'}}>
+            <Rank isUser={this.props.user._id === user._id}>
+              {user.position}
+            </Rank>
+          </td>
+          <td style={{width:'50%',textAlign:'left'}}>
+            <h3>
+              {this.state.location === 'Earth' ? `${user.name}, ${user.schoolName}` : user.name}
+            </h3>
+          </td>
+          <td style={{width:'25%',textAlign:'center',fontSize:'1.1em'}}>
+            {user.score}
+          </td>
+        </Row>
+      })
     })();
 
     return (
@@ -87,7 +90,7 @@ class Leaderboards extends Component {
           </p>
           <div style={{display:'inline-block',textAlign:'center',verticalAlign:'top',margin:'20px 0px 0px 30px'}}>
             <Dropdown 
-              choices={_.keys(this.props.leaderboards)} 
+              choices={_.unique(_.pluck(this.props.ranks, 'schoolName'))} 
               handleSelect={(location) => this.setState({ location })}
               selected={this.state.location} />
             <Dropdown
@@ -142,7 +145,7 @@ const Rank = styled.h3`
 
 const mapStateToProps = (state, ownProps) => ({
   user: _.first(_.values(state.entities.user)),
-  leaderboards: state.entities.leaderboards
+  ranks: _.values(state.entities.ranks)
 })
 
 export default connect(mapStateToProps)(Leaderboards)
