@@ -37,7 +37,7 @@ import './index.css';
 import { activateSession, loadUser, loadWords, loadRoots } from '../../Actions/index';
 import configureStore from '../../Store/configureStore';
 const store = configureStore();
-store.subscribe(() => console.log(store.getState()))
+// store.subscribe(() => console.log(store.getState()))
 
 class App extends Component {
 

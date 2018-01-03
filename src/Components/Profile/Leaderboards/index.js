@@ -9,7 +9,7 @@ import { color } from '../../../Library/Styles/index';
 import Dropdown from '../../Common/dropdown';
 import { loadLeaderboards } from '../../../Actions/index';
 
-const LOCATION = ['Earth', 'Earth']
+const LOCATION = 'Earth'
 const PERIOD_CHOICES = [
   ['weekly', 'Weekly'],
   ['all', 'All Time']
@@ -37,6 +37,8 @@ class Leaderboards extends Component {
     if (props.user && !this.state.loading) {
       const query = queryString.stringify({ user: props.user._id });
       this.setState({ loading: true }, () => this.props.dispatch(loadLeaderboards(query)));
+    } else if (!_.isEqual(props.ranks, this.props.ranks)) {
+      this.setState({ loadingMore: false });
     }
   }
 
@@ -53,11 +55,15 @@ class Leaderboards extends Component {
     return this.props.ranks.filter(r => r.schoolName === this.state.location && r.period === this.state.period[0])
   }
 
-  loadMore() {
-    const position = Math.max(_.first(_.pluck(this.leaderboard(), 'position')), 0);
+  loadMore(direction) {
+    this.setState({ loadingMore: true });
+    
+    const positions = _.pluck(_.sortBy(this.leaderboard(), 'position'), 'position')
+    const position = direction === 'prev' ? (Math.max(positions[0], 0) - 20) : _.last(positions)
     const rank = _.find(this.props.ranks, (r) => r.schoolName === this.state.location);
     const school = rank && rank.school;
-    const query = queryString.stringify({ period: this.state.period[0], school: school, start: position - 20 });
+    const query = queryString.stringify({ period: this.state.period[0], school: school, start: position });
+
     this.props.dispatch(loadLeaderboards(query));
   }
 
@@ -99,22 +105,54 @@ class Leaderboards extends Component {
               selected={this.state.period[1]} />
           </div>
         </div>
+        
         <p style={{color:color.gray,textAlign:'left',marginLeft:'10%',marginTop:'-15px'}}>
           Tracked by count of stars
         </p>
+
         <TableContainer>
           <p style={{lineHeight:'0px',paddingTop:'20px',fontSize:'1.5em'}}><b>{this.state.location}</b></p>
           <p>{this.periodTitle()}</p>
+
+          <LoadMoreContainer hide={_.contains(_.pluck(this.leaderboard(), 'position'), 1)}>
+            <Circle 
+              loadingMore={this.state.loadingMore}
+              onMouseOver={() => this.loadMore('prev')} />
+            <div>
+              <p>Load More</p>
+            </div>
+          </LoadMoreContainer>
+
           <table style={{padding:'5px 20px 5px 20px',width:'100%',margin:'0 auto',borderCollapse:'separate',borderSpacing:'0'}}>  
             <tbody>
               {leaderboard}
             </tbody>
-          </table>
+          </table>        
         </TableContainer>
       </div>
     );
   }
 }
+
+const Circle = styled.div`
+  transition: all 0.2s ease-in-out;
+  background: ${props => props.loadingMore ? color.green : 'white'};
+  cursor: pointer;
+  border: 2px solid ${color.lightGray};
+  border-radius: 100%;
+  overflow: hidden;  
+  width: 20px;
+  height: 20px;  
+  margin: 0px 7px 2px 0px;
+`
+
+const LoadMoreContainer = styled.div`
+  visibility: ${props => props.hide ? 'hidden' : 'visibile'};
+  display: flex;
+  align-items: center;
+  width: 75%;
+  margin: 0 auto;
+`
 
 const TableContainer = styled.div`
   border-collapse: separate;
