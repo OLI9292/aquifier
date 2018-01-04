@@ -52,7 +52,7 @@ class Leaderboards extends Component {
   }
 
   leaderboard() {
-    return this.props.ranks.filter(r => r.schoolName === this.state.location && r.period === this.state.period[0])
+    return this.props.ranks.filter(r => r.group === this.state.location && r.period === this.state.period[0])
   }
 
   loadMore(direction) {
@@ -60,9 +60,9 @@ class Leaderboards extends Component {
     
     const positions = _.pluck(_.sortBy(this.leaderboard(), 'position'), 'position')
     const position = direction === 'prev' ? (Math.max(positions[0], 0) - 20) : _.last(positions)
-    const rank = _.find(this.props.ranks, (r) => r.schoolName === this.state.location);
-    const school = rank && rank.school;
-    const query = queryString.stringify({ period: this.state.period[0], school: school, start: position });
+    const rank = _.find(this.props.ranks, (r) => r.group === this.state.location);
+    const location = rank.schoolId || 'Earth';
+    const query = queryString.stringify({ period: this.state.period[0], school: location, start: position });
 
     this.props.dispatch(loadLeaderboards(query));
   }
@@ -70,6 +70,9 @@ class Leaderboards extends Component {
   render() {
     const leaderboard = (() => {
       return _.sortBy(this.leaderboard(), 'position').map((user, i) => {
+        const content = this.state.location === 'Earth' && user.schoolName
+          ? `${user.name}, ${user.schoolName}`
+          : user.name;
         return <Row key={i} even={i % 2 === 0}>
           <td style={{width:'25%'}}>
             <Rank isUser={this.props.user._id === user._id}>
@@ -78,11 +81,14 @@ class Leaderboards extends Component {
           </td>
           <td style={{width:'50%',textAlign:'left'}}>
             <h3>
-              {this.state.location === 'Earth' ? `${user.name}, ${user.schoolName}` : user.name}
+              {content}
             </h3>
           </td>
-          <td style={{width:'25%',textAlign:'center',fontSize:'1.1em'}}>
-            {user.score}
+          <td style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
+            <p style={{fontSize:'1.1em'}}>{user.score}</p>
+            <img 
+              style={{height:'25px',margin:'0px 0px 4px 5px'}} 
+              src={require('../../../Library/Images/star-yellow.png')} />
           </td>
         </Row>
       })
@@ -96,7 +102,7 @@ class Leaderboards extends Component {
           </p>
           <div style={{display:'inline-block',textAlign:'center',verticalAlign:'top',margin:'20px 0px 0px 30px'}}>
             <Dropdown 
-              choices={_.unique(_.pluck(this.props.ranks, 'schoolName'))} 
+              choices={_.unique(_.pluck(this.props.ranks, 'group'))} 
               handleSelect={(location) => this.setState({ location })}
               selected={this.state.location} />
             <Dropdown
@@ -105,10 +111,6 @@ class Leaderboards extends Component {
               selected={this.state.period[1]} />
           </div>
         </div>
-        
-        <p style={{color:color.gray,textAlign:'left',marginLeft:'10%',marginTop:'-15px'}}>
-          Tracked by count of stars
-        </p>
 
         <TableContainer>
           <p style={{lineHeight:'0px',paddingTop:'20px',fontSize:'1.5em'}}><b>{this.state.location}</b></p>

@@ -38,8 +38,10 @@ class Navigation extends Component {
   }
 
   clickedLogout() {
-    LocalStorage.logout();
-    this.props.dispatch(logoutUser());
+    this.setState({ redirect: '/' }, () => { 
+      LocalStorage.logout(); 
+      this.props.dispatch(logoutUser())
+    })
   }
 
   display(link) {
