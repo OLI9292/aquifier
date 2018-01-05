@@ -98,7 +98,7 @@ const Image = styled.img`
   width: auto;
 `
 
-const LessonButton = Button.mediumLong.extend`
+const LessonButton = Button.medium.extend`
   color: ${props => props.locked
     ? color.gray
     : props.selected ? 'white' : 'black'

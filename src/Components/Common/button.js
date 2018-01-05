@@ -15,7 +15,9 @@ const Default = styled.button`
   }
   margin: ${props => props.margin || '0'};  
   vertical-align: ${props => props.verticalAlign || 'baseline'};
+  text-align: center;
   border-radius: 10px;
+  padding: 0px 15px;
   border-width: 0px;
   color: white;
   font-family: BrandonGrotesque;
@@ -25,58 +27,32 @@ const Default = styled.button`
 `
 
 const ExtraLargeButton = Default.extend`
-  width: 400px;
-  height: 100px;
-  font-size: 3em;
-
-  @media (max-width: 768px) {
-    width: 300px;
-    height: 100px;
-    font-size: 2em;
-  }
+  height: 90px;
+  min-width: 240px;
+  font-size: 1.8em;
 `
 
 const LargeButton = Default.extend`
-  width: 250px;
-  height: 80px;
-  font-size: 2em;
-
-  ${breakpoints.largeWH} {
-    width: 180px;
-    height: 60px;
-    font-size: 1.5em;
-  }
+  height: 70px;
+  min-width: 180px;
+  font-size: 1.6em;
 `
 
 const MediumButton = Default.extend`
-  width: 150px;
-  height: 50px;
-  font-size: 1.5em;
-`
-
-const MediumLongButton = MediumButton.extend`
-  width: 320px;
-
-  ${breakpoints.largeWH} {
-    width: 250px;
-  }
+  height: 60px;
+  min-width: 150px;
+  font-size: 1.4em;
 `
 
 const SmallButton = Default.extend`
-  width: 150px;
   height: 50px;
-  font-size: 1.5em;
+  min-width: 120px;
+  font-size: 1.2em;
 `
 
 const ExtraSmallButton = Default.extend`
-  width: 120px;
-  height: 50px;
-  font-size: 1.25em;
-`
-
-const SmallestButton = Default.extend`
-  width: 60px;
-  height: 30px;
+  height: 40px;
+  min-width: 90px;
   font-size: 1em;
 `
 
@@ -134,10 +110,8 @@ const Button = {
   extraLarge: ExtraLargeButton,
   large: LargeButton,
   medium: MediumButton,
-  mediumLong: MediumLongButton,
   small: SmallButton,
   extraSmall: ExtraSmallButton,
-  smallest: SmallestButton,
   iOS: iOS,
   imageAndText: imageAndText
 }

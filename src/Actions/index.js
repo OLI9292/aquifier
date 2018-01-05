@@ -147,6 +147,26 @@ export const updateWordList = (data, id, session) => ({
 })
 
 //
+// LEADERBOARDS
+//
+
+export const loadLeaderboards = query => (dispatch, getState) => dispatch(fetchLeaderboards(query))
+
+export const LEADERBOARDS_REQUEST = 'LEADERBOARDS_REQUEST'
+export const LEADERBOARDS_SUCCESS = 'LEADERBOARDS_SUCCESS'
+export const LEADERBOARDS_FAILURE = 'LEADERBOARDS_FAILURE'
+
+export const fetchLeaderboards = query => ({
+  [CALL_API]: {
+    api: 'accounts',
+    endpoint: `auth/leaderboard?${query}`,
+    method: 'GET',    
+    types: [ LEADERBOARDS_REQUEST, LEADERBOARDS_SUCCESS, LEADERBOARDS_FAILURE ],
+    schema: Schemas.LEADERBOARDS
+  }
+})
+
+//
 // LESSONS
 //
 
@@ -260,7 +280,7 @@ export const LOGOUT_USER = 'LOGOUT_USER'
 
 export const logoutUser = () => ({
   type: LOGOUT_USER,
-  response: { remove: ['session', 'user', 'students'] }
+  response: { remove: ['session', 'user', 'students', 'ranks'] }
 })
 
 

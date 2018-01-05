@@ -66,6 +66,7 @@ class GameSelect extends Component {
   }
 
   render() {
+    if (!this.props.session) { return <Redirect push to={'/'} />; }
     if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }
 
     const isTeacher = this.props.user && this.props.user.isTeacher;
@@ -76,7 +77,7 @@ class GameSelect extends Component {
 
       return isTeacher 
       ?
-      <div style={{display:'flex',justifyContent:'space-around',margin:'25px 10px 25px 10px'}}>
+      <div style={{margin:'20px 0px'}}>
         <PlayButton onClick={() => this.handleClick(game)} color={'white'}>
           {Button.imageAndText(require('../../Library/Images/singleplayer.png'), 'Preview Game')}
         </PlayButton>
@@ -85,7 +86,7 @@ class GameSelect extends Component {
         </PlayButton>
       </div>
       :
-      <div style={{display:'flex',justifyContent:'space-around',margin:'25px 10px 25px 10px'}}>
+      <div style={{margin:'20px 0px'}}>
         <Button.medium 
           onClick={() => this.handleClick(game)} 
           style={{backgroundColor:'white', color:color.darkGray}}>
@@ -110,12 +111,12 @@ class GameSelect extends Component {
                 onChange={(e) => this.setState({ accessCode: e.target.value.trim() })}
                 style={{textAlign:'center'}} 
                 placeholder={'access code'} />
-              <Button.extraSmall
+              <Button.small
                 color={color.orange}
                 onClick={() => this.joinMatch()}
-                style={{marginLeft:'5px'}}>
+                style={{marginLeft:'5px',minWidth:'75px'}}>
                 Play
-              </Button.extraSmall>
+              </Button.small>
             </div>
           </div>
       </GameButton>
@@ -125,7 +126,7 @@ class GameSelect extends Component {
       <div style={{paddingTop:'25px'}}>
         <Title>Choose Your Game</Title>
 
-        <div style={{textAlign:'center'}}>
+        <div style={{width:'90%',margin:'0 auto',display:'flex',justifyContent:'space-evenly',flexWrap:'wrap'}}>
           <GameButton color={color.blue} onClick={() => this.handleGameButtonClick('study') }>
             <Image src={require('../../Library/Images/study-white.png')} />
             <p style={{color:'white',fontSize:'2em',height:'10px',lineHeight:'10px'}}>Study</p>
@@ -160,11 +161,10 @@ class GameSelect extends Component {
           </GameButton>
 
           {compete()}
-
-          <p style={{textAlign:'center',color:color.red}}>
-            {this.state.error}
-          </p>
         </div>
+        <p style={{textAlign:'center',color:color.red}}>
+          {this.state.error}
+        </p> 
       </div>
     );
   }
@@ -188,9 +188,12 @@ const Image = styled.img`
   width: 75px;
   padding-top: 20px;
 `
-const PlayButton = Button.extraSmall.extend`
+const PlayButton = Button.small.extend`
   color: black;
-  margin: 5px;
+  margin: 0 auto;
+  width: 150px;
+  margin-top: 5px;
+  margin-bottom: 5px;
   &:hover {
     background-color: ${color.lightGray};
   }
@@ -204,12 +207,9 @@ const GameButton = styled.div`
   cursor: pointer;
   border: ${props => props.border};
   text-align: center;
-  display: inline-block;
   margin: 10px;
   border-radius: 5px;
-  vertical-align: top;
   width: 250px;
-  height: 350px;
 `
 
 const mapStateToProps = (state, ownProps) => ({

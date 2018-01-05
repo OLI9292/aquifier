@@ -23,11 +23,11 @@ class Login extends Component {
   }
 
   componentDidMount() {
-    document.body.addEventListener('keydown', this.handleKeydown, true);
+    document.body.addEventListener('keydown', this.handleKeydown.bind(this), true);
   }
 
   componentWillUnmount() {
-    document.body.removeEventListener('keydown', this.handleKeydown, true);
+    document.body.removeEventListener('keydown', this.handleKeydown.bind(this), true);
   }    
 
   handleKeydown(event) {
