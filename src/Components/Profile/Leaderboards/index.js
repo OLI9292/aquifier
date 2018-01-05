@@ -3,13 +3,13 @@ import moment from 'moment';
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import _ from 'underscore';
+import Button from '../../Common/button';
 import queryString from 'query-string';
 
 import { color } from '../../../Library/Styles/index';
 import Dropdown from '../../Common/dropdown';
 import { loadLeaderboards } from '../../../Actions/index';
 
-const LOCATION = 'Earth'
 const PERIOD_CHOICES = [
   ['weekly', 'Weekly'],
   ['all', 'All Time']
@@ -20,7 +20,6 @@ class Leaderboards extends Component {
     super(props);
 
     this.state = {
-      location: LOCATION,
       period: PERIOD_CHOICES[0]
     }
   }
@@ -34,11 +33,18 @@ class Leaderboards extends Component {
   }
 
   loadData(props) {
-    if (props.user && !this.state.loading) {
-      const query = queryString.stringify({ user: props.user._id });
+    console.log(_.unique(_.pluck(props.ranks, 'group')))
+    if (props.ranks.length) {
+      if (props.ranks.length !== this.props.ranks.length) {
+        this.setState({ loadingMore: false, loading: false });
+      }
+      if (!this.state.location) {
+        this.setState({ location: _.first(_.pluck(props.ranks, 'group')) });
+      }      
+    } else if (props.user && !this.state.loading) {
+      const params = props.user.isTeacher ? { school: props.user.school } : { user: props.user._id };
+      const query = queryString.stringify(params);
       this.setState({ loading: true }, () => this.props.dispatch(loadLeaderboards(query)));
-    } else if (!_.isEqual(props.ranks, this.props.ranks)) {
-      this.setState({ loadingMore: false });
     }
   }
 
@@ -68,7 +74,7 @@ class Leaderboards extends Component {
   }
 
   render() {
-    const leaderboard = (() => {
+    const leaderboard = () => {
       return _.sortBy(this.leaderboard(), 'position').map((user, i) => {
         const content = this.state.location === 'Earth' && user.schoolName
           ? `${user.name}, ${user.schoolName}`
@@ -92,15 +98,28 @@ class Leaderboards extends Component {
           </td>
         </Row>
       })
-    })();
+    };
+
+    const loadMore = (direction) => {
+      const hide = direction === 'prev'
+        ? _.contains(_.pluck(this.leaderboard(), 'position'), 1)
+        : _.contains(_.pluck(this.leaderboard(), 'isLast'), true);
+
+      return <LoadMoreButton 
+        onClick={() => this.loadMore(direction)}
+        loadingMore={this.state.loadingMore}
+        hide={hide}>
+        Load More
+      </LoadMoreButton>;      
+    };
 
     return (
-      <div style={{paddingTop:'25px',margin:'0 auto',width:'95%',textAlign:'center'}}>
-        <div style={{width:'80%',margin:'0 auto',textAlign:'left'}}>
-          <p onClick={() => this.loadMore()} style={{fontSize:'3em',lineHeight:'0px',display:'inline-block'}}>
+      <Container loading={this.state.loading}>
+        <div style={{width:'80%',margin:'0 auto',display:'flex',alignItems:'end'}}>
+          <p onClick={() => this.loadMore()} style={{fontSize:'3em',lineHeight:'0px'}}>
             Leaderboards
           </p>
-          <div style={{display:'inline-block',textAlign:'center',verticalAlign:'top',margin:'20px 0px 0px 30px'}}>
+          <div style={{display:'flex',margin:'20px 0px 0px 30px',}}>
             <Dropdown 
               choices={_.unique(_.pluck(this.props.ranks, 'group'))} 
               handleSelect={(location) => this.setState({ location })}
@@ -111,49 +130,40 @@ class Leaderboards extends Component {
               selected={this.state.period[1]} />
           </div>
         </div>
-
         <TableContainer>
-          <p style={{lineHeight:'0px',paddingTop:'20px',fontSize:'1.5em'}}><b>{this.state.location}</b></p>
-          <p>{this.periodTitle()}</p>
-
-          <LoadMoreContainer hide={_.contains(_.pluck(this.leaderboard(), 'position'), 1)}>
-            <Circle 
-              loadingMore={this.state.loadingMore}
-              onMouseOver={() => this.loadMore('prev')} />
-            <div>
-              <p>Load More</p>
-            </div>
-          </LoadMoreContainer>
-
-          <table style={{padding:'5px 20px 5px 20px',width:'100%',margin:'0 auto',borderCollapse:'separate',borderSpacing:'0'}}>  
+          <p style={{lineHeight:'0px',paddingTop:'20px',fontSize:'1.5em'}}>
+            <b>{this.state.location}</b>
+          </p>
+          <p>
+            {this.periodTitle()}
+          </p>
+          {loadMore('prev')}
+          <table style={{padding:'5px 20px 20px 20px',width:'100%',margin:'0 auto',borderCollapse:'separate',borderSpacing:'0'}}>  
             <tbody>
-              {leaderboard}
+              {leaderboard()}
             </tbody>
           </table>        
+          {loadMore('next')}      
         </TableContainer>
-      </div>
+      </Container>
     );
   }
 }
 
-const Circle = styled.div`
-  transition: all 0.2s ease-in-out;
-  background: ${props => props.loadingMore ? color.green : 'white'};
-  cursor: pointer;
-  border: 2px solid ${color.lightGray};
-  border-radius: 100%;
-  overflow: hidden;  
-  width: 20px;
-  height: 20px;  
-  margin: 0px 7px 2px 0px;
+const Container = styled.div`
+  margin: 0 auto;
+  pointer-events: ${props => props.loading ? 'none' : 'auto'};
+  padding-top: 25px;
+  text-align: center;
+  width: 95%;
 `
 
-const LoadMoreContainer = styled.div`
-  visibility: ${props => props.hide ? 'hidden' : 'visibile'};
-  display: flex;
-  align-items: center;
-  width: 75%;
+const LoadMoreButton = Button.small.extend`
+  display: ${props => props.hide ? 'none' : 'inline-block'};
   margin: 0 auto;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  background-color: ${props => props.loadingMore ? color.green : color.blue};
 `
 
 const TableContainer = styled.div`

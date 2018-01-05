@@ -48,7 +48,7 @@ class Navigation extends Component {
     const shouldDisplay = (() => {
       switch (link) {
         case 'profile':      return this.props.user && !this.props.user.isTeacher
-        case 'leaderboards': return this.props.user
+        case 'leaderboards': return this.props.user && this.props.user.school && this.props.user.weeklyStarCount > 0
         case 'classes':      return this.props.user && this.props.user.isTeacher
         case 'lessons':      return this.props.user && this.props.user.role === 'admin'
         case 'wordLists':    return this.props.user && this.props.user.role === 'admin'
@@ -63,21 +63,21 @@ class Navigation extends Component {
 
     const dropdown = (() => {
       return <DropdownContainer hide={!this.state.displayDropdown}>
-        <Link.small margin={'5px'} hoverColor={color.green} style={{display:this.display('profile')}}
-          onClick={() => this.setState({ redirect: `/profile/${this.props.user._id}`})} 
-          >Progress</Link.small>
-
-        <Link.small margin={'5px'} hoverColor={color.green} style={{display:this.display('leaderboards')}}
-          onClick={() => this.setState({ redirect: 'leaderboards'})} 
-          >Leaderboards</Link.small>
-
         <Link.small margin={'5px'} hoverColor={color.green} style={{display:this.display('classes')}}
           onClick={() => this.setState({ redirect: '/classes' })}
-          >Class</Link.small>
+          >Class</Link.small>     
+
+        <Link.small margin={'5px'} hoverColor={color.green} style={{display:this.display('leaderboards')}}
+          onClick={() => this.setState({ redirect: '/leaderboards'})} 
+          >Leaderboards</Link.small>
 
         <Link.small margin={'5px'} hoverColor={color.green} style={{display:this.display('lessons')}}
           onClick={() => this.setState({ redirect: '/lessons'})}
-          >Lessons</Link.small>
+          >Lessons</Link.small>             
+
+        <Link.small margin={'5px'} hoverColor={color.green} style={{display:this.display('profile')}}
+          onClick={() => this.setState({ redirect: `/profile/${this.props.user._id}`})} 
+          >Progress</Link.small>
 
         <Link.small margin={'5px'} hoverColor={color.green} style={{display:this.display('wordLists')}}
           onClick={() => this.setState({ redirect: '/word-lists'})}
