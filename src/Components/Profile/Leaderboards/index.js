@@ -93,6 +93,7 @@ class Leaderboards extends Component {
           <td style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
             <p style={{fontSize:'1.1em'}}>{user.score}</p>
             <img 
+              alt="star"
               style={{height:'25px',margin:'0px 0px 4px 5px'}} 
               src={require('../../../Library/Images/star-yellow.png')} />
           </td>

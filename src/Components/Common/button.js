@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import Link from './link';
 import { lighten10 } from '../../Library/helpers';
-import { color, breakpoints } from '../../Library/Styles/index';
+import { color } from '../../Library/Styles/index';
 import GLOBAL from '../../Library/global';
 
 const Default = styled.button`
