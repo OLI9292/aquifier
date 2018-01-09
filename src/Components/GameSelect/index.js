@@ -66,7 +66,6 @@ class GameSelect extends Component {
   }
 
   render() {
-    if (!this.props.session) { return <Redirect push to={'/'} />; }
     if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }
 
     const isTeacher = this.props.user && this.props.user.isTeacher;
