@@ -1,5 +1,4 @@
 import React from 'react';
-import Adapter from 'enzyme-adapter-react-15';
 import { shallow } from 'enzyme';
 import { shallowToJson } from 'enzyme-to-json';
 import sinon from 'sinon';
