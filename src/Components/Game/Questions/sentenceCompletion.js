@@ -27,6 +27,7 @@ class SentenceCompletion extends Component {
     const pressedEquals = e.keyCode === 187 || e.keyCode === 61;
 
     if (pressedEquals) {
+      this.props.incrementHintCount();
       this.setState({ hintCount: this.state.hintCount + 1 });
     }
   }
@@ -71,6 +72,7 @@ class SentenceCompletion extends Component {
     if (correct) {
       this.correct();
     } else {
+      this.props.incrementIncorrectGuesses();
       this.setState({ incorrect: option });
       await sleep(200);
       this.setState({ incorrect: null });
