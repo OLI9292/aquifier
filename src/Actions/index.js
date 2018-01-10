@@ -21,6 +21,27 @@ export const fetchStudents = (id) => ({
 })
 
 //
+// QUESTION
+//
+
+export const saveQuestion = (data) => (dispatch, getState) => dispatch(createQuestion(data))
+
+export const QUESTIONS_REQUEST = 'QUESTIONS_REQUEST'
+export const QUESTIONS_SUCCESS = 'QUESTIONS_SUCCESS'
+export const QUESTIONS_FAILURE = 'QUESTIONS_FAILURE'
+
+export const createQuestion = (data) => ({
+  [CALL_API]: {
+    api: 'accounts',
+    data: data,
+    endpoint: 'auth/question',
+    method: 'POST',
+    types: [ QUESTIONS_REQUEST, QUESTIONS_SUCCESS, QUESTIONS_FAILURE ],
+    schema: Schemas.SUCCESS
+  }
+})
+
+//
 // ROOTS
 //
 

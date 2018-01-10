@@ -11,11 +11,13 @@ const API_ROOT = {
 const callApi = (api, endpoint, schema, method, data) => {
   const fullUrl = API_ROOT[api] + endpoint
   const body = { method: method, body: JSON.stringify(data), headers: { 'Content-Type': 'application/json' } };
+  console.log(data)
   console.log(`${method} ${api} ${endpoint}`)
 
   return fetch(fullUrl, body)
     .then(response =>
       response.json().then(json => {
+        console.log(json)
         if (!response.ok) { return Promise.reject(json) }
         const normalized = Object.assign({},normalize(json, schema))
         // Removes undefined keys
@@ -28,6 +30,8 @@ const callApi = (api, endpoint, schema, method, data) => {
 // We use this Normalizr schemas to transform API responses from a nested form
 // to a flat form where models are placed in `entities`, and nested
 // JSON objects are replaced with their IDs
+
+const successSchema = new schema.Entity('Success')
 
 // CURRICULUM
 const wordSchema = new schema.Entity('words', {}, { idAttribute: '_id' })
@@ -55,7 +59,8 @@ export const Schemas = {
   SESSION: sessionSchema,
   STUDENTS: studentsSchema,
   LEADERBOARDS: [rankSchema],
-  RELATED_WORDS_ARRAY: [relatedWordSchema]
+  RELATED_WORDS_ARRAY: [relatedWordSchema],
+  SUCCESS: successSchema
 }
 
 // Action key that carries API call info interpreted by this Redux middleware.

@@ -1,0 +1,42 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Dropdown should render correctly 1`] = `
+<styled.div>
+  <styled.p
+    display={true}
+    key="Earth"
+    onClick={[Function]}
+    selected={true}
+  >
+    Earth
+    <img
+      alt="down arrow"
+      src="white-arrow-down.png"
+      style={
+        Object {
+          "height": "45%",
+          "margin": "12px 0px 0px 5px",
+        }
+      }
+    />
+  </styled.p>
+  <styled.p
+    display={false}
+    key="TAG"
+    onClick={[Function]}
+    selected={false}
+  >
+    TAG
+    <img
+      alt="down arrow"
+      src="white-arrow-down.png"
+      style={
+        Object {
+          "height": "45%",
+          "margin": "12px 0px 0px 5px",
+        }
+      }
+    />
+  </styled.p>
+</styled.div>
+`;

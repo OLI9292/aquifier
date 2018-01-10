@@ -61,9 +61,12 @@ class ButtonQuestion extends Component {
     const correct = !_.isEqual(this.state.components, updatedComponents);
     this.animate(choice, correct);
 
-    correct
-      ? this.setState({ components: updatedComponents }, this.checkComplete)
-      : this.setState({ correct: false });
+    if (correct) {
+      this.setState({ components: updatedComponents }, this.checkComplete);
+    } else {
+      this.props.incrementIncorrectGuesses();
+      this.setState({ correct: false });
+    }
   }  
 
   redHerrings(exclude) {

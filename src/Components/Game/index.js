@@ -3,6 +3,7 @@ import Firebase from '../../Networking/Firebase';
 import React, { Component } from 'react';
 import { Redirect } from 'react-router';
 import styled from 'styled-components';
+import moment from 'moment';
 import _ from 'underscore';
 
 import ButtonQuestion from './Questions/button';
@@ -20,7 +21,7 @@ import { color } from '../../Library/Styles/index';
 import speedyPng from '../../Library/Images/speedy.png';
 import nextButton from '../../Library/Images/next-button.png';
 import { shouldRedirect } from '../../Library/helpers';
-import { loadWordLists, loadLessons } from '../../Actions/index';
+import { loadWordLists, loadLessons, saveQuestion } from '../../Actions/index';
 
 class Game extends Component {
   constructor(props) {
@@ -33,7 +34,9 @@ class Game extends Component {
       nextQuestionIndex: 0,
       score: 0,
       stats: [],
-      time: 0
+      time: 0,
+      hintCount: 0,
+      incorrectGuessCount: 0
     }
   }
 
@@ -97,6 +100,25 @@ class Game extends Component {
     }
   }
 
+  handleSaveQuestion(correct) {
+    const answeredAt = moment().format();
+    const mobile = false;
+    const hintsUsed = this.state.hintCount;
+    const incorrectGuesses = this.state.incorrectGuessCount;
+    const timeSpent = this.state.time;
+    const type = this.state.question.type.includes('spell') ? 'spell' : this.state.question.type;
+    const userId = this.props.user && this.props.user._id;
+    const word = this.state.question.word.value;
+    const answers = null;
+    const choices = null;
+
+    const data = { answered_at: answeredAt, answers: answers, choices: choices,
+      correct: correct, mobile: mobile, hints_used: hintsUsed, incorrect_guesses: incorrectGuesses,
+      time_spent: timeSpent, type: type, user_id: userId, word: word };
+
+    this.props.dispatch(saveQuestion(data));
+  }
+
   handleKeydown(e) {
     e.preventDefault();
     
@@ -133,7 +155,13 @@ class Game extends Component {
       const word = _.find(this.props.words, (w) => w.value === question.word);
       if (word) {
         question.word = word;
-        this.setState({ question: question, nextQuestionIndex: questionIndex + 1, time: 0 });
+        this.setState({
+          question: question,
+          hintCount: 0,
+          incorrectGuessCount: 0,
+          nextQuestionIndex: questionIndex + 1,
+          time: 0 
+      });
       } else {
         this.setState({ nextQuestionIndex: questionIndex + 1 }, this.nextQuestion);
       }
@@ -172,6 +200,7 @@ class Game extends Component {
     }
 
     this.setState(state);
+    this.handleSaveQuestion(correct);
     window.timeout = setTimeout(() => { this.nextQuestion() }, 3000000);
   }  
 
@@ -237,15 +266,20 @@ class Game extends Component {
       const type = this.state.question.type;
       if (type === 'sentenceCompletion') {
         return <SentenceCompletionQuestion
+          incrementIncorrectGuesses={() => this.setState({ incorrectGuessCount: this.state.incorrectGuessCount + 1 })}
+          incrementHintCount={() => this.setState({ hintCount: this.state.hintCount + 1 })}
           question={this.state.question}
           nextQuestion={this.runInterlude.bind(this)} />
       } else if (type.startsWith('spell')) {
         return <SpellQuestion
+          incrementIncorrectGuesses={() => this.setState({ incorrectGuessCount: this.state.incorrectGuessCount + 1 })}
+          incrementHintCount={() => this.setState({ hintCount: this.state.hintCount + 1 })}
           word={this.state.question.word}
           isEasy={type === 'spellEasy'}
           nextQuestion={this.runInterlude.bind(this)} />
       } else {
         return <ButtonQuestion
+          incrementIncorrectGuesses={() => this.setState({ incorrectGuessCount: this.state.incorrectGuessCount + 1 })}
           word={this.state.question.word}
           nextQuestion={this.runInterlude.bind(this)} />
       }

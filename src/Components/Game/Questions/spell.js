@@ -84,6 +84,8 @@ class SpellQuestion extends Component {
         answerComplete: true,
         cursor: -1
       },() => this.props.nextQuestion(correct));
+    } else {
+      this.props.incrementIncorrectGuesses();
     }
   }
 
@@ -157,6 +159,7 @@ class SpellQuestion extends Component {
 
   pressedHint = async () => {
     if (this.state.hintDisabled) { return; }
+    this.props.incrementHintCount();
 
     this.state.hintCount === 0
       ? this.revealRootsinDefinition()
