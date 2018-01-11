@@ -88,18 +88,17 @@ class WordListGameSelect extends Component {
       .filter((w) => w), 'name'), 'category')
   }
 
-  handleClickedContinue() {
-    if (this.state.step === 0) {
-      this.setState({ step: 1 });
-    } else {
-      const gameLink = this.gameLink();
-      if (gameLink) { this.setState({ redirect: gameLink }) } ;
-    }
+  continue(wordListId) {
+    this.setState({ wordListId: wordListId, step: 1 });
   }
 
-  gameLink() {
-    const timeLimit = this.state.timeLimit;
-    const wordList = _.find(_.flatten(_.values(this.state.wordLists)), (w) => w.id === this.state.selected);
+  play(timeLimit) {
+    const gameLink = this.gameLink(timeLimit);
+    if (gameLink) { this.setState({ redirect: gameLink }) } ;
+  }
+
+  gameLink(timeLimit) {
+    const wordList = _.find(_.flatten(_.values(this.state.wordLists)), (w) => w.id === this.state.wordListId);
 
     if (wordList) {
       return this.props.settings.players === 'multi'
@@ -129,14 +128,13 @@ class WordListGameSelect extends Component {
         else                            { return wordList.name; }
       })();
 
-      const [fColor, bColor] = selected
-        ? ['white', color.green]
-          : completed ? [color.green, color.lightestGray] : ['black', color.lightestGray];
+      const [fColor, bColor] = completed
+        ? ['white', color.green] 
+        : enabled ? ['black', color.lightestGray] : [color.gray, color.lightestGray];
 
       return <Button.small key={wordList.name} color={bColor}
         style={{color:fColor,margin:'5px',verticalAlign:'top'}}
-        onClick={() => this.setState(enabled ? { selected: wordList.id } : { redirect: '/startfreetrial'})}
-        onDoubleClick={() => this.handleClickedContinue()}
+        onClick={() => enabled ? this.continue(wordList.id) : this.setState({ redirect: '/startfreetrial'})}
       >{content}</Button.small>;
     }
 
@@ -173,10 +171,9 @@ class WordListGameSelect extends Component {
           <td>
             {
               TIME_LIMITS.map((t,i) => {
-                const [fColor, bColor] = this.state.timeLimit === t ? ['white', color.green] : ['black', color.lightestGray];
-                return <Button.small key={i} color={bColor}
-                  style={{color:fColor,margin:'0px 5px 0px 5px'}}
-                  onClick={() => this.setState({ timeLimit: t })}
+                return <Button.small key={i} color={color.lightestGray}
+                  style={{color:'black',margin:'0px 5px 0px 5px'}}
+                  onClick={() => this.play(t)}
                 >{`${t} Minutes`}</Button.small>
               })
             }
@@ -184,16 +181,6 @@ class WordListGameSelect extends Component {
           </tr>
         </tbody>
       </table>
-    }
-
-    const continueButton = () => {
-      const continueText = this.props.settings.players === 'multi' && this.state.step === 1
-        ? 'Generate Access Code'
-        : 'Continue';
-
-      return <Button.medium color={color.blue} style={{marginTop:'25px'}} onClick={() => this.handleClickedContinue()}>
-        {continueText}
-      </Button.medium>
     }
 
     return (
@@ -208,7 +195,6 @@ class WordListGameSelect extends Component {
           this.state.wordLists &&
           <div style={{textAlign:'center'}}>
             {this.state.step === 0 ? wordListTable() : timeSelect()}
-            {continueButton()}
           </div>
         }
       </div>

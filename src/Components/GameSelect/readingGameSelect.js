@@ -44,15 +44,14 @@ class ReadingGameSelect extends Component {
             return l.name.startsWith("Demo") || this.props.user
             ?
             <LessonButton key={i}
-              onClick={() => this.setState({ selected: l._id })}
+              onClick={() => this.setState({ redirect: `/play/reading=${l._id}`})}
               selected={l._id === this.state.selected}>
               {l.name}
             </LessonButton>
             :
             <LessonButton key={i}
               locked
-              onClick={() => this.setState({ redirect: '/startfreetrial' })}
-              selected={l._id === this.state.selected}>
+              onClick={() => this.setState({ redirect: '/startfreetrial' })}>
               <Image style={{height: '16px',marginRight:'5px'}} src={lockPng} />
               {l.name}
             </LessonButton>
@@ -72,16 +71,6 @@ class ReadingGameSelect extends Component {
         </Header>
 
         {lessons}
-
-        {
-          !_.isEmpty(this.props.lessons) && 
-          <div style={{textAlign:'center',marginTop:'50px'}}>
-            <Button.medium color={color.blue} 
-              onClick={() => this.setState({ redirect: `/play/reading=${this.state.selected}` })}>
-              Continue
-            </Button.medium>
-          </div>
-        }
       </div>
     );
   }
@@ -99,12 +88,9 @@ const Image = styled.img`
 `
 
 const LessonButton = Button.medium.extend`
-  color: ${props => props.locked
-    ? color.gray
-    : props.selected ? 'white' : 'black'
-  };
+  color: ${props => props.locked ? color.gray : 'black'};
   height: 80px;
-  background-color: ${props => props.selected ? color.green : color.lightestGray};
+  background-color: ${color.lightestGray};
   margin: 0.5em;
   vertical-align: top;
   &:hover {
