@@ -111,7 +111,7 @@ class ButtonQuestion extends Component {
       <div>
         <Definition><p>{definition()}</p></Definition>
         <div>{answerSpaces()}</div>
-        <GameButtons display={!this.props.isDisplayingImage}>{buttons()}</GameButtons>      
+        <GameButtons show={!this.props.isDisplayingImage}>{buttons()}</GameButtons>      
       </div>
     );
   }
@@ -140,7 +140,7 @@ const AnswerSpace = styled.p`
 
 const GameButtons = styled.div`
   margin-top: 3em;
-  display: ${props => props.display ? 'flex' : 'none'};
+  display: ${props => props.show ? 'flex' : 'none'};
   flex-wrap: wrap;
   justify-content: center;
 `
