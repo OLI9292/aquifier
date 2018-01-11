@@ -27,7 +27,13 @@ class Home extends Component {
   componentDidMount() {
     this.checkWindowSize();
     window.addEventListener('resize', this.checkWindowSize);
-    if (this.props.session) { this.setState({ redirect: '/play' })};
+
+    if (this.props.session) { 
+      this.setState({ redirect: '/play' })
+    } else {
+      const isOnMobile = /Mobi/i.test(navigator.userAgent);
+      this.setState({ isOnMobile });
+    };
   }
 
   componentWillUnmount() {
@@ -48,7 +54,10 @@ class Home extends Component {
         </Explanation>
         {this.state.isSmallScreen && <DaisyChain />}
         <div style={{textAlign:'center'}}>
-          <Button.medium color={color.green} style={{width:'90%'}} onClick={() => this.setState({ redirect: '/play' })}>Play Now</Button.medium>
+          <Button.medium color={color.green} style={{width:'90%',display:this.state.isOnMobile ? 'none' : ''}} 
+            onClick={() => this.setState({ redirect: '/play' })}>
+            Play Now
+          </Button.medium>
           {Button.iOS({width:'90%',marginTop:'15px'})}
         </div>
       </TopLeftContainer>
@@ -63,8 +72,11 @@ class Home extends Component {
           <Screenshot src={require('../../Library/Images/example.png')} />
          </ScreenshotContainer>
          <TextContainer>
-           <Text><BlackSpan><b>60% of English words</b></BlackSpan> have Greek or Latin roots.  In the fields of science and technology, that number is <BlackSpan><b>above 90%.</b></BlackSpan><br /><br />By solving fast-paced puzzles, students learn hundreds of roots and thousands of words.  Wordcraft is the most fun and efficient way to acquire a large vocabulary.</Text>
-           <Button.medium color={color.green} style={{width:'90%'}} onClick={() => this.setState({ redirect: '/play' })}>Play Now</Button.medium>
+          <Text><BlackSpan><b>60% of English words</b></BlackSpan> have Greek or Latin roots.  In the fields of science and technology, that number is <BlackSpan><b>above 90%.</b></BlackSpan><br /><br />By solving fast-paced puzzles, students learn hundreds of roots and thousands of words.  Wordcraft is the most fun and efficient way to acquire a large vocabulary.</Text>
+          <Button.medium color={color.green} style={{width:'90%',display:this.state.isOnMobile ? 'none' : ''}}
+            onClick={() => this.setState({ redirect: '/play' })}>
+            Play Now
+          </Button.medium>
          </TextContainer>
        </Container>
      })();
