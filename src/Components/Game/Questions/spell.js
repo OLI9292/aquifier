@@ -92,7 +92,7 @@ class SpellQuestion extends Component {
   }
 
   isIncorrect(component) {
-    return _.isNull(component.guess) || component.value !== component.guess;
+    return _.isNull(component.guess) || component.value.toLowerCase() !== component.guess.toLowerCase();
   }
 
   handleArrowPress(pressedLeft) {
@@ -212,7 +212,7 @@ class SpellQuestion extends Component {
 
     const answerSpaces = () => {
       return this.state.components.map((c, idx) => {
-        const correct = c.guess && c.value === c.guess;
+        const correct = c.guess && c.value.toLowerCase() === c.guess.toLowerCase();
         return <AnswerSpace
           correct={correct}
           onClick={() => this.handleClick(idx)}
