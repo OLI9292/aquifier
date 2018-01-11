@@ -15,13 +15,11 @@ import SentenceCompletionQuestion from './Questions/sentenceCompletion';
 import SpellQuestion from './Questions/spell';
 import Timer from '../Timer/index';
 
-import User from '../../Models/User';
 import { color } from '../../Library/Styles/index';
-
 import speedyPng from '../../Library/Images/speedy.png';
 import nextButton from '../../Library/Images/next-button.png';
 import { shouldRedirect } from '../../Library/helpers';
-import { loadWordLists, loadLessons, saveQuestion } from '../../Actions/index';
+import { loadWordLists, loadLessons, saveQuestion, saveStats } from '../../Actions/index';
 
 class Game extends Component {
   constructor(props) {
@@ -75,7 +73,13 @@ class Game extends Component {
     const wordList = this.state.gameOver ? this.props.settings.wordList : null;
 
     if (this.props.user && stats.length) { 
-      User.saveStats(this.props.user._id, stats, wordList);
+      const data = {
+        id: this.props.user._id,
+        stats: stats,
+        platform: 'web',
+        wordList: wordList
+      };
+      this.props.dispatch(saveStats(data));
     }
   }
 
