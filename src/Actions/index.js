@@ -297,6 +297,24 @@ export const loginUser = data => ({
 })
 
 
+export const saveStats = data => (dispatch, getState) => dispatch(saveUserStats(data))
+
+export const SAVE_STATS_REQUEST = 'SAVE_STATS_REQUEST'
+export const SAVE_STATS_SUCCESS = 'SAVE_STATS_SUCCESS'
+export const SAVE_STATS_FAILURE = 'SAVE_STATS_FAILURE'
+
+export const saveUserStats = data => ({
+  [CALL_API]: {
+    api: 'accounts',
+    data: data,
+    endpoint: 'auth/user/stats',
+    method: 'PATCH',
+    schema: Schemas.USER,
+    types: [ SAVE_STATS_REQUEST, SAVE_STATS_SUCCESS, SAVE_STATS_FAILURE ]
+  }
+})
+
+
 export const LOGOUT_USER = 'LOGOUT_USER'
 
 export const logoutUser = () => ({
