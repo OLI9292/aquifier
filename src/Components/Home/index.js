@@ -16,6 +16,8 @@ class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {};
+
+    this.checkWindowSize = this.checkWindowSize.bind(this);
   }
 
   checkWindowSize() {
@@ -24,12 +26,12 @@ class Home extends Component {
 
   componentDidMount() {
     this.checkWindowSize();
-    window.addEventListener('resize', this.checkWindowSize.bind(this));
+    window.addEventListener('resize', this.checkWindowSize);
     if (this.props.session) { this.setState({ redirect: '/play' })};
   }
 
   componentWillUnmount() {
-    window.removeEventListener('resize', this.checkWindowSize.bind(this));
+    window.removeEventListener('resize', this.checkWindowSize);
   }
 
   render() {
