@@ -32,7 +32,7 @@ class InfoForm extends Component {
       success: false
     }
 
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleKeydown = this.handleKeydown.bind(this);
   }
 
   componentDidMount() {
@@ -141,7 +141,7 @@ class InfoForm extends Component {
       </Heading>
         <div style={{width:'90%',margin:'0 auto'}}>
           <Text>Bring the full <span style={{color: color.yellow}}><b>WORDCRAFT</b></span> curriculum to your school with progress tracking, test prep, in-class multiplayer games, and worldwide competition. Send us the following and we'll set you up right away.</Text>
-          <form onSubmit={this.handleSubmit}>
+          <form onSubmit={this.handleSubmit.bind(this)}>
             <div style={{display:'flex',flexWrap:'wrap',justifyContent:'center'}}>
               {inputs}
               <Textarea.default
@@ -151,7 +151,7 @@ class InfoForm extends Component {
                 onChange={(e) => this.setState({ comments: e.target.value })} />
             </div>
             <SubmitButton valid={this.state.allValid} type='submit' value='submit' />
-            <ErrorMessage success={this.state.success} display={this.state.displayError || this.state.success}>
+            <ErrorMessage success={this.state.success} show={this.state.displayError || this.state.success}>
               {this.state.success ? 'Submitted.  We\'ll be in touch soon!' : this.state.errorMessage}
             </ErrorMessage>
           </form>
@@ -208,7 +208,7 @@ const ErrorMessage = styled.p`
   position: relative;
   padding-left: 10%;
   color: ${props => props.success ? color.green : color.red};
-  visibility: ${props => props.display ? 'visible' : 'hidden'}
+  visibility: ${props => props.show ? 'visible' : 'hidden'}
 
   @media (max-width: 1100px) {
     font-size: 1em;

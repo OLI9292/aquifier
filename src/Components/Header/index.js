@@ -5,7 +5,7 @@ import { Redirect } from 'react-router';
 import { color } from '../../Library/Styles/index';
 import Login from './login';
 import Navigation from './navigation';
-import { shouldRedirect } from '../../Library/helpers'
+import { sleep, shouldRedirect } from '../../Library/helpers';
 
 class Header extends Component {
   constructor(props) {
@@ -13,7 +13,8 @@ class Header extends Component {
     this.state = {};
   }
 
-  exitLogin() {
+  exitLogin = async () => {
+    await sleep(500);
     this.setState({ displayLogin: false });
   }
 

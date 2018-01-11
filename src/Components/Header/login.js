@@ -8,7 +8,7 @@ import Button from '../Common/button';
 import { color } from '../../Library/Styles/index';
 import InputStyles from '../Common/inputStyles';
 import LocalStorage from '../../Models/LocalStorage'
-import { sleep, shouldRedirect } from '../../Library/helpers';
+import { shouldRedirect } from '../../Library/helpers';
 
 import { loginUser } from '../../Actions/index';
 
@@ -18,7 +18,8 @@ class Login extends Component {
 
     this.state = {
       email: '',
-      password: ''
+      password: '',
+      focusedOn: 'email'
     }
 
     this.handleKeydown = this.handleKeydown.bind(this);
@@ -26,6 +27,7 @@ class Login extends Component {
 
   componentDidMount() {
     document.body.addEventListener('keydown', this.handleKeydown);
+    this.emailInput.focus();
   }
 
   componentWillUnmount() {
@@ -40,9 +42,7 @@ class Login extends Component {
     if (this.state.focusedOn === 'email') {
       this.passwordInput.focus();
       this.setState({ focusedOn: 'password' });
-    }
-
-    if (this.state.focusedOn === 'password') {
+    } else if (this.state.focusedOn === 'password') {
       this.handleLogin();
     }
   }
@@ -66,7 +66,6 @@ class Login extends Component {
     } else if (result.response.entities) {
       LocalStorage.setSession(result.response.entities.session);
       this.setState({ isError: false, message: 'Logged in.' });
-      await sleep(500);
       this.props.exitLogin();
     }
   }
@@ -85,6 +84,7 @@ class Login extends Component {
             style={_.extend({}, InputStyles.default, {width:'100%',marginBottom:'10px'})}
             placeholder={'username or email'} 
             onChange={(e) => this.setState({ email: e.target.value.replace(/ /g,'') })}
+            ref={(input) => { this.emailInput = input; }}
             onClick={() => this.setState({ focusedOn: 'email'})} />
 
           <input
@@ -94,7 +94,7 @@ class Login extends Component {
             ref={(input) => { this.passwordInput = input; }}
             onClick={() => this.setState({ focusedOn: 'password'})} />
 
-          <LoginButton onClick={this.handleLogin}>
+          <LoginButton onClick={this.handleLogin.bind(this)}>
             login
           </LoginButton>
 
