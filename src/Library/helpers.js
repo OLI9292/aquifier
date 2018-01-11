@@ -26,8 +26,6 @@ export const guid = () => {
   return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
 }
 
-export const mobilecheck = () => typeof window.orientation !== 'undefined'
-
 export const validateEmail = (email) => {
   const re = /\S+@\S+\.\S+/;
   return re.test(email);

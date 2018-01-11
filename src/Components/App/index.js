@@ -30,7 +30,6 @@ import LocalStorage from '../../Models/LocalStorage'
 
 // ETC
 import { color, breakpoints } from '../../Library/Styles/index';
-import { mobilecheck } from '../../Library/helpers';
 import './index.css';
 
 // STORE
@@ -102,7 +101,8 @@ const contained = (component) => () => <Container component={component} />
 class Container extends Component {
   render() {
     // Display not-mobile-compatible popup
-    if (mobilecheck() && this.props.component !== 'home') {
+    const isOnMobile = /Mobi/i.test(navigator.userAgent);
+    if (isOnMobile && this.props.component !== 'home') {
       return <MobilePopup />
     };
 
