@@ -20,14 +20,16 @@ class Login extends Component {
       email: '',
       password: ''
     }
+
+    this.handleKeydown = this.handleKeydown.bind(this);
   }
 
   componentDidMount() {
-    document.body.addEventListener('keydown', this.handleKeydown.bind(this), true);
+    document.body.addEventListener('keydown', this.handleKeydown);
   }
 
   componentWillUnmount() {
-    document.body.removeEventListener('keydown', this.handleKeydown.bind(this), true);
+    document.body.removeEventListener('keydown', this.handleKeydown);
   }    
 
   handleKeydown(event) {

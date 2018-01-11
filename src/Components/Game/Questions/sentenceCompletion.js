@@ -12,15 +12,17 @@ class SentenceCompletion extends Component {
   constructor(props) {
     super(props);
     this.state = {}
+
+    this.handleKeydown = this.handleKeydown.bind(this)
   }
 
   componentDidMount() {
     this.reset(this.props.question);
-    document.body.addEventListener('keydown', this.handleKeydown.bind(this), true);
+    document.body.addEventListener('keydown', this.handleKeydown);
   }
 
   componentWillUnmount() {
-    document.body.removeEventListener('keydown', this.handleKeydown, true);
+    document.body.removeEventListener('keydown', this.handleKeydown);
   }  
 
   handleKeydown(e) {

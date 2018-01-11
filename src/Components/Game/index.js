@@ -36,10 +36,12 @@ class Game extends Component {
       hintCount: 0,
       incorrectGuessCount: 0
     }
+
+    this.handleKeydown = this.handleKeydown.bind(this);
   }
 
   async componentDidMount() {
-    document.body.addEventListener('keydown', this.handleKeydown.bind(this), true);
+    document.body.addEventListener('keydown', this.handleKeydown);
 
     const refreshInterval = setInterval(() => this.setState({ time: this.state.time + 1 }), 1000);
     this.setState({ refreshInterval });
@@ -67,7 +69,7 @@ class Game extends Component {
     }
 
     clearInterval(this.state.refreshInterval);
-    document.body.removeEventListener('keydown', this.handleKeydown.bind(this), true);
+    document.body.removeEventListener('keydown', this.handleKeydown);
 
     const stats = this.state.stats;
     const wordList = this.state.gameOver ? this.props.settings.wordList : null;
@@ -296,7 +298,7 @@ class Game extends Component {
             {this.state.name}
           </h4>
 
-          <SpeedyContainer display={this.state.isSpeedy}>
+          <SpeedyContainer show={this.state.isSpeedy}>
             <img src={speedyPng} alt='speedy-flame' style={{height:'100%',width:'auto'}} />
             <p style={{color:color.red,fontSize:'1.25em'}}>Speedy! +2</p>
           </SpeedyContainer>
@@ -351,7 +353,7 @@ class Game extends Component {
 }
 
 const SpeedyContainer = styled.div`
-  display: ${props => props.display ? 'flex' : 'none'};
+  display: ${props => props.show ? 'flex' : 'none'};
   justify-content: space-evenly;
   align-items: center;
   width: 150px;

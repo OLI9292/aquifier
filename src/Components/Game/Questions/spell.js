@@ -27,15 +27,17 @@ class SpellQuestion extends Component {
       guess: '',
       word: null
     }
+
+    this.handleInput = this.handleInput.bind(this);
   }
 
   componentDidMount() {
     this.reset(this.props.word);
-    document.body.addEventListener('keydown', this.handleInput.bind(this), true);
+    document.body.addEventListener('keydown', this.handleInput);
   }
 
   componentWillUnmount() {
-    document.body.removeEventListener('keydown', this.handleInput, true);
+    document.body.removeEventListener('keydown', this.handleInput);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -225,7 +227,7 @@ class SpellQuestion extends Component {
       <div style={{marginTop:'25px'}}>
         <Definition>{definition()}</Definition>
         <div>{answerSpaces()}</div>
-        <HintButton display={!this.props.isDisplayingImage} type='button' onClick={() => this.pressedHint()}>Hint</HintButton>
+        <HintButton show={!this.props.isDisplayingImage} type='button' onClick={() => this.pressedHint()}>Hint</HintButton>
       </div>
     );
   }
@@ -260,7 +262,7 @@ const Definition = styled.div`
 
 const HintButton = Button.medium.extend`
   margin-top: 50px;
-  display: ${props => props.display ? 'normal' : 'none'};
+  display: ${props => props.show ? 'normal' : 'none'};
   background-color: ${color.blue};
   &:hover {
     background-color: ${color.blue10l};

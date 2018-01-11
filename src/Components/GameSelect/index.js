@@ -16,21 +16,24 @@ class GameSelect extends Component {
   constructor(props) {
     super(props);
     this.state = {};
+
+    this.handleKeydown = this.handleKeydown.bind(this);
   }
 
   componentDidMount() {
-    document.body.addEventListener('keydown', this.handleKeydown.bind(this), true);
+    document.body.addEventListener('keydown', this.handleKeydown);
   }
 
   componentWillUnmount() {
-    document.body.removeEventListener('keydown', this.handleKeydown.bind(this), true);
+    document.body.removeEventListener('keydown', this.handleKeydown);
   }
 
   handleKeydown(event) {
-    if (event.key !== 'Enter') { return; }
-    event.preventDefault();
-    const code = this.state.accessCode;
-    if (code && code.trim().length === 4) { this.joinMatch(); }
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      const code = this.state.accessCode;
+      if (code && code.trim().length === 4) { this.joinMatch(); }
+    }
   }
 
   handleClick(game, multiplayer = false) {
@@ -63,6 +66,10 @@ class GameSelect extends Component {
         this.setState({ error: 'Unable to join game.' });
       }
     }
+  }
+
+  updateAccessCode(event) {
+    this.setState({ accessCode: event.target.value.trim() });
   }
 
   render() {
@@ -107,7 +114,7 @@ class GameSelect extends Component {
             </p>
             <div style={{display:'flex',justifyContent:'space-around',margin:'25px 10px 25px 10px'}}>
               <Textarea.medium 
-                onChange={(e) => this.setState({ accessCode: e.target.value.trim() })}
+                onChange={this.updateAccessCode.bind(this)}
                 style={{textAlign:'center'}} 
                 placeholder={'access code'} />
               <Button.small
