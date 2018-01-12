@@ -23,11 +23,11 @@ class Dropdown extends Component {
       <Container open={this.state.open}>
         {
           choices.map((c, i) => {
-            const display = this.state.open || i === 0;
+            const show = this.state.open || i === 0;
             const selected = !this.state.open && i === 0
 
             return <Button
-              display={display}
+              show={show}
               selected={selected}
               key={c} 
               onClick={() => this.state.open ? this.handleSelect(c) : this.setState({ open: true })}>
@@ -45,7 +45,7 @@ class Dropdown extends Component {
 }
 
 const Button = styled.p`
-  display: ${props => props.display ? 'flex' : 'none'};
+  display: ${props => props.show ? 'flex' : 'none'};
   background-color: ${props => props.selected ? color.blue : 'white'};
   color: ${props => props.selected ? 'white' : 'black'};
   cursor: pointer;

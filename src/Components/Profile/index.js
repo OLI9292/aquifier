@@ -39,7 +39,7 @@ class Profile extends Component {
 
   async componentDidMount() {
     const id = _.last(window.location.href.split('/'));
-    const result = await this.props.dispatch(loadUser(id, false));
+    const result = await this.props.dispatch(loadUser(id, this.props.session, false));
 
     if (!result.error) {
       const user = _.first(_.values(result.response.entities.user));

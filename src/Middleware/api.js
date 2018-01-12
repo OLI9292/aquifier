@@ -6,12 +6,19 @@ const API_ROOT = {
   'curriculum': 'https://rocky-garden-48841.herokuapp.com/api/v2/'
 }
 
+const formatSession = session => session ? {
+  'access-token': session.token,
+  'key': session.user,
+  'session': session.sessionId
+} : {};
+
 // Fetches an API response and normalizes the result JSON according to schema.
 // This makes every API response have the same shape, regardless of how nested it was.
-const callApi = (api, endpoint, schema, method, data) => {
+const callApi = (api, endpoint, schema, method, data, session) => {
   const fullUrl = API_ROOT[api] + endpoint
-  const body = { method: method, body: JSON.stringify(data), headers: { 'Content-Type': 'application/json' } };
-  console.log(`${method} ${api} ${endpoint}`)
+  const headers = _.extend({}, { 'Content-Type': 'application/json' }, formatSession(session));
+  const body = { method: method, body: JSON.stringify(data), headers: headers };
+  console.log(`method: ${method}\napi: ${api}\nendpoint: ${endpoint}\nheaders: ${JSON.stringify(headers)}`)
 
   return fetch(fullUrl, body)
     .then(response =>
@@ -74,7 +81,7 @@ export default store => next => action => {
   }
 
   let { endpoint } = callAPI
-  const { api, schema, types, method, data } = callAPI
+  const { api, schema, types, method, data, session } = callAPI
 
   if (typeof endpoint === 'function')                 { endpoint = endpoint(store.getState()) }
   if (typeof endpoint !== 'string')                   { throw new Error('Specify a string endpoint URL.') }
@@ -91,7 +98,7 @@ export default store => next => action => {
   const [ requestType, successType, failureType ] = types
   next(actionWith({ type: requestType }))
 
-  return callApi(api, endpoint, schema, method, data).then(
+  return callApi(api, endpoint, schema, method, data, session).then(
     response => next(actionWith({
       response,
       type: successType

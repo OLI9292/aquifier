@@ -3,10 +3,10 @@
 exports[`Dropdown should render correctly 1`] = `
 <styled.div>
   <styled.p
-    display={true}
     key="Earth"
     onClick={[Function]}
     selected={true}
+    show={true}
   >
     Earth
     <img
@@ -21,10 +21,10 @@ exports[`Dropdown should render correctly 1`] = `
     />
   </styled.p>
   <styled.p
-    display={false}
     key="TAG"
     onClick={[Function]}
     selected={false}
+    show={false}
   >
     TAG
     <img

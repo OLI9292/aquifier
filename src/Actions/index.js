@@ -171,19 +171,20 @@ export const updateWordList = (data, id, session) => ({
 // LEADERBOARDS
 //
 
-export const loadLeaderboards = query => (dispatch, getState) => dispatch(fetchLeaderboards(query))
+export const loadLeaderboards = (query, session) => (dispatch, getState) => dispatch(fetchLeaderboards(query, session))
 
 export const LEADERBOARDS_REQUEST = 'LEADERBOARDS_REQUEST'
 export const LEADERBOARDS_SUCCESS = 'LEADERBOARDS_SUCCESS'
 export const LEADERBOARDS_FAILURE = 'LEADERBOARDS_FAILURE'
 
-export const fetchLeaderboards = query => ({
+export const fetchLeaderboards = (query, session) => ({
   [CALL_API]: {
     api: 'accounts',
     endpoint: `auth/leaderboard?${query}`,
     method: 'GET',    
     types: [ LEADERBOARDS_REQUEST, LEADERBOARDS_SUCCESS, LEADERBOARDS_FAILURE ],
-    schema: Schemas.LEADERBOARDS
+    schema: Schemas.LEADERBOARDS,
+    session: session
   }
 })
 
@@ -261,17 +262,18 @@ export const updateLesson = (data, id, session) => ({
 // USER
 //
 
-export const loadUser = (id, updateState = true) => (dispatch, getState) => dispatch(fetchUser(id, updateState))
+export const loadUser = (id, session, updateState = true) => (dispatch, getState) => dispatch(fetchUser(id, session, updateState))
 
 export const USER_REQUEST = 'USER_REQUEST'
 export const USER_SUCCESS = 'USER_SUCCESS'
 export const USER_FAILURE = 'USER_FAILURE'
 
-export const fetchUser = (id, updateState) => ({
+export const fetchUser = (id, session, updateState) => ({
   [CALL_API]: {
     api: 'accounts',
     endpoint: `auth/user/${id}`,
     method: 'GET',
+    session: session,
     schema: Schemas.USER,
     types: [ USER_REQUEST, USER_SUCCESS, USER_FAILURE ]    
   },
@@ -297,18 +299,19 @@ export const loginUser = data => ({
 })
 
 
-export const saveStats = data => (dispatch, getState) => dispatch(saveUserStats(data))
+export const saveStats = (data, session) => (dispatch, getState) => dispatch(saveUserStats(data, session))
 
 export const SAVE_STATS_REQUEST = 'SAVE_STATS_REQUEST'
 export const SAVE_STATS_SUCCESS = 'SAVE_STATS_SUCCESS'
 export const SAVE_STATS_FAILURE = 'SAVE_STATS_FAILURE'
 
-export const saveUserStats = data => ({
+export const saveUserStats = (data, session) => ({
   [CALL_API]: {
     api: 'accounts',
     data: data,
     endpoint: 'auth/user/stats',
     method: 'PATCH',
+    session: session,
     schema: Schemas.USER,
     types: [ SAVE_STATS_REQUEST, SAVE_STATS_SUCCESS, SAVE_STATS_FAILURE ]
   }
