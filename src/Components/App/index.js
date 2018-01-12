@@ -24,7 +24,6 @@ import Waiting from '../Waiting/index';
 import WordListsEdit from '../Dashboard/WordLists/edit';
 import WordListsTable from '../Dashboard/WordLists/table';
 import WordListGameSelect from '../GameSelect/wordListGameSelect';
-import { guid } from '../../Library/helpers';
 
 // MODELS
 import LocalStorage from '../../Models/LocalStorage'

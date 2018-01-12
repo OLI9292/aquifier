@@ -7,7 +7,7 @@ const API_ROOT = {
 }
 
 const formatSession = session => session ? {
-  'access_token': session.token,
+  'access-token': session.token,
   'key': session.user,
   'session': session.sessionId
 } : {};
@@ -18,7 +18,7 @@ const callApi = (api, endpoint, schema, method, data, session) => {
   const fullUrl = API_ROOT[api] + endpoint
   const headers = _.extend({}, { 'Content-Type': 'application/json' }, formatSession(session));
   const body = { method: method, body: JSON.stringify(data), headers: headers };
-  console.log(`${method} ${api} ${endpoint}`)
+  console.log(`method: ${method}\napi: ${api}\nendpoint: ${endpoint}\nheaders: ${JSON.stringify(headers)}`)
 
   return fetch(fullUrl, body)
     .then(response =>
