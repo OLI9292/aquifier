@@ -17,7 +17,6 @@ const formatSession = session => session ? {
 const callApi = (api, endpoint, schema, method, data, session) => {
   const fullUrl = API_ROOT[api] + endpoint
   const headers = _.extend({}, { 'Content-Type': 'application/json' }, formatSession(session));
-  console.log(headers);
   const body = { method: method, body: JSON.stringify(data), headers: headers };
   console.log(`${method} ${api} ${endpoint}`)
 

@@ -13,8 +13,8 @@ app.use(express.static(path.resolve(__dirname, '..', 'build')));
 // Allow Origin
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*')
-  res.header('Access-Control-Allow-Methods', "PUT, GET, POST, DELETE, OPTIONS")
-  res.header('Access-Control-Allow-Headers', "Origin, X-Requested-With, Content-Type, Accept, access_token, key, session")
+  res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS')
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, access_token, key, session')
   res.header('Access-Control-Allow-Credentials', 'true')
   next()
 })
