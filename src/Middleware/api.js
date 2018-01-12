@@ -12,6 +12,7 @@ const callApi = (api, endpoint, schema, method, data) => {
   const fullUrl = API_ROOT[api] + endpoint
   const body = { method: method, body: JSON.stringify(data), headers: { 'Content-Type': 'application/json' } };
   console.log(`${method} ${api} ${endpoint}`)
+  console.log(data)
 
   return fetch(fullUrl, body)
     .then(response =>

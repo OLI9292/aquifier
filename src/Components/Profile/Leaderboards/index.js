@@ -33,7 +33,6 @@ class Leaderboards extends Component {
   }
 
   loadData(props) {
-    console.log(_.unique(_.pluck(props.ranks, 'group')))
     if (props.ranks.length) {
       if (props.ranks.length !== this.props.ranks.length) {
         this.setState({ loadingMore: false, loading: false });
@@ -44,7 +43,8 @@ class Leaderboards extends Component {
     } else if (props.user && !this.state.loading) {
       const params = props.user.isTeacher ? { school: props.user.school } : { user: props.user._id };
       const query = queryString.stringify(params);
-      this.setState({ loading: true }, () => this.props.dispatch(loadLeaderboards(query)));
+      const session = { userId: this.props.user._id, sessionId: this.props.session.sessionId };
+      this.setState({ loading: true }, () => this.props.dispatch(loadLeaderboards(query, session)));
     }
   }
 
@@ -195,6 +195,7 @@ const Rank = styled.h3`
 `
 
 const mapStateToProps = (state, ownProps) => ({
+  session: state.entities.session,
   user: _.first(_.values(state.entities.user)),
   ranks: _.values(state.entities.ranks)
 })

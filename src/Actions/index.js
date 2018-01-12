@@ -171,15 +171,16 @@ export const updateWordList = (data, id, session) => ({
 // LEADERBOARDS
 //
 
-export const loadLeaderboards = query => (dispatch, getState) => dispatch(fetchLeaderboards(query))
+export const loadLeaderboards = (query, session) => (dispatch, getState) => dispatch(fetchLeaderboards(query, session))
 
 export const LEADERBOARDS_REQUEST = 'LEADERBOARDS_REQUEST'
 export const LEADERBOARDS_SUCCESS = 'LEADERBOARDS_SUCCESS'
 export const LEADERBOARDS_FAILURE = 'LEADERBOARDS_FAILURE'
 
-export const fetchLeaderboards = query => ({
+export const fetchLeaderboards = (query, session) => ({
   [CALL_API]: {
     api: 'accounts',
+    data: session,
     endpoint: `auth/leaderboard?${query}`,
     method: 'GET',    
     types: [ LEADERBOARDS_REQUEST, LEADERBOARDS_SUCCESS, LEADERBOARDS_FAILURE ],
