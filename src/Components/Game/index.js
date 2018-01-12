@@ -81,7 +81,7 @@ class Game extends Component {
         platform: 'web',
         wordList: wordList
       };
-      this.props.dispatch(saveStats(data));
+      this.props.dispatch(saveStats(data, this.props.session));
     }
   }
 
@@ -376,6 +376,7 @@ const NextButton = styled.img`
 `
 
 const mapStateToProps = (state, ownProps) => ({
+  session: state.entities.session,
   lessons: _.values(state.entities.lessons),
   roots: _.values(state.entities.roots),
   user: _.first(_.values(state.entities.user)),
