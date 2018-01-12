@@ -42,9 +42,8 @@ class Leaderboards extends Component {
       }      
     } else if (props.user && !this.state.loading) {
       const params = props.user.isTeacher ? { school: props.user.school } : { user: props.user._id };
-      const query = queryString.stringify(params);
-      const session = { userId: this.props.user._id, sessionId: this.props.session.sessionId };
-      this.setState({ loading: true }, () => this.props.dispatch(loadLeaderboards(query, session)));
+      const query = queryString.stringify(params);      
+      this.setState({ loading: true }, () => this.props.dispatch(loadLeaderboards(query, this.props.session)));
     }
   }
 
@@ -70,7 +69,7 @@ class Leaderboards extends Component {
     const location = rank.schoolId || 'Earth';
     const query = queryString.stringify({ period: this.state.period[0], school: location, start: position });
 
-    this.props.dispatch(loadLeaderboards(query));
+    this.props.dispatch(loadLeaderboards(query, this.props.session));
   }
 
   render() {
@@ -197,7 +196,7 @@ const Rank = styled.h3`
 const mapStateToProps = (state, ownProps) => ({
   session: state.entities.session,
   user: _.first(_.values(state.entities.user)),
-  ranks: _.values(state.entities.ranks)
+  ranks: _.values(state.entities.ranks),
 })
 
 export default connect(mapStateToProps)(Leaderboards)

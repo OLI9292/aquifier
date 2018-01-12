@@ -180,11 +180,11 @@ export const LEADERBOARDS_FAILURE = 'LEADERBOARDS_FAILURE'
 export const fetchLeaderboards = (query, session) => ({
   [CALL_API]: {
     api: 'accounts',
-    data: session,
     endpoint: `auth/leaderboard?${query}`,
     method: 'GET',    
     types: [ LEADERBOARDS_REQUEST, LEADERBOARDS_SUCCESS, LEADERBOARDS_FAILURE ],
-    schema: Schemas.LEADERBOARDS
+    schema: Schemas.LEADERBOARDS,
+    session: session
   }
 })
 
