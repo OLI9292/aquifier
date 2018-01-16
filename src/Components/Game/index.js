@@ -115,12 +115,13 @@ class Game extends Component {
     const type = this.state.question.type.includes('spell') ? 'spell' : this.state.question.type;
     const userId = this.props.user && this.props.user._id;
     const word = this.state.question.word.value;
+    const sessionId = this.props.session && this.props.session.sessionId;
     const answers = null;
     const choices = null;
 
     const data = { answered_at: answeredAt, answers: answers, choices: choices,
       correct: correct, mobile: mobile, hints_used: hintsUsed, incorrect_guesses: incorrectGuesses,
-      time_spent: timeSpent, type: type, user_id: userId, word: word };
+      session_id: sessionId, time_spent: timeSpent, type: type, user_id: userId, word: word };
 
     this.props.dispatch(saveQuestion(data));
   }
