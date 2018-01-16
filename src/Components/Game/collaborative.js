@@ -33,6 +33,7 @@ class Collaborative extends Component {
 
   wordPool(words, answers, size) {
     const [keyWords, not] = _.partition(words, w => _.contains(answers, w.value));
+    console.log(keyWords)
     return _.shuffle(_.union(_.sample(not, size - keyWords.length), keyWords));
   }
 
@@ -45,14 +46,14 @@ class Collaborative extends Component {
       const answered = _.flatten(_.map(_.values(snap.val().players), v => v === 0 ? [] : v.split(',')));
 
       const state = { answers: answers, answered: answered }
-      if (!this.state.words) { state.words = this.wordPool(words, answers, 300) };
+      if (!this.state.words) { state.words = this.wordPool(words, answers, 400) };
 
       this.setState(state, () => { if (!this.state.word) { this.setQuestion() }});
     });
   }
 
   runInterlude(correct) {
-    if (this.state.keyWordFound && correct) {
+    if (this.state.keyWordFound && correct && !_.contains(this.state.answered, this.state.word.value)) {
       const userAnswers = _.union(this.state.userAnswers, [this.state.word.value]);
       this.setState({ userAnswers });
       const username = this.props.user && `${this.props.user.firstName} ${this.props.user.lastName.charAt(0)}`;
@@ -64,7 +65,9 @@ class Collaborative extends Component {
   }
 
   setQuestion() {
-    const word = _.sample(this.state.words.filter(w => !_.isEqual(w, this.state.word)));
+    const word = _.sample(this.state.words.filter((w) => {
+      return !_.contains(this.state.answered, w.value) && !_.isEqual(w, this.state.word);
+    }));
     const type = this.randomType(8, 1, 1);
     const keyWordFound = _.contains(this.state.answers, word && word.value);
     this.setState({ word: word, type: type, keyWordFound: keyWordFound });
