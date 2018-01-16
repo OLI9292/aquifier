@@ -91,9 +91,14 @@ class Navigation extends Component {
 
     const loggedInNavigation = (() => {
       return <div style={{marginTop:'30px',cursor:'pointer'}}>
+        <Link.default color={color.red} margin={'0px 15px 0px 0px'} onClick={() => this.setState({ redirect: '/' })}>
+          Home
+        </Link.default>      
+
         <Link.default margin={'5px'} color={color.blue}>
           Me
         </Link.default>
+
         <img alt='dropdown' src={require('../../Library/Images/dropdown.png')}
           style={{display:'inline-block',height:'25px',marginTop:'-10px',verticalAlign:'middle'}} />
         {dropdown}
@@ -102,7 +107,10 @@ class Navigation extends Component {
 
     const loggedOutNavigation = (() => {
       return <div style={{marginTop:'30px'}}>
-        <Link.default color={color.green}  margin={'0px 15px 0px 0px'} onClick={this.clickedStartFreeTrial.bind(this)}>
+        <Link.default color={color.red} margin={'0px 15px 0px 0px'} onClick={() => this.setState({ redirect: '/' })}>
+          Home
+        </Link.default>      
+        <Link.default color={color.green} margin={'0px 15px 0px 0px'} onClick={this.clickedStartFreeTrial.bind(this)}>
           Start Free Trial
         </Link.default>
         <Link.default color={color.blue} onClick={this.props.clickedLogin}>
