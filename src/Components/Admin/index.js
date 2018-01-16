@@ -27,7 +27,8 @@ class Admin extends Component {
     const data = {
       status: 0,
       time: this.props.settings.time,
-      wordList: this.props.settings.wordList
+      wordList: this.props.settings.wordList,
+      type: 'competitive'
     }
 
     this.createMatch(data);

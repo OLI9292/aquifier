@@ -38,6 +38,7 @@ class GameSelect extends Component {
 
   handleClick(game, multiplayer = false) {
     const players = multiplayer ? 'multi' : 'single';
+    console.log(`/play/game=${game}&players=${players}&setup=true`)
     this.setState({ redirect: `/play/game=${game}&players=${players}&setup=true` });
   }
 
@@ -61,7 +62,11 @@ class GameSelect extends Component {
       if (joined) {
         result[1].accessCode = accessCode;
         const match = queryString.stringify(_.pick(result[1], 'status', 'accessCode'));
-        this.setState({ redirect: `/play/${match}` });
+        if (result[1].type === 'collaborative') {
+          this.setState({ redirect: `/play/collaborative/${match}` });
+        } else {
+          this.setState({ redirect: `/play/${match}` });
+        }
       } else {
         this.setState({ error: 'Unable to join game.' });
       }
@@ -78,27 +83,29 @@ class GameSelect extends Component {
     const isTeacher = this.props.user && this.props.user.isTeacher;
     const isStudent = this.props.user && !this.props.user.isTeacher;
 
-    const buttons = (game) => {
-      const display = isTeacher && game !== 'read' ? 'block' : 'none';
+    const buttons = (game) => {    
+      if (isTeacher) {
+        let display = ['block', 'block'];
+        if (game === 'read')          { display[1] = 'none'; }
+        if (game === 'collaborative') { display[0] = 'none'; }
 
-      return isTeacher 
-      ?
-      <div style={{margin:'20px 0px'}}>
-        <PlayButton onClick={() => this.handleClick(game)} color={'white'}>
-          {Button.imageAndText(require('../../Library/Images/singleplayer.png'), 'Preview Game')}
-        </PlayButton>
-        <PlayButton onClick={() => this.handleClick(game, true)} color={'white'} style={{display:display}}>
-          {Button.imageAndText(require('../../Library/Images/setupmatch.png'), 'Setup Match')}
-        </PlayButton>
-      </div>
-      :
-      <div style={{margin:'20px 0px'}}>
-        <Button.medium 
-          onClick={() => this.handleClick(game)} 
-          style={{backgroundColor:'white', color:color.darkGray}}>
-          Play
-        </Button.medium>
-      </div>
+        return <div style={{margin:'20px 0px'}}>
+          <PlayButton onClick={() => this.handleClick(game)} color={'white'} style={{display:display[0]}}>
+            {Button.imageAndText(require('../../Library/Images/singleplayer.png'), 'Preview Game')}
+          </PlayButton>
+          <PlayButton onClick={() => this.handleClick(game, true)} color={'white'} style={{display:display[1]}}>
+            {Button.imageAndText(require('../../Library/Images/setupmatch.png'), 'Setup Match')}
+          </PlayButton>
+        </div>
+      } else {
+        return <div style={{margin:'20px 0px'}}>
+          <Button.medium 
+            onClick={() => this.handleClick(game)} 
+            style={{backgroundColor:'white', color:color.darkGray}}>
+            Play
+          </Button.medium>
+        </div>
+      }
     }
 
     const compete = () => {
@@ -127,6 +134,20 @@ class GameSelect extends Component {
           </div>
       </GameButton>
     }
+
+    const collaborative = () => {
+      return isTeacher && 
+        <GameButton color={color.purple} onClick={() => this.handleGameButtonClick('collaborative') }>
+          <Image src={require('../../Library/Images/teamwork.png')} />
+          <p style={{color:'white',fontSize:'2em',height:'10px',lineHeight:'10px'}}>Collaborative</p>
+          <div style={{width:'250px'}}>
+            <p style={{color:'white',width:'90%',margin:'0 auto',fontSize:'1.25em'}}>
+              Complete puzzles with your classmates.
+            </p>
+            {buttons('collaborative')}
+          </div>
+        </GameButton>
+    }    
 
     return (
       <div style={{paddingTop:'25px'}}>
@@ -167,6 +188,7 @@ class GameSelect extends Component {
           </GameButton>
 
           {compete()}
+          {collaborative()}
         </div>
         <p style={{textAlign:'center',color:color.red}}>
           {this.state.error}
