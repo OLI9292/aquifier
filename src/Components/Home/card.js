@@ -89,7 +89,7 @@ class Card extends Component {
     })();
 
     return (
-      <OuterContainer inverted={inverted}>  
+      <OuterContainer gray={this.props.inverted}>  
         <InnerContainer>
         {inverted ? screenshot : info}
         <div style={{height:'100%',width:'15%'}}/>
@@ -102,13 +102,10 @@ class Card extends Component {
 
 const OuterContainer = styled.div`
   width: 100%;
-  background-color: ${props => props.inverted ? 'white' : color.lightestGray};
+  background-color: ${props => props.gray ? 'white' : color.lightestGray};
   @media (min-width: 900px) {
     height: 500px;
-  }
-  @media (max-width: 900px) {
-    margin-bottom: 100px;
-  }   
+  }  
 `
 
 const InnerContainer = styled.div`
@@ -120,6 +117,8 @@ const InnerContainer = styled.div`
   align-items: center;
   @media (max-width: 900px) {
     display: block;
+    padding-top: 75px;
+    padding-bottom: 75px;
   } 
 `
 

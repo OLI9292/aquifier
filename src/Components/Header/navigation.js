@@ -29,7 +29,7 @@ class Navigation extends Component {
   clickedStartFreeTrial() {
     isHome()
       ? window.scrollTo({ top: 2875, left: 0, behavior: 'smooth'})
-      : this.setState({ redirect: '/startfreetrial' });
+      : this.setState({ redirect: '/start-free-trial' });
   }  
 
   handleClick = e => {

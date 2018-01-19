@@ -40,7 +40,7 @@ class GameOver extends Component {
               Create an account for the full curriculum, progress tracking, and in-class multiplayer games.
             </p>
             <Button.medium
-              onClick={() => this.setState({ redirect: '/startfreetrial' })} 
+              onClick={() => this.setState({ redirect: '/start-free-trial' })} 
               color={color.green}
               style={{marginTop:'25px'}} >
               Start Free Trial

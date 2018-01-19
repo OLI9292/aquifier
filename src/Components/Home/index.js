@@ -8,6 +8,8 @@ import TESTIMONIALS from './testimonials';
 import Card from './card';
 import CTA from './cta';
 import DaisyChain from './daisyChain';
+import Header from './header';
+import { sleep, shouldRedirect } from '../../Library/helpers';
 
 import bgYellow from '../../Library/Images/Home/bg-yellow.png';
 import bgYellowFooter from '../../Library/Images/Home/bg-yellow-footer.png';
@@ -41,6 +43,9 @@ class Home extends Component {
   }
 
   render() {
+    if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }
+    if (this.props.session) { this.setState({ redirect: '/play'} )};
+
     return (
       <div>
         <TopContainer>
@@ -48,21 +53,7 @@ class Home extends Component {
         </TopContainer>
 
         <div style={{position:'relative'}}>
-          <h2 style={{fontFamily:'BrandonGrotesqueBold',fontSize:'2em',marginLeft:'10%'}}>
-            WORDCRAFT
-          </h2>
-
-          <LinksContainer>
-            <p style={{display:'none'}}>
-              ABOUT              
-            </p> 
-            <p>
-              START FREE TRIAL
-            </p>
-            <p>
-              LOGIN
-            </p>
-          </LinksContainer>
+          <Header smallScreen={this.state.smallScreen} />
 
           <TopContentContainer>
             <h1 style={{fontFamily:'BrandonGrotesqueBold',fontSize:'2.5em'}}>
@@ -80,10 +71,12 @@ class Home extends Component {
         </div>
       
         <ButtonContainer>
-          <Button color={color.blue}>
+          <Button color={color.blue} onClick={() => this.setState({ redirect: '/play'})}>
             PLAY NOW
           </Button>
-          <Button marginLeft color={color.green}>
+          <Button
+            onClick={() => this.setState({ redirect: '/start-free-trial' })}
+            marginLeft color={color.green}>
             SIGN UP
           </Button>
         </ButtonContainer>
@@ -117,11 +110,13 @@ class Home extends Component {
 
         <MorphemeContainer>
 
-          <img 
-            alt={'omni-carn-herb'}
-            src={morphemeCube}
-            style={{height:'150px',width:'auto',marginRight:'50px'}}
-            />
+          <MorphemeCubeContainer>
+            <img 
+              alt={'omni-carn-herb'}
+              src={morphemeCube}
+              style={{height:'100%',width:'auto',}}
+              />
+          </MorphemeCubeContainer>
 
           <div>
             <p style={{fontFamily:'BrandonGrotesqueBold',color:color.gray2,fontSize:'1.75em'}}>
@@ -161,27 +156,30 @@ class Home extends Component {
           </p>
           <div style={{width:'10%',height:'100%'}} />
           <div style={{width:'45%'}}>
-            <img
-              alt={'download-on-app-store'}
-              src={downloadOnAppStore}
-              style={{height:this.state.smallScreen ? '50px' : '75px',width:'auto'}} />
+            <a href='https://www.bit.ly/playwordcraft' target='_blank'>
+              <img
+                alt={'download-on-app-store'}
+                src={downloadOnAppStore}
+                style={{height:this.state.smallScreen ? '50px' : '75px',width:'auto'}} />
+            </a>
           </div>
         </AppleContainer>   
 
         <BottomContainer>             
           <BottomImage image={bgYellowFooter}>        
             <BottomNav>
-              <p style={{display:'none'}}>
+              <p style={{cursor:'pointer',display:'none'}}>
                 ABOUT              
               </p>
-              <p style={{display:'none'}}>
+              <p style={{cursor:'pointer',display:'none'}}>
                 METHODOLOGY
               </p>
-              <p style={{display:'none'}}>
+              <p style={{cursor:'pointer',display:'none'}}>
                 PARTNERS
               </p>      
-              <p>
-                CONTACT
+              <p style={{transition:'0.5s'}}
+                onMouseOver={() => this.setState({ hoveredOverContact: true })}>
+                {this.state.hoveredOverContact ? 'SUPPORT@PLAYWORDCRAFT.COM' : 'CONTACT'}
               </p>      
             </BottomNav>
           </BottomImage>        
@@ -229,21 +227,6 @@ const DaisyChainContainer = styled.div`
   }  
 `
 
-const LinksContainer = styled.div`
-  display: flex;
-  width: 35%;
-  min-width: 300px;
-  position: absolute;
-  right: 5%;
-  justify-content: space-evenly;
-  top: -5px;
-  font-family: BrandonGrotesqueBold;
-  @media (max-width: 900px) {
-    width: 100%;
-    position: static;
-  }    
-`
-
 const ButtonContainer = styled.div`
   display: flex;
   margin-left: 10%;
@@ -251,6 +234,7 @@ const ButtonContainer = styled.div`
   margin-top: 40px;
   position: relative;
   @media (max-width: 900px) {
+    display: none;
     width: 80%;
     margin-top: 50px;
     justify-content: space-evenly;
@@ -291,10 +275,26 @@ const MorphemeContainer = styled.div`
   display: flex;
   width: 70%;
   margin: 0 auto;
-  margin-top: 100px;
+  margin-top: 75px;
+  margin-bottom: 75px;
+  align-items: center;
+  @media (min-width: 900px) {
+    height: 300px;
+  }
   @media (max-width: 900px) {
     width: 90%;
+    text-align: center;
+    display: block;
   }    
+`
+
+const MorphemeCubeContainer = styled.div`
+  margin-right: 50px;
+  height: 50%;
+  @media (max-width: 900px) {
+    height: 100px;
+    margin-right: 0px;
+  }      
 `
 
 const WhiteLine = styled.div`
@@ -331,6 +331,7 @@ const AppleContainer = styled.div`
 
 const Button = styled.button`
   font-family: BrandonGrotesqueBold;
+  cursor: pointer;
   background-color: ${props => props.color};
   display: inline-block;
   color: white;

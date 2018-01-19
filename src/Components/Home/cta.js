@@ -1,15 +1,25 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
+import { Redirect } from 'react-router';
+
+import { shouldRedirect } from '../../Library/helpers';
+import { color } from '../../Library/Styles/index';
 
 import bgBlue from '../../Library/Images/Home/bg-blue.png';
 import bgBlueStraight from '../../Library/Images/Home/bg-blue-straight.png';
-import { color } from '../../Library/Styles/index';
 import hatIcon from '../../Library/Images/Home/icon-hat.png';
 import schoolIcon from '../../Library/Images/Home/icon-school.png';
 import districtIcon from '../../Library/Images/Home/icon-district.png';
 
 class CTA extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+
   render() {
+    if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }
+
     return (
       <Container>
         <SignUpImage image={this.props.smallScreen ? bgBlueStraight : bgBlue}>
@@ -19,7 +29,9 @@ class CTA extends Component {
           </Header>  
 
           <SignUpCardContainer>
-            <SignUpCard color={'white'} marginBottom={'100px'}>
+            <SignUpCard
+              onClick={() => this.setState({ redirect: '/start-free-trial' })}
+              color={'white'} marginBottom={'100px'}>
               <h2 style={{fontSize:'2em',paddingTop:'10px'}}>
                 Individual
               </h2>
@@ -38,13 +50,15 @@ class CTA extends Component {
                 </li>                  
               </ul>
               <div style={{position:'absolute',bottom:'25px',left:'25px'}}>
-                <Button color={color.blue}>
+                <Button color={color.blue} visibile={!this.props.smallScreen}>
                   START FREE TRIAL
                 </Button>
               </div>
             </SignUpCard>
 
-            <SignUpCard color={color.warmYellow} marginBottom={'50px'}>
+            <SignUpCard
+              onClick={() => this.setState({ redirect: '/start-free-trial' })}
+              color={color.warmYellow} marginBottom={'50px'}>
               <div style={{position:'absolute',height:'20px',width:'100%',backgroundColor:color.warmYellow,top:'0',zIndex:'100'}} />
 
               <div style={{position:'absolute',height:'70px',width:'100%',backgroundColor:color.orange,borderRadius:'20px',top:'-50px'}}>
@@ -74,13 +88,15 @@ class CTA extends Component {
                 </li>                                    
               </ul>
               <div style={{position:'absolute',bottom:'25px',left:'25px'}}>
-                <Button color={color.orange}>
+                <Button color={color.orange} visibile={!this.props.smallScreen}>
                   START FREE TRIAL
                 </Button>
               </div>
             </SignUpCard>
 
-            <SignUpCard color={'white'} marginBottom={'50px'}>
+            <SignUpCard
+              onClick={() => this.setState({ redirect: '/start-free-trial' })}
+              color={'white'} marginBottom={'50px'}>
               <h2 style={{fontSize:'2em',paddingTop:'10px'}}>
                 District
               </h2>
@@ -105,7 +121,7 @@ class CTA extends Component {
                 </li>                                    
               </ul>
               <div style={{position:'absolute',bottom:'25px',left:'25px'}}>
-                <Button color={color.blue}>
+                <Button color={color.blue} visibile={!this.props.smallScreen}>
                   START FREE TRIAL
                 </Button>
               </div>
@@ -155,6 +171,7 @@ const SignUpCardContainer = styled.div`
 `
 
 const SignUpCard = styled.div`
+  cursor: pointer;
   background-color: ${props => props.color};
   border-radius: 20px;
   width: 300px;
@@ -175,6 +192,7 @@ const SignUpImage = styled.div`
 
 const Button = styled.button`
   font-family: BrandonGrotesqueBold;
+  cursor: pointer;
   background-color: ${props => props.color};
   display: inline-block;
   color: white;
@@ -185,6 +203,7 @@ const Button = styled.button`
   height: 60px;
   border-radius: 30px;
   font-size: 1.25em;
+  visibility: ${props => props.visibile ? 'visibile' : 'hidden'};
 `
 
 export default CTA;

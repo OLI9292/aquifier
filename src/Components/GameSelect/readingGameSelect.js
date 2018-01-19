@@ -51,7 +51,7 @@ class ReadingGameSelect extends Component {
             :
             <LessonButton key={i}
               locked
-              onClick={() => this.setState({ redirect: '/startfreetrial' })}>
+              onClick={() => this.setState({ redirect: '/start-free-trial' })}>
               <Image style={{height: '16px',marginRight:'5px'}} src={lockPng} />
               {l.name}
             </LessonButton>
