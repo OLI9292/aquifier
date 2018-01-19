@@ -99,7 +99,7 @@ class Login extends Component {
           </LoginButton>
 
           <p 
-            onClick={() => this.setState({ redirect: '/startfreetrial' })} 
+            onClick={() => this.setState({ redirect: '/start-free-trial' })} 
             style={{color:color.blue,fontSize:'1.2em',cursor:'pointer'}}>
             No account? Start Free Trial Now!
           </p>

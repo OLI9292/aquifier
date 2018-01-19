@@ -134,7 +134,7 @@ class WordListGameSelect extends Component {
 
       return <Button.small key={wordList.name} color={bColor}
         style={{color:fColor,margin:'5px',verticalAlign:'top'}}
-        onClick={() => enabled ? this.continue(wordList.id) : this.setState({ redirect: '/startfreetrial'})}
+        onClick={() => enabled ? this.continue(wordList.id) : this.setState({ redirect: '/start-free-trial'})}
       >{content}</Button.small>;
     }
 

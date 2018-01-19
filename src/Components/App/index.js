@@ -57,17 +57,19 @@ class App extends Component {
       <Provider store={store}>
         <BrowserRouter>
           <Switch>
-            <Route exact path='/'                component={Home} />
-            <Route exact path='/classes'         component={contained('classesDashboard')} />            
-            <Route exact path='/leaderboard/:id' component={contained('leaderboard')} />
-            <Route exact path='/leaderboards'    component={contained('leaderboards')} />
-            <Route exact path='/lessons'         component={contained('lessonsTable')} />
-            <Route exact path='/lessons/:id'     component={contained('lessonEdit')} />
-            <Route exact path='/play'            component={contained('gameSelect')} />
-            <Route exact path='/profile/:id'     component={contained('profile')} />
-            <Route exact path='/startfreetrial'  component={contained('infoForm')} />
-            <Route exact path='/word-lists'      component={contained('wordListsTable')} />
-            <Route exact path='/word-lists/:id'  component={contained('wordListsEdit')} />
+            <Route exact path='/'                 component={Home} />
+            <Route exact path='/classes'          component={contained('classesDashboard')} />            
+            <Route exact path='/leaderboard/:id'  component={contained('leaderboard')} />
+            <Route exact path='/leaderboards'     component={contained('leaderboards')} />
+            <Route exact path='/lessons'          component={contained('lessonsTable')} />
+            <Route exact path='/lessons/:id'      component={contained('lessonEdit')} />
+            <Route exact path='/play'             component={contained('gameSelect')} />
+            
+            <Route exact path='/profile/:id'      component={contained('profile')} />
+
+            <Route exact path='/start-free-trial' component={contained('infoForm')} />
+            <Route exact path='/word-lists'       component={contained('wordListsTable')} />
+            <Route exact path='/word-lists/:id'   component={contained('wordListsEdit')} />
 
             
             {/* ADMIN */}

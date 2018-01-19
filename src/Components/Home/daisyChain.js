@@ -2,26 +2,27 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import * as d3 from 'd3';
 
+import { color } from '../../Library/Styles/index';
+
 const words = [
-  { value: 'cryptogram', definition: 'a piece of writing in a secret code', indices: [0,4], marginAdjustment: '24%' },
-  { value: 'cryptography', definition: 'the writing and decoding of secret codes', indices: [0,4], marginAdjustment: '20%' },
-  { value: 'telegraph', definition: 'a device for sending a written message over a great distance by wires', indices: [4,8],marginAdjustment: '25%' },
-  { value: 'dermatoglyph', definition: 'the fingerprint, i.e. a symbol found in the skin of the fingertips', indices: [], marginAdjustment: '20%' },
-  { value: 'decagon', definition: 'a geometrical shape with ten angles', indices: [], marginAdjustment: '32%' },
-  { value: 'cephalopod', definition: 'an animal, such as a squid, that uses its head as a foot', indices: [], marginAdjustment: '25%'},
-  { value: 'gastropod', definition: 'an animal that uses its stomach as a foot - such as a snail', indices: [6,8], marginAdjustment: '25%' },
-  { value: 'pteropod', definition: 'a sea creature with a winged foot for swimming, also known as the sea butterfly', indices: [5,7], marginAdjustment: '28%' },
-  { value: 'pterodactyl', definition: 'an extinct flying dinosaur which had a finger on its wing', indices: [0,4], marginAdjustment: '23%' },
-  { value: 'quadruped', definition: 'a four legged animal', indices: [], marginAdjustment: '26%' },
-  { value: 'quadrilateral', definition: 'a four sided shape', indices: [0,3], marginAdjustment: '17%' },
-  { value: 'equilateral', definition: 'having equal sides', indices: [4,10], marginAdjustment: '23%' },
-  { value: 'polydactylic', definition: 'having many or too many fingers or toes', indices: [], marginAdjustment: '20%' },
-  { value: 'polyhedron', definition: 'a solid geometrical shape with many faces', indices: [0,3], marginAdjustment: '24%' },
-  { value: 'protoplasm', definition: 'the living material inside a cell, so named because it is the first formed thing', indices: [], marginAdjustment: '24%' },
-  { value: 'isometric', definition: 'having equal measure', indices: [], marginAdjustment: '25%' },
-  { value: 'lithograph', definition: 'a symbol or inscription on stone', indices: [0,3], marginAdjustment: '24%' },
-  { value: 'monolith', definition: 'a single piece of stone', indices: [4,7], marginAdjustment: '28%' },
-  { value: 'monogram', definition: 'a symbol with one initial letter from each word', indices: [4,7], marginAdjustment: '26%' }
+  { value: 'cryptogram', definition: 'a piece of writing in a secret code', indices: [0,4] },
+  { value: 'cryptography', definition: 'the writing and decoding of secret codes', indices: [0,4] },
+  { value: 'telegraph', definition: 'a device for sending a written message over a great distance by wires', indices: [4,8] },
+  { value: 'dermatoglyph', definition: 'the fingerprint, i.e. a symbol found in the skin of the fingertips', indices: [] },
+  { value: 'decagon', definition: 'a geometrical shape with ten angles', indices: [] },
+  { value: 'cephalopod', definition: 'an animal, such as a squid, that uses its head as a foot', indices: []},
+  { value: 'gastropod', definition: 'an animal that uses its stomach as a foot - such as a snail', indices: [6,8] },
+  { value: 'pteropod', definition: 'a sea creature with a winged foot for swimming, also known as the sea butterfly', indices: [5,7] },
+  { value: 'pterodactyl', definition: 'an extinct flying dinosaur which had a finger on its wing', indices: [0,4] },
+  { value: 'quadruped', definition: 'a four legged animal', indices: [] },
+  { value: 'equilateral', definition: 'having equal sides', indices: [4,10] },
+  { value: 'polydactylic', definition: 'having many or too many fingers or toes', indices: [] },
+  { value: 'polyhedron', definition: 'a solid geometrical shape with many faces', indices: [0,3] },
+  { value: 'protoplasm', definition: 'the living material inside a cell, so named because it is the first formed thing', indices: [] },
+  { value: 'isometric', definition: 'having equal measure', indices: [] },
+  { value: 'lithograph', definition: 'a symbol or inscription on stone', indices: [0,3] },
+  { value: 'monolith', definition: 'a single piece of stone', indices: [4,7] },
+  { value: 'monogram', definition: 'a symbol with one initial letter from each word', indices: [4,7] }
 ]
 
 class DaisyChain extends Component {
@@ -93,48 +94,46 @@ class DaisyChain extends Component {
 
   render() {
     const word = this.state.words[this.state.idx];
+    const marginLeft = `${Math.max(0, 40 - (word.value.length * 3))}%`;
+
     return (
-      <Layout>
-        <div style={{marginLeft: word.marginAdjustment, height: '100px'}}>
+      <Container>
+        <div style={{marginLeft:marginLeft,height:'75px',margin:'-15px 0px 15px 0px'}}>
           <SVG />
         </div>
+        
         <ImageContainer>
           <Image src={require(`../../Library/Images/${word.value}.png`)} />
         </ImageContainer>
-        <Definition>{word.definition}</Definition>
-      </Layout>
+
+        <Definition>
+          {word.definition}
+        </Definition>
+      </Container>
     );
   }
 }
 
-const Layout = styled.div`
-  width: 100%;
-  height: 100%;
+const Container = styled.div`
+  width: 300px;
+  height: 300px;
   border-radius: 10px;
   background: white;
-
-  @media (max-width: 1100px) {
-   max-width: 440px;
-   margin: 0px auto;
- }
+  border: 2px solid ${color.gray};
+  padding: 30px;
+  margin: 0 auto;
 `
 
 const SVG = styled.svg`
   width: 100%;
+  margin-bottom: 10px;
   height: 100%;
-  font-size: 1.8em;
+  font-size: 2.5em;
   font-family: monospace;
-  @media (max-width: 450px) {
-    font-size: 1.4em;
-  }
 `
 const ImageContainer = styled.div`
-  height: 200px;
+  height: 150px;
   width: 100%;
-  margin-bottom: 10px;
-  @media (max-width: 450px) {
-      height: 150px;
-  }
 `
 
 const Image = styled.img`
@@ -145,15 +144,9 @@ const Image = styled.img`
 `
 
 const Definition = styled.p`
-  width: 80%;
-  margin-left: 10%;
   height: 75px;
-  margin-top: 50px;
   text-align: center;
-  font-size: 1.25em;
-  @media (max-width: 1100px) {
-    display: none;
-  }
+  font-size: 1.2em;
 `
 
 export default DaisyChain;

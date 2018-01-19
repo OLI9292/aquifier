@@ -4,9 +4,18 @@
 }
 
 @font-face {
-  font-family: BrandonGrotesque;
+  font-family: BrandonGrotesqueBold;
   src: url('../../Library/Fonts/Brandon_bld.otf');
-  font-weight: bold;
+}
+
+@font-face {
+  font-family: EBGaramond;
+  src: url('../../Library/Fonts/EBGaramond_reg.ttf');
+}
+
+@font-face {
+  font-family: EBGaramondSemiBold;
+  src: url('../../Library/Fonts/EBGaramond_semibld.ttf');
 }
 
 html, body, #root {
