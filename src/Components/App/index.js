@@ -64,7 +64,9 @@ class App extends Component {
             <Route exact path='/lessons'         component={contained('lessonsTable')} />
             <Route exact path='/lessons/:id'     component={contained('lessonEdit')} />
             <Route exact path='/play'            component={contained('gameSelect')} />
+            
             <Route exact path='/profile/:id'     component={contained('profile')} />
+
             <Route exact path='/startfreetrial'  component={contained('infoForm')} />
             <Route exact path='/word-lists'      component={contained('wordListsTable')} />
             <Route exact path='/word-lists/:id'  component={contained('wordListsEdit')} />
