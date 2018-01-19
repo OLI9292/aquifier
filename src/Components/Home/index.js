@@ -17,7 +17,7 @@ import downloadOnAppStore from '../../Library/Images/Home/download-on-app-store.
 
 const morphemeText = 'Studies have shown that morphemes supercharge vocabulary, thus enhancing ' +
   'literacy and reading comprehension. Wordcraft makes morphemes fun, addictive, and easy to ' +
-  'acquire. Read more about the latest research here.';
+  'acquire.';
 
 class Home extends Component {
   constructor(props) {
@@ -53,9 +53,9 @@ class Home extends Component {
           </h2>
 
           <LinksContainer>
-            <p>
+            <p style={{display:'none'}}>
               ABOUT              
-            </p>
+            </p> 
             <p>
               START FREE TRIAL
             </p>
@@ -171,13 +171,13 @@ class Home extends Component {
         <BottomContainer>             
           <BottomImage image={bgYellowFooter}>        
             <BottomNav>
-              <p>
+              <p style={{display:'none'}}>
                 ABOUT              
               </p>
-              <p>
+              <p style={{display:'none'}}>
                 METHODOLOGY
               </p>
-              <p>
+              <p style={{display:'none'}}>
                 PARTNERS
               </p>      
               <p>

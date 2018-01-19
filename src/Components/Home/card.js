@@ -53,9 +53,10 @@ class Card extends Component {
 
   render() {
     const data = TYPES[this.props.type];
+    const inverted = this.invertedCheck();
 
     const info = (() => {
-      const [justify, textAlign] = this.invertedCheck() ? ['',''] : ['flex-end', 'right'];
+      const [justify, textAlign] = inverted ? ['',''] : ['flex-end', 'right'];
 
       const header = (() => {
         return <h3 style={{fontFamily:'BrandonGrotesqueBold',color:color.gray2,fontSize:'1.25em'}}>
@@ -67,9 +68,9 @@ class Card extends Component {
 
       return <Info textAlign={textAlign}>
         <Header justify={justify}>
-          {this.invertedCheck() ? icon : header}
+          {inverted ? icon : header}
           <div style={{height:'100%',width:'15px'}}/>
-          {this.invertedCheck() ? header : icon}
+          {inverted ? header : icon}
         </Header>
         <br />
         <Description>
@@ -88,30 +89,38 @@ class Card extends Component {
     })();
 
     return (
-      <Container>  
-        {this.invertedCheck() ? screenshot : info}
-        
+      <OuterContainer inverted={inverted}>  
+        <InnerContainer>
+        {inverted ? screenshot : info}
         <div style={{height:'100%',width:'15%'}}/>
-
-        {this.invertedCheck() ? info : screenshot}
-      </Container>
+        {inverted ? info : screenshot}
+        </InnerContainer>
+      </OuterContainer>
     );
   }
 }
 
-const Container = styled.div`
-  width: 80%;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
+const OuterContainer = styled.div`
+  width: 100%;
+  background-color: ${props => props.inverted ? 'white' : color.lightestGray};
   @media (min-width: 900px) {
     height: 500px;
   }
   @media (max-width: 900px) {
-    display: block;
     margin-bottom: 100px;
   }   
+`
+
+const InnerContainer = styled.div`
+  width: 80%;
+  height: 100%;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  @media (max-width: 900px) {
+    display: block;
+  } 
 `
 
 const Header = styled.div`
