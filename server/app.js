@@ -1,8 +1,12 @@
 const express = require('express');
 const morgan = require('morgan');
 const path = require('path');
+const sslRedirect = require('heroku-ssl-redirect');
 
 const app = express();
+
+// enable ssl redirect
+app.use(sslRedirect());
 
 // Setup logger
 app.use(morgan(':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] :response-time ms'));
