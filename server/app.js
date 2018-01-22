@@ -28,4 +28,8 @@ app.get('*', (req, res) => {
   res.sendFile(path.resolve(__dirname, '..', 'build', 'index.html'));
 });
 
+app.get('/.well-known/acme-challenge/:content', (req, res) => {
+  res.send('Xgr_mooYDqwofhfAybNFnqDfQlvIkrIMMAUYSxHCb9k')
+})
+
 module.exports = app;
