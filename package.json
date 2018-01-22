@@ -79,6 +79,9 @@
     "test": "node scripts/test.js --env=jsdom",
     "bringToYourSchoolFormCheck": "node bin/bringToYourSchoolFormCheck"
   },
+  "engines": {
+    "node": "6.9.3"
+  },  
   "jest": {
     "collectCoverageFrom": [
       "src/**/*.{js,jsx}"
