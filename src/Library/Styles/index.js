@@ -1,3 +1,5 @@
+import { css } from 'styled-components'
+
 // TODO: change 10l, there might exist a method to do this?
 export const color = {
   mainBlue: '#3F81E6',
@@ -31,9 +33,12 @@ export const color = {
   facebookBlue10l: '#5a71ac'
 };
 
-export const breakpoints = {
-  largeWH: '@media screen and (max-height: 700px), screen and (max-width: 1150px)',
-  largeW: '@media screen and (max-width: 1150px)',
-  mediumW: '@media screen and (max-width: 1000px)',
-  smallW: '@media (max-width: 600px)'
+export const PHONE_MAX_WIDTH = 600
+
+export const media = {
+  phone: (...args) => css`
+    @media (max-width: ${PHONE_MAX_WIDTH}px) {
+      ${ css(...args) }
+    }
+  `
 }

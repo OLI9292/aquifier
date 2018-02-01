@@ -18,7 +18,7 @@ const Large = Default.extend`
 `
 
 const Small = Default.extend`
-  font-size: 1.25em;
+  font-size: 1em;
 `
 
 const Link = {

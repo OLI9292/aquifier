@@ -69,7 +69,7 @@ class ClassesDashboard extends Component {
     if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }
 
     return (
-      <div>
+      <div style={{width:'100%',textAlign:'center'}}>
         <Header>
           My Class
         </Header>
@@ -110,6 +110,12 @@ class ClassesDashboard extends Component {
   }
 }
 
+const Header = styled.p`
+  font-size: 2.25em;
+  height: 0px;
+  line-height: 0px;
+`
+
 const Row = styled.tr`
   height: 75px;
   background-color: ${props => props.holistic
@@ -117,14 +123,6 @@ const Row = styled.tr`
     : props.dark ? color.lightestGray : 'white'
   };
   cursor: pointer;
-`
-
-const Header = styled.p`
-  width: 100%;
-  font-size: 2.75em;
-  padding-top: 25px;
-  text-align: center;
-  height: 25px;
 `
 
 const Table = styled.table`

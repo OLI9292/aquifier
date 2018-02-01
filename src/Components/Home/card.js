@@ -38,7 +38,7 @@ const TYPES = {
 const highlight = (text, toHighlight) => {
   return text
     .split(' ')
-    .map(w => <span style={{color:_.contains(toHighlight, w) ? color.mainBlue : 'black'}}>{w} </span>)
+    .map(w => <span key={w} style={{color:_.contains(toHighlight, w) ? color.mainBlue : 'black'}}>{w} </span>)
 }
 
 class Card extends Component {

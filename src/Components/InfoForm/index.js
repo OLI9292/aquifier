@@ -1,15 +1,13 @@
 import Firebase from '../../Networking/Firebase';
 import React, { Component } from 'react';
+import { Redirect } from 'react-router';
 import styled from 'styled-components';
 import _ from 'underscore';
 
 import Textarea from '../Common/textarea';
+import { shouldRedirect } from '../../Library/helpers';
 import InputStyles from '../Common/inputStyles';
-import Heading from '../Common/heading';
-import Container from '../Common/container';
-import lightGrayCheckmark from '../../Library/Images/Checkmark-LightGray.png';
-import greenCheckmark from '../../Library/Images/Checkmark-Green.png';
-import { color } from '../../Library/Styles/index';
+import { color, media } from '../../Library/Styles/index';
 
 class InfoForm extends Component {
   constructor(props) {
@@ -116,63 +114,84 @@ class InfoForm extends Component {
   }
 
   render() {
+    if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }
+
     const inputs = this.state.inputs.map((input, idx) => {
-      return <div style={{margin:'1%'}} key={idx}>
-        <img
-          alt='checkmark'
-          className='checkmark'
-          src={this.isValid(input) ? greenCheckmark : lightGrayCheckmark}
-          style={{height:'50px',width:'auto',marginRight:'5px'}}/>
-        <input
-          type='text'
-          style={_.extend({}, InputStyles.default, {'verticalAlign':'top'})}
-          name={input.name}
-          placeholder={input.placeholder}
-          ref={(input) => { this.inputs = _.union(this.inputs, [input]); }}
-          onClick={() => this.setState({ focusedOn: idx })}
-          onChange={this.handleInputChange.bind(this)} />
-      </div>
+      return <input
+        key={idx}
+        type='text'
+        style={_.extend({}, InputStyles.default, { display: 'block', margin: '15px 0px' })}
+        name={input.name}
+        placeholder={input.placeholder}
+        ref={(input) => { this.inputs = _.union(this.inputs, [input]); }}
+        onClick={() => this.setState({ focusedOn: idx })}
+        onChange={this.handleInputChange.bind(this)} />
     });
+
+    const description = (() => {
+      return <p style={{lineHeight:'40px',fontSize:'1.25em',fontFamily:'EBGaramond',marginBottom:'40px'}}>
+        <span>Bring the full</span>
+        <span style={{color: color.yellow}}><b> WORDCRAFT </b></span>
+        <span>curriculum to your school with progress tracking, test prep, in-class multiplayer games, and worldwide competition. Send us the following and we'll set you up right away.</span>
+      </p>
+    })()
 
     return (
       <Container>
-      <Heading color={color.green}>
-        START FREE TRIAL
-      </Heading>
-        <div style={{width:'90%',margin:'0 auto'}}>
-          <Text>Bring the full <span style={{color: color.yellow}}><b>WORDCRAFT</b></span> curriculum to your school with progress tracking, test prep, in-class multiplayer games, and worldwide competition. Send us the following and we'll set you up right away.</Text>
-          <form onSubmit={this.handleSubmit.bind(this)}>
-            <div style={{display:'flex',flexWrap:'wrap',justifyContent:'center'}}>
-              {inputs}
-              <Textarea.default
-                style={{width:'80%',height:'200px',float:'left',padding:'10px','fontSize':'1.25em'}}
-                name='comments'
-                placeholder='comments'
-                onChange={(e) => this.setState({ comments: e.target.value })} />
-            </div>
-            <SubmitButton valid={this.state.allValid} type='submit' value='submit' />
-            <ErrorMessage success={this.state.success} show={this.state.displayError || this.state.success}>
-              {this.state.success ? 'Submitted.  We\'ll be in touch soon!' : this.state.errorMessage}
-            </ErrorMessage>
-          </form>
-        </div>
+        <MobileExit
+          onClick={() => this.setState({ redirect: '/' })}
+          src={require('../../Library/Images/exit-gray.png')}
+          display={this.props.smallScreen ? 'fixed' : 'none'} />
+
+        <h1 style={{height:'10px',lineHeight:'0px',letterSpacing:'1px'}}>
+          START FREE TRIAL
+        </h1>
+
+        {description}
+        
+        <form onSubmit={this.handleSubmit.bind(this)}>
+
+          {inputs}
+
+          <Textarea.default
+            style={{width:'100%',height:'200px',padding:'10px','fontSize':'1.25em'}}
+            name='comments'
+            placeholder='comments'
+            onChange={(e) => this.setState({ comments: e.target.value })} />
+
+          <SubmitButton
+            type='submit'
+            value='submit'
+            valid={this.state.allValid} />
+
+          <ErrorMessage success={this.state.success} show={this.state.displayError || this.state.success}>
+            {this.state.success ? 'Submitted.  We\'ll be in touch soon!' : this.state.errorMessage}
+          </ErrorMessage>
+        </form>
       </Container>
     );
   }
 }
 
-const Text = styled.p`
-  line-height: 40px;
-  font-size: 1.5em;
-  color: ${color.darkGray};
-  @media (max-width: 1100px) {
-    line-height: 30px;
-    text-align: left !important;
-    font-size: 1.2em;
-  }
-  @media (max-width: 450px) {
-    font-size: 0.9em;
-  }
+const MobileExit = styled.img`
+  height: 50px;
+  width: auto;
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  cursor: pointer;
+`
+
+const Container = styled.div`
+  padding: 50px;
+  ${media.phone`
+    position: absolute;
+    z-index: 100000000;
+    background-color: white;
+    width: 100%;
+    padding: 100px 50px 50px 50px;
+    box-sizing: border-box;
+  `};
 `
 
 // TODO: - move to inputStyles.js
@@ -191,16 +210,7 @@ const SubmitButton = styled.input`
   height: 50px;
   cursor: pointer;
   transition: 0.2s;
-  margin-left: 10%;
-  margin-top: 2%;
-
-  @media (max-width: 768px) {
-    font-size: 1em;
-  }
-
-  @media (max-width: 450px) {
-    font-size: 0.9em;
-  }
+  margin: 10px 0px;
 `
 
 const ErrorMessage = styled.p`
@@ -208,15 +218,7 @@ const ErrorMessage = styled.p`
   position: relative;
   padding-left: 10%;
   color: ${props => props.success ? color.green : color.red};
-  visibility: ${props => props.show ? 'visible' : 'hidden'}
-
-  @media (max-width: 1100px) {
-    font-size: 1em;
-  }
-
-  @media (max-width: 450px) {
-    font-size: 0.75em;
-  }
+  visibility: ${props => props.show ? 'visible' : 'hidden'};
 `
 
 export default InfoForm;

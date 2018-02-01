@@ -6,7 +6,7 @@ import _ from 'underscore';
 import Button from '../../Common/button';
 import queryString from 'query-string';
 
-import { color } from '../../../Library/Styles/index';
+import { color, media } from '../../../Library/Styles/index';
 import Dropdown from '../../Common/dropdown';
 import { loadLeaderboards } from '../../../Actions/index';
 
@@ -115,21 +115,21 @@ class Leaderboards extends Component {
 
     return (
       <Container loading={this.state.loading}>
-        <div style={{width:'80%',margin:'0 auto',display:'flex',alignItems:'end'}}>
-          <p onClick={() => this.loadMore()} style={{fontSize:'3em',lineHeight:'0px'}}>
-            Leaderboards
-          </p>
-          <div style={{display:'flex',margin:'20px 0px 0px 30px',}}>
-            <Dropdown 
-              choices={_.unique(_.pluck(this.props.ranks, 'group'))} 
-              handleSelect={(location) => this.setState({ location })}
-              selected={this.state.location} />
-            <Dropdown
-              choices={PERIOD_CHOICES.map((c) => c[1])} 
-              handleSelect={(period) => this.setState({ period: _.find(PERIOD_CHOICES, (p) => p[1] === period) })}
-              selected={this.state.period[1]} />
-          </div>
-        </div>
+        <h1 style={{letterSpacing:'1px'}}>
+          Leaderboards
+        </h1>
+
+        <DropdownContainer>
+          <Dropdown 
+            choices={_.unique(_.pluck(this.props.ranks, 'group'))} 
+            handleSelect={(location) => this.setState({ location })}
+            selected={this.state.location} />
+          <Dropdown
+            choices={PERIOD_CHOICES.map((c) => c[1])} 
+            handleSelect={(period) => this.setState({ period: _.find(PERIOD_CHOICES, (p) => p[1] === period) })}
+            selected={this.state.period[1]} />
+        </DropdownContainer>
+
         <TableContainer>
           <p style={{lineHeight:'0px',paddingTop:'20px',fontSize:'1.5em'}}>
             <b>{this.state.location}</b>
@@ -151,11 +151,28 @@ class Leaderboards extends Component {
 }
 
 const Container = styled.div`
-  margin: 0 auto;
   pointer-events: ${props => props.loading ? 'none' : 'auto'};
-  padding-top: 25px;
+  padding: 50px;
   text-align: center;
-  width: 95%;
+  position: relative;
+  ${media.phone`
+    padding: 25px;
+  `};    
+`
+
+const DropdownContainer = styled.div`
+  display: flex;
+  width: 300px;
+  margin: 0 auto;
+  justify-content: space-between;
+  left: 50%;
+  transform: translateX(-50%);
+  position: absolute;
+  top: 150px;
+  ${media.phone`
+    top: 110px;
+    width: 275px;
+  `};   
 `
 
 const LoadMoreButton = Button.small.extend`
@@ -173,8 +190,8 @@ const TableContainer = styled.div`
   border-radius: 5px;
   font-size: 1.25em;
   margin: 0 auto;
-  margin-top: 20px;
-  width: 80%;
+  margin-top: 120px;
+  width: 100%;
 `
 
 const Row = styled.tr`

@@ -8,8 +8,8 @@ import TESTIMONIALS from './testimonials';
 import Card from './card';
 import CTA from './cta';
 import DaisyChain from './daisyChain';
-import Header from './header';
-import { sleep, shouldRedirect } from '../../Library/helpers';
+import Header from '../Header/index';
+import { shouldRedirect } from '../../Library/helpers';
 
 import bgYellow from '../../Library/Images/Home/bg-yellow.png';
 import bgYellowFooter from '../../Library/Images/Home/bg-yellow-footer.png';
@@ -53,7 +53,9 @@ class Home extends Component {
         </TopContainer>
 
         <div style={{position:'relative'}}>
-          <Header smallScreen={this.state.smallScreen} />
+          <Header
+            smallScreen={this.state.smallScreen}
+            isHome={true} />
 
           <TopContentContainer>
             <h1 style={{fontFamily:'BrandonGrotesqueBold',fontSize:'2.5em'}}>

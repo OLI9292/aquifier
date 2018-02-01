@@ -5,6 +5,8 @@ exports[`Dropdown should render correctly 1`] = `
   <styled.p
     key="Earth"
     onClick={[Function]}
+    onMouseLeave={[Function]}
+    onMouseOver={[Function]}
     selected={true}
     show={true}
   >
@@ -23,6 +25,8 @@ exports[`Dropdown should render correctly 1`] = `
   <styled.p
     key="TAG"
     onClick={[Function]}
+    onMouseLeave={[Function]}
+    onMouseOver={[Function]}
     selected={false}
     show={false}
   >

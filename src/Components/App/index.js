@@ -8,6 +8,7 @@ import styled from 'styled-components';
 // COMPONENTS
 import Admin from '../Admin/index';
 import ClassesDashboard from '../Dashboard/classes';
+import Footer from '../Footer/index';
 import Game from '../Game/index';
 import GameSelect from '../GameSelect/index';
 import Header from '../Header/index';
@@ -17,7 +18,6 @@ import Leaderboard from '../Leaderboard/index';
 import Leaderboards from '../Profile/Leaderboards/index';
 import LessonsTable from '../Dashboard/Lessons/table';
 import LessonEdit from '../Dashboard/Lessons/edit';
-import MobilePopup from '../MobilePopup/index';
 import Profile from '../Profile/index';
 import ReadingGameSelect from '../GameSelect/readingGameSelect';
 import Waiting from '../Waiting/index';
@@ -29,7 +29,7 @@ import WordListGameSelect from '../GameSelect/wordListGameSelect';
 import LocalStorage from '../../Models/LocalStorage'
 
 // ETC
-import { color, breakpoints } from '../../Library/Styles/index';
+import { color, media, PHONE_MAX_WIDTH } from '../../Library/Styles/index';
 import './index.css';
 
 // STORE
@@ -39,7 +39,6 @@ const store = configureStore();
 // store.subscribe(() => console.log(store.getState()))
 
 class App extends Component {
-
   componentDidMount() {
     const session = LocalStorage.getSession();
     
@@ -64,13 +63,10 @@ class App extends Component {
             <Route exact path='/lessons'          component={contained('lessonsTable')} />
             <Route exact path='/lessons/:id'      component={contained('lessonEdit')} />
             <Route exact path='/play'             component={contained('gameSelect')} />
-            
             <Route exact path='/profile/:id'      component={contained('profile')} />
-
             <Route exact path='/start-free-trial' component={contained('infoForm')} />
             <Route exact path='/word-lists'       component={contained('wordListsTable')} />
             <Route exact path='/word-lists/:id'   component={contained('wordListsEdit')} />
-
             
             {/* ADMIN */}
             <Route exact path='/admin/:settings' component={({ match }) => {
@@ -101,14 +97,36 @@ class App extends Component {
 const contained = (component) => () => <Container component={component} />
 
 class Container extends Component {
-  render() {
-    // Display not-mobile-compatible popup
-    const isOnMobile = /Mobi/i.test(navigator.userAgent);
-    if (isOnMobile && this.props.component !== 'home') {
-      return <MobilePopup />
-    };
+  constructor(props) {
+    super(props);
+    
+    const path = window.location.pathname;
 
-    const component = () => {
+    this.state = {
+      isHome: path === '/',
+      isPlay: path === '/play',
+      isLeaderboards:  path === '/leaderboards'
+    };    
+
+    this.checkWindowSize = this.checkWindowSize.bind(this);
+  }
+
+  componentDidMount() {
+    window.addEventListener('resize', this.checkWindowSize);
+    this.checkWindowSize();
+  }
+
+  componentWillUnmount() {
+    window.addEventListener('resize', this.checkWindowSize);
+  }  
+
+  checkWindowSize() {
+    const smallScreen = document.body.clientWidth < PHONE_MAX_WIDTH;
+    this.setState({ smallScreen });
+  }  
+
+  render() {
+    const Component = () => {
       switch (this.props.component) {
         case 'admin':              return <Admin settings={this.props.settings} />
         case 'classesDashboard':   return <ClassesDashboard />
@@ -131,9 +149,20 @@ class Container extends Component {
 
     return (
       <OuterFrame>
-        <Header />
+        <Header
+          smallScreen={this.state.smallScreen}
+          isHome={this.state.isHome}
+          isLeaderboards={this.state.isLeaderboards}
+          isPlay={this.state.isPlay} />
         <InnerFrame>
-          {component()}
+          <ComponentFrame>
+            <Component 
+              smallScreen={this.state.smallScreen}
+              isHome={this.state.isHome}
+              isLeaderboards={this.state.isLeaderboards}
+              isPlay={this.state.isPlay} />
+          </ComponentFrame>
+          <Footer smallScreen={this.state.smallScreen} />
         </InnerFrame>
       </OuterFrame>
     );
@@ -141,31 +170,37 @@ class Container extends Component {
 }
 
 const OuterFrame = styled.div`
-  height: 100%;
-  width: 100%;
-  background-color: ${color.blue};
+  background-color: ${color.lightestGray};
   display: block;
+  height: 100%;
   overflow: auto;
+  width: 100%;  
 `
 
 const InnerFrame = styled.div`
-  width: 1000px;
-  ${breakpoints.largeW} {
-    width: 900px;
-  }
-  ${breakpoints.mediumW} {
-    width: 800px;
-  }
-  padding-bottom: 25px;
-  position: relative;
-  margin-left: 2.5%;
-  margin-right: 2.5%;
-  margin: auto;
-  min-height: 450px;
-  margin-top: 25px;
-  margin-bottom: 25px;
+  margin: 0 auto;
+  margin-top: 120px;
+  max-width: 1100px;
+  width: 90%;
+  ${media.phone`
+    width: 100%;
+    border-radius: 0px;
+    margin-top: 0px;
+    min-height: 100vh;
+  `};  
+`
+
+const ComponentFrame = styled.div`
   background-color: white;
   border-radius: 10px;
+  box-sizing: border-box;
+  width: 100%;
+  ${media.phone`
+    width: 100%;
+    border-radius: 0px;
+    margin-top: 0px;
+    min-height: 100vh;
+  `};  
 `
 
 export default App;

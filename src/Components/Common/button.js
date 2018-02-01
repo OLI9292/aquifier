@@ -26,12 +26,6 @@ const Default = styled.button`
   line-height: 1em;
 `
 
-const ExtraLargeButton = Default.extend`
-  height: 90px;
-  min-width: 240px;
-  font-size: 1.8em;
-`
-
 const LargeButton = Default.extend`
   height: 70px;
   min-width: 180px;
@@ -50,69 +44,17 @@ const SmallButton = Default.extend`
   font-size: 1.2em;
 `
 
-const ExtraSmallButton = Default.extend`
-  height: 40px;
-  min-width: 90px;
-  font-size: 1em;
-`
-
-const LinkContent = styled.div`
-  width: 90%;
-  height: 90%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`
-
-const LinkText = styled.p`
-  display: table-cell;
-  vertical-align: middle;
-`
-
-const iOS = (style = {}) => {
-  return <MediumButton color={color.black} style={style}>
-    <Link.default style={{fontSize:'inherit'}} href={GLOBAL.IOSURL} target='blank' color={'white'}>
-      <LinkContent>
-        <img alt='iOS' style={{height: '75%', marginRight: '5%',width: 'auto'}} src={require('../../Library/Images/apple-logo.png')} />
-        <LinkText>iOS</LinkText>
-      </LinkContent>
-    </Link.default>
-  </MediumButton>
-}
-
 const imageAndText = (src, text) => {
-  return <Content>
-    <Image src={src} />
-    <ContentText>{text}</ContentText>
-  </Content>;
+  return <div style={{width:'90%',height:'90%',display:'flex',justifyContent:'center',alignItems:'center'}}>
+    <img src={src} style={{height:'75%',marginRight:'5%',width:'auto'}} />
+    <p style={{display:'table-cell',verticalAlign:'middle'}}>{text}</p>
+  </div>;
 }
-
-const Content = styled.div`
-  width: 90%;
-  height: 90%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`
-
-const Image = styled.img`
-  height: 75%;
-  margin-right: 5%;
-  width: auto;
-`
-
-const ContentText = styled.p`
-  display: table-cell;
-  vertical-align: middle;
-`
 
 const Button = {
-  extraLarge: ExtraLargeButton,
   large: LargeButton,
   medium: MediumButton,
   small: SmallButton,
-  extraSmall: ExtraSmallButton,
-  iOS: iOS,
   imageAndText: imageAndText
 }
 

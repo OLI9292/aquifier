@@ -1,8 +1,9 @@
+import _ from 'underscore';
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import _ from 'underscore';
-import { color } from '../../Library/Styles/index';
+
 import arrow from '../../Library/Images/white-arrow-down.png';
+import { color } from '../../Library/Styles/index';
 
 class Dropdown extends Component {
   constructor(props) {
@@ -27,10 +28,13 @@ class Dropdown extends Component {
             const selected = !this.state.open && i === 0
 
             return <Button
+              open={this.state.open}
               show={show}
               selected={selected}
-              key={c} 
-              onClick={() => this.state.open ? this.handleSelect(c) : this.setState({ open: true })}>
+              key={c}
+              onMouseOver={() => this.setState({ open: true })}
+              onMouseLeave={() => this.setState({ open: false })} 
+              onClick={() => this.setState({ open: false }, () => this.handleSelect(c))}>
               {c}
               <img 
                 alt={'down arrow'} 
@@ -44,27 +48,27 @@ class Dropdown extends Component {
   }
 }
 
+const Container = styled.div`
+  border: 5px solid ${props => props.open ? color.lightGray : color.blue};
+  border-radius: 5px;
+  height: ${props => props.open ? '' : '45px'};
+`
+
 const Button = styled.p`
+  border: 5px solid ${props => props.open ? 'white' : color.blue};
   display: ${props => props.show ? 'flex' : 'none'};
   background-color: ${props => props.selected ? color.blue : 'white'};
   color: ${props => props.selected ? 'white' : 'black'};
   cursor: pointer;
   justify-content: left;
-  border-radius: 5px;  
-  line-height: 50px;
+  line-height: 35px;
   margin: 0;
   padding: 0px 20px 0px 10px;
-  height: 50px;
-  font-size: 1.1em;
+  height: 35px;
   transition-duration: 0.2s;
   &:hover {
     color: ${props => props.selected ? 'white' : color.green};
   }
-`
-
-const Container = styled.div`
-  border: 5px solid ${props => props.open ? color.lightestGray : 'white'};
-  border-radius: 5px;
 `
 
 export default Dropdown;
