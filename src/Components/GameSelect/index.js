@@ -42,7 +42,7 @@ class GameSelect extends Component {
     })
 
 
-    const demoButtons = _.map(_.range(1, 5), level => {
+    const demoButtons = _.map(_.range(1, 6), level => {
       const params = queryString.stringify({ type: 'demo', id: level })
       return <Link key={level} style={{textDecoration:'none',color:'white'}} to={'/play/' + params}>
         <Button>
