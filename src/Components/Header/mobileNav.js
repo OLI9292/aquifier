@@ -19,7 +19,7 @@ class MobileNav extends Component {
     return (
       <Container isHome={isHome}>
 
-        <Option onClick={() => this.props.redirect('/play')}>
+        <Option onClick={() => this.props.redirect('/home')}>
           <Image src={require(`../../Library/Images/play-${isPlay ? 'blue' : 'gray'}.png`)} />
           <Title selected={isPlay}>
             PLAY

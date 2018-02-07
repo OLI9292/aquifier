@@ -44,7 +44,7 @@ class Home extends Component {
 
   render() {
     if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }
-    if (this.props.session) { this.setState({ redirect: '/play'} )};
+    if (this.props.session) { this.setState({ redirect: '/home'} )};
 
     return (
       <div>

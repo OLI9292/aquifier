@@ -47,7 +47,7 @@ class Waiting extends Component {
     if (this.state.redirect && !window.location.href.endsWith(this.state.redirect)) {
       const multiplayerGame = _.extend(this.state.game, { players: 'multi', accessCode: this.props.settings.accessCode });
       const redirect = this.state.text.includes('kicked')
-        ? '/play'
+        ? '/home'
         : `/play/${queryString.stringify(multiplayerGame)}`;
       return <Redirect push to={redirect} />;
     }

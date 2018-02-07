@@ -79,7 +79,7 @@ class Nav extends Component {
           </Link>
         </div>
       </div>
-    })()
+    })()  
 
     return (
       <Container isHome={isHome}>
@@ -90,7 +90,7 @@ class Nav extends Component {
             </FullLogo>
             {links}
           </div>
-        </div>       
+        </div>  
       </Container>
     );
   }

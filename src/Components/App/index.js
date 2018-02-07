@@ -9,7 +9,7 @@ import styled from 'styled-components';
 import Admin from '../Admin/index';
 import ClassesDashboard from '../Dashboard/classes';
 import Footer from '../Footer/index';
-import Game from '../Game/index';
+import GameManager from '../Game2/gameManager';
 import GameSelect from '../GameSelect/index';
 import Header from '../Header/index';
 import Home from '../Home/index';
@@ -19,11 +19,9 @@ import Leaderboards from '../Profile/Leaderboards/index';
 import LessonsTable from '../Dashboard/Lessons/table';
 import LessonEdit from '../Dashboard/Lessons/edit';
 import Profile from '../Profile/index';
-import ReadingGameSelect from '../GameSelect/readingGameSelect';
 import Waiting from '../Waiting/index';
 import WordListsEdit from '../Dashboard/WordLists/edit';
 import WordListsTable from '../Dashboard/WordLists/table';
-import WordListGameSelect from '../GameSelect/wordListGameSelect';
 
 // MODELS
 import LocalStorage from '../../Models/LocalStorage'
@@ -46,9 +44,6 @@ class App extends Component {
       store.dispatch(activateSession(session));
       store.dispatch(loadUser(session.user));
     };
-
-    store.dispatch(loadWords());
-    store.dispatch(loadRoots());
   }  
 
   render() {
@@ -62,7 +57,12 @@ class App extends Component {
             <Route exact path='/leaderboards'     component={contained('leaderboards')} />
             <Route exact path='/lessons'          component={contained('lessonsTable')} />
             <Route exact path='/lessons/:id'      component={contained('lessonEdit')} />
-            <Route exact path='/play'             component={contained('gameSelect')} />
+            <Route exact path='/home'             component={contained('gameSelect')} />
+            
+            <Route exact path='/play/:settings' component={({ match }) => {
+              return <GameManager settings={match.params.settings} /> 
+            }} />
+
             <Route exact path='/profile/:id'      component={contained('profile')} />
             <Route exact path='/start-free-trial' component={contained('infoForm')} />
             <Route exact path='/word-lists'       component={contained('wordListsTable')} />
@@ -74,19 +74,6 @@ class App extends Component {
                 component='admin' 
                 settings={queryString.parse(match.params.settings)} /> 
             }} />
-
-            {/* GAME */}
-            <Route path='/play/:settings' component={({ match }) => {
-              const settings = queryString.parse(match.params.settings)
-              const waiting = settings.status && parseInt(settings.status, 10) < 2
-              let component
-
-              if      (settings.setup) { component = `${settings.game === 'read' ? 'reading' : 'wordList'}GameSelect` }
-              else if (waiting)        { component = 'waiting' }
-              else                     { component = 'game' }
-
-              return <Container component={component} settings={settings} />
-            }} />
           </Switch>
         </BrowserRouter>
       </Provider>
@@ -94,7 +81,7 @@ class App extends Component {
   }
 }
 
-const contained = (component) => () => <Container component={component} />
+const contained = component => () => <Container component={component} />
 
 class Container extends Component {
   constructor(props) {
@@ -130,7 +117,6 @@ class Container extends Component {
       switch (this.props.component) {
         case 'admin':              return <Admin settings={this.props.settings} />
         case 'classesDashboard':   return <ClassesDashboard />
-        case 'game':               return <Game settings={this.props.settings} />
         case 'gameSelect':         return <GameSelect />
         case 'infoForm':           return <InfoForm />
         case 'leaderboard':        return <Leaderboard />
@@ -138,11 +124,9 @@ class Container extends Component {
         case 'lessonsTable':       return <LessonsTable />
         case 'lessonEdit':         return <LessonEdit />
         case 'profile':            return <Profile />
-        case 'readingGameSelect':  return <ReadingGameSelect settings={this.props.settings} />
         case 'waiting':            return <Waiting settings={this.props.settings} />
         case 'wordListsEdit':      return <WordListsEdit />
         case 'wordListsTable':     return <WordListsTable />
-        case 'wordListGameSelect': return <WordListGameSelect settings={this.props.settings} />
         default:                   return <Home />
       }
     }

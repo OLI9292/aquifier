@@ -41,6 +41,42 @@ export const createQuestion = (data) => ({
   }
 })
 
+export const loadQuestions = params => (dispatch, getState) => dispatch(fetchQuestions(params))
+
+export const FETCH_QUESTIONS_REQUEST = 'FETCH_QUESTIONS_REQUEST'
+export const FETCH_QUESTIONS_SUCCESS = 'FETCH_QUESTIONS_SUCCESS'
+export const FETCH_QUESTIONS_FAILURE = 'FETCH_QUESTIONS_FAILURE'
+
+export const fetchQuestions = params => ({
+  [CALL_API]: {
+    api: 'accounts',
+    endpoint: 'question?' + params,
+    method: 'GET',
+    types: [ FETCH_QUESTIONS_REQUEST, FETCH_QUESTIONS_SUCCESS, FETCH_QUESTIONS_FAILURE ],
+    schema: Schemas.QUESTION_ARRAY
+  }
+})
+
+//
+// LEVELS
+//
+
+export const loadLevels = () => (dispatch, getState) => dispatch(fetchLevels())
+
+export const LEVEL_REQUEST = 'LEVEL_REQUEST'
+export const LEVEL_SUCCESS = 'LEVEL_SUCCESS'
+export const LEVEL_FAILURE = 'LEVEL_FAILURE'
+
+export const fetchLevels = () => ({
+  [CALL_API]: {
+    api: 'accounts',
+    endpoint: 'level',
+    method: 'GET',
+    schema: Schemas.LEVEL,
+    types: [ LEVEL_REQUEST, LEVEL_SUCCESS, LEVEL_FAILURE ]    
+  }
+})
+
 //
 // ROOTS
 //

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import { color } from '../../Library/Styles/index';
 
+
 class Timer extends Component {
   constructor(props) {
     super(props);
@@ -55,7 +56,7 @@ class Timer extends Component {
   render() {
     return (
       <Text>
-        {this.state.time}
+        10
       </Text>
     );
   }

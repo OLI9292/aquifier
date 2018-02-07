@@ -11,7 +11,7 @@ const entities = (state = {}, action) => {
     const [remove, entities] = [response.remove, response.entities]
 
     if (remove) {
-      if (_.isArray(remove)) { // Removes matching keys from state tree
+      if (_.isString(remove) || _.isArray(remove)) { // Removes matching keys from state tree
         return _.omit(state, remove)
       }
 

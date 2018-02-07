@@ -2,8 +2,8 @@ import { normalize, schema } from 'normalizr'
 import _ from 'underscore';
 
 const API_ROOT = {
-  'accounts': 'https://dry-ocean-39738.herokuapp.com/api/v2/',
-  'curriculum': 'https://rocky-garden-48841.herokuapp.com/api/v2/'
+  'accounts': 'https://desolate-plains-35942.herokuapp.com/api/v2/',
+  'curriculum': 'https://desolate-plains-35942.herokuapp.com/api/v2/'
 }
 
 const formatSession = session => session ? {
@@ -14,10 +14,11 @@ const formatSession = session => session ? {
 
 // Fetches an API response and normalizes the result JSON according to schema.
 // This makes every API response have the same shape, regardless of how nested it was.
-const callApi = (api, endpoint, schema, method, data, session) => {
+const callApi = (api, endpoint, schema, method, data, session, save) => {
   const fullUrl = API_ROOT[api] + endpoint
   const headers = _.extend({}, { 'Content-Type': 'application/json' }, formatSession(session));
   const body = { method: method, body: JSON.stringify(data), headers: headers };
+
   console.log(`method: ${method}\napi: ${api}\nendpoint: ${endpoint}\nheaders: ${JSON.stringify(headers)}`)
 
   return fetch(fullUrl, body)
@@ -26,7 +27,7 @@ const callApi = (api, endpoint, schema, method, data, session) => {
         if (!response.ok) { return Promise.reject(json) }
         const normalized = Object.assign({},normalize(json, schema))
         // Removes undefined keys
-        normalized.entities = _.mapObject(normalized.entities, (v, k) => v.undefined ? v.undefined : v )
+        normalized.entities = _.mapObject(normalized.entities, (v, k) => v.undefined ? v.undefined : v)
         return normalized
       })
     )
@@ -39,8 +40,10 @@ const callApi = (api, endpoint, schema, method, data, session) => {
 const successSchema = new schema.Entity('Success')
 
 // CURRICULUM
+const questionSchema = new schema.Entity('questions')
 const wordSchema = new schema.Entity('words', {}, { idAttribute: '_id' })
 const rootSchema = new schema.Entity('roots', {}, { idAttribute: '_id' })
+const levelSchema = new schema.Entity('levels', {}, { idAttribute: '_id' })
 const wordListSchema = new schema.Entity('wordLists', {}, { idAttribute: '_id' })
 const lessonSchema = new schema.Entity('lessons', {}, { idAttribute: '_id' })
 const relatedWordSchema = new schema.Entity('relatedWords', {}, { idAttribute: 'word' })
@@ -57,6 +60,10 @@ export const Schemas = {
   WORD_ARRAY: [wordSchema],
   WORD_LIST: wordListSchema,
   WORD_LIST_ARRAY: [wordListSchema],
+  QUESTION: questionSchema,
+  QUESTION_ARRAY: questionSchema,
+  LEVEL: levelSchema,
+  LEVEL_ARRAY: [levelSchema],
   LESSON: lessonSchema,
   LESSON_ARRAY: [lessonSchema],
   USER: userSchema,

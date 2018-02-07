@@ -1,226 +1,105 @@
 import { connect } from 'react-redux'
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import queryString from 'query-string';
 import { Redirect } from 'react-router';
 import styled from 'styled-components';
 import _ from 'underscore';
 import Firebase from '../../Networking/Firebase';
 
-import Button from '../Common/button';
 import Textarea from '../Common/textarea';
 import { color } from '../../Library/Styles/index';
 import { lighten10 } from '../../Library/helpers';
 import { shouldRedirect } from '../../Library/helpers'
 
+import { fetchLevels } from '../../Actions/index';
+
 class GameSelect extends Component {
   constructor(props) {
     super(props);
     this.state = {};
-
-    this.handleKeydown = this.handleKeydown.bind(this);
   }
 
   componentDidMount() {
-    document.body.addEventListener('keydown', this.handleKeydown);
+    this.props.dispatch(fetchLevels());
   }
 
-  componentWillUnmount() {
-    document.body.removeEventListener('keydown', this.handleKeydown);
-  }
-
-  handleKeydown(event) {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      const code = this.state.accessCode;
-      if (code && code.trim().length === 4) { this.joinMatch(); }
-    }
-  }
-
-  handleClick(game, multiplayer = false) {
-    const players = multiplayer ? 'multi' : 'single';
-    this.setState({ redirect: `/play/game=${game}&players=${players}&setup=true` });
-  }
-
-  handleGameButtonClick(game) {
-    if (this.props.user && this.props.user.isTeacher) { return; }
-    this.setState({ redirect: `/play/game=${game}&players=single&setup=true` });
-  }
-
-  joinMatch = async () => {
-    const name = this.props.user && `${this.props.user.firstName} ${this.props.user.lastName.charAt(0)}`;
-    const accessCode = this.state.accessCode;
-
-    const result = await Firebase.canEnterGame(name, accessCode);
-    const canEnterMatch = result[0];
-
-    if (!canEnterMatch) {
-      this.setState({ error: result[1] });
-    } else {
-      const joined = await Firebase.joinGame(name, accessCode);
-
-      if (joined) {
-        result[1].accessCode = accessCode;
-        const match = queryString.stringify(_.pick(result[1], 'status', 'accessCode'));
-        this.setState({ redirect: `/play/${match}` });
-      } else {
-        this.setState({ error: 'Unable to join game.' });
-      }
-    }
-  }
-
-  updateAccessCode(event) {
-    this.setState({ accessCode: event.target.value.trim() });
-  }
+  componentWillReceiveProps(nextProps) {
+    const levels = nextProps.levels;
+    if (levels && !this.state.levels) { this.setState({ levels }); }
+  }  
 
   render() {
     if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }
 
-    const isTeacher = this.props.user && this.props.user.isTeacher;
-    const isStudent = this.props.user && !this.props.user.isTeacher;
+    const speedRoundButtons = _.map(_.range(1, 11), level => {
+      const params = queryString.stringify({ type: 'speed', id: level })
+      return <Link key={level} style={{textDecoration:'none',color:'white'}} to={'/play/' + params}>
+        <Button>
+          {level}
+        </Button>
+      </Link>
+    })
 
-    const buttons = (game) => {
-      const display = isTeacher && game !== 'read' ? 'block' : 'none';
 
-      return isTeacher 
-      ?
-      <div style={{margin:'20px 0px'}}>
-        <PlayButton onClick={() => this.handleClick(game)} color={'white'}>
-          {Button.imageAndText(require('../../Library/Images/singleplayer.png'), 'Preview Game')}
-        </PlayButton>
-        <PlayButton onClick={() => this.handleClick(game, true)} color={'white'} style={{display:display}}>
-          {Button.imageAndText(require('../../Library/Images/setupmatch.png'), 'Setup Match')}
-        </PlayButton>
-      </div>
-      :
-      <div style={{margin:'20px 0px'}}>
-        <Button.medium 
-          onClick={() => this.handleClick(game)} 
-          style={{backgroundColor:'white', color:color.darkGray}}>
-          Play
-        </Button.medium>
-      </div>
-    }
+    const demoButtons = _.map(_.range(1, 5), level => {
+      const params = queryString.stringify({ type: 'demo', id: level })
+      return <Link key={level} style={{textDecoration:'none',color:'white'}} to={'/play/' + params}>
+        <Button>
+          {level}
+        </Button>
+      </Link>
+    })    
 
-    const compete = () => {
-      return isStudent && 
-        <GameButton color={'white'} border={`1px solid ${color.orange}`}>
-          <Image src={require('../../Library/Images/compete-color.png')} />
-          <p style={{color:color.orange,fontSize:'2em',height:'10px',lineHeight:'10px'}}>
-            Compete
-          </p>
-          <div style={{width:'250px'}}>
-            <p style={{color:color.orange,width:'90%',margin:'0 auto',fontSize:'1.25em'}}>
-              Compete against your classmates.
-            </p>
-            <div style={{display:'flex',justifyContent:'space-around',margin:'25px 10px 25px 10px'}}>
-              <Textarea.medium 
-                onChange={this.updateAccessCode.bind(this)}
-                style={{textAlign:'center'}} 
-                placeholder={'access code'} />
-              <Button.small
-                color={color.orange}
-                onClick={() => this.joinMatch()}
-                style={{marginLeft:'5px',minWidth:'75px'}}>
-                Play
-              </Button.small>
-            </div>
-          </div>
-      </GameButton>
+    const levelButton = level => {
+      const params = queryString.stringify({ type: 'train', id: level._id })
+      return <Link key={level._id} style={{textDecoration:'none',color:'white'}} to={'/play/' + params}>
+        <Button>
+          {level.name}
+        </Button>
+      </Link>      
     }
 
     return (
-      <div style={{paddingTop:'25px'}}>
-        <Title>Choose Your Game</Title>
-
-        <div style={{width:'90%',margin:'0 auto',display:'flex',justifyContent:'space-evenly',flexWrap:'wrap'}}>
-          <GameButton color={color.blue} onClick={() => this.handleGameButtonClick('study') }>
-            <Image src={require('../../Library/Images/study-white.png')} />
-            <p style={{color:'white',fontSize:'2em',height:'10px',lineHeight:'10px'}}>Study</p>
-            <div style={{width:'250px'}}>
-              <p style={{color:'white',width:'90%',margin:'0 auto',fontSize:'1.25em'}}>
-                Thousands of words grouped by curriculum.
-              </p>
-              {buttons('study')}
-            </div>
-          </GameButton>
-
-          <GameButton color={color.green} onClick={() => this.handleGameButtonClick('explore') }>
-            <Image src={require('../../Library/Images/explore-white.png')} />
-            <p style={{color:'white',fontSize:'2em',height:'10px',lineHeight:'10px'}}>Explore</p>
-            <div style={{width:'250px'}}>
-              <p style={{color:'white',width:'90%',margin:'0 auto',fontSize:'1.25em'}}>
-                The core vocabulary of dozens of subjects.
-              </p>
-              {buttons('explore')}
-            </div>
-          </GameButton>
-
-          <GameButton color={color.red} onClick={() => this.handleGameButtonClick('read') }>
-            <Image src={require('../../Library/Images/read-white.png')} />
-            <p style={{color:'white',fontSize:'2em',height:'10px',lineHeight:'10px'}}>Read</p>
-            <div style={{width:'250px'}}>
-              <p style={{color:'white',width:'90%',margin:'0 auto',fontSize:'1.25em'}}>
-                Passages with vocabulary in context.
-              </p>
-              {buttons('read')}
-            </div>
-          </GameButton>
-
-          {compete()}
-        </div>
-        <p style={{textAlign:'center',color:color.red}}>
-          {this.state.error}
-        </p> 
-      </div>
+      <Container>
+        <h2 style={{textAlign:'center'}}>
+          Demo
+        </h2>    
+        {demoButtons}
+        <h2 style={{textAlign:'center'}}>
+          Train
+        </h2>    
+        {this.state.levels && _.map(this.state.levels, levelButton)}  
+        <h2 style={{textAlign:'center'}}>
+          Speed Rounds
+        </h2>
+        {speedRoundButtons}
+      </Container>
     );
   }
 }
 
-const Title = styled.div`
-  background-color: ${color.orange};
-  width: 450px;
-  margin: 0 auto;
-  height: 90px;
-  line-height: 90px;
-  margin-bottom: 25px;
-  border-radius: 5px;
-  text-align: center;
-  font-size: 2.75em;
-  color: white;
+const Container = styled.div`
+  padding: 25px 0px;
 `
 
-const Image = styled.img`
-  height: 75px;
-  width: 75px;
-  padding-top: 20px;
-`
-const PlayButton = Button.small.extend`
-  color: black;
+const Button = styled.div`
+  height: 50px;
+  width: 50px;
   margin: 0 auto;
-  width: 150px;
-  margin-top: 5px;
-  margin-bottom: 5px;
-  &:hover {
-    background-color: ${color.lightGray};
-  }
-`
-const GameButton = styled.div`
-  background-color: ${props => props.color};
-  &:hover {
-   background-color: ${props => lighten10(props.color)};
-  }
-  transition: 0.2s;
   cursor: pointer;
-  border: ${props => props.border};
+  background: ${color.red};
   text-align: center;
-  margin: 10px;
-  border-radius: 5px;
-  width: 250px;
+  line-height: 50px;
+  border-radius: 25px;
+  margin-top: 10px;
+  margin-bottom: 10px;
 `
 
 const mapStateToProps = (state, ownProps) => ({
   session: state.entities.session,
-  user: _.first(_.values(state.entities.user))
+  user: _.first(_.values(state.entities.user)),
+  levels: _.values(state.entities.levels)
 });
 
 export default connect(mapStateToProps)(GameSelect);
