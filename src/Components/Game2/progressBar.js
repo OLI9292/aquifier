@@ -37,7 +37,7 @@ class ProgressBar extends Component {
 }
 
 const Container = styled.div`
-  width: 300px;
+  width: 60%;
   height: 100%;
   margin: 0 auto;
   display: flex;
@@ -51,11 +51,12 @@ const Progress = styled.div`
   background-color: ${color.warmYellow};
   border-radius: 8px;
   z-index: 1000;
+  transition: 0.2s;
   position: relative;
 `
 
 const BackgroundBar = styled.div`
-  width: 300px;
+  width: 60%;
   height: 9px;
   margin-top: -4px;
   z-index: 5;

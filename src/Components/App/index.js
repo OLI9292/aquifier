@@ -89,10 +89,12 @@ class Container extends Component {
     
     const path = window.location.pathname;
 
+    // todo: - this is dumb, change it
     this.state = {
       isHome: path === '/',
-      isPlay: path === '/play',
-      isLeaderboards:  path === '/leaderboards'
+      isPlay: path === '/home',
+      isLeaderboards: path === '/leaderboards',
+      isProgress: path === '/progress'
     };    
 
     this.checkWindowSize = this.checkWindowSize.bind(this);
@@ -137,6 +139,7 @@ class Container extends Component {
           smallScreen={this.state.smallScreen}
           isHome={this.state.isHome}
           isLeaderboards={this.state.isLeaderboards}
+          isProgress={this.state.isProgress}
           isPlay={this.state.isPlay} />
         <InnerFrame>
           <ComponentFrame>
@@ -144,6 +147,7 @@ class Container extends Component {
               smallScreen={this.state.smallScreen}
               isHome={this.state.isHome}
               isLeaderboards={this.state.isLeaderboards}
+              isProgress={this.state.isProgress}
               isPlay={this.state.isPlay} />
           </ComponentFrame>
           <Footer smallScreen={this.state.smallScreen} />
@@ -175,7 +179,6 @@ const InnerFrame = styled.div`
 `
 
 const ComponentFrame = styled.div`
-  background-color: white;
   border-radius: 10px;
   box-sizing: border-box;
   width: 100%;

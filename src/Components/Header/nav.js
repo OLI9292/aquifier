@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import Dropdown from './dropdown';
 import { color } from '../../Library/Styles/index';
 
+import background from '../../Library/Images/yellow-header.png';
+
 class Nav extends Component {
   constructor(props) {
     super(props);
@@ -14,6 +16,7 @@ class Nav extends Component {
     const { 
       isHome,
       isPlay,
+      isProgress,
       isLeaderboards,
       isTeacher,
       isAdmin,
@@ -30,23 +33,29 @@ class Nav extends Component {
 
     const links = (() => {
       return <div style={{display:'flex',width:'100%',alignItems:'center',justifyContent:'space-between'}}>
-        <div style={{display:'flex',alignItems:'center'}}>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',width:'325px'}}>
           <Link
             padding
-            selected={isPlay}
             onClick={() => this.props.redirect('/')}
-            hide={isHome} 
-            margin={'0px 0px 0px 25px'}>
+            hide={isHome} >
             HOME
+            <Highlight show={isPlay} />
           </Link>
 
           <Link
             padding
-            selected={isLeaderboards}
+            onClick={() => this.props.redirect('/progress')}
+            hide={!loggedIn}>
+            PROGRESS
+            <Highlight show={isProgress} />
+          </Link>
+
+          <Link
+            padding
             onClick={() => this.props.redirect('/leaderboards')}
-            hide={!loggedIn}
-            margin={'0px 0px 0px 25px'}>
+            hide={!loggedIn}>
             LEADERBOARDS
+            <Highlight show={isLeaderboards} />
           </Link>
         </div>
         <div>
@@ -60,7 +69,7 @@ class Nav extends Component {
               <img
                 alt={'down-arrow'} 
                 style={{width:'20px',height:'auto',cursor:'pointer'}}
-                src={require('../../Library/Images/white-arrow-down.png')} />
+                src={require('../../Library/Images/black-arrow-down.png')} />
             </div>
             {this.state.displayProfileDropdown && profileDropdown}
           </div>
@@ -101,24 +110,32 @@ const Container = styled.div`
   z-index: 1000;
   width: 100%;
   height: 70px;
-  background-color: ${props => props.isHome ? '' : 'rgba(75,154,236,0.95)'};
-  color: ${props => props.isHome ? 'black' : 'white'};
+  background: url(${background}) no-repeat center center;
 ` 
 
 const FullLogo = styled.h2`
   font-family: BrandonGrotesqueBold;
   font-size: 2em;
   letter-spacing: 1px;
+  margin-right: 5%;
   cursor: pointer;
 `
 
 const Link = styled.p`
-  background-color: ${props => props.padding && props.selected ? color.mainBlue : ''};
-  padding: ${props => props.padding ? '5px 15px' : '0'};
-  border-radius: 50px;
+  font-family: BrandonGrotesqueBold;
+  position: relative;
   cursor: pointer;
   display: ${props => props.hide ? 'none' : 'inline-block'};
-  margin: ${props => props.margin};
+`
+
+const Highlight = styled.div`
+  display: ${props => props.show ? '' : 'none'};
+  width: 100%;
+  height: 2px;
+  background-color: black;
+  position: absolute;
+  margin-top: -25px;
+  border-radius: 1px;
 `
 
 export default Nav;

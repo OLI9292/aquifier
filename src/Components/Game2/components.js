@@ -2,6 +2,26 @@ import styled from 'styled-components';
 
 import { color, media, PHONE_MAX_WIDTH } from '../../Library/Styles/index';
 
+export const Alert = styled.div`
+  position: absolute;
+  right: 40px;
+  top: 10px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  transition: 0.2s;
+  opacity: ${props => props.hide ? 0 : 1};
+`
+
+export const StageDot = styled.div`
+  width: 15px;
+  height: 7px;
+  background-color: ${props => props.green ? color.green : color.lightGray};
+  border-radius: 4px;
+  display: inline-block;
+  margin-right: 5px;
+`
+
 export const HelpButton = styled.div`
   width: 120px;
   height: 50px;

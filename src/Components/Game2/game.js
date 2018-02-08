@@ -1,6 +1,7 @@
 import queryString from 'query-string';
 import React, { Component } from 'react';
 import { Redirect } from 'react-router';
+import moment from 'moment';
 import styled from 'styled-components';
 import _ from 'underscore';
 import get from 'lodash/get'
@@ -12,12 +13,13 @@ import { shouldRedirect } from '../../Library/helpers';
 
 import SpeedRound from './speedRound';
 import ProgressBar from './progressBar';
+import { alerts } from './alerts';
 import OnCorrectImage from './onCorrectImage';
 
 import {
   HelpButton, HeaderContainer, ButtonValue, Bottom, Content, PromptContainer,
   Prompt, PromptValue, Answer, AnswerSpace, Underline, AnswerValue,
-  Choices, ChoiceButton, ExitOut
+  Choices, ChoiceButton, ExitOut, StageDot, Alert
 } from './components'
 
 class Game extends Component {
@@ -30,7 +32,9 @@ class Game extends Component {
       hintCount: 0,
       guessed: {},
       prompt: 'normal',
-      points: 0
+      points: 0,
+      correct: true,
+      startTime: moment()
     }
 
     this.handleKeydown = this.handleKeydown.bind(this);
@@ -44,44 +48,57 @@ class Game extends Component {
     document.body.removeEventListener('keydown', this.handleKeydown);
   }
 
-  handleKeydown(e) {    
-    const choices = this.state.question.choices;
-    const index = _.findIndex(choices, c => c.value === e.key);
+  handleKeydown(e) {
+    if (!this.state.question) { return; }
 
-    if (this.state.isSpellQuestion && index > -1) {
-      e.preventDefault();      
-      this.guessed(choices[index].value, index);
+    if (e.key === 'Enter' && this.state.questionComplete) {
+      clearTimeout(this.continue);
+      this.reset(() => this.setQuestion());
+    } else {
+      const choices = this.state.question.choices;
+      const index = _.findIndex(choices, c => c.value.toLowerCase() === e.key.toLowerCase());
+
+      if (this.state.isSpellQuestion && index > -1) {
+        e.preventDefault();      
+        this.guessed(choices[index].value, index);
+      }
     }
   }  
 
   componentWillReceiveProps(nextProps) {
     const questions = nextProps.questions;
+
     if (questions && !this.state.questions) { this.setState({ questions }, this.setQuestion); }
   }
 
   setQuestion() {
     const question = this.state.questions[this.state.questionIndex];
-    
+    console.log(question) 
     if (question) {
-      console.log(question);
       const isSpellQuestion = _.every(question.answer, a => a.value.length === 1);
       this.setState({ question: question, isSpellQuestion: isSpellQuestion }, this.checkHint);
+      setTimeout(this.autohint.bind(this), 1000);
     } else {
       this.gameOver();
     }
   }
 
   guessed(choice, idx) {
+    let correct
+
     const answer = _.map(this.state.question.answer, a => {
-      const correct = a.missing && a.value === choice;
-      return correct ? { value: choice, missing: false } : a
+      if (correct) { return a; }
+      const correctGuess = a.missing && a.value === choice;
+      if (correctGuess) { correct = true; }
+      return correctGuess ? { value: choice, missing: false } : a;
     });
 
-    const correct = !_.isEqual(this.state.question.answer, answer);
     this.animateButton(choice, idx, correct);
 
     if (correct) {
       this.setState({ question: _.extend(this.state.question, {}, { answer: answer }) }, this.checkComplete);
+    } else {
+      this.setState({ correct: false });
     }
   }
 
@@ -91,13 +108,26 @@ class Game extends Component {
     })
   }
 
+  animateAlerts() {
+    if (this.state.isSpeedy) {
+      this.setState({ alert: 'speedy' });
+      setTimeout(() => { this.setState({ alert: undefined }); }, 750);
+    };
+    const correctAlert = this.state.correct ? 'correct' : 'passed';
+    setTimeout(() => { this.setState({ alert: correctAlert }); }, this.state.isSpeedy ? 1000 : 0);
+    setTimeout(() => { this.setState({ alert: undefined }); }, this.state.isSpeedy ? 1500 : 750);    
+  }
+
   checkComplete() {
     if (_.every(this.state.question.answer, a => !a.missing)) {
+      const isSpeedy = Math.floor(moment.duration(moment().diff(this.state.startTime)).asSeconds()) < 5;
       this.setState({
         questionComplete: true,
+        isSpeedy: isSpeedy,
         points: this.state.points + 1,
         questionIndex: this.state.questionIndex + 1
        }, () => {
+        this.animateAlerts();
         this.continue = setTimeout(() => { this.reset(() => this.setQuestion()) }, 100000);
       })
     }
@@ -109,9 +139,37 @@ class Game extends Component {
       hintCount: 0,
       highlightPrompt: false,
       prompt: 'normal',
-      hintButtonsOn: false
+      hintButtonsOn: false,
+      correct: true,
+      startTime: moment()
     }, cb)
   }
+
+  glowAnswer(giveAnswer) {
+    const q = this.state.question;
+    const nextCorrect = _.find(q.answer, a => a.missing);
+    if (!nextCorrect) { return; }
+    const idx = _.findIndex(q.choices, c => c.value === nextCorrect.value);  
+    this.setState({ glowIdx: idx });
+    this.guessed(q.choices[idx].value, idx);
+    setTimeout(() => this.setState({ glowIdx: -1 }), 200);
+  }
+
+  autohint() {
+    switch (this.state.question.type) {
+      case 'defToOneRoot': 
+      case 'defToAllRoots': 
+      case 'defCompletion':
+      case 'defToAllRootsNoHighlight':
+        this.setState({ hintButtonsOn: true });
+        break;
+      case 'defToWord': case 'defToCharsOneRoot':
+        this.setState({ highlightPrompt: true });
+        break;
+      default:
+        break;
+    }
+  }  
 
   checkHint() {
     const {
@@ -122,36 +180,32 @@ class Game extends Component {
     switch (question.type) {
 
     case 'defToOneRoot': case 'defToAllRoots':
-      switch (hintCount) {
-      case 0: this.setState({ highlightPrompt: true }); break;
-      case 1: this.setState({ prompt: 'easy' }); break;
-      case 2: this.setState({ hintButtonsOn: true }); break;
-      default: break;}
+      hintCount === 0
+        ? this.setState({ highlightPrompt: true })
+        : this.glowAnswer(false);
+      break;
     
     case 'defCompletion':
-      switch (hintCount) {
-      case 1: this.setState({ highlightPrompt: true }); break;
-      case 2: this.setState({ hintButtonsOn: true }); break;      
-      default: break;}
+      this.glowAnswer(false);
+      break;
 
     case 'defToAllRootsNoHighlight':
-      switch (hintCount) {
-      case 1: this.setState({ highlightPrompt: true }); break;
-      case 2: this.setState({ prompt: 'easy' }); break;
-      case 3: this.setState({ hintButtonsOn: true }); break;
-      default: break;} 
+      hintCount === 1
+        ? this.setState({ highlightPrompt: true })
+        : hintCount > 1 && this.glowAnswer(false);
+      break;
 
     case 'defToWord':
-      switch (hintCount) {
-      case 1: this.setState({ highlightPrompt: true }); break;
-      case 2: this.setState({ prompt: 'easy' }); break;
-      default: break;} 
+      hintCount === 1
+        ? this.setState({ prompt: 'easy' })
+        : hintCount > 1 && this.glowAnswer(false);
+      break;
 
     case 'defToCharsOneRoot':
-      switch (hintCount) {
-      case 1: this.setState({ highlightPrompt: true }); break;
-      case 2: this.setState({ prompt: 'easy' }); break;
-      default: break;}  
+      hintCount === 1
+        ? this.setState({ prompt: 'easy' })
+        : hintCount > 1 && this.glowAnswer(true);
+      break;
     }
   }
 
@@ -173,7 +227,8 @@ class Game extends Component {
       questionIndex,
       question,
       questions,
-      time
+      time,
+      glowIdx
     } = this.state;
 
     const progressComponent = type => {
@@ -191,6 +246,17 @@ class Game extends Component {
       }
     }
 
+    const alert = type => {
+      return  <Alert hide={_.isUndefined(type)}>
+        <img
+          style={{height:'75%',width:'auto',marginRight:'10px'}}
+          src={type && alerts[type].image} />              
+        <p style={{color:type && alerts[type].color,fontSize:'1.1em'}}>
+          {type && alerts[type].name.toUpperCase()}
+        </p>
+      </Alert>      
+    }
+
     const topInfo = (() => {
       return <div style={{height:'10%',width:'100%'}}>
         <Link to={'/home'}>
@@ -198,6 +264,7 @@ class Game extends Component {
             src={require('../../Library/Images/exit-gray.png')} />
         </Link>
         {progressComponent(this.props.type)}
+        {alert(this.state.alert)}
       </div>
     })();
 
@@ -220,6 +287,8 @@ class Game extends Component {
       </PromptContainer>
     };
 
+    const answer = () => <Answer>{_.map(question.answer, (a, idx) => answerSpace(a.value, a.missing, idx))}</Answer>
+
     const answerSpace = (value, missing, idx) => {
       const width = `${value.length * 30}px`;
       const margin = questionComplete ? '0px -2px' : '0px 10px';
@@ -233,8 +302,9 @@ class Game extends Component {
 
     const choiceButton = (choice, idx, count) => {
       const { value, hint } = choice;
-      const bColor = guessed.idx === idx ? (guessed.correct ? color.green : color.red) : color.blue;
-
+      const bColor = guessed.idx === idx
+      ? (guessed.correct ? color.green : color.red)
+      : glowIdx === idx ? color.green : color.blue;
       return <ChoiceButton
         square={isSpellQuestion}
         long={count === 4}
@@ -250,11 +320,6 @@ class Game extends Component {
       </ChoiceButton> 
     }
 
-    const answer = () => {
-      return <Answer>
-        {_.map(question.answer, (a, idx) => answerSpace(a.value, a.missing, idx))}
-      </Answer>
-    };
 
     const gridTemplates = (count, isSpellQuestion) => {
       // todo: validate choice lengths (12 / 16 for spell / 4 - 10 even for regular)
@@ -295,12 +360,19 @@ class Game extends Component {
       }
     })();
 
-    const bottomInfo = (() => {
-      return <Bottom>
-        <p style={{fontFamily:'BrandonGrotesqueBold'}}>
-          Speed Round 1
+    const levelInfo = () => {
+      return <div>
+        <p style={{fontFamily:'BrandonGrotesqueBold',fontSize:'1.25em',height:'2px'}}>
+          {this.props.level.fullname}
         </p>
-        <HelpButton color={questionComplete ? color.green : color.red}
+        {_.map(_.range(1, this.props.level.progress[1] + 1), n => {
+          return <StageDot key={n} green={n <= this.props.level.progress[0]} />
+        })}
+      </div>      
+    }
+
+    const helpButton = (() => {
+      return <HelpButton color={questionComplete ? color.green : color.red}
           onClick={() => {
             if (questionComplete) {
               clearTimeout(this.continue);
@@ -310,7 +382,14 @@ class Game extends Component {
             }
           }}>
           {questionComplete ? 'CONTINUE' : 'HINT'}
-        </HelpButton>
+          {questionComplete && <p style={{color:'white',marginTop:'-35px',fontSize:'0.6em',height:'0px'}}>(ENTER)</p>}
+      </HelpButton>
+    })();
+
+    const bottomInfo = (() => {
+      return <Bottom>
+        {this.props.level && levelInfo()}
+        {helpButton}
       </Bottom>
     })();       
 

@@ -3,6 +3,7 @@ import { css } from 'styled-components'
 // TODO: change 10l, there might exist a method to do this?
 export const color = {
   mainBlue: '#3F81E6',
+  lightBlue: '#72CAF1',
   blue: '#4B9AEC',
   blue10l: '#438cee',
   green: '#32B368',
@@ -12,7 +13,7 @@ export const color = {
   yellow10l: '#f4c46b',
   black: '#000000',
   black10l: '#191919',
-  red: '#eb5757',
+  red: '#FD7274',
   red10l: '#FF7171',
   darkGray: '#686868',
   gray2: '#58595B',

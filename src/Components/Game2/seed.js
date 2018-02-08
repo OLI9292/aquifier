@@ -57,7 +57,7 @@ highlight: false
 answer: [
 {
 value: "carn",
-missing: false
+missing: true
 },
 {
 value: "i",
@@ -65,7 +65,7 @@ missing: false
 },
 {
 value: "vor",
-missing: true
+missing: false
 },
 {
 value: "e",
@@ -74,28 +74,28 @@ missing: false
 ],
 choices: [
 {
-value: "vor",
-hint: "eat"
+value: "carn",
+hint: "meat"
 },
 {
-value: "glyph",
-hint: "symbol"
+value: "vast",
+hint: "wasteland"
 },
 {
-value: "brachy",
-hint: "short"
+value: "chel",
+hint: "claw"
 },
 {
-value: "tri",
-hint: "three"
+value: "tract",
+hint: "drag"
 },
 {
-value: "therap",
-hint: "medical treatment"
+value: "electr",
+hint: "electric"
 },
 {
-value: "soph",
-hint: "wisdom"
+value: "som",
+hint: "body"
 }
 ],
 word: "carnivore",
@@ -184,20 +184,20 @@ value: "vor",
 hint: "eat"
 },
 {
-value: "ecto",
-hint: "outside"
+value: "ir",
+hint: "not"
 },
 {
-value: "flora",
-hint: "flower"
+value: "scope",
+hint: "view"
 },
 {
-value: "magn",
-hint: "large"
+value: "san",
+hint: "healthy"
 },
 {
-value: "ism",
-hint: "system"
+value: "ary",
+hint: "room"
 }
 ],
 word: "carnivore",
@@ -208,7 +208,7 @@ prompt: {
 normal: [
 {
 value: "carn",
-highlight: false
+highlight: true
 },
 {
 value: "i",
@@ -216,7 +216,7 @@ highlight: false
 },
 {
 value: "vor",
-highlight: true
+highlight: false
 },
 {
 value: "e",
@@ -239,49 +239,45 @@ value: " that",
 highlight: false
 },
 {
-value: " ___",
+value: " eats",
 highlight: false
 },
 {
-value: " s",
-highlight: false
-},
-{
-value: " meat",
+value: " ____",
 highlight: false
 }
 ]
 },
 answer: [
 {
-value: "eat",
+value: "meat",
 missing: true
 }
 ],
 choices: [
 {
-value: "brain",
-hint: "cerebr"
+value: "place",
+hint: "top"
 },
 {
-value: "rain",
-hint: "ombro"
+value: "outside",
+hint: "exo"
 },
 {
-value: "musical notes",
-hint: "chord"
+value: "well",
+hint: "val"
 },
 {
-value: "spiral",
-hint: "spir"
+value: "wasteland",
+hint: "vast"
 },
 {
-value: "lacking",
-hint: "ano"
+value: "sound",
+hint: "acoustic"
 },
 {
-value: "eat",
-hint: "vor"
+value: "meat",
+hint: "carn"
 }
 ],
 word: "carnivore",
@@ -370,20 +366,20 @@ value: "vor",
 hint: "eat"
 },
 {
-value: "phob",
-hint: "one who fears"
+value: "noc",
+hint: "harm"
 },
 {
-value: "alien",
-hint: "another"
+value: "photo",
+hint: "light"
 },
 {
-value: "clar",
-hint: "clear"
+value: "val",
+hint: "well"
 },
 {
-value: "troph",
-hint: "nutrient"
+value: "pneum",
+hint: "breath"
 }
 ],
 word: "carnivore",
@@ -452,19 +448,19 @@ missing: true
 ],
 choices: [
 {
-value: "hemopathy"
+value: "epidemiology"
 },
 {
-value: "sympatric"
+value: "anthracemia"
 },
 {
-value: "oneiromancy"
+value: "philanthropist"
 },
 {
-value: "inequality"
+value: "benign"
 },
 {
-value: "anthophilia"
+value: "depend"
 },
 {
 value: "carnivore"
@@ -531,19 +527,19 @@ highlight: false
 answer: [
 {
 value: "c",
-missing: true
+missing: false
 },
 {
 value: "a",
-missing: true
+missing: false
 },
 {
 value: "r",
-missing: true
+missing: false
 },
 {
 value: "n",
-missing: true
+missing: false
 },
 {
 value: "i",
@@ -551,15 +547,15 @@ missing: false
 },
 {
 value: "v",
-missing: false
+missing: true
 },
 {
 value: "o",
-missing: false
+missing: true
 },
 {
 value: "r",
-missing: false
+missing: true
 },
 {
 value: "e",
@@ -568,13 +564,16 @@ missing: false
 ],
 choices: [
 {
-value: "c"
+value: "v"
 },
 {
-value: "a"
+value: "o"
 },
 {
 value: "r"
+},
+{
+value: "s"
 },
 {
 value: "n"
@@ -583,32 +582,36 @@ value: "n"
 value: "b"
 },
 {
+value: "m"
+},
+{
 value: "q"
 },
 {
-value: "s"
-},
-{
-value: "x"
-},
-{
-value: "k"
-},
-{
-value: "p"
+value: "f"
 },
 {
 value: "l"
 },
 {
-value: "z"
+value: "h"
+},
+{
+value: "a"
 }
 ],
 word: "carnivore",
 type: "defToCharsOneRoot"
 },
 {
-prompt: "carnivore",
+prompt: {
+normal: [
+{
+value: "carnivore",
+highlight: false
+}
+]
+},
 answer: [
 {
 value: "an animal that eats meat",
@@ -620,13 +623,13 @@ choices: [
 value: "an animal that eats meat"
 },
 {
-value: "carrying sleep, used of certain chemicals that make one sleepy"
+value: "the two-headed muscle at the front of the arm"
 },
 {
-value: "supporting one's home-country or father-land"
+value: "existing only for a certain amount of time"
 },
 {
-value: "having the shape of a cross"
+value: "calm, not able to be agitateed"
 }
 ],
 word: "carnivore",
@@ -748,70 +751,97 @@ value: "o"
 value: "r"
 },
 {
-value: "b"
+value: "d"
+},
+{
+value: "m"
 },
 {
 value: "l"
 },
 {
-value: "k"
+value: "u"
 },
 {
-value: "f"
-},
-{
-value: "h"
+value: "x"
 }
 ],
 word: "carnivore",
 type: "defToCharsAllRoots"
+},
+{
+prompt: [
+{
+value: "What is the meaning of the highlighted root in ",
+highlighted: false
+},
+{
+value: "carn",
+highlight: true
+},
+{
+value: "i",
+highlight: false
+},
+{
+value: "vor",
+highlight: false
+},
+{
+value: "e",
+highlight: false
+},
+{
+value: "?",
+highlighted: false
 }
-]
-/*[
-  {
-    answer: [
-      {value: "quint", missing: true},
-      {value: "et", missing: false}
-    ],
-    choices: [
-      {value: "quint", hint: "fifth"},
-      {value: "onto", hint: "existence"},
-      {value: "vermi", hint: "worm"},
-      {value: "exo", hint: "outside"},
-      {value: "pachy", hint: "thick"},
-      {value: "vari", hint: "change"}
-    ],
-    prompt: {
-      easy: [
-        {value: "a group of ", highlight: false},
-        {value: "five", highlight: true},
-        {value: " (QUINT)", highlight: true},
-        {value: " musicians", highlight: false}
-      ],
-      normal: [
-        {value: "a group of ", highlight: false},
-        {value: "five", highlight: true},
-        {value: " musicians", highlight: false}
-      ]
-    }
-  },
+],
+answer: [
+{
+value: "meat",
+missing: true
+}
+],
+choices: [
+{
+value: "meat"
+},
+{
+value: "hedr"
+},
+{
+value: "turb"
+},
+{
+value: "loqu"
+},
+{
+value: "anthrop"
+},
+{
+value: "iso"
+}
+],
+word: "carnivore",
+type: "wordDefToRootDef"
+},
 {
 prompt: {
 normal: [
 {
-value: "a variety of ",
+value: "an animal that ",
 highlight: false
 },
 {
-value: "language",
+value: "eat",
 highlight: true
 },
 {
-value: " that is used in a specific ",
+value: "s ",
 highlight: false
 },
 {
-value: "group",
+value: "meat",
 highlight: true
 },
 {
@@ -821,27 +851,27 @@ highlight: false
 ],
 easy: [
 {
-value: "a variety of ",
+value: "an animal that ",
 highlight: false
 },
 {
-value: "language",
+value: "eat",
 highlight: true
 },
 {
-value: " (LECT)",
+value: " (VOR)",
 highlight: true
 },
 {
-value: " that is used in a specific ",
+value: "s ",
 highlight: false
 },
 {
-value: "group",
+value: "meat",
 highlight: true
 },
 {
-value: " (SOCI)",
+value: " (CARN)",
 highlight: true
 },
 {
@@ -852,92 +882,49 @@ highlight: false
 },
 answer: [
 {
-value: "s",
-missing: true
-},
-{
-value: "o",
-missing: true
-},
-{
-value: "c",
+value: "carn",
 missing: true
 },
 {
 value: "i",
-missing: true
-},
-{
-value: "o",
 missing: false
 },
 {
-value: "l",
+value: "vor",
 missing: true
 },
 {
 value: "e",
-missing: true
-},
-{
-value: "c",
-missing: true
-},
-{
-value: "t",
-missing: true
+missing: false
 }
 ],
 choices: [
 {
-value: "s"
+value: "carn",
+hint: "meat"
 },
 {
-value: "o"
+value: "vor",
+hint: "eat"
 },
 {
-value: "c"
+value: "meso",
+hint: "middle"
 },
 {
-value: "i"
+value: "luc",
+hint: "light"
 },
 {
-value: "l"
+value: "dodec",
+hint: "twelve"
 },
 {
-value: "e"
-},
-{
-value: "c"
-},
-{
-value: "t"
-},
-{
-value: "q"
-},
-{
-value: "h"
-},
-{
-value: "w"
-},
-{
-value: "v"
-},
-{
-value: "z"
-},
-{
-value: "y"
-},
-{
-value: "x"
-},
-{
-value: "b"
+value: "alt",
+hint: "height"
+}
+],
+word: "carnivore",
+type: "defToRoots"
 }
 ]
-}  
-]
-*/
