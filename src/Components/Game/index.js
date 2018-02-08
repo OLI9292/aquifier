@@ -13,7 +13,6 @@ import OnCorrectImage from './onCorrectImage';
 import ProgressBar from '../ProgressBar/index';
 import SentenceCompletionQuestion from './Questions/sentenceCompletion';
 import SpellQuestion from './Questions/spell';
-import Timer from '../Timer/index';
 
 import { color } from '../../Library/Styles/index';
 import speedyPng from '../../Library/Images/speedy.png';

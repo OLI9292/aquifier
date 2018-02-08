@@ -5,7 +5,6 @@ import styled from 'styled-components';
 import _ from 'underscore';
 
 import Button from '../Common/button';
-import Timer from '../Timer/index';
 import { color } from '../../Library/Styles/index';
 
 class Admin extends Component {
@@ -122,9 +121,6 @@ class Admin extends Component {
         <tr>
           <ShortCell/>
           <LongCell alignTop>
-            <Timer ref={instance => { this.timer = instance }}
-              time={this.props.settings.time} 
-              gameOver={this.gameOver.bind(this)} />
             <br/>
             <Button.medium onClick={this.startMatch} style={{backgroundColor:color.blue,marginBottom:'1em'}}>
               Start Match
