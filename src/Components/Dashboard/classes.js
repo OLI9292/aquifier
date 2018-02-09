@@ -45,16 +45,12 @@ class ClassesDashboard extends Component {
 
   readStudent(data) {
     const name = data.firstName + ' ' + data.lastName.charAt(0);
-    const mastery = sum(data.words, 'experience')/10;
     const wordsLearned = data.words.length;
-    const wordsMastered = data.words.filter((w) => w.experience >= 7).length;
     const timePlayed = Math.ceil(sum(data.words, 'timeSpent')/60);
     return {
       id: data._id,
       name: name,
-      mastery: Math.ceil(mastery),
       wordsLearned: wordsLearned,
-      wordsMastered: wordsMastered,
       timePlayed: timePlayed
     }    
   }
@@ -79,16 +75,12 @@ class ClassesDashboard extends Component {
             <tbody>
               <Row>
                 <TableCell left header onClick={() => this.sortStudents('name')}>Name</TableCell>
-                <TableCell header onClick={() => this.sortStudents('mastery')}>Mastery</TableCell>
-                <TableCell header onClick={() => this.sortStudents('wordsMastered')}>Words Mastered</TableCell>
                 <TableCell header onClick={() => this.sortStudents('wordsLearned')}>Words Learned</TableCell>
                 <TableCell header onClick={() => this.sortStudents('timePlayed')}>Time Played</TableCell>
               </Row>
             
               <Row holistic>
                 <TableCell holistic left>Class Average</TableCell>
-                <TableCell border bold holistic>{this.average('mastery')}</TableCell>
-                <TableCell holistic>{this.average('wordsMastered')}</TableCell>
                 <TableCell holistic>{this.average('wordsLearned')}</TableCell>
                 <TableCell holistic>{`${this.average('timePlayed')}m`}</TableCell>
               </Row>
@@ -96,8 +88,6 @@ class ClassesDashboard extends Component {
               {this.state.students.map((s, i) => {
                 return <Row dark={i % 2 === 0} key={i} onClick={() => this.setState({ redirect: `/profile/${s.id}` })}>
                   <TableCell left>{s.name}</TableCell>
-                  <TableCell border bold>{s.mastery}</TableCell>
-                  <TableCell>{s.wordsMastered}</TableCell>
                   <TableCell>{s.wordsLearned}</TableCell>
                   <TableCell>{`${s.timePlayed}m`}</TableCell>
                 </Row>
