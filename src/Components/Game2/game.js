@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 import Header from '../Header/index';
 import { color } from '../../Library/Styles/index';
 import { shouldRedirect } from '../../Library/helpers';
+import LoadingSpinner from '../Common/loadingSpinner';
 
 import SpeedRound from './speedRound';
 import ProgressBar from './progressBar';
@@ -393,13 +394,23 @@ class Game extends Component {
       </Bottom>
     })();       
 
+    const loadingSpinner = (() => {
+      return 
+    })();
+
     return (
       <div>
-        <Content>
-          {topInfo}
-          {questionComponents}
-          {bottomInfo}
-        </Content>
+        {
+          this.state.questions
+          ?
+          <Content>
+            {topInfo}
+            {questionComponents}
+            {bottomInfo}
+          </Content>
+          :
+          <LoadingSpinner />
+        }
       </div>
     );
   }
