@@ -52,8 +52,8 @@ class GameManager extends Component {
   }
 
   loadGame(userId) {
-    const shouldSeed = true;
-    const multiple = true;
+    const shouldSeed = false;
+    const multiple = false;
     const spell = false;
 
     if (shouldSeed) {
