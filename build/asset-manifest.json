@@ -1,8 +1,8 @@
 {
   "main.css": "static/css/main.d6f4dd3e.css",
   "main.css.map": "static/css/main.d6f4dd3e.css.map",
-  "main.js": "static/js/main.f2878924.js",
-  "main.js.map": "static/js/main.f2878924.js.map",
+  "main.js": "static/js/main.4fc1d4ac.js",
+  "main.js.map": "static/js/main.4fc1d4ac.js.map",
   "static/media/Brandon_bld.otf": "static/media/Brandon_bld.fa11c3ca.otf",
   "static/media/Brandon_reg.otf": "static/media/Brandon_reg.1f55925e.otf",
   "static/media/Checkmark-Green.png": "static/media/Checkmark-Green.64b01b11.png",
@@ -18,6 +18,7 @@
   "static/media/categories.png": "static/media/categories.bfe51981.png",
   "static/media/cephalopod.png": "static/media/cephalopod.e6fc3ae4.png",
   "static/media/checkmark.png": "static/media/checkmark.1baabd11.png",
+  "static/media/circle-load.png": "static/media/circle-load.8f2412b4.png",
   "static/media/cube.png": "static/media/cube.86f385c9.png",
   "static/media/decagon.png": "static/media/decagon.82a778e9.png",
   "static/media/dermatoglyph.png": "static/media/dermatoglyph.b7a37dee.png",
