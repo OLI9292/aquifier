@@ -18,9 +18,9 @@ import { alerts } from './alerts';
 import OnCorrectImage from './onCorrectImage';
 
 import {
-  HelpButton, HeaderContainer, ButtonValue, Bottom, Content, PromptContainer,
+  HelpButton, HeaderContainer, ButtonValue, ButtonContent, Bottom, Content, PromptContainer,
   Prompt, PromptValue, Answer, AnswerSpace, Underline, AnswerValue,
-  Choices, ChoiceButton, ExitOut, StageDot, Alert
+  Choices, ChoiceButton, ExitOut, StageDot, Alert, ButtonHint
 } from './components'
 
 class Game extends Component {
@@ -29,7 +29,7 @@ class Game extends Component {
 
     this.state = {
       time: 5,
-      questionIndex: 0,
+      questionIndex: 2,
       hintCount: 0,
       guessed: {},
       prompt: 'normal',
@@ -78,7 +78,7 @@ class Game extends Component {
     if (question) {
       const isSpellQuestion = _.every(question.answer, a => a.value.length === 1);
       this.setState({ question: question, isSpellQuestion: isSpellQuestion }, this.checkHint);
-      setTimeout(this.autohint.bind(this), 1000);
+      setTimeout(this.autohint.bind(this), 2000);
     } else {
       this.gameOver();
     }
@@ -157,7 +157,7 @@ class Game extends Component {
     if (!nextCorrect) { return; }
     const idx = _.findIndex(q.choices, c => c.value === nextCorrect.value);  
     this.setState({ glowIdx: idx });
-    this.guessed(q.choices[idx].value, idx);
+    if (giveAnswer) { this.guessed(q.choices[idx].value, idx); }
     setTimeout(() => this.setState({ glowIdx: -1 }), 200);
   }
 
@@ -192,7 +192,7 @@ class Game extends Component {
       break;
     
     case 'defCompletion':
-      this.glowAnswer(false);
+      hintCount !== 0 && this.glowAnswer(false);
       break;
 
     case 'defToAllRootsNoHighlight':
@@ -322,12 +322,14 @@ class Game extends Component {
         key={idx}
         bColor={bColor}
         onClick={() => this.guessed(value, idx)}>
-        <ButtonValue>
-          {value}
-          <span style={{display:'block',fontSize:'0.75em'}}>
-            {hintButtonsOn && hint}
-          </span>
-        </ButtonValue>
+        <ButtonContent>
+          <ButtonValue hintOn={hintButtonsOn}>
+            {value}
+          </ButtonValue>
+          <ButtonHint opacity={hintButtonsOn ? 1 : 0}>
+            {hint}
+          </ButtonHint>
+        </ButtonContent>
       </ChoiceButton> 
     }
 

@@ -58,12 +58,21 @@ export const ExitOut = styled.img`
   cursor: pointer;
 `
 
-export const ButtonValue = styled.p`
+export const ButtonContent = styled.p`
   font-size: 2em;
+  margin: 0;
   color: white;
-  display: table-cell;
-  vertical-align: middle;
   text-transform: uppercase;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`
+
+export const ButtonValue = styled.span`
+  display: block;
+  margin-top: ${props => `${props.hintOn ? 0 : 35}px`};
+  transition: margin 200ms;
 `
 
 export const Bottom = styled.div`
@@ -148,13 +157,14 @@ export const ChoiceButton = styled.div`
   height: ${props => props.long ? '80%' : '100px'};
   font-size: ${props => props.long ? '0.75em' : '1em'};
   cursor: pointer;
-  display: table;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: ${props => props.square
     ? '100px'
     : props.long
       ? '80%'
       : '250px'};
-  text-align: center;
   border-radius: 20px;
   box-shadow: 0 0 10px rgba(0,0,0,0.25);
   transition-duration: 0.15s;
@@ -167,4 +177,11 @@ export const ChoiceButton = styled.div`
         : '150px'};    
     border-radius: 15px;
   `}
+`
+
+export const ButtonHint = styled.span`
+  display: block;
+  font-size: 0.75em;
+  opacity: ${props => props.opacity};
+  transition: opacity 200ms;
 `
