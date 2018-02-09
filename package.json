@@ -33,6 +33,7 @@
     "file-loader": "0.11.2",
     "firebase": "^4.3.0",
     "fs-extra": "3.0.1",
+    "heroku-ssl-redirect": "0.0.4",
     "html-webpack-plugin": "2.29.0",
     "lodash": "^4.17.4",
     "moment": "^2.19.1",
@@ -78,6 +79,9 @@
     "test": "node scripts/test.js --env=jsdom",
     "bringToYourSchoolFormCheck": "node bin/bringToYourSchoolFormCheck"
   },
+  "engines": {
+    "node": "6.9.3"
+  },  
   "jest": {
     "collectCoverageFrom": [
       "src/**/*.{js,jsx}"

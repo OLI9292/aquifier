@@ -24,7 +24,7 @@ class MobilePopup extends Component {
       <Layout>
         <Title>Sorry to interrupt!</Title>
         <Text>
-          We noticed you’re on a mobile device. You’ll have a much better time if you use the mobile app. Get it below. If that’s not possible, try it out on a laptop.
+          Email us at support@playwordcraft.com or call us at (617) 429-8906 to set up Wordcraft in your school. Click below to play the solo version on an iPhone.
         </Text>
         <ButtonsContainer>
           <Button.iOS style={{display:'block',margin:'0 auto'}}/>

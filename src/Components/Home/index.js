@@ -176,11 +176,10 @@ class Home extends Component {
               </p>
               <p style={{cursor:'pointer',display:'none'}}>
                 PARTNERS
-              </p>      
-              <p style={{transition:'0.5s'}}
-                onMouseOver={() => this.setState({ hoveredOverContact: true })}>
-                {this.state.hoveredOverContact ? 'SUPPORT@PLAYWORDCRAFT.COM' : 'CONTACT'}
-              </p>      
+              </p>     
+              <a style={{color:'black',textDecoration:'none'}} href={'mailto:support@playwordcraft.com'}>
+                <p>CONTACT</p>      
+              </a> 
             </BottomNav>
           </BottomImage>        
         </BottomContainer>             
