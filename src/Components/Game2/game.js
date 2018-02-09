@@ -135,15 +135,20 @@ class Game extends Component {
   }
 
   reset(cb) {
-    this.setState({
-      questionComplete: false,
-      hintCount: 0,
-      highlightPrompt: false,
-      prompt: 'normal',
-      hintButtonsOn: false,
-      correct: true,
-      startTime: moment()
-    }, cb)
+    this.setState({ gameOpaqueness: 0 }, () => {
+      setTimeout(() => {
+        this.setState({
+          questionComplete: false,
+          hintCount: 0,
+          highlightPrompt: false,
+          prompt: 'normal',
+          hintButtonsOn: false,
+          correct: true,
+          startTime: moment(),
+          gameOpaqueness: 1
+        }, cb);
+      }, 200);
+    });
   }
 
   glowAnswer(giveAnswer) {
@@ -273,7 +278,9 @@ class Game extends Component {
       const prompt = question.prompt[this.state.prompt] || question.prompt['normal']
       return _.map(prompt, (section, i) => {
         const highlight = highlightPrompt && section.highlight;
-        const style = highlight ? { color: color.warmYellow, textTransform: 'uppercase' } : {};
+        const style = highlight
+          ? { color: color.warmYellow, textTransform: 'uppercase', fontFamily: 'BrandonGrotesqueBold' }
+          : {};
         return <span key={i} style={style}>{section.value}</span>;
       });
     }
@@ -292,12 +299,15 @@ class Game extends Component {
 
     const answerSpace = (value, missing, idx) => {
       const width = `${value.length * 30}px`;
-      const margin = questionComplete ? '0px -2px' : '0px 10px';
+      const margin = questionComplete
+        ? `0px -${this.state.isSpellQuestion ? 2 : 5}px`
+        : `0px ${this.state.isSpellQuestion ? 5 : 10}px`;
       return <AnswerSpace key={idx} width={width} margin={margin}>
         <AnswerValue missing={missing}>
           {value}
         </AnswerValue>
-        <Underline color={missing ? 'black' : color.green}/>
+        <Underline
+          color={questionComplete ? color.warmYellow : missing ? 'black' : color.green}/>
       </AnswerSpace> 
     }
 
@@ -382,8 +392,12 @@ class Game extends Component {
               this.setState({ hintCount: hintCount + 1 }, this.checkHint);
             }
           }}>
-          {questionComplete ? 'CONTINUE' : 'HINT'}
-          {questionComplete && <p style={{color:'white',marginTop:'-35px',fontSize:'0.6em',height:'0px'}}>(ENTER)</p>}
+          <p>
+            {questionComplete ? 'CONTINUE' : 'HINT'}
+            <span style={{fontSize:'0.6em',display:questionComplete ? 'block' : 'none'}}>
+              (ENTER)
+            </span>            
+          </p>
       </HelpButton>
     })();
 
@@ -403,7 +417,7 @@ class Game extends Component {
         {
           this.state.questions
           ?
-          <Content>
+          <Content opacity={this.state.gameOpaqueness}>
             {topInfo}
             {questionComponents}
             {bottomInfo}

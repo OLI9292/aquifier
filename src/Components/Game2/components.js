@@ -30,19 +30,22 @@ export const HelpButton = styled.div`
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0,0,0,0.25);
   z-index: 9999;
-  text-align: center;
-  line-height: 50px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  justify-content: center;  
 `
 
 export const Content = styled.div`
-  bottom: 0;
-  position: absolute;
-  top: 0;
+  height: 100vh;
   width: 100%;
+  max-width: 900px;
   margin: 0 auto;
+  position: relative;
+  opacity: ${props => props.opacity};
+  transition: opacity 200ms;
   ${media.phone`
-    top: 0;
     font-size: 0.7em;
   `}  
 `
@@ -52,7 +55,6 @@ export const ExitOut = styled.img`
   height: 40px;
   width: auto;
   top: 10px;
-  left: 10px;   
   cursor: pointer;
 `
 
