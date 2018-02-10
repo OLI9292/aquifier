@@ -48,16 +48,8 @@ class Train extends Component {
     });
   }
 
-  handleClick(level) {
-    const [id, stage] = level._id.split('-');
-
-    if (level.progressBars === 1) {
-      this.setState({ redirect: '/play/' + queryString.stringify({ type: 'train', id: id, stage: 1 }) });
-    } else if (stage) {
-      this.setState({ redirect: '/play/' + queryString.stringify({ type: 'train', id: id, stage: stage }) });
-    } else {
-      
-    }
+  clickedLevel(id, stage) {
+    this.setState({ redirect: '/play/' + queryString.stringify({ type: 'train', id: id, stage: stage }) });
   }
 
   render() {
@@ -69,7 +61,7 @@ class Train extends Component {
         <StagesContainer height={`${level.progressBars * 100}px`}>
           {_.map(_.range(1, level.progressBars + 1), n => {
             return <div>
-              <LevelButton small isExpanded>
+              <LevelButton small isExpanded onClick={() => this.clickedLevel(level._id, n)}>
                 <StageIndex>{n}</StageIndex>
                 <Img 
                   src={require(`../../Library/Images/DemoLevels/${level.name.split(' ')[0]}.jpg`)} />

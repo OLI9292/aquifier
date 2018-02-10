@@ -29,7 +29,7 @@ class Game extends Component {
 
     this.state = {
       time: 5,
-      questionIndex: 2,
+      questionIndex: 0,
       hintCount: 0,
       guessed: {},
       prompt: 'normal',
