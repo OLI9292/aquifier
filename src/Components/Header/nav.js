@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import Dropdown from './dropdown';
 import { color } from '../../Library/Styles/index';
 
-import background from '../../Library/Images/yellow-header.png';
+import background from '../../Library/Images/header-bg.png';
 
 class Nav extends Component {
   constructor(props) {
@@ -111,6 +111,7 @@ const Container = styled.div`
   width: 100%;
   height: 70px;
   background: url(${background}) no-repeat center center;
+  background-size: 100% auto;
 ` 
 
 const FullLogo = styled.h2`

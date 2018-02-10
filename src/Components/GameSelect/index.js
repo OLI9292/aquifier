@@ -56,14 +56,14 @@ class GameSelect extends Component {
     })();
 
     const statList = (forLeaderboards = true) => {
-      return <ul style={{listStyle:'none',margin:'0',padding:'0'}}>
+      return <ul style={{listStyle:'none',margin:'0 auto',width:'60%',padding:'0'}}>
         {flatMap(stats[forLeaderboards ? 'leaderboards' : 'progress'], data => {
           const ListItem = forLeaderboards ? LeaderboardListItem : ProgressListItem;
           return <ListItem key={data.slug}>
             <Icon src={data.image} />
             {data.name && <StatName>{data.name}</StatName>}
             <Stat color={data.color} forLeaderboards={forLeaderboards}>
-              0
+              {data.seed}
             </Stat>
           </ListItem>
         })}
@@ -71,21 +71,21 @@ class GameSelect extends Component {
     }
 
     const leaderboardStats = (() => {
-      return <Leaderboards>
+      return <SidebarContainer>
         <Header>
           Leaderboards
         </Header>
         {statList()}
-      </Leaderboards>
+      </SidebarContainer>
     })();
 
     const progressStats = (() => {
-      return <Progress>
+      return <SidebarContainer>
         <Header>
           Progress
         </Header>
         {statList(false)}
-      </Progress>
+      </SidebarContainer>
     })();
     
     return (
@@ -93,7 +93,7 @@ class GameSelect extends Component {
         <Main>
           {tabs}
           <Content>
-            <div style={{position:'absolute',width:'100%',height:'20px',backgroundColor:'white'}}></div>
+            <div style={{position:'absolute',width:'100%',height:'20px',backgroundColor:'white',borderTop:`2px solid ${color.lightestGray}`}} />
             {mainComponent}
           </Content>
         </Main>
@@ -112,6 +112,8 @@ const Container = styled.div`
 `
 
 const TabContainer = styled.div`
+  box-sizing: border-box;
+  padding: 0px 1px;
   position: absolute;
   display: flex;
   justify-content: space-between;
@@ -121,13 +123,13 @@ const TabContainer = styled.div`
 
 const Tab = styled.div`
   flex: 1;
-  font-size: 0.8em;
+  font-size: 0.9em;
   cursor: pointer;
   height: 50px;
   line-height: 42px;
   text-align: center;
-  background-color: ${props => props.selected ? color.red : color.lightBlue};
-  color: white;
+  background-color: ${props => props.selected ? color.red : 'white'};
+  color: ${props => props.selected ? 'white' : color.mediumGray};
   border-radius: 10px;
   font-family: BrandonGrotesqueBold;
   margin: ${props => props.margin};
@@ -152,26 +154,24 @@ const Sidebar = styled.div`
   flex-direction: column;
 `
 
-const Leaderboards = styled.div`
+const SidebarContainer = styled.div`
   background-color: white;
   margin-bottom: 25px;
   border-radius: 20px;
+  padding-bottom: 25px;
 `
 
-const Progress = styled.div`
-  background-color: white;
-  border-radius: 20px;
-`
-
-const Header = styled.h3`
+const Header = styled.p`
   text-align: center;
+  font-size: 1.5em;
+  height: 15px;
 `
 
 const LeaderboardListItem = styled.li`
   height: 60px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: start;
 `
 
 const ProgressListItem = styled.li`
@@ -180,21 +180,27 @@ const ProgressListItem = styled.li`
 `
 
 const Icon = styled.img`
-  height: 30px;
+  height: 35px;
   width: auto;
 `
 
 const StatName = styled.div`
   height: 0px;
   line-height: 0px;
+  font-size: 0.7em;
+  font-family: BrandonGrotesqueBold;
+  color: ${color.gray};
+  letter-spacing: 1px;
+  margin-top: -2px;
 `
 
 const Stat = styled.p`
+  margin-left: ${props => props.forLeaderboards ? '10px' : '0'};
   line-height: ${props => props.forLeaderboards ? '' : '0px'};
-  height: ${props => props.forLeaderboards ? '' : '0px'};
-  font-family: EBGaramond;
+  font-family: EBGaramondSemiBold;
   color: ${props => props.color};
-  font-size: ${props => props.forLeaderboards ? '1.75em' : '1.25em'};
+  font-size: ${props => props.forLeaderboards ? '2em' : '1.75em'};
+  margin-top: ${props => props.forLeaderboards ? '' : '20px'};
 `
 
 

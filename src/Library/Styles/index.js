@@ -16,6 +16,7 @@ export const color = {
   red: '#FD7274',
   red10l: '#FF7171',
   darkGray: '#686868',
+  mediumGray: '#BDBEC0',
   gray2: '#58595B',
   gray: '#828282',
   gray10l: '#8e8e8e',
