@@ -20,11 +20,6 @@ class Profile extends Component {
           image: 'book',
           color: color.blue
         },
-        wordsMastered: {
-          name: 'words mastered',
-          image: 'wizard',
-          color: color.yellow
-        },
         wordAccuracy: {
           name: 'word accuracy',
           image: 'archer',
@@ -32,7 +27,6 @@ class Profile extends Component {
         },
       },
       wordsLearned: 0,
-      wordsMastered: 0,
       wordAccuracy: 0
     }
   }

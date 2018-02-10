@@ -14,12 +14,12 @@ class Timer extends Component {
   }
 
   componentDidMount() {
-    const time = this.props.time === '5' ? '5:00' : '3:00';
+    const time = this.props.time === '5' ? '5:00' : this.props.time === '1' ? '1:00' : '3:00';
     this.setState({ time });
   }
 
   accountForLateness(secondsLate) {
-    const totalSeconds = (this.props.time === '5' ? 300 : 180) - secondsLate;
+    const totalSeconds = (this.props.time === '5' ? 300 : this.props.time === '1' ? 60 : 180) - secondsLate;
     // TODO: refactor
     if (totalSeconds < 0) {
       this.props.gameOver();
