@@ -31,7 +31,7 @@ const params = {
   }
 }
 
-const TIME_LIMITS = [3, 5];
+const TIME_LIMITS = [1, 3, 5];
 
 class WordListGameSelect extends Component {
   constructor(props) {
@@ -174,7 +174,7 @@ class WordListGameSelect extends Component {
                 return <Button.small key={i} color={color.lightestGray}
                   style={{color:'black',margin:'0px 5px 0px 5px'}}
                   onClick={() => this.play(t)}
-                >{`${t} Minutes`}</Button.small>
+                >{`${t} Minute${t === 1 ? '' : 's'}`}</Button.small>
               })
             }
           </td>
