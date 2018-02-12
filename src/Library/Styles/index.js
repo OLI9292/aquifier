@@ -32,7 +32,8 @@ export const color = {
   googleRed: '#DC4C3D',
   googleRed10l: '#df5d50',
   facebookBlue: '#4862A3',
-  facebookBlue10l: '#5a71ac'
+  facebookBlue10l: '#5a71ac',
+  white: '#ffffff'
 };
 
 export const PHONE_MAX_WIDTH = 600

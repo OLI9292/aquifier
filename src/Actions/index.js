@@ -354,6 +354,24 @@ export const saveUserStats = (data, session) => ({
 })
 
 
+export const completedLevel = (data, userId) => (dispatch, getState) => dispatch(saveLevel(data, userId))
+
+export const SAVE_LEVEL_REQUEST = 'SAVE_LEVEL_REQUEST'
+export const SAVE_LEVEL_SUCCESS = 'SAVE_LEVEL_SUCCESS'
+export const SAVE_LEVEL_FAILURE = 'SAVE_LEVEL_FAILURE'
+
+export const saveLevel = (data, userId) => ({
+  [CALL_API]: {
+    api: 'accounts',
+    data: data,
+    endpoint: `auth/user/${userId}/completedLevel`,
+    method: 'PATCH',
+    schema: Schemas.USER,
+    types: [ SAVE_LEVEL_REQUEST, SAVE_LEVEL_SUCCESS, SAVE_LEVEL_FAILURE ]
+  }
+})
+
+
 export const LOGOUT_USER = 'LOGOUT_USER'
 
 export const logoutUser = () => ({

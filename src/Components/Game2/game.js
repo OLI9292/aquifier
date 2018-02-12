@@ -35,7 +35,8 @@ class Game extends Component {
       prompt: 'normal',
       points: 0,
       correct: true,
-      startTime: moment()
+      correctCounter: [0,0],
+      questionStartTime: moment()
     }
 
     this.handleKeydown = this.handleKeydown.bind(this);
@@ -69,18 +70,25 @@ class Game extends Component {
   componentWillReceiveProps(nextProps) {
     const questions = nextProps.questions;
 
-    if (questions && !this.state.questions) { this.setState({ questions }, this.setQuestion); }
+    if (questions && !this.state.questions) { 
+      const gameStartTime = moment();
+      this.setState({ questions: questions, gameStartTime: gameStartTime }, this.setQuestion); 
+    }
   }
 
   setQuestion() {
     const question = this.state.questions[this.state.questionIndex];
-    console.log(question) 
+    
     if (question) {
+      console.log(question)
       const isSpellQuestion = _.every(question.answer, a => a.value.length === 1);
       this.setState({ question: question, isSpellQuestion: isSpellQuestion }, this.checkHint);
       setTimeout(this.autohint.bind(this), 2000);
     } else {
-      this.gameOver();
+      const accuracy = this.state.correctCounter[0] / Math.max(this.state.correctCounter[1], 1);
+      const score = this.state.points;
+      const time = Math.floor(moment.duration(moment().diff(this.state.gameStartTime)).asSeconds());
+      this.props.gameOver(accuracy, score, time);
     }
   }
 
@@ -121,11 +129,12 @@ class Game extends Component {
 
   checkComplete() {
     if (_.every(this.state.question.answer, a => !a.missing)) {
-      const isSpeedy = Math.floor(moment.duration(moment().diff(this.state.startTime)).asSeconds()) < 5;
+      const isSpeedy = Math.floor(moment.duration(moment().diff(this.state.questionStartTime)).asSeconds()) < 5;
       this.setState({
         questionComplete: true,
         isSpeedy: isSpeedy,
         points: this.state.points + 1,
+        correctCounter: [this.state.correctCounter[0] + (this.state.correct ? 1 : 0), this.state.correctCounter[1] + 1],
         questionIndex: this.state.questionIndex + 1
        }, () => {
         this.animateAlerts();
@@ -144,7 +153,7 @@ class Game extends Component {
           prompt: 'normal',
           hintButtonsOn: false,
           correct: true,
-          startTime: moment(),
+          questionStartTime: moment(),
           gameOpaqueness: 1
         }, cb);
       }, 200);
@@ -215,10 +224,6 @@ class Game extends Component {
     }
   }
 
-  gameOver() {
-    // this.setState({ redirect: '/home' });
-  }
-
   render() {
     if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }  
 
@@ -239,7 +244,7 @@ class Game extends Component {
 
     const progressComponent = type => {
       switch (type) {
-        case 'train': case 'demo':
+        case 'train': case 'explore': case 'read':
           return <ProgressBar
             progress={Math.max(questionIndex) / get(questions, 'length', 1)} />;
         case 'speed':
@@ -253,7 +258,7 @@ class Game extends Component {
     }
 
     const alert = type => {
-      return  <Alert hide={_.isUndefined(type)}>
+      return  <Alert hide={_.isUndefined(type)} display={this.state.questionComplete ? '' : 'none'}>
         <img
           style={{height:'75%',width:'auto',marginRight:'10px'}}
           src={type && alerts[type].image} />              

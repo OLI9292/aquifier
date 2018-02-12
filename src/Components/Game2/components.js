@@ -9,7 +9,8 @@ export const Alert = styled.div`
   height: 50px;
   display: flex;
   align-items: center;
-  transition: 0.2s;
+  transition: opacity 0.2s;
+  display: ${props => props.display};
   opacity: ${props => props.hide ? 0 : 1};
 `
 

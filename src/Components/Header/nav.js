@@ -122,7 +122,7 @@ const FullLogo = styled.h2`
   cursor: pointer;
 `
 
-const Link = styled.p`
+const Link = styled.div`
   font-family: BrandonGrotesqueBold;
   position: relative;
   cursor: pointer;
