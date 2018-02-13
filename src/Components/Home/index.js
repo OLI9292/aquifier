@@ -47,7 +47,7 @@ class Home extends Component {
     if (this.props.session) { this.setState({ redirect: '/home'} )};
 
     return (
-      <div>
+      <Container>
         <TopContainer>
           <TopImage image={bgYellow} />
         </TopContainer>
@@ -68,7 +68,7 @@ class Home extends Component {
           </TopContentContainer>   
 
           <DaisyChainContainer>
-            <DaisyChain />
+            <DaisyChain smallScreen={this.state.smallScreen} />
           </DaisyChainContainer>
         </div>
       
@@ -186,10 +186,14 @@ class Home extends Component {
             </BottomNav>
           </BottomImage>        
         </BottomContainer>             
-      </div>
+      </Container>
     );
   }
 }
+
+const Container = styled.div`
+  font-size: 0.8em;
+`
 
 const TopContainer = styled.div`
   height: 550px;
@@ -236,7 +240,6 @@ const ButtonContainer = styled.div`
   margin-top: 40px;
   position: relative;
   @media (max-width: 900px) {
-    display: none;
     width: 80%;
     margin-top: 50px;
     justify-content: space-evenly;

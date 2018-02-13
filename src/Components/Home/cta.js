@@ -50,7 +50,7 @@ class CTA extends Component {
                 </li>                  
               </ul>
               <div style={{position:'absolute',bottom:'25px',left:'25px'}}>
-                <Button color={color.blue} visibile={!this.props.smallScreen}>
+                <Button color={color.blue}>
                   START FREE TRIAL
                 </Button>
               </div>
@@ -203,7 +203,6 @@ const Button = styled.button`
   height: 60px;
   border-radius: 30px;
   font-size: 1.25em;
-  visibility: ${props => props.visibile ? 'visibile' : 'hidden'};
 `
 
 export default CTA;

@@ -24,7 +24,7 @@ class Nav extends Component {
 
     const links = (() => {
       return <div style={{display:'flex',width:'100%',alignItems:'center',justifyContent:'space-between'}}>
-        <LeftLinksContainer show={loggedIn}>
+        <LeftLinksContainer width={isHome ? '25px' : '325px'} show={loggedIn}>
           <Link to={'/'}>
             <LinkText>
               HOME
@@ -54,13 +54,13 @@ class Nav extends Component {
           </LinkText>  
           :
           <div>
-            <Link to={'/start-free-trial'}>
-              <LinkText style={{marginRight:'10px'}}>
+            <Link style={{display:'block'}} to={'/start-free-trial'}>
+              <LinkText style={{margin:'30px 0px 10px 0px'}}>
                 START FREE TRIAL
               </LinkText>
             </Link>
 
-            <LinkText onClick={() => this.props.displayLogin()}>
+            <LinkText style={{display:'block',textAlign:'right'}} onClick={() => this.props.displayLogin()}>
               LOGIN
             </LinkText>
           </div>
@@ -98,7 +98,7 @@ const LeftLinksContainer = styled.div`
   pointer-events: ${props => props.show ? 'auto' : 'none'};
   align-items: center;
   justify-content: space-between;
-  width: 325px;
+  width: ${props => props.width};
 `
 
 const FullLogo = styled.h2`
