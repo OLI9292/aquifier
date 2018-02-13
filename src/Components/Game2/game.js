@@ -18,9 +18,16 @@ import { alerts } from './alerts';
 import OnCorrectImage from './onCorrectImage';
 
 import {
-  HelpButton, HeaderContainer, ButtonValue, ButtonContent, Bottom, Content, PromptContainer,
-  Prompt, PromptValue, Answer, AnswerSpace, Underline, AnswerValue,
-  Choices, ChoiceButton, ExitOut, StageDot, Alert, ButtonHint
+  Alert, AlertImage, AlertText,
+  Answer, AnswerSpace, AnswerValue, Underline,
+  Bottom,
+  ButtonContent, ButtonHint, ButtonValue,
+  Content,
+  Choices, ChoiceButton,
+  ExitOut,
+  HelpButton, HelpSpan,
+  Prompt, PromptContainer, PromptValue,
+  StageDot
 } from './components'
 
 class Game extends Component {
@@ -85,11 +92,15 @@ class Game extends Component {
       this.setState({ question: question, isSpellQuestion: isSpellQuestion }, this.checkHint);
       setTimeout(this.autohint.bind(this), 2000);
     } else {
-      const accuracy = this.state.correctCounter[0] / Math.max(this.state.correctCounter[1], 1);
-      const score = this.state.points;
-      const time = Math.floor(moment.duration(moment().diff(this.state.gameStartTime)).asSeconds());
-      this.props.gameOver(accuracy, score, time);
+      this.gameOver();
     }
+  }
+
+  gameOver() {
+    const accuracy = this.state.correctCounter[0] / Math.max(this.state.correctCounter[1], 1);
+    const score = this.state.points;
+    const time = Math.floor(moment.duration(moment().diff(this.state.gameStartTime)).asSeconds());
+    this.props.gameOver(accuracy, score, time);
   }
 
   guessed(choice, idx) {
@@ -259,12 +270,10 @@ class Game extends Component {
 
     const alert = type => {
       return  <Alert hide={_.isUndefined(type)} display={this.state.questionComplete ? '' : 'none'}>
-        <img
-          style={{height:'75%',width:'auto',marginRight:'10px'}}
-          src={type && alerts[type].image} />              
-        <p style={{color:type && alerts[type].color,fontSize:'1.1em'}}>
+        <AlertImage src={type && alerts[type].image} />              
+        <AlertText color={type && alerts[type].color}>
           {type && alerts[type].name.toUpperCase()}
-        </p>
+        </AlertText>
       </Alert>      
     }
 
@@ -305,9 +314,10 @@ class Game extends Component {
     const answerSpace = (value, missing, idx) => {
       const width = `${value.length * 30}px`;
       const margin = questionComplete
-        ? `0px -${this.state.isSpellQuestion ? 2 : 5}px`
+        ? '0px 0px'
         : `0px ${this.state.isSpellQuestion ? 5 : 10}px`;
-      return <AnswerSpace key={idx} width={width} margin={margin}>
+
+      return <AnswerSpace key={idx} margin={margin}>
         <AnswerValue missing={missing}>
           {value}
         </AnswerValue>
@@ -378,16 +388,16 @@ class Game extends Component {
       }
     })();
 
-    const levelInfo = () => {
+    const levelInfo = (() => {
       return <div>
         <p style={{fontFamily:'BrandonGrotesqueBold',fontSize:'1.25em',height:'2px'}}>
-          {this.props.level.fullname}
+          {get(this.props.level, 'fullname')}
         </p>
-        {_.map(_.range(1, this.props.level.progress[1] + 1), n => {
+        {this.props.level && _.map(_.range(1, this.props.level.progress[1] + 1), n => {
           return <StageDot key={n} green={n <= this.props.level.progress[0]} />
         })}
       </div>      
-    }
+    })();
 
     const helpButton = (() => {
       return <HelpButton color={questionComplete ? color.green : color.red}
@@ -401,23 +411,19 @@ class Game extends Component {
           }}>
           <p>
             {questionComplete ? 'CONTINUE' : 'HINT'}
-            <span style={{fontSize:'0.6em',display:questionComplete ? 'block' : 'none'}}>
+            <HelpSpan hide={questionComplete}>
               (ENTER)
-            </span>            
+            </HelpSpan>            
           </p>
       </HelpButton>
     })();
 
     const bottomInfo = (() => {
       return <Bottom>
-        {this.props.level && levelInfo()}
+        {levelInfo}
         {helpButton}
       </Bottom>
     })();       
-
-    const loadingSpinner = (() => {
-      return 
-    })();
 
     return (
       <div>

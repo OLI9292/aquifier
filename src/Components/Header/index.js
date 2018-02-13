@@ -56,6 +56,8 @@ class Header extends Component {
       </div>
     })()    
 
+    // TODO: - change smallScreen && loggedIn
+    // bad looks if the user has a small screen but is not logged in
     return (
       <div>
         {this.state.displayLoginModal && loginModal}

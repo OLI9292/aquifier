@@ -41,14 +41,20 @@ class GameManager extends Component {
   componentWillReceiveProps(nextProps) {
     if (nextProps.session && !this.state.loading) {
       this.setState({ loading: true }, () => this.loadGame(nextProps.session.user));  
-    } else if (nextProps.questions && nextProps.questions.length && !this.state.questions) {
+    } else if (nextProps.questions.length && !this.state.questions) {
       this.setState({ questions: nextProps.questions });
     } else if (nextProps.levels.length && !this.state.level) {
-      // TODO: fix
-      /*const level = _.find(nextProps.levels, l => l._id === this.state.settings.id);
-      level.fullname = level.name.toUpperCase() + ' ' + this.state.settings.stage;
-      level.progress = [this.state.settings.stage, level.progressBars];
-      if (level) { this.setState({ level }); }*/
+      this.setLevelName(nextProps, this.state.settings);
+    }
+  }
+
+  setLevelName(props, settings) {
+    if (settings.type === 'train') {
+      const level = _.find(props.levels, l => l._id === settings.id);
+      if (!level) { return; }
+      level.fullname = level.name.toUpperCase() + ' ' + settings.stage;
+      level.progress = [settings.stage, level.progressBars];
+      this.setState({ level });
     }
   }
 
@@ -86,12 +92,10 @@ class GameManager extends Component {
   }
 
   hideZendesk() {
-    // Zendesk doesn't show up in the DOM until a couple sec after the component mounts
-    // there's probably a better solution, but this works
     this.interval = setInterval(() => {
-      const elems = document.getElementsByClassName('zopim');
-      if (elems.length === 2) {
-        _.each(elems, e => e.style.display = 'none');
+      const zendesk = window.$zopim.livechat;
+      if (zendesk) {
+        zendesk.hideAll();
         clearInterval(this.interval);
       }
     }, 50);
