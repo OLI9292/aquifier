@@ -22,7 +22,7 @@ class Footer extends Component {
     const link = (text, path) => {
       return <Link
         to={path}
-        style={{textDecoration:'none',color:color.gray,fontFamily:'BrandonGrotesque',fontSize:'0.9em'}}>
+        style={{textDecoration:'none',color:'black',fontFamily:'BrandonGrotesque',fontSize:'0.9em'}}>
         {text}
       </Link>
     }

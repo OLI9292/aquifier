@@ -1,20 +1,26 @@
+import _ from 'underscore';
 import { connect } from 'react-redux'
 import React, { Component } from 'react';
-import styled from 'styled-components';
-import _ from 'underscore';
 
-import dummyIcon from '../../Library/Images/archer.png';
-import { stats } from './stats';
+import MiniLeaderboard from './miniLeaderboard';
+import MiniProgress from './miniProgress';
 import Train from './Train/index';
 import Explore from './Explore/index';
 import Read from './Read/index';
+
 import { color } from '../../Library/Styles/index';
 import flatMap from 'lodash/flatMap';
 import { loadLevels, loadWordLists, loadLessons } from '../../Actions/index';
 
 import {
-  Container, GrayLine, TabContainer, Tab, Main, Content, Sidebar, SidebarContainer,
-  Header, LeaderboardListItem, ProgressListItem, Icon, StatName, Stat
+  Container,
+  Content,
+  GrayLine,
+  Header,
+  Main,
+  Tab,
+  TabContainer,
+  Sidebar
 } from './components'
 
 const GAME_TYPES = ['train', 'explore', 'read', 'join game'];
@@ -45,14 +51,22 @@ class GameSelect extends Component {
   }
 
   render() {
+    const {
+      lessons,
+      levels,
+      session,
+      wordLists,
+      user
+    } = this.props;
+
     const mainComponent = {
       train: <Train 
-        user={this.props.user} 
-        levels={this.props.levels} />,
+        user={user} 
+        levels={levels} />,
       explore: <Explore
-        levels={this.props.wordLists} />,
+        levels={wordLists} />,
       read: <Read
-        levels={this.props.lessons} />
+        levels={lessons} />
     }[this.state.gameType];
 
     const tabs = (() => {
@@ -69,39 +83,6 @@ class GameSelect extends Component {
         })}
       </TabContainer>
     })();
-
-    const statList = (forLeaderboards = true) => {
-      return <ul style={{listStyle:'none',margin:'0 auto',width:'60%',padding:'0'}}>
-        {flatMap(stats[forLeaderboards ? 'leaderboards' : 'progress'], data => {
-          const ListItem = forLeaderboards ? LeaderboardListItem : ProgressListItem;
-          return <ListItem key={data.slug}>
-            <Icon src={data.image} />
-            {data.name && <StatName>{data.name}</StatName>}
-            <Stat color={data.color} forLeaderboards={forLeaderboards}>
-              {data.seed}
-            </Stat>
-          </ListItem>
-        })}
-      </ul>
-    }
-
-    const leaderboardStats = (() => {
-      return <SidebarContainer>
-        <Header>
-          Leaderboards
-        </Header>
-        {statList()}
-      </SidebarContainer>
-    })();
-
-    const progressStats = (() => {
-      return <SidebarContainer>
-        <Header>
-          Progress
-        </Header>
-        {statList(false)}
-      </SidebarContainer>
-    })();
     
     return (
       <Container>
@@ -113,8 +94,8 @@ class GameSelect extends Component {
           </Content>
         </Main>
         <Sidebar>
-          {leaderboardStats}
-          {progressStats}
+          {user && session && <MiniLeaderboard user={user} session={session} />}
+          {user && <MiniProgress user={user} />}
         </Sidebar>
       </Container>
     );

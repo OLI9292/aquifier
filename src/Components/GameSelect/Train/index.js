@@ -34,7 +34,8 @@ class Train extends Component {
     });
 
     const completedLadders = _.uniq(_.pluck(completedLevels, 'ladder')).sort();
-    const openLadders = completedLadders.concat(_.last(completedLadders) + 1);
+    const openLadders = completedLadders.concat((_.last(completedLadders) || 0) + 1);
+    console.log(completedLadders, openLadders)
 
     return _.groupBy(_.map(allLevels, level => {
       level.completed = _.contains(_.pluck(completedLevels, '_id'), level._id);

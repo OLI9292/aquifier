@@ -15,7 +15,7 @@ import Header from '../Header/index';
 import Home from '../Home/index';
 import InfoForm from '../InfoForm/index';
 import Leaderboard from '../Leaderboard/index';
-import Leaderboards from '../Profile/Leaderboards/index';
+import Leaderboards from '../Leaderboards/index';
 import LessonsTable from '../Dashboard/Lessons/table';
 import LessonEdit from '../Dashboard/Lessons/edit';
 import Profile from '../Profile/index';
@@ -158,7 +158,7 @@ class Container extends Component {
 }
 
 const OuterFrame = styled.div`
-  background-color: ${color.lightestGray};
+  background: linear-gradient(white, ${color.paleBlue});
   display: block;
   height: 100%;
   overflow: auto;

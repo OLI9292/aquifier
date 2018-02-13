@@ -3,12 +3,21 @@ import moment from 'moment';
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import _ from 'underscore';
-import Button from '../../Common/button';
 import queryString from 'query-string';
 
-import { color, media } from '../../../Library/Styles/index';
-import Dropdown from '../../Common/dropdown';
-import { loadLeaderboards } from '../../../Actions/index';
+import { color, media } from '../../Library/Styles/index';
+import Dropdown from '../Common/dropdown';
+import { loadLeaderboards } from '../../Actions/index';
+import star from '../../Library/Images/star-yellow.png';
+
+import {
+  Container,
+  DropdownContainer,
+  LoadMoreButton,
+  Rank,
+  Row,
+  TableContainer
+} from './components'
 
 const PERIOD_CHOICES = [
   ['weekly', 'Weekly'],
@@ -94,7 +103,7 @@ class Leaderboards extends Component {
             <img 
               alt="star"
               style={{height:'25px',margin:'0px 0px 4px 5px'}} 
-              src={require('../../../Library/Images/star-yellow.png')} />
+              src={star} />
           </td>
         </Row>
       })
@@ -115,9 +124,9 @@ class Leaderboards extends Component {
 
     return (
       <Container loading={this.state.loading}>
-        <h1 style={{letterSpacing:'1px'}}>
+        <p style={{fontSize:'2.5em',paddingTop:'20px'}}>
           Leaderboards
-        </h1>
+        </p>
 
         <DropdownContainer>
           <Dropdown 
@@ -150,70 +159,10 @@ class Leaderboards extends Component {
   }
 }
 
-const Container = styled.div`
-  pointer-events: ${props => props.loading ? 'none' : 'auto'};
-  padding: 50px;
-  text-align: center;
-  position: relative;
-  ${media.phone`
-    padding: 25px;
-  `};    
-`
-
-const DropdownContainer = styled.div`
-  display: flex;
-  width: 300px;
-  margin: 0 auto;
-  justify-content: space-between;
-  left: 50%;
-  transform: translateX(-50%);
-  position: absolute;
-  top: 150px;
-  ${media.phone`
-    top: 110px;
-    width: 275px;
-  `};   
-`
-
-const LoadMoreButton = Button.small.extend`
-  display: ${props => props.hide ? 'none' : 'inline-block'};
-  margin: 0 auto;
-  margin-top: 10px;
-  margin-bottom: 20px;
-  background-color: ${props => props.loadingMore ? color.green : color.blue};
-`
-
-const TableContainer = styled.div`
-  border-collapse: separate;
-  border-spacing: 0 1em;
-  border: 5px solid ${color.lightestGray};
-  border-radius: 5px;
-  font-size: 1.25em;
-  margin: 0 auto;
-  margin-top: 120px;
-  width: 100%;
-`
-
-const Row = styled.tr`
-  background-color: ${props => props.even ? color.lightestGray : 'white'};
-  height: 70px;
-  border-radius: 20px;
-`
-
-const Rank = styled.h3`
-  background-color: ${props => props.isUser ? color.green : color.blue};
-  border-radius: 5px;
-  color: white;
-  height: 50px;
-  line-height: 50px;
-  margin: 0 auto;
-  width: 50px;
-`
-
 const mapStateToProps = (state, ownProps) => ({
   session: state.entities.session,
   user: _.first(_.values(state.entities.user)),
-  ranks: _.values(state.entities.ranks),
+  ranks: _.values(state.entities.ranks)
 })
 
 export default connect(mapStateToProps)(Leaderboards)
