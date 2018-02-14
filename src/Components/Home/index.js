@@ -29,6 +29,7 @@ class Home extends Component {
   }
 
   componentDidMount() {
+    console.log('yoo')
     window.addEventListener('resize', this.checkWindowSize);
     this.checkWindowSize();
   }

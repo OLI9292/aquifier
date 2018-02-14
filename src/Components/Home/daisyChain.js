@@ -40,8 +40,10 @@ class DaisyChain extends Component {
       .append('g')
       .attr('transform', 'translate(0,50)');
 
+    console.log('hiii')
     this.interval = setInterval(() => {
       const idx = this.state.idx === this.state.words.length - 1 ? 0 : this.state.idx + 1;
+      console.log('Daisy chain requesting ' + idx)
       this.setState({ idx: idx }, this.update);
     }, 5000);
 
