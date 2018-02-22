@@ -9,6 +9,7 @@ import { color } from '../../Library/Styles/index';
 import { shouldRedirect } from '../../Library/helpers';
 import LoadingSpinner from '../Common/loadingSpinner';
 
+import hintChecker from './hintChecker';
 import SpeedRound from './speedRound';
 import ProgressBar from './progressBar';
 import { alerts } from './alerts';
@@ -84,7 +85,6 @@ class Game extends Component {
     const question = this.state.questions[this.state.questionIndex];
     
     if (question) {
-      console.log(question)
       const isSpellQuestion = _.every(question.answer, a => a.value.length === 1);
       this.setState({ question: question, isSpellQuestion: isSpellQuestion }, this.checkHint);
       setTimeout(this.autohint.bind(this), 2000);
@@ -186,7 +186,7 @@ class Game extends Component {
       case 'defToAllRootsNoHighlight':
         this.setState({ hintButtonsOn: true });
         break;
-      case 'defToWord': case 'defToCharsOneRoot':
+      case 'defToWord': case 'defToCharsOneRoot': case 'defToCharsAllRoots': case 'rootInWordToDef':
         this.setState({ highlightPrompt: true });
         break;
       default:
@@ -195,42 +195,14 @@ class Game extends Component {
   }  
 
   checkHint() {
-    const {
-      hintCount,
-      question
-    } = this.state
-
-    switch (question.type) {
-
-    case 'defToOneRoot': case 'defToAllRoots':
-      hintCount === 0
-        ? this.setState({ highlightPrompt: true })
-        : this.glowAnswer(false);
-      break;
-    
-    case 'defCompletion':
-      hintCount !== 0 && this.glowAnswer(false);
-      break;
-
-    case 'defToAllRootsNoHighlight':
-      hintCount === 1
-        ? this.setState({ highlightPrompt: true })
-        : hintCount > 1 && this.glowAnswer(false);
-      break;
-
-    case 'defToWord':
-      hintCount === 1
-        ? this.setState({ prompt: 'easy' })
-        : hintCount > 1 && this.glowAnswer(false);
-      break;
-
-    case 'defToCharsOneRoot':
-      hintCount === 1
-        ? this.setState({ prompt: 'easy' })
-        : hintCount > 1 && this.glowAnswer(true);
-      break;
-
-    default: break;
+    const hint = hintChecker(this.state.hintCount, this.state.question.type);
+    switch (hint) {
+      case 'highlightPrompt': this.setState({ highlightPrompt: true }); break;
+      case 'easyPrompt':      this.setState({ prompt: 'easy' }); break;
+      case 'hintButtonsOn':   this.setState({ hintButtonsOn: true }); break;
+      case 'glowAnswer':      this.glowAnswer(false); break;
+      case 'giveAnswer':      this.glowAnswer(true); break;
+      default: break;
     }
   }
 
@@ -290,10 +262,9 @@ class Game extends Component {
     const promptText = () => {
       const prompt = question.prompt[this.state.prompt] || question.prompt['normal']
       return _.map(prompt, (section, i) => {
+        if (section.value === '<br />') { return <br />; }
         const highlight = highlightPrompt && section.highlight;
-        const style = highlight
-          ? { color: color.warmYellow, textTransform: 'uppercase', fontFamily: 'BrandonGrotesqueBold' }
-          : {};
+        const style = highlight ? { color: color.warmYellow, fontFamily: 'BrandonGrotesqueBold' } : {};
         return <span key={i} style={style}>{section.value}</span>;
       });
     }
@@ -329,17 +300,19 @@ class Game extends Component {
       const bColor = guessed.idx === idx
       ? (guessed.correct ? color.green : color.red)
       : glowIdx === idx ? color.green : color.blue;
+      const fontSize = value.length > 14 ? '0.65em' : value.length > 10 ? '0.75em' : '0.85em';
+      const hintFontSize = get(hint, 'length') > 12 ? '0.65em' : '0.75em';
       return <ChoiceButton
         square={isSpellQuestion}
         long={count === 4}
         key={idx}
         bColor={bColor}
-        onClick={() => this.guessed(value, idx)}>
+        onClick={() => this.guessed(value, idx) }>
         <ButtonContent>
-          <ButtonValue hintOn={hintButtonsOn}>
+          <ButtonValue fontSize={fontSize} marginTop={hintButtonsOn || !hint}>
             {value}
           </ButtonValue>
-          <ButtonHint opacity={hintButtonsOn ? 1 : 0}>
+          <ButtonHint fontSize={hintFontSize} opacity={hintButtonsOn ? 1 : 0}>
             {hint}
           </ButtonHint>
         </ButtonContent>

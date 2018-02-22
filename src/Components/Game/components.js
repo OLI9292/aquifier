@@ -109,14 +109,15 @@ export const ButtonContent = styled.p`
 
 export const ButtonHint = styled.span`
   display: block;
-  font-size: 0.75em;
+  font-size: ${props => props.fontSize};
   opacity: ${props => props.opacity};
   transition: opacity 200ms;  
 `
 
 export const ButtonValue = styled.span`
   display: block;
-  margin-top: ${props => `${props.hintOn ? 0 : 35}px`};
+  margin-top: ${props => `${props.marginTop ? 0 : 35}px`};
+  font-size: ${props => props.fontSize};
   transition: margin 200ms;
 `
 

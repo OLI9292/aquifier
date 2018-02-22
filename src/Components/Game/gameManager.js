@@ -28,6 +28,8 @@ class GameManager extends Component {
       this.props.dispatch(fetchLevels());
     }
 
+    console.log(settings)
+
     this.setState({ settings }, () => {
       if (this.props.session) {
         this.setState({ loading: true }, () => { this.loadGame(this.props.session.user); });  
@@ -56,7 +58,7 @@ class GameManager extends Component {
   }
 
   gameOver(accuracy, score, time) {
-    const levelId = this.state.level._id;
+    const levelId = this.state.settings.id;
     const stage = parseInt(this.state.settings.stage, 10);
     const userId = this.props.session.user;
     const data = {
