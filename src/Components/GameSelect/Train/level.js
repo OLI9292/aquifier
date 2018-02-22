@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import queryString from 'query-string';
 import { Redirect } from 'react-router';
-import styled from 'styled-components';
 import _ from 'underscore';
 
 import { color } from '../../../Library/Styles/index';
@@ -12,6 +10,16 @@ import get from 'lodash/get'
 import downArrow from '../../../Library/Images/icon-double-arrow.png';
 import lockIcon from '../../../Library/Images/icon-lock.png';
 import archer from '../../../Library/Images/archer-green.png';
+
+import {
+  DownArrow,
+  Img,
+  InfoIconContainer,
+  InfoIcon,
+  LevelButton,
+  StageDetail,
+  StagesContainer
+} from './components';
 
 class Level extends Component {
   constructor(props) {
@@ -33,14 +41,12 @@ class Level extends Component {
     if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }
 
     const {
-      isCompleted,
       isExpanded,
       isHovering,
       level,
-      userStages
+      userStages,
+      imgSrc
     } = this.props;
-
-    const levelImg = require(`../../../Library/Images/DemoLevels/${level.name.split(' ')[0]}.jpg`); 
 
     const infoIcon = (type, data, completed, isHovering) => {
       const bColor = {
@@ -56,6 +62,7 @@ class Level extends Component {
           ),
           'lock': (
             <InfoIcon
+              alt={'lock icon'}
               src={lockIcon} />
           )
         }[type]}
@@ -64,7 +71,7 @@ class Level extends Component {
 
     const addStages = overview => {
       const completedIndices = _.pluck(userStages, 'stage');
-      const openIndices = _.map(completedIndices, s => s + 1).concat(1);
+      // const openIndices = _.map(completedIndices, s => s + 1).concat(1);
       const allIndices = _.range(1, level.progressBars + 1);
 
       return <div key={level._id}>
@@ -73,7 +80,7 @@ class Level extends Component {
           {_.map(allIndices, n => {
             const key = level._id + '-' + n;
             const isHovering = this.state.hovering === key;
-            const isLocked = !_.contains(openIndices, n);
+            const isLocked = false // !_.contains(openIndices, n);
             const completed = _.contains(completedIndices, n);
             const userStage = _.find(userStages, s => s.stage === n);
 
@@ -88,10 +95,10 @@ class Level extends Component {
                 
                 {infoIcon(isLocked ? 'lock' : 'index', n, completed, isHovering)}
                 
-                <Img src={levelImg} />
+                <Img alt={level.name} src={imgSrc} />
               </LevelButton>
               <StageDetail show={userStage || isHovering}>
-                {userStage && !isHovering && <img src={archer} style={{height:'50%',width:'auto',marginRight:'5px'}} />}
+                {userStage && !isHovering && <img alt={'archer icon'} src={archer} style={{height:'50%',width:'auto',marginRight:'5px'}} />}
                 <p>
                   {isHovering ? 'Play!' : this.formatAccuracy(userStage)}
                 </p>
@@ -105,6 +112,7 @@ class Level extends Component {
     const levelOverview = () => {
       return <div style={{margin:'50px 0px',height:'120px'}}>
         <LevelButton
+          id={level._id}
           isLocked={level.locked}
           bColor={level.locked ? 'lightGray' : (level.completed || isExpanded || isHovering) ? 'green' : 'lightGray'}
           isHovering={isHovering}
@@ -119,8 +127,8 @@ class Level extends Component {
             isExpanded={isExpanded}
             isHovering={isHovering} />
 
-          <Img 
-            src={levelImg}
+          <Img           
+            src={imgSrc}
             opaque={level.locked} />
         </LevelButton>
 
@@ -137,79 +145,5 @@ class Level extends Component {
     );
   }
 }
-
-const DownArrow = styled.img`
-  position: absolute;
-  height: 25px;
-  right: 0;
-  margin-right: -40px;
-  opacity: ${props => props.isHovering ? 1 : 0};
-  transition: opacity 100ms;
-  transform: rotate(${props => props.isExpanded ? 180 : 0}deg);
-`
-
-const Img = styled.img`
-  opacity: ${props => props.opaque ? 0.25 : 1};
-  max-height: 70%;
-  max-width: 70%;
-  width: auto;
-  height: auto;
-`
-
-const InfoIconContainer = styled.div`
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 40;
-  margin-top: -5px;
-  margin-right: -5px;
-  height: 30px;
-  width: 30px;
-  border-radius: 20px;
-  transition: 100ms;
-  font-family: BrandonGrotesqueBold;
-  background-color: ${props => props.color};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`
-
-const InfoIcon = styled.img`
-  width: 13px;
-  height: auto;
-`
-
-const LevelButton = styled.div`
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: ${props => `${props.small ? 70 : 100}px`};
-  width: ${props => `${props.small ? 70 : 100}px`};
-  border-radius: 60px;
-  margin: 0 auto;
-  border: ${props => `4px solid ${color[props.bColor]}`};
-  cursor: ${props => props.isLocked ? 'default' : 'pointer'};
-  transition: 100ms;
-`
-
-const StageDetail = styled.div`
-  opacity: ${props => props.show ? 1 : 0};
-  color: ${color.green};
-  transition: opacity 100ms;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 50px;
-  margin-top: -5px;
-  padding-bottom: 10px;
-`
-
-const StagesContainer = styled.div`
-  height: ${props => props.height};
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-`
 
 export default Level

@@ -46,7 +46,6 @@ class MiniProgress extends Component {
 
   formatData(user) {
     const words = user.words;
-    const levels = user.levels;
     const stats = {
       points: this.points(words),
       wordsLearned: this.wordsLearned(words),

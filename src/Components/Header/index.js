@@ -18,6 +18,7 @@ class Header extends Component {
   }
 
   displayLogin() {
+    console.log('hiiii')
     this.setState({ displayLoginModal: true });
   }
 
@@ -40,56 +41,33 @@ class Header extends Component {
     if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }
 
     const { 
-      isTeacher,
-      isAdmin,
-      isHome,
-      isPlay,
-      isLeaderboards,
       loggedIn,
+      path,
       smallScreen
     } = this.props;
 
     const loginModal = (() => {
-      return <div>
-        <Login smallScreen={smallScreen} exitLogin={this.exitLogin.bind(this)} />
-        <DarkBackground onClick={() => this.exitLogin()} />
+      return this.state.displayLoginModal && <div>
+        <Login
+          smallScreen={smallScreen}
+          exitLogin={this.exitLogin.bind(this)} />
+        <DarkBackground
+          onClick={() => this.exitLogin()} />
       </div>
     })()    
 
     // TODO: - change smallScreen && loggedIn
-    // bad looks if the user has a small screen but is not logged in
+    const NavComponent = (smallScreen && loggedIn) ? MobileNav : Nav;
     return (
       <div>
-        {this.state.displayLoginModal && loginModal}
-        {
-          smallScreen && loggedIn
-          ? 
-          <MobileNav 
-            isHome={isHome}
-            isPlay={isPlay}
-            isLeaderboards={isLeaderboards}
-            loggedIn={loggedIn}
-            isTeacher={isTeacher}
-            isAdmin={isAdmin}
-            redirect={this.redirect.bind(this)}
-            logout={this.logout.bind(this)}
-            exitLogin={this.exitLogin.bind(this)}
-            displayLogin={this.displayLogin.bind(this)}
-            />
-          :
-          <Nav
-            isHome={isHome}
-            isPlay={isPlay}
-            isLeaderboards={isLeaderboards}
-            loggedIn={loggedIn}
-            isTeacher={isTeacher}
-            isAdmin={isAdmin}
-            redirect={this.redirect.bind(this)}
-            logout={this.logout.bind(this)}
-            exitLogin={this.exitLogin.bind(this)}
-            displayLogin={this.displayLogin.bind(this)}
-            />
-        }
+        {loginModal}
+        <NavComponent
+          loggedIn={loggedIn}
+          path={path}
+          displayLogin={this.displayLogin.bind(this)}
+          exitLogin={this.exitLogin.bind(this)}
+          logout={this.logout.bind(this)}
+          redirect={this.redirect.bind(this)} />
       </div>      
     );
   }

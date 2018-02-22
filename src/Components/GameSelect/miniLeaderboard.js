@@ -67,8 +67,8 @@ class MiniLeaderboard extends Component {
   formatData(ranks) {
     const myRanks = _.filter(ranks, r => r.id.includes(this.props.session.user));
     const [weekly, allTime] = _.partition(myRanks, r => r.period === 'weekly');
-    const [earthWeekly, schoolWeekly] = _.partition(weekly, r => r.group == 'Earth');
-    const [earthAllTime, schoolAllTime] = _.partition(allTime, r => r.group == 'Earth');
+    const [earthWeekly, schoolWeekly] = _.partition(weekly, r => r.group === 'Earth');
+    const [earthAllTime, schoolAllTime] = _.partition(allTime, r => r.group === 'Earth');
     
     this.setState({
       ranks: {

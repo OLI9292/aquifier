@@ -9,7 +9,7 @@ import styled from 'styled-components';
 import Admin from '../Admin/index';
 import ClassesDashboard from '../Dashboard/classes';
 import Footer from '../Footer/index';
-import GameManager from '../Game2/gameManager';
+import GameManager from '../Game/gameManager';
 import GameSelect from '../GameSelect/index';
 import Header from '../Header/index';
 import Home from '../Home/index';
@@ -31,7 +31,7 @@ import { color, media, PHONE_MAX_WIDTH } from '../../Library/Styles/index';
 import './index.css';
 
 // STORE
-import { activateSession, loadUser, loadWords, loadRoots } from '../../Actions/index';
+import { activateSession, loadUser } from '../../Actions/index';
 import configureStore from '../../Store/configureStore';
 const store = configureStore();
 // store.subscribe(() => console.log(store.getState()))
@@ -63,7 +63,7 @@ class App extends Component {
               return <GameManager settings={match.params.settings} /> 
             }} />
 
-            <Route exact path='/profile/:id'      component={contained('profile')} />
+            <Route exact path='/profile'          component={contained('profile')} />
             <Route exact path='/start-free-trial' component={contained('infoForm')} />
             <Route exact path='/word-lists'       component={contained('wordListsTable')} />
             <Route exact path='/word-lists/:id'   component={contained('wordListsEdit')} />
@@ -87,14 +87,8 @@ class Container extends Component {
   constructor(props) {
     super(props);
     
-    const path = window.location.pathname;
-
-    // todo: - this is dumb, change it
     this.state = {
-      isHome: path === '/',
-      isPlay: path === '/home',
-      isLeaderboards: path === '/leaderboards',
-      isProgress: path === '/progress'
+      path: window.location.pathname
     };    
 
     this.checkWindowSize = this.checkWindowSize.bind(this);
@@ -106,7 +100,7 @@ class Container extends Component {
   }
 
   componentWillUnmount() {
-    window.addEventListener('resize', this.checkWindowSize);
+    window.removeEventListener('resize', this.checkWindowSize);
   }  
 
   checkWindowSize() {
@@ -115,11 +109,16 @@ class Container extends Component {
   }  
 
   render() {
+    const {
+      path,
+      smallScreen
+    } = this.state;
+
     const Component = () => {
       switch (this.props.component) {
         case 'admin':              return <Admin settings={this.props.settings} />
         case 'classesDashboard':   return <ClassesDashboard />
-        case 'gameSelect':         return <GameSelect />
+        case 'gameSelect':         return <GameSelect smallScreen={smallScreen} />
         case 'infoForm':           return <InfoForm />
         case 'leaderboard':        return <Leaderboard />
         case 'leaderboards':       return <Leaderboards />
@@ -136,21 +135,13 @@ class Container extends Component {
     return (
       <OuterFrame>
         <Header
-          smallScreen={this.state.smallScreen}
-          isHome={this.state.isHome}
-          isLeaderboards={this.state.isLeaderboards}
-          isProgress={this.state.isProgress}
-          isPlay={this.state.isPlay} />
+          path={path}
+          smallScreen={smallScreen} />
         <InnerFrame>
           <ComponentFrame>
-            <Component 
-              smallScreen={this.state.smallScreen}
-              isHome={this.state.isHome}
-              isLeaderboards={this.state.isLeaderboards}
-              isProgress={this.state.isProgress}
-              isPlay={this.state.isPlay} />
+            <Component />
           </ComponentFrame>
-          <Footer smallScreen={this.state.smallScreen} />
+          <Footer smallScreen={smallScreen} />
         </InnerFrame>
       </OuterFrame>
     );

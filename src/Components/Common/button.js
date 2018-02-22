@@ -1,9 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import Link from './link';
 import { lighten10 } from '../../Library/helpers';
 import { color } from '../../Library/Styles/index';
-import GLOBAL from '../../Library/global';
 
 const Default = styled.button`
   &:focus {
@@ -46,7 +44,7 @@ const SmallButton = Default.extend`
 
 const imageAndText = (src, text) => {
   return <div style={{width:'90%',height:'90%',display:'flex',justifyContent:'center',alignItems:'center'}}>
-    <img src={src} style={{height:'75%',marginRight:'5%',width:'auto'}} />
+    <img alt={text} src={src} style={{height:'75%',marginRight:'5%',width:'auto'}} />
     <p style={{display:'table-cell',verticalAlign:'middle'}}>{text}</p>
   </div>;
 }

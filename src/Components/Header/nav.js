@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
-import { color } from '../../Library/Styles/index';
 import background from '../../Library/Images/header-bg.png';
 
 class Nav extends Component {
@@ -13,36 +12,31 @@ class Nav extends Component {
 
   render() {
     const { 
-      isHome,
-      isPlay,
-      isProgress,
-      isLeaderboards,
-      isTeacher,
-      isAdmin,
+      path,
       loggedIn
     } = this.props;
 
     const links = (() => {
       return <div style={{display:'flex',width:'100%',alignItems:'center',justifyContent:'space-between'}}>
-        <LeftLinksContainer width={isHome ? '25px' : '325px'} show={loggedIn}>
-          <Link to={'/'}>
+        <LeftLinksContainer width={path === '/' ? '25px' : '325px'} show={loggedIn}>
+          <Link to={'/home'}>
             <LinkText>
               HOME
-              <Highlight show={isPlay} />
+              <Highlight show={path === '/home'} />
             </LinkText>
           </Link>
 
-          <Link to={'/progress'}>
+          <Link to={'/profile'}>
             <LinkText>
-              PROGRESS
-              <Highlight show={isProgress} />
+              PROFILE
+              <Highlight show={path === '/profile'} />
             </LinkText>
           </Link>
 
           <Link to={'/leaderboards'}>
             <LinkText>
               LEADERBOARDS
-              <Highlight show={isLeaderboards} />
+              <Highlight show={path === '/leaderboards'} />
             </LinkText>
           </Link>
         </LeftLinksContainer>
@@ -69,7 +63,7 @@ class Nav extends Component {
     })();
 
     return (
-      <Container isHome={isHome}>
+      <Container isHome={path === '/'}>
         <div style={{width:'90%',maxWidth:'1100px',margin:'0 auto'}}>
           <div style={{display:'flex',width:'100%',alignItems:'center',height:'90px'}}>
             <FullLogo onClick={() => this.props.redirect('/')}>
@@ -88,7 +82,7 @@ const Container = styled.div`
   z-index: 1000;
   width: 100%;
   height: 90px;
-  background: url(${background}) no-repeat center center;
+  background: ${props => props.isHome ? '' : `url(${background}) no-repeat center center`};
   background-size: 100% auto;
 ` 
 

@@ -10,36 +10,30 @@ class MobileNav extends Component {
   }
 
   render() {
-    const { 
-      isHome,
-      isPlay,
-      isLeaderboards
-    } = this.props;
+    const path = this.props.path;
 
     return (
-      <Container isHome={isHome}>
-
+      <Container isHome={path === '/home'}>
         <Option onClick={() => this.props.redirect('/home')}>
-          <Image src={require(`../../Library/Images/play-${isPlay ? 'blue' : 'gray'}.png`)} />
-          <Title selected={isPlay}>
+          <Image src={require(`../../Library/Images/play-${path === '/home' ? 'blue' : 'gray'}.png`)} />
+          <Title selected={path === '/home'}>
             PLAY
           </Title>
         </Option>
 
         <Option onClick={() => this.props.redirect('/profile')}>
           <Image src={require(`../../Library/Images/wizard-${'gray'}.png`)} />
-          <Title selected={false}>
+          <Title selected={path === '/profile'}>
             ME
           </Title>        
         </Option>
 
         <Option onClick={() => this.props.redirect('/leaderboards')}>
-          <Image src={require(`../../Library/Images/leaderboard-${isLeaderboards ? 'blue' : 'gray'}.png`)} />
-          <Title selected={isLeaderboards}>
+          <Image src={require(`../../Library/Images/leaderboard-${path === '/leaderboards' ? 'blue' : 'gray'}.png`)} />
+          <Title selected={path === '/leaderboards'}>
             COMPETE
           </Title>
         </Option>
-
       </Container>
     );
   }

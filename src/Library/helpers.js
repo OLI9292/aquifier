@@ -37,8 +37,6 @@ export const capitalizeOne = (str) => {
 
 export const concat = (x, y) => x.concat(y)
 
-export const flatMap = (f, xs) => xs.map(f).reduce(concat, [])
-
 export const sum = (arr, attr) => _.reduce(_.pluck(arr, attr), (n, m) => n + m, 0)
 
 export const move = (array, fromIndex, toIndex) => {

@@ -294,6 +294,30 @@ export const updateLesson = (data, id, session) => ({
   }
 })
 
+
+
+
+
+
+export const loadSchool = id => (dispatch, getState) => dispatch(fetchSchool(id))
+
+export const SCHOOL_REQUEST = 'SCHOOL_REQUEST'
+export const SCHOOL_SUCCESS = 'SCHOOL_SUCCESS'
+export const SCHOOL_FAILURE = 'SCHOOL_FAILURE'
+
+export const fetchSchool = id => ({
+  [CALL_API]: {
+    api: 'accounts',
+    endpoint: `auth/school/${id}`,
+    method: 'GET',
+    schema: Schemas.SCHOOL,
+    types: [ SCHOOL_REQUEST, SCHOOL_SUCCESS, SCHOOL_FAILURE ]    
+  }
+})
+
+
+
+
 //
 // USER
 //

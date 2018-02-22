@@ -1,6 +1,5 @@
 import styled from 'styled-components';
-import { color, media, PHONE_MAX_WIDTH } from '../../Library/Styles/index';
-import flatMap from 'lodash/flatMap';
+import { color, media } from '../../Library/Styles/index';
 
 export const Container = styled.div`
   display: flex;
@@ -13,6 +12,9 @@ export const Content = styled.div`
   border-radius: 20px;
   z-index: 5;
   min-height: 60vh;
+  ${media.phone`
+    margin-top: 10px;
+  `};      
 `
 
 export const GrayLine = styled.div`
@@ -21,6 +23,9 @@ export const GrayLine = styled.div`
   height: 10px;
   background-color: white;
   border-top: 2px solid ${color.lightestGray};
+  ${media.phone`
+    border: 0;
+  `};  
 `
 
 export const Header = styled.p`
@@ -45,6 +50,9 @@ export const Main = styled.div`
   flex: 2.5;
   margin-right: 25px;
   position: relative;
+  ${media.phone`
+    margin-right: 0;
+  `};
 `
 
 export const ProgressListItem = styled.li`
@@ -96,6 +104,10 @@ export const Tab = styled.div`
   border-radius: 10px;
   font-family: BrandonGrotesqueBold;
   margin: ${props => props.margin};
+  ${media.phone`
+    background-color: ${props => props.selected ? color.red : color.lightGray};
+    color: ${props => color[props.selected ? 'white' : 'gray']};
+  `};  
 `
 
 export const TabContainer = styled.div`
@@ -106,4 +118,7 @@ export const TabContainer = styled.div`
   justify-content: space-between;
   width: 100%;
   margin-top: -40px;
+  ${media.phone`
+    margin-top: -30px;
+  `};    
 `

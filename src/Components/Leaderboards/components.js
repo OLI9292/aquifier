@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import Button from '../Common/button';
-import { color, media, PHONE_MAX_WIDTH } from '../../Library/Styles/index';
+import { color, media } from '../../Library/Styles/index';
 
 export const Container = styled.div`
   pointer-events: ${props => props.loading ? 'none' : 'auto'};

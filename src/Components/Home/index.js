@@ -29,13 +29,12 @@ class Home extends Component {
   }
 
   componentDidMount() {
-    console.log('yoo')
     window.addEventListener('resize', this.checkWindowSize);
     this.checkWindowSize();
   }
 
   componentWillUnmount() {
-    window.addEventListener('resize', this.checkWindowSize);
+    window.removeEventListener('resize', this.checkWindowSize);
   }
 
   checkWindowSize() {
@@ -56,7 +55,7 @@ class Home extends Component {
         <div style={{position:'relative'}}>
           <Header
             smallScreen={this.state.smallScreen}
-            isHome={true} />
+            path={'/'} />
 
           <TopContentContainer>
             <h1 style={{fontFamily:'BrandonGrotesqueBold',fontSize:'2.5em'}}>
@@ -159,7 +158,7 @@ class Home extends Component {
           </p>
           <div style={{width:'10%',height:'100%'}} />
           <div style={{width:'45%'}}>
-            <a href='https://www.bit.ly/playwordcraft' target='_blank'>
+            <a href='https://www.bit.ly/playwordcraft' target='_blank' rel='noopener noreferrer'>
               <img
                 alt={'download-on-app-store'}
                 src={downloadOnAppStore}

@@ -49,6 +49,8 @@ const lessonSchema = new schema.Entity('lessons', {}, { idAttribute: '_id' })
 const relatedWordSchema = new schema.Entity('relatedWords', {}, { idAttribute: 'word' })
 const rankSchema = new schema.Entity('ranks')
 
+const schoolSchema = new schema.Entity('school', {}, { idAttribute: '_id' })
+
 // ACCOUNTS
 const userSchema = new schema.Entity('user', {}, { idAttribute: '_id' })
 const sessionSchema = new schema.Entity('session', { user: userSchema })
@@ -67,6 +69,7 @@ export const Schemas = {
   LESSON: lessonSchema,
   LESSON_ARRAY: [lessonSchema],
   USER: userSchema,
+  SCHOOL: schoolSchema,
   ROOT_ARRAY: [rootSchema],
   SESSION: sessionSchema,
   STUDENTS: studentsSchema,

@@ -1,11 +1,9 @@
 import { connect } from 'react-redux'
 import moment from 'moment';
 import React, { Component } from 'react';
-import styled from 'styled-components';
 import _ from 'underscore';
 import queryString from 'query-string';
 
-import { color, media } from '../../Library/Styles/index';
 import Dropdown from '../Common/dropdown';
 import { loadLeaderboards } from '../../Actions/index';
 import star from '../../Library/Images/star-yellow.png';

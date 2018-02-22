@@ -34,7 +34,8 @@ export const color = {
   facebookBlue: '#4862A3',
   facebookBlue10l: '#5a71ac',
   white: '#ffffff',
-  paleBlue: '#D3EFFB'
+  paleBlue: '#D3EFFB',
+  honey: '#BF430C'
 };
 
 export const PHONE_MAX_WIDTH = 600
