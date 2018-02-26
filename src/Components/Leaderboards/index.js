@@ -10,6 +10,7 @@ import star from '../../Library/Images/star-yellow.png';
 
 import {
   Container,
+  Header,
   DropdownContainer,
   LoadMoreButton,
   Rank,
@@ -122,9 +123,9 @@ class Leaderboards extends Component {
 
     return (
       <Container loading={this.state.loading}>
-        <p style={{fontSize:'2.5em',paddingTop:'20px'}}>
-          Leaderboards
-        </p>
+        <Header>
+          leaderboards
+        </Header>
 
         <DropdownContainer>
           <Dropdown 

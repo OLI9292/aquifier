@@ -20,40 +20,37 @@ class SpeedRound extends Component {
   }
   
   componentDidMount() {
-    this.setState({ 
-      startTime: Date.now(),
-      timeLimit: this.props.time * 60 // min to sec
-    }, () => setInterval(() => this.track(), 100))
+    const time = this.props.time || 3;
+    const end = moment().add(time, 'minutes');
+  
+    this.setState(
+      { end }, 
+      () => this.interval = setInterval(() => this.track(), 100)
+    )
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
   }
 
   track()  {
-    const secondsPassed = Math.floor(moment.duration(moment().diff(this.state.startTime)).asSeconds());
-    if (secondsPassed >= this.state.timeLimit) {
+    const { minutes, seconds } = moment.duration(this.state.end.diff(moment()))._data;
+    if (minutes <= 0 && seconds <= 0) {
+      clearInterval(this.interval);
       this.props.gameOver();
     } else {
-      const secondsLeft = this.state.timeLimit - secondsPassed;
-      const minutes = Math.floor(secondsLeft/60);
-      const seconds = secondsLeft % 60;
-      this.setState({ time: { minutes: minutes, seconds: seconds }});
+      const timeLeft = minutes + ':' + (seconds < 10 ? `0${seconds}` : seconds);
+      this.setState({ timeLeft });
     }
   }
 
   render() {
-    const { 
-      time
-    } = this.state;
-
-    const timer = (() => {
-      const seconds = time.seconds < 10 ? `0${time.seconds}` : String(time.seconds);
-      return String(time.minutes) + ':' + seconds;
-    })();
-
     return (
       <Container>
         <Timer>
           <Icon src={clock} />
           <p>
-            {timer}
+            {this.state.timeLeft}
           </p>
         </Timer>
         <Score>

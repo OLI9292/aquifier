@@ -7,9 +7,9 @@ import { color, media } from '../../Library/Styles/index';
 
 export const Alert = styled.div`
   position: absolute;
-  right: 40px;
-  top: 10px;
-  height: 50px;
+  right: 0;
+  top: 40px;
+  height: 25px;
   display: flex;
   align-items: center;
   transition: opacity 0.2s;
@@ -22,16 +22,12 @@ export const Alert = styled.div`
 `
 
 export const AlertImage = styled.img`  
-  height: 75%;
+  height: 100%;
   width: auto;
-  margin-right: 10px;
-  ${media.phone`
-    height: 40px;
-  `} 
+  margin-right: 5px;
 `
 
 export const AlertText = styled.p`    
-  font-size: 1.1em;
   color: ${props => props.color};
   ${media.phone`
     display: none;
@@ -100,7 +96,6 @@ export const ButtonContent = styled.p`
   font-size: 2em;
   margin: 0;
   color: white;
-  text-transform: uppercase;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -116,6 +111,7 @@ export const ButtonHint = styled.span`
 
 export const ButtonValue = styled.span`
   display: block;
+  text-transform: uppercase;
   margin-top: ${props => `${props.marginTop ? 0 : 35}px`};
   font-size: ${props => props.fontSize};
   transition: margin 200ms;
@@ -128,6 +124,8 @@ export const ButtonValue = styled.span`
 export const Content = styled.div`
   height: 100vh;
   width: 100%;
+  padding: 25px 0px;
+  box-sizing: border-box;
   max-width: 900px;
   margin: 0 auto;
   position: relative;
@@ -136,6 +134,9 @@ export const Content = styled.div`
   ${media.phone`
     font-size: 0.7em;
   `}  
+  ${media.smallComp`
+    font-size: 0.85em;
+  `}    
 `
 
 //
@@ -182,6 +183,14 @@ export const ChoiceButton = styled.div`
         : '150px'};    
     border-radius: 15px;
   `}
+  ${media.smallComp`
+    height: 80px;
+    width: ${props => props.square
+      ? '80px'
+      : props.long
+        ? '80%'
+        : '180px'};       
+  `}
 `
 
 //
@@ -192,7 +201,7 @@ export const ExitOut = styled.img`
   position: absolute;
   height: 40px;
   width: auto;
-  top: 10px;
+  top: 35px;
   cursor: pointer;
 `
 
@@ -212,6 +221,7 @@ export const HelpButton = styled.div`
   display: flex;
   align-items: center;
   text-align: center;
+  font-size: 1.15em;
   justify-content: center;  
   ${media.phone`
     width: 100px;
@@ -220,7 +230,7 @@ export const HelpButton = styled.div`
 `
 
 export const HelpSpan = styled.span`
-  font-size: 0.6em;
+  font-size: 0.65em;
   display: ${props => props.hide ? 'block' : 'none'};
   ${media.phone`
     display: none;

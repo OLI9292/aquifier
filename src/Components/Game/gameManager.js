@@ -3,11 +3,11 @@ import { connect } from 'react-redux'
 import React, { Component } from 'react';
 import { Redirect } from 'react-router';
 import _ from 'underscore';
+import get from 'lodash/get';
 
 import { shouldRedirect } from '../../Library/helpers';
 import { fetchQuestions, fetchLevels, removeEntity, saveLevel } from '../../Actions/index';
 
-import seed from './seed';
 import Game from './game';
 
 const VALID_GAMES = ['train', 'speed', 'explore', 'read'];
@@ -22,18 +22,12 @@ class GameManager extends Component {
     this.hideZendesk();
     this.props.dispatch(removeEntity('questions'));    
 
-    const settings = queryString.parse(this.props.settings);
-    
-    if (settings.type === 'train' && _.isEmpty(this.props.levels)) {
-      this.props.dispatch(fetchLevels());
-    }
+    const { session, levels, settings } = this.props;
 
-    console.log(settings)
+    if (!levels.length) { this.props.dispatch(fetchLevels()); }
 
-    this.setState({ settings }, () => {
-      if (this.props.session) {
-        this.setState({ loading: true }, () => { this.loadGame(this.props.session.user); });  
-      }        
+    this.setState({ settings: queryString.parse(settings) }, () => {
+      if (session) { this.setState({ loading: true }, () => { this.loadGame(session.user); }); }        
     })
   } 
 
@@ -48,13 +42,19 @@ class GameManager extends Component {
   }
 
   setLevelName(props, settings) {
+    const level = _.find(props.levels, l => l._id === settings.id);
+    let time
+    if (!level) { return; }
+
     if (settings.type === 'train') {
-      const level = _.find(props.levels, l => l._id === settings.id);
-      if (!level) { return; }
       level.fullname = level.name.toUpperCase() + ' ' + settings.stage;
-      level.progress = [settings.stage, level.progressBars];
-      this.setState({ level });
+      level.progress = [settings.stage, level.progressBars];      
+    } else if (_.contains(['explore', 'speed'], settings.type)) {
+      level.fullname = level.slug.replace('-', ' ').toUpperCase();
+      level.time = get(level.speed, 'time') || 3;
     }
+
+    this.setState({ level: level, time: time });
   }
 
   gameOver(accuracy, score, time) {
@@ -73,20 +73,11 @@ class GameManager extends Component {
   }
 
   loadGame(userId) {
-    const shouldSeed = false;
-    const multiple = false;
-    const spell = false;
-
-    if (shouldSeed) {
-      const questions = multiple ? seed : [seed[spell ? 1 : 0]];
-      this.setState({ questions: questions, type: 'demo' })
-    } else {
-      const type = this.state.settings.type;
-      if (_.contains(VALID_GAMES, type)) {
-        this.setState({ type });
-        const query = queryString.stringify(_.extend({}, this.state.settings, { user_id: userId }));
-        this.props.dispatch(fetchQuestions(query));
-      }
+    const type = this.state.settings.type;
+    if (_.contains(VALID_GAMES, type)) {
+      this.setState({ type });
+      const query = queryString.stringify(_.extend({}, this.state.settings, { user_id: userId }));
+      this.props.dispatch(fetchQuestions(query));
     }
   }
 

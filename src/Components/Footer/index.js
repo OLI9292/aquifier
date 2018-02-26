@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import { color } from '../../Library/Styles/index';
 
 class Footer extends Component {
   render() {
@@ -25,6 +26,7 @@ class Footer extends Component {
 
 const Container = styled.div`
   align-items: center;
+  color: ${color.mediumGray};
   display: ${props => props.hide ? 'none' : 'flex'};
   font-family: BrandonGrotesqueBold;
   height: 120px;

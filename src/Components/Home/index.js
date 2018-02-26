@@ -37,6 +37,13 @@ class Home extends Component {
     window.removeEventListener('resize', this.checkWindowSize);
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.session) { 
+      const redirect = nextProps.session.isTeacher ? '/setup-game' : '/home'
+      this.setState({ redirect });
+    };    
+  }
+
   checkWindowSize() {
     const smallScreen = document.body.clientWidth < 900;
     this.setState({ smallScreen });
@@ -44,7 +51,6 @@ class Home extends Component {
 
   render() {
     if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }
-    if (this.props.session) { this.setState({ redirect: '/home'} )};
 
     return (
       <Container>

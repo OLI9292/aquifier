@@ -33,7 +33,6 @@ class Game extends Component {
     super(props);
 
     this.state = {
-      time: 5,
       questionIndex: 0,
       hintCount: 0,
       guessed: {},
@@ -128,11 +127,11 @@ class Game extends Component {
   animateAlerts() {
     if (this.state.isSpeedy) {
       this.setState({ alert: 'speedy' });
-      setTimeout(() => { this.setState({ alert: undefined }); }, 750);
+      setTimeout(() => { this.setState({ alert: undefined }); }, 1100);
     };
     const correctAlert = this.state.correct ? 'correct' : 'passed';
-    setTimeout(() => { this.setState({ alert: correctAlert }); }, this.state.isSpeedy ? 1000 : 0);
-    setTimeout(() => { this.setState({ alert: undefined }); }, this.state.isSpeedy ? 1500 : 750);    
+    setTimeout(() => { this.setState({ alert: correctAlert }); }, this.state.isSpeedy ? 1200 : 0);
+    setTimeout(() => { this.setState({ alert: undefined }); }, this.state.isSpeedy ? 2300 : 1100);    
   }
 
   checkComplete() {
@@ -220,7 +219,6 @@ class Game extends Component {
       questionIndex,
       question,
       questions,
-      time,
       glowIdx
     } = this.state;
 
@@ -231,7 +229,7 @@ class Game extends Component {
             progress={Math.max(questionIndex) / get(questions, 'length', 1)} />;
         case 'speed':
           return <SpeedRound
-            time={time}
+            time={get(this.props.level, 'time')}
             score={points}
             gameOver={this.gameOver.bind(this)} />;
         default:
@@ -361,10 +359,10 @@ class Game extends Component {
 
     const levelInfo = (() => {
       return <div>
-        <p style={{fontFamily:'BrandonGrotesqueBold',fontSize:'1.25em',height:'2px'}}>
+        <p style={{fontFamily:'BrandonGrotesqueBold',fontSize:'1.25em'}}>
           {get(this.props.level, 'fullname')}
         </p>
-        {this.props.level && _.map(_.range(1, this.props.level.progress[1] + 1), n => {
+        {_.has(this.props.level, 'progress') && _.map(_.range(1, this.props.level.progress[1] + 1), n => {
           return <StageDot key={n} green={n <= this.props.level.progress[0]} />
         })}
       </div>      
@@ -381,9 +379,9 @@ class Game extends Component {
             }
           }}>
           <p>
-            {questionComplete ? 'CONTINUE' : 'HINT'}
+            {questionComplete ? 'Continue' : 'Hint'}
             <HelpSpan hide={questionComplete}>
-              (ENTER)
+              (enter)
             </HelpSpan>            
           </p>
       </HelpButton>

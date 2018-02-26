@@ -6,11 +6,11 @@ import { Provider } from 'react-redux'
 import styled from 'styled-components';
 
 // COMPONENTS
-import Admin from '../Admin/index';
-import ClassesDashboard from '../Dashboard/classes';
+import Admin from '../Admin/index2';
 import Footer from '../Footer/index';
 import GameManager from '../Game/gameManager';
 import GameSelect from '../GameSelect/index';
+import GameSetup from '../GameSetup/index';
 import Header from '../Header/index';
 import Home from '../Home/index';
 import InfoForm from '../InfoForm/index';
@@ -18,10 +18,12 @@ import Leaderboard from '../Leaderboard/index';
 import Leaderboards from '../Leaderboards/index';
 import LessonsTable from '../Dashboard/Lessons/table';
 import LessonEdit from '../Dashboard/Lessons/edit';
+import MyClass from '../MyClass/index';
 import Profile from '../Profile/index';
 import Waiting from '../Waiting/index';
 import WordListsEdit from '../Dashboard/WordLists/edit';
 import WordListsTable from '../Dashboard/WordLists/table';
+import NotFound from '../NotFound/index';
 
 // MODELS
 import LocalStorage from '../../Models/LocalStorage'
@@ -52,12 +54,14 @@ class App extends Component {
         <BrowserRouter>
           <Switch>
             <Route exact path='/'                 component={Home} />
-            <Route exact path='/classes'          component={contained('classesDashboard')} />            
+            <Route exact path='/admin'            component={contained('admin')} />            
+            <Route exact path='/my-class'         component={contained('myClass')} />            
             <Route exact path='/leaderboard/:id'  component={contained('leaderboard')} />
             <Route exact path='/leaderboards'     component={contained('leaderboards')} />
             <Route exact path='/lessons'          component={contained('lessonsTable')} />
             <Route exact path='/lessons/:id'      component={contained('lessonEdit')} />
             <Route exact path='/home'             component={contained('gameSelect')} />
+            <Route exact path='/setup-game'       component={contained('gameSetup')} />
             
             <Route exact path='/play/:settings' component={({ match }) => {
               return <GameManager settings={match.params.settings} /> 
@@ -68,12 +72,8 @@ class App extends Component {
             <Route exact path='/word-lists'       component={contained('wordListsTable')} />
             <Route exact path='/word-lists/:id'   component={contained('wordListsEdit')} />
             
-            {/* ADMIN */}
-            <Route exact path='/admin/:settings' component={({ match }) => {
-              return <Container
-                component='admin' 
-                settings={queryString.parse(match.params.settings)} /> 
-            }} />
+            
+            <Route component={contained('notFound')} />
           </Switch>
         </BrowserRouter>
       </Provider>
@@ -116,18 +116,20 @@ class Container extends Component {
 
     const Component = () => {
       switch (this.props.component) {
-        case 'admin':              return <Admin settings={this.props.settings} />
-        case 'classesDashboard':   return <ClassesDashboard />
+        case 'admin':              return <Admin />
         case 'gameSelect':         return <GameSelect smallScreen={smallScreen} />
+        case 'gameSetup':          return <GameSetup smallScreen={smallScreen} />
         case 'infoForm':           return <InfoForm />
         case 'leaderboard':        return <Leaderboard />
         case 'leaderboards':       return <Leaderboards />
         case 'lessonsTable':       return <LessonsTable />
         case 'lessonEdit':         return <LessonEdit />
+        case 'myClass':            return <MyClass />
         case 'profile':            return <Profile />
         case 'waiting':            return <Waiting settings={this.props.settings} />
         case 'wordListsEdit':      return <WordListsEdit />
         case 'wordListsTable':     return <WordListsTable />
+        case 'notFound':           return <NotFound />
         default:                   return <Home />
       }
     }
@@ -149,7 +151,7 @@ class Container extends Component {
 }
 
 const OuterFrame = styled.div`
-  background: linear-gradient(white, ${color.paleBlue});
+  background-color: ${color.lightestGray};
   display: block;
   height: 100%;
   overflow: auto;

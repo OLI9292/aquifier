@@ -1,7 +1,10 @@
+import { Redirect } from 'react-router';
+import queryString from 'query-string';
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import _ from 'underscore';
 
+import { shouldRedirect } from '../../../Library/helpers'
 import Level from './level';
 import JumpTo from './jumpTo';
 
@@ -55,7 +58,7 @@ class Train extends Component {
       level.completed = _.contains(_.pluck(completedLevels, '_id'), level._id);
       level.locked = !_.contains(openLadders, level.ladder);
       return level;
-    }), 'ladder');
+    }), level => `${level.ladder}${level.type === 'speed' ? '-speed' : ''}`);
 
     return {
       furthest: furthestLevel,
@@ -65,10 +68,19 @@ class Train extends Component {
 
   clickedLevelOverview(level, isExpanded) {
     if (!level.locked) {
-      const expanded = !isExpanded && level._id;
-      this.setState({ expanded });
+      if (level.type === 'speed') {
+        this.clickedLevelStage('speed', level._id);
+      } else {
+        const expanded = !isExpanded && level._id;
+        this.setState({ expanded });        
+      }
     }
   }
+
+  clickedLevelStage(type, id, stage = 0) {
+    const params = { type: type, id: id, stage: stage };
+    this.setState({ redirect: '/play/' + queryString.stringify(params) });
+  }  
 
   mouse(level, over = true) {
     const hovering = over && !level.locked && level._id;
@@ -80,6 +92,8 @@ class Train extends Component {
   }
 
   render() {
+    if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }
+
     const { 
       session,
       user
@@ -106,13 +120,12 @@ class Train extends Component {
           const userStages = userLevel ? userLevel.progress : [];
 
           const isExpanded = level._id === expanded;
-          const isHovering = level._id === hovering;
 
           return <Level
             imgSrc={imgSrc(level)}
+            clickedLevelStage={this.clickedLevelStage.bind(this)}
             clickedLevelOverview={this.clickedLevelOverview.bind(this)}
             isExpanded={isExpanded}
-            isHovering={isHovering}
             key={level._id}
             level={level}
             mouse={this.mouse.bind(this)}

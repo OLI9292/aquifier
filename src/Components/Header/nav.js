@@ -1,3 +1,4 @@
+import _ from 'underscore';
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
@@ -13,32 +14,29 @@ class Nav extends Component {
   render() {
     const { 
       path,
-      loggedIn
+      loggedIn,
+      isTeacher
     } = this.props;
+
+    const link = _path => {
+      return <Link to={_path}>
+        <LinkText>
+          {_path.substring(1).replace('-',' ').toUpperCase()}
+          <Highlight show={path === _path} />
+        </LinkText>
+      </Link>
+    }
+
+    const paths = isTeacher
+      ? ['/setup-game','/my-class','/leaderboards']
+      : ['/home','/profile','/leaderboards'];
 
     const links = (() => {
       return <div style={{display:'flex',width:'100%',alignItems:'center',justifyContent:'space-between'}}>
-        <LeftLinksContainer width={path === '/' ? '25px' : '325px'} show={loggedIn}>
-          <Link to={'/home'}>
-            <LinkText>
-              HOME
-              <Highlight show={path === '/home'} />
-            </LinkText>
-          </Link>
-
-          <Link to={'/profile'}>
-            <LinkText>
-              PROFILE
-              <Highlight show={path === '/profile'} />
-            </LinkText>
-          </Link>
-
-          <Link to={'/leaderboards'}>
-            <LinkText>
-              LEADERBOARDS
-              <Highlight show={path === '/leaderboards'} />
-            </LinkText>
-          </Link>
+        <LeftLinksContainer
+          width={path === '/' ? '25px' : '325px'}
+          show={loggedIn}>
+          {_.map(paths, link)}
         </LeftLinksContainer>
         {
           loggedIn

@@ -27,7 +27,7 @@ class GameSelect extends Component {
     super(props);
 
     this.state = {
-      gameType: GAME_TYPES[1]
+      gameType: GAME_TYPES[0]
     };
   }
 
@@ -46,7 +46,7 @@ class GameSelect extends Component {
     const mainComponent = {
       train: <Train 
         user={user} 
-        levels={_.filter(levels, l => l.type === 'train')} />,
+        levels={_.filter(levels, l => _.contains(['train', 'speed'], l.type))} />,
       explore: <Explore
         levels={_.filter(levels, l => l.type === 'topic')} />,
     }[this.state.gameType];
@@ -54,7 +54,7 @@ class GameSelect extends Component {
     const tabs = (() => {
       return <TabContainer>
         {_.map(GAME_TYPES, (gameType, i) => {
-          const margin = i === 1 ? '0px 5px 0px 10px' : i === 2 ? '0px 10px 0px 5px' : '0';
+          const margin = i === 1 ? '0px 20px 0px 20px' : '0';
           return <Tab
             key={i}
             onClick={() => this.setState({ gameType })}

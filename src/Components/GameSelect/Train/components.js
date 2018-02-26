@@ -1,16 +1,6 @@
 import styled from 'styled-components';
 import { color } from '../../../Library/Styles/index';
 
-export const DownArrow = styled.img`
-  position: absolute;
-  height: 25px;
-  right: 0;
-  margin-right: -40px;
-  opacity: ${props => props.isHovering ? 1 : 0};
-  transition: opacity 100ms;
-  transform: rotate(${props => props.isExpanded ? 180 : 0}deg);
-`
-
 export const Img = styled.img`
   opacity: ${props => props.opaque ? 0.25 : 1};
   max-height: 70%;

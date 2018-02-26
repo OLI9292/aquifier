@@ -1,5 +1,4 @@
 module.exports = (hintCount, questionType) => {
-    console.log(questionType)
   switch (questionType) {
 
   case 'defToOneRoot': case 'defToAllRoots':

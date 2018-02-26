@@ -18,6 +18,15 @@ export const Container = styled.div`
   `};     
 `
 
+export const Header = styled.h1`
+  font-size: 1.5em;
+  font-family: BrandonGrotesqueBold;
+  letter-spacing: 2px;  
+  line-height: 45px;
+  text-transform: uppercase;
+  padding-top: 20px;
+`
+
 export const DropdownContainer = styled.div`
   display: flex;
   width: 300px;

@@ -16,7 +16,7 @@ class ProgressBar extends Component {
   render() {
     const colors = [color.blue, color.green, color.red];
 
-    const progressBarWidth = 0.6;
+    const progressBarWidth = 0.7;
 
     const progress = `${this.props.progress * progressBarWidth * 100}%`;
     
@@ -51,12 +51,12 @@ const Progress = styled.div`
   width: ${props => props.progress};
   height: 13px;
   margin-top: -6px;
-  background-color: ${color.warmYellow};
+  background: linear-gradient(to right, ${color.brightYellow}, ${color.warmYellow});
   border-radius: 8px;
   z-index: 1000;
   transition: 0.2s;
   position: absolute;
-  left: 20%;
+  left: 15%;
 `
 
 const BackgroundBar = styled.div`
@@ -66,7 +66,7 @@ const BackgroundBar = styled.div`
   z-index: 5;
   background-color: ${color.lightGray};
   border-radius: 5px;
-  left: 20%;
+  left: 15%;
   position: absolute;
 `
 

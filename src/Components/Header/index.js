@@ -18,7 +18,6 @@ class Header extends Component {
   }
 
   displayLogin() {
-    console.log('hiiii')
     this.setState({ displayLoginModal: true });
   }
 
@@ -43,7 +42,8 @@ class Header extends Component {
     const { 
       loggedIn,
       path,
-      smallScreen
+      smallScreen,
+      isTeacher
     } = this.props;
 
     const loginModal = (() => {
@@ -62,6 +62,7 @@ class Header extends Component {
       <div>
         {loginModal}
         <NavComponent
+          isTeacher={isTeacher}
           loggedIn={loggedIn}
           path={path}
           displayLogin={this.displayLogin.bind(this)}

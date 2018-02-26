@@ -4,38 +4,40 @@ import { Redirect } from 'react-router';
 import styled from 'styled-components';
 import _ from 'underscore';
 
-import { color } from '../../Library/Styles/index';
+import { color, media } from '../../Library/Styles/index';
 import { shouldRedirect, sum } from '../../Library/helpers';
 
 import { loadStudents } from '../../Actions/index';
 
-class ClassesDashboard extends Component {
+class MyClass extends Component {
   constructor(props) {
     super(props);
-
-    this.state = {
-      students: []
-    }
+    this.state = {}
   }
 
   componentDidMount() {
     if (this.props.students.length) {
+      console.log(1)
       this.setState({ students: this.props.students.map(this.readStudent) });
     } else if (this.props.user) {
-      this.setState({ loading: true }, this.loadClass);
+      console.log(2)
+      this.setState({ loading: true }, () => this.loadClass(this.props));
     }
   }  
 
   componentWillReceiveProps(nextProps) {
-    if (_.isEmpty(this.state.students) && nextProps.students.length) {
-      this.setState({ students: nextProps.students.map(this.readStudent) });
-    } else if (this.props.user && !this.state.loading) {
-      this.loadClass();
+    if (nextProps.students.length && !this.state.students) {
+      console.log(3)
+      const students = nextProps.students.map(this.readStudent);
+      this.setState({ students });
+    } else if (nextProps.user && !this.state.loading) {
+      console.log(4)
+      this.loadClass(nextProps);
     }
   }
 
-  loadClass() {
-    const _class = _.find(this.props.user.classes, (c) => c.role === 'teacher');
+  loadClass(props) {
+    const _class = _.find(props.user.classes, (c) => c.role === 'teacher');
     if (_class) { this.props.dispatch(loadStudents(_class.id)) };
   }
 
@@ -45,16 +47,12 @@ class ClassesDashboard extends Component {
 
   readStudent(data) {
     const name = data.firstName + ' ' + data.lastName.charAt(0);
-    const mastery = sum(data.words, 'experience')/10;
     const wordsLearned = data.words.length;
-    const wordsMastered = data.words.filter((w) => w.experience >= 7).length;
     const timePlayed = Math.ceil(sum(data.words, 'timeSpent')/60);
     return {
       id: data._id,
       name: name,
-      mastery: Math.ceil(mastery),
       wordsLearned: wordsLearned,
-      wordsMastered: wordsMastered,
       timePlayed: timePlayed
     }    
   }
@@ -69,9 +67,9 @@ class ClassesDashboard extends Component {
     if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }
 
     return (
-      <div style={{width:'100%',textAlign:'center'}}>
+      <Container>
         <Header>
-          My Class
+          my class
         </Header>
         {
           !_.isEmpty(this.state.students) &&
@@ -79,16 +77,12 @@ class ClassesDashboard extends Component {
             <tbody>
               <Row>
                 <TableCell left header onClick={() => this.sortStudents('name')}>Name</TableCell>
-                <TableCell header onClick={() => this.sortStudents('mastery')}>Mastery</TableCell>
-                <TableCell header onClick={() => this.sortStudents('wordsMastered')}>Words Mastered</TableCell>
                 <TableCell header onClick={() => this.sortStudents('wordsLearned')}>Words Learned</TableCell>
                 <TableCell header onClick={() => this.sortStudents('timePlayed')}>Time Played</TableCell>
               </Row>
             
               <Row holistic>
                 <TableCell holistic left>Class Average</TableCell>
-                <TableCell border bold holistic>{this.average('mastery')}</TableCell>
-                <TableCell holistic>{this.average('wordsMastered')}</TableCell>
                 <TableCell holistic>{this.average('wordsLearned')}</TableCell>
                 <TableCell holistic>{`${this.average('timePlayed')}m`}</TableCell>
               </Row>
@@ -96,8 +90,6 @@ class ClassesDashboard extends Component {
               {this.state.students.map((s, i) => {
                 return <Row dark={i % 2 === 0} key={i} onClick={() => this.setState({ redirect: `/profile/${s.id}` })}>
                   <TableCell left>{s.name}</TableCell>
-                  <TableCell border bold>{s.mastery}</TableCell>
-                  <TableCell>{s.wordsMastered}</TableCell>
                   <TableCell>{s.wordsLearned}</TableCell>
                   <TableCell>{`${s.timePlayed}m`}</TableCell>
                 </Row>
@@ -105,15 +97,30 @@ class ClassesDashboard extends Component {
             </tbody>
           </Table>
         }
-      </div>
+      </Container>
     );
   }
 }
 
-const Header = styled.p`
-  font-size: 2.25em;
-  height: 0px;
-  line-height: 0px;
+const Container = styled.div`
+  width: 100%;
+  background-color: white;
+  border-radius: 20px;
+  min-height: 70vh;
+  text-align: center;
+  padding-bottom: 20px;
+  ${media.phone`
+    font-size: 0.9em;
+  `};    
+`
+
+export const Header = styled.h1`
+  font-size: 1.5em;
+  font-family: BrandonGrotesqueBold;
+  letter-spacing: 2px;  
+  line-height: 45px;
+  text-transform: uppercase;
+  padding-top: 20px;
 `
 
 const Row = styled.tr`
@@ -150,4 +157,4 @@ const mapStateToProps = (state, ownProps) => ({
   user: _.first(_.values(state.entities.user))
 })
 
-export default connect(mapStateToProps)(ClassesDashboard)
+export default connect(mapStateToProps)(MyClass)

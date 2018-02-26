@@ -10,6 +10,7 @@ export const color = {
   green10l: '#48b978',
   yellow: '#f3be5b',
   warmYellow: '#FFC31A',
+  brightYellow: '#fdce4a',
   yellow10l: '#f4c46b',
   black: '#000000',
   black10l: '#191919',
@@ -18,8 +19,10 @@ export const color = {
   darkGray: '#686868',
   mediumGray: '#BDBEC0',
   gray2: '#58595B',
+  brown: '#AF7803',
   gray: '#828282',
   gray10l: '#8e8e8e',
+  mediumLGray: '#BCBEC0',
   lightestGray: '#F2F2F2',
   lightGray: '#d9d9d9',
   gold: '#C98910',
@@ -35,7 +38,10 @@ export const color = {
   facebookBlue10l: '#5a71ac',
   white: '#ffffff',
   paleBlue: '#D3EFFB',
-  honey: '#BF430C'
+  babyBlue: '#A6EAFF',
+  honey: '#BF430C',
+  limeGreen: '#43DE80',
+  darkLimeGreen: '#29A85C'
 };
 
 export const PHONE_MAX_WIDTH = 600
@@ -45,5 +51,10 @@ export const media = {
     @media (max-width: ${PHONE_MAX_WIDTH}px) {
       ${ css(...args) }
     }
-  `
+  `,
+  smallComp: (...args) => css`
+    @media (min-width: ${PHONE_MAX_WIDTH}px) and (max-width: 850px) {
+      ${ css(...args) }
+    }
+  `  
 }
