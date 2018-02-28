@@ -24,6 +24,7 @@ import {
   Choices, ChoiceButton,
   ExitOut,
   HelpButton, HelpSpan,
+  Pause,
   Prompt, PromptContainer, PromptValue,
   StageDot
 } from './components'
@@ -88,7 +89,15 @@ class Game extends Component {
       this.setState({ question: question, isSpellQuestion: isSpellQuestion }, this.checkHint);
       setTimeout(this.autohint.bind(this), 2000);
     } else {
-      this.gameOver();
+      // Reset questions in multiplayer and speed rounds
+      if (_.contains(['multiplayer','speed'], this.props.type)) {
+        const questions = this.props.originalQuestions;
+        console.log(questions)
+        const questionIndex = 0;
+        this.setState({ questions: questions, questionIndex: questionIndex }, this.setQuestion);
+      } else {
+        this.gameOver();        
+      }
     }
   }
 
@@ -112,7 +121,7 @@ class Game extends Component {
     this.animateButton(choice, idx, correct);
 
     if (correct) {
-      this.setState({ question: _.extend(this.state.question, {}, { answer: answer }) }, this.checkComplete);
+      this.setState({ question: _.extend({}, this.state.question, {}, { answer: answer }) }, this.checkComplete);
     } else {
       this.setState({ correct: false });
     }
@@ -224,12 +233,13 @@ class Game extends Component {
 
     const progressComponent = type => {
       switch (type) {
-        case 'train': case 'explore': case 'read':
+        case 'train': case 'explore':
           return <ProgressBar
             progress={Math.max(questionIndex) / get(questions, 'length', 1)} />;
-        case 'speed':
+        case 'speed': case 'multiplayer':
           return <SpeedRound
-            time={get(this.props.level, 'time')}
+            time={this.props.time}
+            end={this.props.end}
             score={points}
             gameOver={this.gameOver.bind(this)} />;
         default:
@@ -392,11 +402,17 @@ class Game extends Component {
         {levelInfo}
         {helpButton}
       </Bottom>
-    })();       
+    })();      
 
     return (
       <div>
         {
+          this.props.pauseMatch
+          ?
+          <Pause>
+            Waiting for admin to start game.
+          </Pause>
+          :
           this.state.questions
           ?
           <Content opacity={this.state.gameOpaqueness}>

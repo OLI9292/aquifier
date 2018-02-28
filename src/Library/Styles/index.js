@@ -2,6 +2,9 @@ import { css } from 'styled-components'
 
 // TODO: change 10l, there might exist a method to do this?
 export const color = {
+  navBlue: '#3F81E6',
+  lightNavBlue: '#C0D9F7',
+  navBlueBg: '#CCECFA',
   mainBlue: '#3F81E6',
   lightBlue: '#72CAF1',
   blue: '#4B9AEC',

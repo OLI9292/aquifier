@@ -11,11 +11,29 @@ import { shouldRedirect } from '../../Library/helpers';
 import LocalStorage from '../../Models/LocalStorage'
 import { logoutUser } from '../../Actions/index';
 
+import { PHONE_MAX_WIDTH } from '../../Library/Styles/index';
+
 class Header extends Component {
   constructor(props) {
     super(props);
     this.state = {};
+
+    this.checkWindowSize = this.checkWindowSize.bind(this);
   }
+
+  componentDidMount() {
+    window.addEventListener('resize', this.checkWindowSize);
+    this.checkWindowSize();
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.checkWindowSize);
+  }  
+
+  checkWindowSize() {
+    const smallScreen = document.body.clientWidth < PHONE_MAX_WIDTH;
+    this.setState({ smallScreen });
+  }  
 
   displayLogin() {
     this.setState({ displayLoginModal: true });
@@ -42,14 +60,13 @@ class Header extends Component {
     const { 
       loggedIn,
       path,
-      smallScreen,
       isTeacher
     } = this.props;
 
     const loginModal = (() => {
       return this.state.displayLoginModal && <div>
         <Login
-          smallScreen={smallScreen}
+          smallScreen={this.state.smallScreen}
           exitLogin={this.exitLogin.bind(this)} />
         <DarkBackground
           onClick={() => this.exitLogin()} />
@@ -57,7 +74,8 @@ class Header extends Component {
     })()    
 
     // TODO: - change smallScreen && loggedIn
-    const NavComponent = (smallScreen && loggedIn) ? MobileNav : Nav;
+    const NavComponent = (this.state.smallScreen && loggedIn && !isTeacher) ? MobileNav : Nav;
+
     return (
       <div>
         {loginModal}

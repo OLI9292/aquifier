@@ -18,7 +18,7 @@ const STATS = [
     name: 'WORDS',
     slug: 'wordsLearned',
     image: require('../../Library/Images/icon-book.png'),
-    color: color.green
+    color: color.yellow
   }
 ]
 
@@ -85,8 +85,9 @@ const StatContainer = styled.div`
 `
 
 const Img = styled.img`
-  height: 100%;
-  width: auto;
+  height: 35px;
+  width: 35px;
+  margin-right: 5px;
 `
 
 const Stat = styled.p`

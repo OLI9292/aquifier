@@ -1,68 +1,88 @@
+import _ from 'underscore';
 import React, { Component } from 'react';
 import styled from 'styled-components';
 
 import { color } from '../../Library/Styles/index';
 
+const LINKS = [
+  {
+    title: 'play',
+    path: '/home',
+    img: 'bungalow'
+  },
+  {
+    title: 'me',
+    path: '/profile',
+    img: 'stairs'
+  },
+  {
+    title: 'leaderboards',
+    path: '/leaderboards',
+    img: 'trophy'
+  }
+]
+
 class MobileNav extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
   }
 
   render() {
-    const path = this.props.path;
+    const link = data => {
+      const selected = this.props.path === data.path;
+      const image = require('../../Library/Images/' + data.img + (selected ? '' : '-light') + '-blue.png');
+      return <Option onClick={() => this.props.redirect(data.path)}>
+        <Image src={image} />
+        <Title selected={selected}>
+          {data.title.toUpperCase()}
+        </Title>
+      </Option>
+    }
 
     return (
-      <Container isHome={path === '/home'}>
-        <Option onClick={() => this.props.redirect('/home')}>
-          <Image src={require(`../../Library/Images/play-${path === '/home' ? 'blue' : 'gray'}.png`)} />
-          <Title selected={path === '/home'}>
-            PLAY
-          </Title>
-        </Option>
-
-        <Option onClick={() => this.props.redirect('/profile')}>
-          <Image src={require(`../../Library/Images/wizard-${'gray'}.png`)} />
-          <Title selected={path === '/profile'}>
-            ME
-          </Title>        
-        </Option>
-
-        <Option onClick={() => this.props.redirect('/leaderboards')}>
-          <Image src={require(`../../Library/Images/leaderboard-${path === '/leaderboards' ? 'blue' : 'gray'}.png`)} />
-          <Title selected={path === '/leaderboards'}>
-            COMPETE
-          </Title>
-        </Option>
-      </Container>
+      <div>
+        {this.props.path === '/profile' && <Logout onClick={() => this.props.logout()}>logout</Logout>}
+        <Container>{_.map(LINKS, link)}</Container>
+      </div>
     );
   }
 }
 
 const Container = styled.div`
   align-items: center;
-  background-color: ${color.lightestGray};
+  background: linear-gradient(white, ${color.navBlueBg});
   bottom: 0;
   display: flex;
-  height: 80px;
+  height: 100px;
   justify-content: space-around;
   position: fixed;
   width: 100%;
   z-index: 1000;
 ` 
 
+const Logout = styled.p`
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  margin: 0;
+  cursor: pointer;
+  font-family: BrandonGrotesqueBold;
+  letter-spacing: 1px;
+  font-size: 0.9em;
+  text-transform: uppercase;
+`
+
 const Option = styled.div`
   text-align: center;
   flex: 1;
+  cursor: pointer;
 `
 
 const Title = styled.p`
-  color: ${color.blue};
+  color: ${props => props.selected ? color.navBlue : color.lightNavBlue};
   height: 0px;
-  line-height: 0px;
-  font-size: 0.9em;
-  margin: 5px 0px;
-  display: ${props => props.selected ? '' : 'none'};
+  line-height: 5px;
+  margin: 10px 0px;
 `
 
 const Image = styled.img`

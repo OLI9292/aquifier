@@ -64,7 +64,9 @@ export const Sidebar = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
-`
+  ${media.phone`
+    display: none;
+  `};`
 
 export const SidebarContainer = styled.div`
   background-color: white;
@@ -120,5 +122,12 @@ export const TabContainer = styled.div`
   margin-top: -40px;
   ${media.phone`
     margin-top: -30px;
+  `};    
+`
+
+export const MiniProgressMobileContainer = styled.div`
+  display: none;
+  ${media.phone`
+    display: block;
   `};    
 `

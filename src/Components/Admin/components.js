@@ -59,10 +59,16 @@ export const Text = styled.p`
   margin-top: ${props => props.accessCode ? '-10px' : ''};
 `
 
+export const ErrorMessage = styled.p`
+  margin-top: 40px;
+  color: ${color.red};
+  font-family: EBGaramond;
+`
+
 export const StartGameButton = styled.div`
   width: 220px;
   margin: 0 auto;
-  background-color: ${color.warmYellow};
+  background-color: ${props => props.inProgress ? 'white' : color.warmYellow};
   height: 55px;
   line-height: 55px;
   border-radius: 30px;
@@ -71,7 +77,7 @@ export const StartGameButton = styled.div`
   text-transform: uppercase;
   letter-spacing: 2px;
   font-size: 1.1em;
-  margin-bottom: 35px;
+  margin-bottom: 40px;
 `
 
 export const TimerContainer = styled.div`
@@ -82,4 +88,38 @@ export const TimerContainer = styled.div`
   justify-content: space-between;
   color: ${color.gray};
   font-size: 1.1em;
+`
+
+export const PlayersContainer = styled.div`
+  width: 150px;
+  margin: 0 auto;
+  margin-top: 20px;
+`
+
+export const Player = styled.p`
+  font-family: BrandonGrotesque;
+  font-size: 1.2em;
+  margin: 10px 0px;
+`
+
+export const KickButton = styled.p`
+  width: 60px;
+  height: 30px;
+  text-align: center;
+  line-height: 30px;
+  border-radius: 20px;
+  background-color: ${color.red};
+  color: white;
+  text-transform: uppercase;
+  font-size: 0.75em;
+  letter-spacing: 1px;
+  font-family: BrandonGrotesqueBold;
+  cursor: pointer;
+  margin: 0;
+`
+
+export const PlayerContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `

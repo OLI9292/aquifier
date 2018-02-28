@@ -19,7 +19,7 @@ class Nav extends Component {
     } = this.props;
 
     const link = _path => {
-      return <Link to={_path}>
+      return <Link key={_path} to={_path}>
         <LinkText>
           {_path.substring(1).replace('-',' ').toUpperCase()}
           <Highlight show={path === _path} />

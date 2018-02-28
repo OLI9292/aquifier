@@ -58,7 +58,7 @@ class Leaderboard extends Component {
 
     const rows = () => {
       return this.state.players.map((p) => {
-        return <Row>
+        return <tr style={{width:'100%'}}>
           <LeftAlignCell style={{ color: colors[p.position] || 'black' }}>
             {p.position}.
           </LeftAlignCell>
@@ -68,32 +68,41 @@ class Leaderboard extends Component {
           <RightAlignCell>
             {p.score}
           </RightAlignCell>
-        </Row>
+        </tr>
       })
     }
 
     return (
-      <Layout>
-        <Header>Game Over!</Header>
+      <Container>
+        <Header>
+          Game Over!
+        </Header>
         {
           this.state.dataLoaded &&
-          <Container>
-            <ResultsHeader>Results</ResultsHeader>
+          <div style={{margin:'0 auto',width:'100%'}}>
+            <ResultsHeader>
+              results
+            </ResultsHeader>
             <Table>
               <col width="10%" />
               <col width="20%" />
               <col width="70%" />
               {rows()}
             </Table>
-          </Container>
+          </div>
         }
-      </Layout>
+      </Container>
     );
   }
 }
 
-const Row = styled.tr`
+export const Container = styled.div`
   width: 100%;
+  background-color: white;
+  border-radius: 20px;
+  min-height: 70vh;
+  text-align: center;
+  position: relative;   
 `
 
 const Layout = styled.div`
@@ -106,19 +115,21 @@ const Layout = styled.div`
 const Header = styled.p`
   font-size: 3em;
   height: 1em;
+  padding-top: 20px;
 `
 
-const Container = styled.div`
-  margin: auto;
-  width: 100%;
-`
-
-const ResultsHeader = styled.h2`
-  font-size: 2em;
+const ResultsHeader = styled.p`
+  padding-top: 30px;
+  font-size: 1.5em;
+  padding-bottom: 10px;
+  text-transform: uppercase;
+  font-family: BrandonGrotesqueBold;
+  letter-spacing: 1px;
 `
 
 const Table = styled.table`
-  width: 100%;
+  width: 60%;
+  margin: 0 auto;
 `
 
 const LeftAlignCell = styled.td`

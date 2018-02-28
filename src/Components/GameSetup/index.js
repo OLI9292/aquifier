@@ -6,7 +6,7 @@ import React, { Component } from 'react';
 import get from 'lodash/get';
 
 import { shouldRedirect } from '../../Library/helpers';
-import { loadLevels, loadRoots } from '../../Actions/index';
+import { loadLevels, loadRoots, loadWords } from '../../Actions/index';
 import { STEPS } from './steps';
 
 import {
@@ -35,14 +35,18 @@ class GameSetup extends Component {
   }
 
   componentDidMount() {
-    const { levels, roots } = this.props;
+
+    const { levels, roots, words } = this.props;
     if (_.isEmpty(levels)) { this.props.dispatch(loadLevels()); } else { this.setLevels(levels); }
     if (_.isEmpty(roots))  { this.props.dispatch(loadRoots()); }  else { this.setRoots(roots); }
+    if (_.isEmpty(words))  { this.props.dispatch(loadWords()); }
   }
 
   componentWillReceiveProps(nextProps) {
     const gameType = this.state.steps[0].selected;
-    if (nextProps.roots.length && !this.state.roots)   { this.setRoots(nextProps.roots, gameType); }
+    if (nextProps.roots.length && !this.state.roots)   { 
+      this.setRoots(nextProps.roots, gameType);
+    }
     if (nextProps.levels.length && !this.state.levels) { this.setLevels(nextProps.levels, gameType); }
   }
 
@@ -118,23 +122,27 @@ class GameSetup extends Component {
     const [type, data, timeStr] = _.pluck(this.state.steps, 'selected');
     
     let settings = {};
+    let words
+
     settings['time'] = parseInt(timeStr.charAt(0), 10);
     settings['type'] = type;
 
     if (type === 'roots') {
       settings['name'] = 'root-review';
-      settings['roots'] = _.pluck(_.filter(roots, r => _.contains(data, r.value)), '_id').join(',');
+      const ids = _.pluck(_.filter(roots, r => _.contains(data, r.value)), '_id');
+      words = _.pluck(_.filter(this.props.words, w => _.intersection(w.roots, ids).length), 'value');
     } else {
       const level = _.find(levels, l => l.title === data);
       settings['name'] = get(level, 'slug');
-      settings['level'] = get(level, '_id');
+      words = level.words;
     }
+    settings['words'] = _.shuffle(words).join(',');
 
     this.setState({ redirect: '/admin/?' + queryString.stringify(settings) });
   }
 
   previewMatch() {
-    const { levels, steps } = this.state
+    const { levels, steps } = this.state;
     const level = _.find(levels, level => level.title === steps[1].selected)
   }
 
@@ -193,6 +201,7 @@ const mapStateToProps = (state, ownProps) => ({
   session: state.entities.session,
   user: _.first(_.values(state.entities.user)),
   levels: _.values(state.entities.levels),
+  words: _.values(state.entities.words),
   roots: _.values(state.entities.roots)
 });
 

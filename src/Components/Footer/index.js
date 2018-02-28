@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { color } from '../../Library/Styles/index';
+import { color, media } from '../../Library/Styles/index';
 
 class Footer extends Component {
   render() {
@@ -32,6 +32,9 @@ const Container = styled.div`
   height: 120px;
   justify-content: space-evenly;
   width: 100%;
+  ${media.phone`
+    display: none;
+  `};  
 `
 
 export default Footer;

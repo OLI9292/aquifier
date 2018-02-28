@@ -275,3 +275,16 @@ export const StageDot = styled.div`
   display: inline-block;
   margin-right: 5px;
 `
+
+//
+// PAUSE
+//
+
+export const Pause = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  font-size: 2em;
+  letter-spacing: 1px;
+`

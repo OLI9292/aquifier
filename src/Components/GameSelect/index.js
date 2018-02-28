@@ -6,6 +6,7 @@ import MiniLeaderboard from './miniLeaderboard';
 import MiniProgress from './miniProgress';
 import MiniProgressMobile from './miniProgressMobile';
 import Train from './Train/index';
+import JoinGame from './JoinGame/index';
 import Explore from './Explore/index';
 
 import { loadLevels } from '../../Actions/index';
@@ -15,6 +16,7 @@ import {
   Content,
   GrayLine,
   Main,
+  MiniProgressMobileContainer,
   Tab,
   TabContainer,
   Sidebar
@@ -37,7 +39,6 @@ class GameSelect extends Component {
 
   render() {
     const {
-      smallScreen,
       levels,
       session,
       user
@@ -49,6 +50,7 @@ class GameSelect extends Component {
         levels={_.filter(levels, l => _.contains(['train', 'speed'], l.type))} />,
       explore: <Explore
         levels={_.filter(levels, l => l.type === 'topic')} />,
+      'join game': <JoinGame />,
     }[this.state.gameType];
 
     const tabs = (() => {
@@ -72,17 +74,16 @@ class GameSelect extends Component {
           {tabs}
           <Content>
             <GrayLine />
-            {smallScreen && user && <MiniProgressMobile user={user} />}
+            <MiniProgressMobileContainer>
+              {user && <MiniProgressMobile user={user} />}
+            </MiniProgressMobileContainer>
             {mainComponent}
           </Content>
         </Main>
-        {
-          smallScreen === false &&
-          <Sidebar>
-            {user && session && <MiniLeaderboard user={user} session={session} />}
-            {user && <MiniProgress user={user} />}
-          </Sidebar>
-        }
+        <Sidebar>
+          {user && session && <MiniLeaderboard user={user} session={session} />}
+          {user && <MiniProgress user={user} />}
+        </Sidebar>
       </Container>
     );
   }

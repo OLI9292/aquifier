@@ -6,7 +6,7 @@ import { Provider } from 'react-redux'
 import styled from 'styled-components';
 
 // COMPONENTS
-import Admin from '../Admin/index2';
+import Admin from '../Admin/index';
 import Footer from '../Footer/index';
 import GameManager from '../Game/gameManager';
 import GameSelect from '../GameSelect/index';
@@ -90,23 +90,7 @@ class Container extends Component {
     this.state = {
       path: window.location.pathname
     };    
-
-    this.checkWindowSize = this.checkWindowSize.bind(this);
   }
-
-  componentDidMount() {
-    window.addEventListener('resize', this.checkWindowSize);
-    this.checkWindowSize();
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.checkWindowSize);
-  }  
-
-  checkWindowSize() {
-    const smallScreen = document.body.clientWidth < PHONE_MAX_WIDTH;
-    this.setState({ smallScreen });
-  }  
 
   render() {
     const {
@@ -117,8 +101,8 @@ class Container extends Component {
     const Component = () => {
       switch (this.props.component) {
         case 'admin':              return <Admin />
-        case 'gameSelect':         return <GameSelect smallScreen={smallScreen} />
-        case 'gameSetup':          return <GameSetup smallScreen={smallScreen} />
+        case 'gameSelect':         return <GameSelect />
+        case 'gameSetup':          return <GameSetup />
         case 'infoForm':           return <InfoForm />
         case 'leaderboard':        return <Leaderboard />
         case 'leaderboards':       return <Leaderboards />
@@ -136,14 +120,12 @@ class Container extends Component {
 
     return (
       <OuterFrame>
-        <Header
-          path={path}
-          smallScreen={smallScreen} />
+        <Header path={path} />
         <InnerFrame>
           <ComponentFrame>
             <Component />
           </ComponentFrame>
-          <Footer smallScreen={smallScreen} />
+          <Footer />
         </InnerFrame>
       </OuterFrame>
     );
