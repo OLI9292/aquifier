@@ -1,8 +1,8 @@
 {
   "main.css": "static/css/main.d6f4dd3e.css",
   "main.css.map": "static/css/main.d6f4dd3e.css.map",
-  "main.js": "static/js/main.cfa1d054.js",
-  "main.js.map": "static/js/main.cfa1d054.js.map",
+  "main.js": "static/js/main.d6e3b0ac.js",
+  "main.js.map": "static/js/main.d6e3b0ac.js.map",
   "static/media/Book.png": "static/media/Book.a0836e8a.png",
   "static/media/Brandon_bld.otf": "static/media/Brandon_bld.fa11c3ca.otf",
   "static/media/Brandon_reg.otf": "static/media/Brandon_reg.1f55925e.otf",
@@ -13,6 +13,7 @@
   "static/media/android-logo.png": "static/media/android-logo.2194afb7.png",
   "static/media/apple-logo.png": "static/media/apple-logo.194fb681.png",
   "static/media/arthropod.jpg": "static/media/arthropod.f5e63910.jpg",
+  "static/media/astral.gif": "static/media/astral.bdbe5060.gif",
   "static/media/bg-blue-straight.png": "static/media/bg-blue-straight.9be4ce4b.png",
   "static/media/bg-blue.png": "static/media/bg-blue.f563b19c.png",
   "static/media/bg-yellow-footer.png": "static/media/bg-yellow-footer.ee0f215a.png",
