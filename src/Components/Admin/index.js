@@ -9,9 +9,9 @@ import get from 'lodash/get';
 
 import { color } from '../../Library/Styles/index';
 import { shouldRedirect } from '../../Library/helpers';
+import { Container } from '../Common/container';
 
 import {
-  Container,
   Cover,
   ErrorMessage,
   Header,

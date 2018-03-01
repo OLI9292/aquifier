@@ -1,18 +1,6 @@
 import styled from 'styled-components';
 import { color, media } from '../../Library/Styles/index';
 
-export const Container = styled.div`
-  width: 100%;
-  background-color: white;
-  border-radius: 20px;
-  min-height: 70vh;
-  text-align: center;
-  padding-bottom: 20px;
-  ${media.phone`
-    font-size: 0.9em;
-  `};    
-`
-
 export const HeaderStats = styled.div`
   display: flex;
   align-items: center;

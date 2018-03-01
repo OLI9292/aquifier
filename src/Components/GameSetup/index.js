@@ -8,10 +8,10 @@ import get from 'lodash/get';
 import { shouldRedirect } from '../../Library/helpers';
 import { fetchLevelsAction, fetchRootsAction, fetchWordsAction } from '../../Actions/index';
 import { STEPS } from './steps';
+import { Container } from '../Common/container';
 
 import {
   BackArrow,
-  Container,
   Circle,
   Header,
   OptionsContainer,

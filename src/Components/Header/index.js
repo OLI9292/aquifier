@@ -20,6 +20,7 @@ class Header extends Component {
   }
 
   displayLogin() {
+    console.log('displayLogin')
     this.setState({ displayLoginModal: true });
   }
 
@@ -58,6 +59,7 @@ class Header extends Component {
 
     return (
       <div>
+        {loginModal}
         <NonMobileContainer show={!loggedIn}>
           <Nav
             isTeacher={isTeacher}
@@ -114,13 +116,11 @@ const mapStateToProps = (state, ownProps) => {
   const user = _.first(_.values(state.entities.user));
   const loggedIn = user !== undefined;
   const isTeacher = loggedIn && user.isTeacher;
-  const isAdmin = loggedIn && user.role === 'admin';
 
   return {
     user: user,
     loggedIn: loggedIn,
-    isTeacher: isTeacher,
-    isAdmin: isAdmin
+    isTeacher: isTeacher
   };
 };
 

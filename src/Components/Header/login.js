@@ -27,9 +27,6 @@ class Login extends Component {
 
   componentDidMount() {
     document.body.addEventListener('keydown', this.handleKeydown);
-    if (this.props.smallScreen) {
-      document.body.style.overflow = 'hidden';
-    }
     this.emailInput.focus();
   }
 
@@ -82,7 +79,7 @@ class Login extends Component {
         <MobileExit
           onClick={() => this.props.exitLogin()}
           src={require('../../Library/Images/exit-gray.png')}
-          display={this.props.smallScreen ? 'fixed' : 'none'} />
+          display={'fixed'} />
         <h1 style={{fontSize:'1.75em',marginBottom:'20px'}}>
           Login
         </h1>

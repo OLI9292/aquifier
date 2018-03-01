@@ -117,6 +117,8 @@ const InnerFrame = styled.div`
     border-radius: 0px;
     margin-top: 0px;
     min-height: 100vh;
+    position: absolute;
+    top: 0
   `};  
 `
 

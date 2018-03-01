@@ -14,6 +14,7 @@ import grayStar from '../../Library/Images/icon-star-gray.png';
 import book from '../../Library/Images/Book.png';
 
 import { color, } from '../../Library/Styles/index';
+import { Container } from '../Common/container';
 
 import { fetchSchoolAction, fetchWordsAction, fetchLeaderboardsAction } from '../../Actions/index';
 
@@ -21,7 +22,6 @@ import {
   BlankRow,
   BookContainer,
   BookStats,
-  Container,
   Definition,
   DefinitionRow,
   HeaderStats,

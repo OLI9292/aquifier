@@ -11,19 +11,6 @@ export const BackArrow = styled.img`
   cursor: pointer;
 `
 
-export const Container = styled.div`
-  width: 100%;
-  background-color: white;
-  border-radius: 20px;
-  min-height: 70vh;
-  text-align: center;
-  padding-bottom: 20px;
-  position: relative;
-  ${media.phone`
-    font-size: 0.9em;
-  `};    
-`
-
 export const StepsContainer = styled.div`
   width: 400px;
   margin: 0 auto;

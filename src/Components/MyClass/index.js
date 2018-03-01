@@ -6,6 +6,7 @@ import _ from 'underscore';
 
 import { color, media } from '../../Library/Styles/index';
 import { shouldRedirect, sum } from '../../Library/helpers';
+import { Container } from '../Common/container';
 
 import { fetchStudentsAction } from '../../Actions/index';
 
@@ -17,21 +18,17 @@ class MyClass extends Component {
 
   componentDidMount() {
     if (this.props.students.length) {
-      console.log(1)
       this.setState({ students: this.props.students.map(this.readStudent) });
     } else if (this.props.user) {
-      console.log(2)
       this.setState({ loading: true }, () => this.loadClass(this.props));
     }
   }  
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.students.length && !this.state.students) {
-      console.log(3)
       const students = nextProps.students.map(this.readStudent);
       this.setState({ students });
     } else if (nextProps.user && !this.state.loading) {
-      console.log(4)
       this.loadClass(nextProps);
     }
   }
@@ -101,18 +98,6 @@ class MyClass extends Component {
     );
   }
 }
-
-const Container = styled.div`
-  width: 100%;
-  background-color: white;
-  border-radius: 20px;
-  min-height: 70vh;
-  text-align: center;
-  padding-bottom: 20px;
-  ${media.phone`
-    font-size: 0.9em;
-  `};    
-`
 
 export const Header = styled.h1`
   font-size: 1.5em;

@@ -59,9 +59,7 @@ class Home extends Component {
         </TopContainer>
 
         <div style={{position:'relative'}}>
-          <Header
-            smallScreen={this.state.smallScreen}
-            path={'/'} />
+          <Header path={'/'} />
 
           <TopContentContainer>
             <h1 style={{fontFamily:'BrandonGrotesqueBold',fontSize:'2.5em'}}>

@@ -1,0 +1,19 @@
+import styled from 'styled-components';
+import { color, media } from '../../Library/Styles/index';
+
+export const Container = styled.div`
+  pointer-events: ${props => props.loading ? 'none' : 'auto'};
+  width: 100%;
+  background-color: white;
+  border-radius: 20px;
+  min-height: 80vh;
+  text-align: center;
+  padding-bottom: 20px;
+  font-family: BrandonGrotesqueBold;
+  position: relative;
+  ${media.phone`
+    font-size: 0.9em;
+    border-radius: 0;
+    position: absolute;
+  `};    
+`

@@ -7,9 +7,9 @@ import queryString from 'query-string';
 import Dropdown from '../Common/dropdown';
 import { fetchLeaderboardsAction } from '../../Actions/index';
 import star from '../../Library/Images/star-yellow.png';
+import { Container } from '../Common/container';
 
 import {
-  Container,
   Header,
   DropdownContainer,
   LoadMoreButton,

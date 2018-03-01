@@ -4,6 +4,7 @@ import _ from 'underscore';
 
 import Firebase from '../../Networking/Firebase';
 import { color } from '../../Library/Styles/index';
+import { Container } from '../Common/container';
 
 class Leaderboard extends Component {
   constructor(props) {
@@ -95,15 +96,6 @@ class Leaderboard extends Component {
     );
   }
 }
-
-export const Container = styled.div`
-  width: 100%;
-  background-color: white;
-  border-radius: 20px;
-  min-height: 70vh;
-  text-align: center;
-  position: relative;   
-`
 
 const Header = styled.p`
   font-size: 3em;

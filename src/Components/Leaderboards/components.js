@@ -2,22 +2,6 @@ import styled from 'styled-components';
 import Button from '../Common/button';
 import { color, media } from '../../Library/Styles/index';
 
-export const Container = styled.div`
-  pointer-events: ${props => props.loading ? 'none' : 'auto'};
-  width: 100%;
-  background-color: white;
-  border-radius: 20px;
-  min-height: 70vh;
-  text-align: center;
-  padding-bottom: 20px;
-  position: relative;
-  ${media.phone`
-    border-radius: 0;
-    margin-top: -40px;
-    min-height: 100vh;
-  `};     
-`
-
 export const Header = styled.h1`
   font-size: 1.5em;
   font-family: BrandonGrotesqueBold;

@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 import { color } from '../../Library/Styles/index';
 
-const LINKS = [
+const STUDENT_LINKS = [
   {
     title: 'play',
     path: '/home',
@@ -22,10 +22,38 @@ const LINKS = [
   }
 ]
 
+const TEACHER_LINKS = [
+  {
+    title: 'setup game',
+    path: '/setup-game',
+    img: 'bungalow'
+  },
+  {
+    title: 'my class',
+    path: '/my-class',
+    img: 'stairs'
+  },
+  {
+    title: 'leaderboards',
+    path: '/leaderboards',
+    img: 'trophy'
+  }
+]
+
 class MobileNav extends Component {
   render() {
+    const {
+      isTeacher,
+      path
+    } = this.props;
+
+    const data = isTeacher ? TEACHER_LINKS : STUDENT_LINKS;
+    const displayLogout = _.contains(['/profile','/my-class'], path);
+    console.log(displayLogout)
+    const logout = displayLogout && <Logout onClick={() => this.props.logout()}>logout</Logout>;
+
     const link = data => {
-      const selected = this.props.path === data.path;
+      const selected = path === data.path;
       const image = require('../../Library/Images/' + data.img + (selected ? '' : '-light') + '-blue.png');
       return <Option onClick={() => this.props.redirect(data.path)}>
         <Image src={image} />
@@ -37,8 +65,10 @@ class MobileNav extends Component {
 
     return (
       <div>
-        {this.props.path === '/profile' && <Logout onClick={() => this.props.logout()}>logout</Logout>}
-        <Container>{_.map(LINKS, link)}</Container>
+        {logout}
+        <Container>
+          {_.map(data, link)}
+        </Container>
       </div>
     );
   }
@@ -66,6 +96,7 @@ const Logout = styled.p`
   letter-spacing: 1px;
   font-size: 0.9em;
   text-transform: uppercase;
+  z-index: 10;
 `
 
 const Option = styled.div`
