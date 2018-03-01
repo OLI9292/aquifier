@@ -7,7 +7,7 @@ import _ from 'underscore';
 import { color, media } from '../../Library/Styles/index';
 import { shouldRedirect, sum } from '../../Library/helpers';
 
-import { loadStudents } from '../../Actions/index';
+import { fetchStudentsAction } from '../../Actions/index';
 
 class MyClass extends Component {
   constructor(props) {
@@ -38,7 +38,7 @@ class MyClass extends Component {
 
   loadClass(props) {
     const _class = _.find(props.user.classes, (c) => c.role === 'teacher');
-    if (_class) { this.props.dispatch(loadStudents(_class.id)) };
+    if (_class) { this.props.dispatch(fetchStudentsAction(_class.id)) };
   }
 
   average(attr) {

@@ -9,7 +9,7 @@ import MobileNav from './mobileNav';
 import Login from './login';
 import { shouldRedirect } from '../../Library/helpers';
 import LocalStorage from '../../Models/LocalStorage'
-import { logoutUser } from '../../Actions/index';
+import { logoutUserAction } from '../../Actions/index';
 
 import { PHONE_MAX_WIDTH } from '../../Library/Styles/index';
 
@@ -46,7 +46,7 @@ class Header extends Component {
   logout() {
     this.setState({ redirect: '/' }, () => { 
       LocalStorage.logout(); 
-      this.props.dispatch(logoutUser());
+      this.props.dispatch(logoutUserAction());
     })    
   }
 

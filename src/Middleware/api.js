@@ -14,7 +14,7 @@ const formatSession = session => session ? {
 
 // Fetches an API response and normalizes the result JSON according to schema.
 // This makes every API response have the same shape, regardless of how nested it was.
-const callApi = (api, endpoint, schema, method, data, session, save) => {
+const callApi = (api, endpoint, schema, method, data, session) => {
   const fullUrl = API_ROOT[api] + endpoint
   const headers = _.extend({}, { 'Content-Type': 'application/json' }, formatSession(session));
   const body = { method: method, body: JSON.stringify(data), headers: headers };
@@ -37,45 +37,29 @@ const callApi = (api, endpoint, schema, method, data, session, save) => {
 // to a flat form where models are placed in `entities`, and nested
 // JSON objects are replaced with their IDs
 
-const successSchema = new schema.Entity('Success')
-
-// CURRICULUM
-const questionSchema = new schema.Entity('questions')
-const wordSchema = new schema.Entity('words', {}, { idAttribute: '_id' })
-const rootSchema = new schema.Entity('roots', {}, { idAttribute: '_id' })
 const levelSchema = new schema.Entity('levels', {}, { idAttribute: '_id' })
-const wordListSchema = new schema.Entity('wordLists', {}, { idAttribute: '_id' })
-const lessonSchema = new schema.Entity('lessons', {}, { idAttribute: '_id' })
-const relatedWordSchema = new schema.Entity('relatedWords', {}, { idAttribute: 'word' })
+const questionSchema = new schema.Entity('questions')
 const rankSchema = new schema.Entity('ranks')
-
+const rootSchema = new schema.Entity('roots', {}, { idAttribute: '_id' })
 const schoolSchema = new schema.Entity('school', {}, { idAttribute: '_id' })
-
-// ACCOUNTS
 const userSchema = new schema.Entity('user', {}, { idAttribute: '_id' })
 const sessionSchema = new schema.Entity('session', { user: userSchema })
 const studentsSchema = new schema.Entity('students', { students: [userSchema] })
+const successSchema = new schema.Entity('Success')
+const wordSchema = new schema.Entity('words', {}, { idAttribute: '_id' })
 
 // Schemas for API responses.
 export const Schemas = {
-  WORD: wordSchema,
-  WORD_ARRAY: [wordSchema],
-  WORD_LIST: wordListSchema,
-  WORD_LIST_ARRAY: [wordListSchema],
-  QUESTION: questionSchema,
-  QUESTION_ARRAY: questionSchema,
-  LEVEL: levelSchema,
-  LEVEL_ARRAY: [levelSchema],
-  LESSON: lessonSchema,
-  LESSON_ARRAY: [lessonSchema],
-  USER: userSchema,
-  SCHOOL: schoolSchema,
-  ROOT_ARRAY: [rootSchema],
-  SESSION: sessionSchema,
-  STUDENTS: studentsSchema,
   LEADERBOARDS: [rankSchema],
-  RELATED_WORDS_ARRAY: [relatedWordSchema],
-  SUCCESS: successSchema
+  LEVEL_ARRAY: [levelSchema],
+  QUESTION_ARRAY: questionSchema,
+  ROOT_ARRAY: [rootSchema],
+  SCHOOL: schoolSchema,
+  SESSION: sessionSchema,
+  STUDENT_ARRAY: studentsSchema,
+  SUCCESS: successSchema,
+  USER: userSchema,
+  WORD_ARRAY: [wordSchema]
 }
 
 // Action key that carries API call info interpreted by this Redux middleware.

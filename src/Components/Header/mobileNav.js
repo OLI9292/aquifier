@@ -23,10 +23,6 @@ const LINKS = [
 ]
 
 class MobileNav extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     const link = data => {
       const selected = this.props.path === data.path;

@@ -6,7 +6,7 @@ import React, { Component } from 'react';
 import get from 'lodash/get';
 
 import { shouldRedirect } from '../../Library/helpers';
-import { loadLevels, loadRoots, loadWords } from '../../Actions/index';
+import { fetchLevelsAction, fetchRootsAction, fetchWordsAction } from '../../Actions/index';
 import { STEPS } from './steps';
 
 import {
@@ -37,9 +37,9 @@ class GameSetup extends Component {
   componentDidMount() {
 
     const { levels, roots, words } = this.props;
-    if (_.isEmpty(levels)) { this.props.dispatch(loadLevels()); } else { this.setLevels(levels); }
-    if (_.isEmpty(roots))  { this.props.dispatch(loadRoots()); }  else { this.setRoots(roots); }
-    if (_.isEmpty(words))  { this.props.dispatch(loadWords()); }
+    if (_.isEmpty(levels)) { this.props.dispatch(fetchLevelsAction()); } else { this.setLevels(levels); }
+    if (_.isEmpty(roots))  { this.props.dispatch(fetchRootsAction()); }  else { this.setRoots(roots); }
+    if (_.isEmpty(words))  { this.props.dispatch(fetchWordsAction()); }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -142,6 +142,7 @@ class GameSetup extends Component {
   }
 
   previewMatch() {
+    // TODO: - implement 
     const { levels, steps } = this.state;
     const level = _.find(levels, level => level.title === steps[1].selected)
   }

@@ -3,8 +3,9 @@ import { color } from '../../../Library/Styles/index';
 
 export const Img = styled.img`
   opacity: ${props => props.opaque ? 0.25 : 1};
-  max-height: 70%;
-  max-width: 70%;
+  position: absolute;
+  max-height: 65%;
+  max-width: 65%;
   width: auto;
   height: auto;
 `
@@ -45,6 +46,7 @@ export const LevelButton = styled.div`
   border: ${props => `4px solid ${color[props.bColor]}`};
   cursor: ${props => props.isLocked ? 'default' : 'pointer'};
   transition: 100ms;
+  box-sizing: border-box
 `
 
 export const StageDetail = styled.div`
@@ -64,4 +66,13 @@ export const StagesContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+`
+
+export const RadialProgressContainer = styled.div`
+  position: relative;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `

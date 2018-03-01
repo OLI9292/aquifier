@@ -144,6 +144,7 @@ class Admin extends Component {
 
         <TimerContainer>
           <img
+            alt={'clock'}
             src={require('../../Library/Images/clock-black.png')}
             style={{height:'20px',width:'20px'}} />
           <p style={{margin:'10px'}}>

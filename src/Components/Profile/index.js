@@ -15,11 +15,11 @@ import book from '../../Library/Images/Book.png';
 
 import { color, } from '../../Library/Styles/index';
 
-import { loadSchool, loadWords, loadLeaderboards } from '../../Actions/index';
+import { fetchSchoolAction, fetchWordsAction, fetchLeaderboardsAction } from '../../Actions/index';
 
 import {
   BlankRow,
-  BookSidebar,
+  BookContainer,
   BookStats,
   Container,
   Definition,
@@ -34,16 +34,26 @@ class Profile extends Component {
     super(props);
     this.state = {}
 
-    //this.checkScroll = this.checkScroll.bind(this);
+    this.checkScroll = this.checkScroll.bind(this);
   }
 
-  handleScroll() {
-    console.log('scrolling')
+  checkScroll() {
+    if (!this.book) { return; }
+    const { fixedStats } = this.state;
+    const distFromTop = this.book.getBoundingClientRect().top;  
+    const scrollTop = document.documentElement.scrollTop;
 
+    if (fixedStats && scrollTop < this.state.scrollTop) {
+      this.setState({ fixedStats: false });
+    } else if (!fixedStats && distFromTop < window.innerHeight * 0.15) {
+      this.setState({ fixedStats: true, scrollTop: scrollTop });
+    }
   }
 
   componentDidMount() {
-    if (_.isEmpty(this.props.words)) { this.props.dispatch(loadWords()); }
+    window.addEventListener('scroll', this.checkScroll);
+
+    if (_.isEmpty(this.props.words)) { this.props.dispatch(fetchWordsAction()); }
     this.loadSchool();
     this.loadLeaderboards();
   }
@@ -57,7 +67,7 @@ class Profile extends Component {
     const id = get(this.props.user, 'school')
     if (id) {
       this.setState({ loadingSchool: true });
-      this.props.dispatch(loadSchool(id));
+      this.props.dispatch(fetchSchoolAction(id));
     }
   }
 
@@ -67,7 +77,7 @@ class Profile extends Component {
     if (id && session) {
       const query = queryString.stringify({ user: id });
       this.setState({ loadingLeaderboards: true });
-      this.props.dispatch(loadLeaderboards(query, session));
+      this.props.dispatch(fetchLeaderboardsAction(query, session));
     }
   }  
 
@@ -185,8 +195,10 @@ class Profile extends Component {
     const wordsTable = () => {
       const expSorted = _.sortBy(_.groupBy(user.words, 'experience'), (words, exp) => -exp);
       const expAndNameSorted = _.flatten(_.values(_.map(expSorted, (v, k) => _.sortBy(v, 'name'))));
-      return <div style={{position:'relative'}}>
-        {sidebarStats()}
+      return <div>
+        <BookContainer>
+          {sidebarStats()}
+        </BookContainer>
         <table style={{borderCollapse:'collapse'}}>
           <tbody>
             {_.map(expAndNameSorted, (word, idx) => tableRow(word, idx))}
@@ -197,7 +209,10 @@ class Profile extends Component {
 
     const sidebarStats = () => {
       const [schoolRank, worldRank] = this.ranks(ranks, session.user);
-      return <BookSidebar>
+      const styles = this.state.fixedStats
+        ? { position:'fixed',top:'15%',width:'225px',right:'0' }
+        : { position:'absolute',width:'225px',right:'0' }; 
+      return <div ref={book => this.book = book} style={styles}>
         <img
           alt={'book icon'}
           src={book}
@@ -240,11 +255,11 @@ class Profile extends Component {
             </h1>                   
           </div>
         </BookStats>
-      </BookSidebar>
+      </div>
     }
 
     return (
-      <Container onScroll={this.handleScroll}>
+      <Container>
         {
           user && 
           <div>

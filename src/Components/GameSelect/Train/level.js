@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import _ from 'underscore';
+import CircularProgressbar from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
 
 import { color } from '../../../Library/Styles/index';
 import get from 'lodash/get'
@@ -12,6 +14,7 @@ import {
   InfoIconContainer,
   InfoIcon,
   LevelButton,
+  RadialProgressContainer,
   StageDetail,
   StagesContainer
 } from './components';
@@ -32,7 +35,8 @@ class Level extends Component {
       isExpanded,
       level,
       userStages,
-      imgSrc
+      imgSrc,
+      progress
     } = this.props;
 
     const infoIcon = (type, data, completed) => {
@@ -58,7 +62,7 @@ class Level extends Component {
 
     const addStages = overview => {
       const completedIndices = _.pluck(userStages, 'stage');
-      // const openIndices = _.map(completedIndices, s => s + 1).concat(1);
+      const openIndices = _.map(completedIndices, s => s + 1).concat(1);
       const allIndices = _.range(1, level.progressBars + 1);
 
       return <div key={level._id}>
@@ -66,7 +70,7 @@ class Level extends Component {
         <StagesContainer>
           {_.map(allIndices, n => {
             const key = level._id + '-' + n;
-            const isLocked = false // !_.contains(openIndices, n);
+            const isLocked = !_.contains(openIndices, n);
             const completed = _.contains(completedIndices, n);
             const userStage = _.find(userStages, s => s.stage === n);
 
@@ -75,16 +79,19 @@ class Level extends Component {
                 small
                 isLocked={isLocked}
                 bColor={completed ? 'green' : 'lightGray'}
-                onClick={() => this.props.clickedLevelStage('train', level._id, n)}
-                onMouseOver={() => { if (!isLocked) { this.setState({ hovering: key }); }}}
-                onMouseLeave={() => this.setState({ hovering: undefined })}>
+                onClick={() => { if (!isLocked) { this.props.clickedLevelStage('train', level._id, n) }}}>
                 
                 {infoIcon(isLocked ? 'lock' : 'index', n, completed)}
                 
                 <Img alt={level.name} src={imgSrc} />
               </LevelButton>
+
               <StageDetail show={userStage}>
-                {userStage && <img alt={'archer icon'} src={archer} style={{height:'50%',width:'auto',marginRight:'5px'}} />}
+                {userStage && 
+                  <img
+                    alt={'archer icon'}
+                    src={archer}
+                    style={{height:'50%',width:'auto',marginRight:'5px'}} />}
                 <p>
                   {this.formatAccuracy(userStage)}
                 </p>
@@ -95,21 +102,35 @@ class Level extends Component {
       </div>  
     }
 
+    const withProgress = img => {
+      const percentage = this.props.progress ? (this.props.progress * 100) : 0;
+      const stroke = percentage === 100 ? color.green : color.mainBlue;
+      return <RadialProgressContainer>
+        {img}
+        <div style={{position:'absolute',width:'100px',height:'100px'}}>
+          <CircularProgressbar
+            strokeWidth={4}
+            styles={{path: { stroke: stroke }}}
+            percentage={percentage}
+            textForPercentage={null}
+          />
+        </div>
+      </RadialProgressContainer>
+    }
+
     const levelOverview = () => {
+      const img = <Img src={imgSrc} opaque={level.locked} />
       return <div style={{margin:'50px 0px',height:'120px'}}>
         <LevelButton
+          progress={progress}
           id={level._id}
           isLocked={level.locked}
           bColor={level.locked ? 'lightGray' : (level.completed || isExpanded) ? 'green' : 'lightGray'}
-          onClick={() => this.props.clickedLevelOverview(level, isExpanded)}
-          onMouseOver={() => this.props.mouse(level)}
-          onMouseLeave={() => this.props.mouse(level, false)}>
+          onClick={() => this.props.clickedLevelOverview(level, isExpanded)}>
 
           {level.locked && infoIcon('lock')}
 
-          <Img           
-            src={imgSrc}
-            opaque={level.locked} />
+          {withProgress(img)}
         </LevelButton>
 
         <p style={{lineHeight:'0px'}}>

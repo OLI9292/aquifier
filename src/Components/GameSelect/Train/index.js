@@ -49,14 +49,16 @@ class Train extends Component {
       const userLevel = _.find(userLevels, ul => ul.id === level._id);
       return userLevel && userLevel.progress.length >= level.progressBars;
     });
-
-    const openLadders = _.uniq(_.pluck(allLevels, 'ladder')).sort();
-    const furthestLadder = _.last(openLadders);
-
-    const furthestLevel = _.find(allLevels, l => l.ladder === furthestLadder);
+    
+    const completed = _.uniq(_.pluck(completedLevels, 'ladder')).sort();
+    const open = completed.length ? completed.concat(_.last(completed) + 1) : [1];
+    
+    const furthest = _.last(open);
+    const furthestLevel = _.find(allLevels, l => l.ladder === furthest);
+    
     const groupedByLadder = _.groupBy(_.map(allLevels, level => {
       level.completed = _.contains(_.pluck(completedLevels, '_id'), level._id);
-      level.locked = !_.contains(openLadders, level.ladder);
+      level.locked = !_.contains(open, level.ladder);
       return level;
     }), level => `${level.ladder}${level.type === 'speed' ? '-speed' : ''}`);
 
@@ -82,35 +84,21 @@ class Train extends Component {
     this.setState({ redirect: '/play/' + queryString.stringify(params) });
   }  
 
-  mouse(level, over = true) {
-    const hovering = over && !level.locked && level._id;
-    this.setState({ hovering });
-  }  
-
   jumpTo(levelId) {
     document.getElementById(levelId).scrollIntoView({ behavior: 'smooth' });
+  }
+
+  imgSrc(level, images) {
+    if (!images || !level) { return; }
+    const imgKey = _.find(_.keys(images), k => k.includes(level.name.split(' ')[0]));
+    return images[imgKey || 'default.png'];
   }
 
   render() {
     if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }
 
-    const { 
-      session,
-      user
-    } = this.props;
-
-    const {
-      hovering,
-      expanded,
-      furthestLevel,
-      images
-    } = this.state;
-
-    const imgSrc = level => {
-      if (!images || !level) { return; }
-      const imgKey = _.find(_.keys(images), k => k.includes(level.name.split(' ')[0]));
-      return images[imgKey || 'default.png'];
-    }
+    const { session, user } = this.props;
+    const { expanded, furthestLevel, images } = this.state;
 
     const levelComponents = (() => {
       return _.map(_.keys(this.state.levels).sort(), ladder => {
@@ -118,17 +106,18 @@ class Train extends Component {
         const levels = _.map(this.state.levels[ladder].slice(0,2), level => {
           const userLevel = _.find(user.levels, l => l.id === level._id);
           const userStages = userLevel ? userLevel.progress : [];
+          const progress = userStages.length / level.progressBars;
 
           const isExpanded = level._id === expanded;
 
           return <Level
-            imgSrc={imgSrc(level)}
+            imgSrc={this.imgSrc(level, images)}
             clickedLevelStage={this.clickedLevelStage.bind(this)}
             clickedLevelOverview={this.clickedLevelOverview.bind(this)}
+            progress={progress}
             isExpanded={isExpanded}
             key={level._id}
             level={level}
-            mouse={this.mouse.bind(this)}
             session={session}
             userStages={userStages} />
         });
@@ -144,7 +133,7 @@ class Train extends Component {
     return (
       <Container>
         <JumpTo
-          imgSrc={imgSrc(furthestLevel)}
+          imgSrc={this.imgSrc(furthestLevel, images)}
           furthestLevel={furthestLevel}
           jumpTo={this.jumpTo.bind(this)} />
         {levelComponents}  

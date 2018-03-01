@@ -105,13 +105,6 @@ export const Container = styled.div`
   position: relative;   
 `
 
-const Layout = styled.div`
-  padding-top: 1em;
-  margin: auto;
-  text-align: center;
-  width: 75%;
-`
-
 const Header = styled.p`
   font-size: 3em;
   height: 1em;

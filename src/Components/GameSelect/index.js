@@ -9,7 +9,7 @@ import Train from './Train/index';
 import JoinGame from './JoinGame/index';
 import Explore from './Explore/index';
 
-import { loadLevels } from '../../Actions/index';
+import { fetchLevelsAction } from '../../Actions/index';
 
 import {
   Container,
@@ -34,7 +34,7 @@ class GameSelect extends Component {
   }
 
   componentDidMount() {
-    if (_.isEmpty(this.props.levels)) { this.props.dispatch(loadLevels()); }
+    if (_.isEmpty(this.props.levels)) { this.props.dispatch(fetchLevelsAction()); }
   }
 
   render() {

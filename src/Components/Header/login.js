@@ -10,7 +10,7 @@ import InputStyles from '../Common/inputStyles';
 import LocalStorage from '../../Models/LocalStorage'
 import { shouldRedirect } from '../../Library/helpers';
 
-import { loginUser } from '../../Actions/index';
+import { loginUserAction } from '../../Actions/index';
 
 class Login extends Component {
   constructor(props) {
@@ -63,7 +63,7 @@ class Login extends Component {
     }
 
     const data = { email: this.state.email, password: this.state.password };
-    const result = await this.props.dispatch(loginUser(data));
+    const result = await this.props.dispatch(loginUserAction(data));
 
     if (result.error) {
       this.setState({ isError: true, message: result.error })

@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import get from 'lodash/get';
 
 import { color } from '../../Library/Styles/index';
-import { loadLeaderboards } from '../../Actions/index';
+import { fetchLeaderboardsAction } from '../../Actions/index';
 
 import {
   Icon,
@@ -44,7 +44,7 @@ class MiniLeaderboard extends Component {
 
     if (_.isEmpty(ranks)) {
       const query = queryString.stringify(user.isTeacher ? { school: user.school } : { user: user._id });      
-      this.props.dispatch(loadLeaderboards(query, session));
+      this.props.dispatch(fetchLeaderboardsAction(query, session));
     } else {
       this.formatData(ranks);
     }

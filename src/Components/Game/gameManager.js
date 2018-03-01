@@ -7,11 +7,16 @@ import _ from 'underscore';
 import get from 'lodash/get';
 
 import { shouldRedirect } from '../../Library/helpers';
-import { fetchQuestions, fetchLevels, removeEntity, saveLevel } from '../../Actions/index';
+
+import {
+  fetchQuestionsAction,
+  fetchLevelsAction,
+  removeEntityAction,
+  saveStatsAction,
+  saveLevelAction
+} from '../../Actions/index';
 
 import Game from './game';
-
-const VALID_GAMES = ['train', 'speed', 'explore', 'multiplayer'];
 
 class GameManager extends Component {
   constructor(props) {
@@ -21,13 +26,13 @@ class GameManager extends Component {
 
   componentDidMount() {
     this.hideZendesk();
-    this.props.dispatch(removeEntity('questions'));    
+    this.props.dispatch(removeEntityAction('questions'));    
 
     const { user, levels } = this.props;
     const settings = queryString.parse(this.props.settings);
     const pauseMatch = settings.type === 'multiplayer';
 
-    if (!levels.length) { this.props.dispatch(fetchLevels()); }
+    if (!levels.length) { this.props.dispatch(fetchLevelsAction()); }
 
     this.setState({
       settings: settings,
@@ -39,12 +44,19 @@ class GameManager extends Component {
   } 
 
   componentWillUnmount() {
-    const { settings, gameOver } = this.state;
+    const { settings, gameOver, stats } = this.state;
+    const { session, user } = this.props;
+
     if (settings.type === 'multiplayer' && !gameOver) {
-      const username = this.username(this.props.user);
-      Firebase.refs.games.child(settings.id).child('players').child(username).remove();
+      this.exitMultiplayerGame(settings.id, user);
     }
+
+    this.saveStats(session, stats);
   }  
+
+  exitMultiplayerGame(accessCode, user) {
+    Firebase.refs.games.child(accessCode).child('players').child(this.username(user)).remove();
+  }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.user && !this.state.loading) {
@@ -54,6 +66,18 @@ class GameManager extends Component {
     } else if (nextProps.levels.length && !this.state.level) {
       this.setLevelName(nextProps, this.state.settings);
     }
+  }
+
+  recordQuestion(word, correct, level, seconds) {
+    const stat = { word: word, correct: correct, difficulty: level, time: seconds };
+    const stats = (this.state.stats || []).concat(stat);
+    this.setState({ stats });
+  }
+
+  saveStats(session, stats) {
+    const params = { id: get(session, 'user'), stats: stats, platform: 'web' };
+    console.log(params)
+    this.props.dispatch(saveStatsAction(params, session));
   }
 
   setLevelName(props, settings) {
@@ -85,9 +109,9 @@ class GameManager extends Component {
         levelId: levelId,
         score: score,
         stage: stage,
-        time: time,
+        time: time
       };      
-      this.props.dispatch(saveLevel(data, userId));
+      this.props.dispatch(saveLevelAction(data, userId));
       this.setState({ redirect: '/home' });      
     } else if (type === 'multiplayer') {
       const username = this.username(this.props.user);
@@ -112,7 +136,7 @@ class GameManager extends Component {
     if (params && !this.state.loadingQuestions) {
       this.setState({ loadingQuestions: true }, () => {
         const query = queryString.stringify(params);
-        this.props.dispatch(fetchQuestions(query));      
+        this.props.dispatch(fetchQuestionsAction(query));      
       });
     }
   }
@@ -166,6 +190,7 @@ class GameManager extends Component {
           type={this.state.type}
           pauseMatch={this.state.pauseMatch}
           questions={this.state.questions}
+          recordQuestion={this.recordQuestion.bind(this)}
           originalQuestions={this.state.questions} />
       </div>
     );

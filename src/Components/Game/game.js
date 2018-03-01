@@ -144,15 +144,20 @@ class Game extends Component {
   }
 
   checkComplete() {
-    if (_.every(this.state.question.answer, a => !a.missing)) {
-      const isSpeedy = Math.floor(moment.duration(moment().diff(this.state.questionStartTime)).asSeconds()) < 5;
+    const { question, questionStartTime, points, correct, correctCounter, questionIndex } = this.state;
+
+    if (_.every(question.answer, a => !a.missing)) {
+      const seconds = Math.ceil(moment.duration(moment().diff(questionStartTime)).asSeconds());
+      const isSpeedy = seconds < 5;
+
       this.setState({
         questionComplete: true,
         isSpeedy: isSpeedy,
-        points: this.state.points + 1,
-        correctCounter: [this.state.correctCounter[0] + (this.state.correct ? 1 : 0), this.state.correctCounter[1] + 1],
-        questionIndex: this.state.questionIndex + 1
+        points: points + 1,
+        correctCounter: [correctCounter[0] + (correct ? 1 : 0), correctCounter[1] + 1],
+        questionIndex: questionIndex + 1
        }, () => {
+        this.props.recordQuestion(question.word, correct, question.level, seconds);        
         this.animateAlerts();
         this.continue = setTimeout(() => { this.reset(() => this.setQuestion()) }, 100000);
       })

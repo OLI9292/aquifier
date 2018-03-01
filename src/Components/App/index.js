@@ -1,4 +1,3 @@
-import queryString from 'query-string';
 import React, { Component } from 'react';
 import { Route, Switch } from 'react-router';
 import { BrowserRouter } from 'react-router-dom';
@@ -16,24 +15,19 @@ import Home from '../Home/index';
 import InfoForm from '../InfoForm/index';
 import Leaderboard from '../Leaderboard/index';
 import Leaderboards from '../Leaderboards/index';
-import LessonsTable from '../Dashboard/Lessons/table';
-import LessonEdit from '../Dashboard/Lessons/edit';
 import MyClass from '../MyClass/index';
 import Profile from '../Profile/index';
-import Waiting from '../Waiting/index';
-import WordListsEdit from '../Dashboard/WordLists/edit';
-import WordListsTable from '../Dashboard/WordLists/table';
 import NotFound from '../NotFound/index';
 
 // MODELS
 import LocalStorage from '../../Models/LocalStorage'
 
 // ETC
-import { color, media, PHONE_MAX_WIDTH } from '../../Library/Styles/index';
+import { color, media } from '../../Library/Styles/index';
 import './index.css';
 
 // STORE
-import { activateSession, loadUser } from '../../Actions/index';
+import { activateSessionAction, fetchUserAction } from '../../Actions/index';
 import configureStore from '../../Store/configureStore';
 const store = configureStore();
 // store.subscribe(() => console.log(store.getState()))
@@ -43,8 +37,8 @@ class App extends Component {
     const session = LocalStorage.getSession();
     
     if (session) { 
-      store.dispatch(activateSession(session));
-      store.dispatch(loadUser(session.user));
+      store.dispatch(activateSessionAction(session));
+      store.dispatch(fetchUserAction(session.user));
     };
   }  
 
@@ -55,25 +49,17 @@ class App extends Component {
           <Switch>
             <Route exact path='/'                 component={Home} />
             <Route exact path='/admin'            component={contained('admin')} />            
-            <Route exact path='/my-class'         component={contained('myClass')} />            
             <Route exact path='/leaderboard/:id'  component={contained('leaderboard')} />
             <Route exact path='/leaderboards'     component={contained('leaderboards')} />
-            <Route exact path='/lessons'          component={contained('lessonsTable')} />
-            <Route exact path='/lessons/:id'      component={contained('lessonEdit')} />
             <Route exact path='/home'             component={contained('gameSelect')} />
-            <Route exact path='/setup-game'       component={contained('gameSetup')} />
-            
-            <Route exact path='/play/:settings' component={({ match }) => {
+            <Route exact path='/my-class'         component={contained('myClass')} />            
+            <Route exact path='/profile'          component={contained('profile')} />            
+            <Route exact path='/play/:settings'   component={({ match }) => {
               return <GameManager settings={match.params.settings} /> 
             }} />
-
-            <Route exact path='/profile'          component={contained('profile')} />
+            <Route exact path='/setup-game'       component={contained('gameSetup')} />
             <Route exact path='/start-free-trial' component={contained('infoForm')} />
-            <Route exact path='/word-lists'       component={contained('wordListsTable')} />
-            <Route exact path='/word-lists/:id'   component={contained('wordListsEdit')} />
-            
-            
-            <Route component={contained('notFound')} />
+            <Route                                component={contained('notFound')} />
           </Switch>
         </BrowserRouter>
       </Provider>
@@ -84,43 +70,25 @@ class App extends Component {
 const contained = component => () => <Container component={component} />
 
 class Container extends Component {
-  constructor(props) {
-    super(props);
-    
-    this.state = {
-      path: window.location.pathname
-    };    
-  }
-
   render() {
-    const {
-      path,
-      smallScreen
-    } = this.state;
-
     const Component = () => {
       switch (this.props.component) {
-        case 'admin':              return <Admin />
-        case 'gameSelect':         return <GameSelect />
-        case 'gameSetup':          return <GameSetup />
-        case 'infoForm':           return <InfoForm />
-        case 'leaderboard':        return <Leaderboard />
-        case 'leaderboards':       return <Leaderboards />
-        case 'lessonsTable':       return <LessonsTable />
-        case 'lessonEdit':         return <LessonEdit />
-        case 'myClass':            return <MyClass />
-        case 'profile':            return <Profile />
-        case 'waiting':            return <Waiting settings={this.props.settings} />
-        case 'wordListsEdit':      return <WordListsEdit />
-        case 'wordListsTable':     return <WordListsTable />
-        case 'notFound':           return <NotFound />
-        default:                   return <Home />
+        case 'admin':        return <Admin />
+        case 'gameSelect':   return <GameSelect />
+        case 'gameSetup':    return <GameSetup />
+        case 'infoForm':     return <InfoForm />
+        case 'leaderboard':  return <Leaderboard />
+        case 'leaderboards': return <Leaderboards />
+        case 'myClass':      return <MyClass />
+        case 'profile':      return <Profile />
+        case 'notFound':     return <NotFound />
+        default:             return <Home />
       }
     }
 
     return (
       <OuterFrame>
-        <Header path={path} />
+        <Header path={window.location.pathname} />
         <InnerFrame>
           <ComponentFrame>
             <Component />
@@ -134,10 +102,9 @@ class Container extends Component {
 
 const OuterFrame = styled.div`
   background-color: ${color.lightestGray};
-  display: block;
-  height: 100%;
-  overflow: auto;
   width: 100%;  
+  position: absolute;
+  top: 0;
 `
 
 const InnerFrame = styled.div`

@@ -39,10 +39,7 @@ export const BookStats = styled.div`
   margin-top: 25%;
 `
 
-export const BookSidebar = styled.div`
-  position: absolute;
-  width: 250px;
-  right: 0;
+export const BookContainer = styled.div`
   ${media.phone`
     display: none;
   `};     

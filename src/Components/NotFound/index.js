@@ -9,6 +9,7 @@ class Leaderboards extends Component {
       <Container>
         <div style={{height:'200px',width:'500px',display:'flex',alignItems:'center',justifyContent:'space-around'}}>
           <img
+            alt={'monk meditating'}
             src={require('../../Library/Images/astral.gif')}
             style={{height:'100%',width:'auto'}} />
           <div style={{textAlign:'left',marginLeft:'50px'}}>

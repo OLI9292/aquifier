@@ -5,7 +5,7 @@ import _ from 'underscore';
 import queryString from 'query-string';
 
 import Dropdown from '../Common/dropdown';
-import { loadLeaderboards } from '../../Actions/index';
+import { fetchLeaderboardsAction } from '../../Actions/index';
 import star from '../../Library/Images/star-yellow.png';
 
 import {
@@ -51,7 +51,7 @@ class Leaderboards extends Component {
     } else if (props.user && !this.state.loading) {
       const params = props.user.isTeacher ? { school: props.user.school } : { user: props.user._id };
       const query = queryString.stringify(params);      
-      this.setState({ loading: true }, () => this.props.dispatch(loadLeaderboards(query, this.props.session)));
+      this.setState({ loading: true }, () => this.props.dispatch(fetchLeaderboardsAction(query, this.props.session)));
     }
   }
 
@@ -77,7 +77,7 @@ class Leaderboards extends Component {
     const location = rank.schoolId || 'Earth';
     const query = queryString.stringify({ period: this.state.period[0], school: location, start: position });
 
-    this.props.dispatch(loadLeaderboards(query, this.props.session));
+    this.props.dispatch(fetchLeaderboardsAction(query, this.props.session));
   }
 
   render() {
