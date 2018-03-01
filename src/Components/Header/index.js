@@ -11,29 +11,13 @@ import { shouldRedirect } from '../../Library/helpers';
 import LocalStorage from '../../Models/LocalStorage'
 import { logoutUserAction } from '../../Actions/index';
 
-import { PHONE_MAX_WIDTH } from '../../Library/Styles/index';
+import { media, color, PHONE_MAX_WIDTH } from '../../Library/Styles/index';
 
 class Header extends Component {
   constructor(props) {
     super(props);
     this.state = {};
-
-    this.checkWindowSize = this.checkWindowSize.bind(this);
   }
-
-  componentDidMount() {
-    window.addEventListener('resize', this.checkWindowSize);
-    this.checkWindowSize();
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.checkWindowSize);
-  }  
-
-  checkWindowSize() {
-    const smallScreen = document.body.clientWidth < PHONE_MAX_WIDTH;
-    this.setState({ smallScreen });
-  }  
 
   displayLogin() {
     this.setState({ displayLoginModal: true });
@@ -66,31 +50,51 @@ class Header extends Component {
     const loginModal = (() => {
       return this.state.displayLoginModal && <div>
         <Login
-          smallScreen={this.state.smallScreen}
           exitLogin={this.exitLogin.bind(this)} />
         <DarkBackground
           onClick={() => this.exitLogin()} />
       </div>
     })()    
 
-    // TODO: - change smallScreen && loggedIn
-    const NavComponent = (this.state.smallScreen && loggedIn && !isTeacher) ? MobileNav : Nav;
-
     return (
       <div>
-        {loginModal}
-        <NavComponent
-          isTeacher={isTeacher}
-          loggedIn={loggedIn}
-          path={path}
-          displayLogin={this.displayLogin.bind(this)}
-          exitLogin={this.exitLogin.bind(this)}
-          logout={this.logout.bind(this)}
-          redirect={this.redirect.bind(this)} />
+        <NonMobileContainer show={!loggedIn}>
+          <Nav
+            isTeacher={isTeacher}
+            loggedIn={loggedIn}
+            path={path}
+            displayLogin={this.displayLogin.bind(this)}
+            exitLogin={this.exitLogin.bind(this)}
+            logout={this.logout.bind(this)}
+            redirect={this.redirect.bind(this)} />
+        </NonMobileContainer>        
+        <MobileContainer show={loggedIn}>
+          <MobileNav
+            isTeacher={isTeacher}
+            loggedIn={loggedIn}
+            path={path}
+            displayLogin={this.displayLogin.bind(this)}
+            exitLogin={this.exitLogin.bind(this)}
+            logout={this.logout.bind(this)}
+            redirect={this.redirect.bind(this)} />
+        </MobileContainer>
       </div>      
     );
   }
 }
+
+const NonMobileContainer = styled.div`
+  ${media.phone`
+    display: ${props => props.show ? '' : 'none'};
+  `}
+`
+
+const MobileContainer = styled.div`
+  display: none;
+  ${media.phone`
+    display: ${props => props.show ? 'inline-block' : 'none'};
+  `}
+`
 
 const DarkBackground = styled.div`
   background-color: rgb(0, 0, 0);
