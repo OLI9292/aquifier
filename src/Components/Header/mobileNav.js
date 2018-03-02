@@ -49,7 +49,6 @@ class MobileNav extends Component {
 
     const data = isTeacher ? TEACHER_LINKS : STUDENT_LINKS;
     const displayLogout = _.contains(['/profile','/my-class'], path);
-    console.log(displayLogout)
     const logout = displayLogout && <Logout onClick={() => this.props.logout()}>logout</Logout>;
 
     const link = data => {

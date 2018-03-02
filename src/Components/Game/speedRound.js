@@ -21,8 +21,8 @@ class SpeedRound extends Component {
   
   componentDidMount() {
     const time = this.props.time || 3;
-    const end = moment.unix(this.props.end) || moment().add(time, 'minutes');
-  
+    const end = this.props.end ? moment.unix(this.props.end) : moment().add(time, 'minutes');
+
     this.setState(
       { end }, 
       () => this.interval = setInterval(() => this.track(), 100)
@@ -35,8 +35,6 @@ class SpeedRound extends Component {
 
   track()  {
     const { minutes, seconds } = moment.duration(this.state.end.diff(moment()))._data;
-
-    console.log(minutes, seconds)
 
     if (minutes <= 0 && seconds <= 0) {
       clearInterval(this.interval);

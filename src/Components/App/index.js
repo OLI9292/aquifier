@@ -105,6 +105,14 @@ const OuterFrame = styled.div`
   width: 100%;  
   position: absolute;
   top: 0;
+  ${media.phone`
+    height: 100%;
+    width: 100%;
+    margin-top: 0px;
+    min-height: 100vh;
+    position: absolute;
+    top: 0;
+  `};  
 `
 
 const InnerFrame = styled.div`
@@ -118,7 +126,7 @@ const InnerFrame = styled.div`
     margin-top: 0px;
     min-height: 100vh;
     position: absolute;
-    top: 0
+    top: 0;
   `};  
 `
 

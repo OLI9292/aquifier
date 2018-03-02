@@ -25,6 +25,7 @@ export const GrayLine = styled.div`
   border-top: 2px solid ${color.lightestGray};
   ${media.phone`
     border: 0;
+    margin-top: -5px;
   `};  
 `
 
@@ -52,6 +53,7 @@ export const Main = styled.div`
   position: relative;
   ${media.phone`
     margin-right: 0;
+    padding-bottom: 120px;
   `};
 `
 
@@ -120,8 +122,9 @@ export const TabContainer = styled.div`
   justify-content: space-between;
   width: 100%;
   margin-top: -40px;
+  background-color: transparent;
   ${media.phone`
-    margin-top: -30px;
+    margin-top: -35px;
   `};    
 `
 

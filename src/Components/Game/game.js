@@ -39,7 +39,7 @@ class Game extends Component {
       guessed: {},
       prompt: 'normal',
       points: 0,
-      correct: true,
+      incorrectGuesses: 0,
       correctCounter: [0,0],
       questionStartTime: moment()
     }
@@ -92,7 +92,6 @@ class Game extends Component {
       // Reset questions in multiplayer and speed rounds
       if (_.contains(['multiplayer','speed'], this.props.type)) {
         const questions = this.props.originalQuestions;
-        console.log(questions)
         const questionIndex = 0;
         this.setState({ questions: questions, questionIndex: questionIndex }, this.setQuestion);
       } else {
@@ -123,7 +122,7 @@ class Game extends Component {
     if (correct) {
       this.setState({ question: _.extend({}, this.state.question, {}, { answer: answer }) }, this.checkComplete);
     } else {
-      this.setState({ correct: false });
+      this.setState({ incorrectGuesses: this.state.incorrectGuesses + 1 });
     }
   }
 
@@ -138,30 +137,40 @@ class Game extends Component {
       this.setState({ alert: 'speedy' });
       setTimeout(() => { this.setState({ alert: undefined }); }, 1100);
     };
-    const correctAlert = this.state.correct ? 'correct' : 'passed';
+    const correctAlert = this.state.incorrectGuesses > 0 ? 'correct' : 'passed';
     setTimeout(() => { this.setState({ alert: correctAlert }); }, this.state.isSpeedy ? 1200 : 0);
     setTimeout(() => { this.setState({ alert: undefined }); }, this.state.isSpeedy ? 2300 : 1100);    
   }
 
   checkComplete() {
-    const { question, questionStartTime, points, correct, correctCounter, questionIndex } = this.state;
+    const {
+      correctCounter,
+      hintCount,
+      incorrectGuesses,
+      question,
+      questionIndex,
+      questionStartTime,
+      points
+    } = this.state;
 
-    if (_.every(question.answer, a => !a.missing)) {
-      const seconds = Math.ceil(moment.duration(moment().diff(questionStartTime)).asSeconds());
-      const isSpeedy = seconds < 5;
+    const isComplete = _.every(question.answer, a => !a.missing);
+    if (!isComplete) { return; }
 
-      this.setState({
-        questionComplete: true,
-        isSpeedy: isSpeedy,
-        points: points + 1,
-        correctCounter: [correctCounter[0] + (correct ? 1 : 0), correctCounter[1] + 1],
-        questionIndex: questionIndex + 1
-       }, () => {
-        this.props.recordQuestion(question.word, correct, question.level, seconds);        
-        this.animateAlerts();
-        this.continue = setTimeout(() => { this.reset(() => this.setQuestion()) }, 100000);
-      })
-    }
+    const correct = incorrectGuesses === 0 && hintCount === 0;
+    const seconds = Math.ceil(moment.duration(moment().diff(questionStartTime)).asSeconds());
+    const isSpeedy = seconds < 5;
+
+    this.setState({
+      questionComplete: true,
+      isSpeedy: isSpeedy,
+      points: points + 1,
+      correctCounter: [correctCounter[0] + (correct ? 1 : 0), correctCounter[1] + 1],
+      questionIndex: questionIndex + 1
+     }, () => {
+      this.props.recordQuestion(question, correct, seconds, this.state);        
+      this.animateAlerts();
+      this.continue = setTimeout(() => { this.reset(() => this.setQuestion()) }, 100000);
+    });
   }
 
   reset(cb) {
@@ -340,7 +349,7 @@ class Game extends Component {
       const xByOne = { column: gridStr(1), row: gridStr(count) };
 
       return isSpellQuestion
-      ? {  mobile: { column: gridStr(count === 16 ? 4 : 3), row: gridStr(count === 16 ? 4 : 3) }, regular: twoByX }
+      ? {  mobile: { column: gridStr(count === 16 ? 4 : 4), row: gridStr(count === 16 ? 4 : 3) }, regular: twoByX }
       : count === 4
         ? { mobile: xByOne, regular: xByOne }
         : { mobile: { column: twoByX.row, row: twoByX.column }, regular: twoByX };

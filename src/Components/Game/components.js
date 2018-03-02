@@ -131,8 +131,12 @@ export const Content = styled.div`
   position: relative;
   opacity: ${props => props.opacity};
   transition: opacity 200ms;
+  ${media.smallPhone`
+    font-size: 0.65em;
+  `}    
   ${media.phone`
     font-size: 0.7em;
+    padding: 10px 0px;
   `}  
   ${media.smallComp`
     font-size: 0.85em;

@@ -48,6 +48,7 @@ export const color = {
 };
 
 export const PHONE_MAX_WIDTH = 600
+export const SMALL_PHONE_MAX_WIDTH = 350
 
 export const media = {
   phone: (...args) => css`
@@ -59,5 +60,10 @@ export const media = {
     @media (min-width: ${PHONE_MAX_WIDTH}px) and (max-width: 850px) {
       ${ css(...args) }
     }
-  `  
+  `,
+  smallPhone: (...args) => css`
+    @media (min-width: ${PHONE_MAX_WIDTH}px) and (max-width: 850px) {
+      ${ css(...args) }
+    }
+  `    
 }

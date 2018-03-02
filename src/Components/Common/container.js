@@ -15,5 +15,6 @@ export const Container = styled.div`
     font-size: 0.9em;
     border-radius: 0;
     position: absolute;
+    padding-bottom: 120px;    
   `};    
 `

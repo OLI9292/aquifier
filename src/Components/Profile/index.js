@@ -141,12 +141,10 @@ class Profile extends Component {
     const headerStats = () => {
       return <HeaderStats>
         <div style={{height:'100%'}}>
-          <div style={{height:'25%'}}>
-            <img
-              alt={'star icon'}
-              src={starIcon}
-              style={{height:'100%',width:'auto'}} />
-          </div>
+          <img
+            alt={'star icon'}
+            src={starIcon}
+            style={{height:'42px',width:'auto'}} />
           <h3 style={{height:'0',lineHeight:'0',fontSize:'0.8em',fontFamily:'BrandonGrotesque'}}>
             TOTAL STARS
           </h3>
@@ -155,12 +153,10 @@ class Profile extends Component {
           </h1>
         </div>
         <div style={{height:'100%'}}>
-          <div style={{height:'25%'}}>
-            <img
-              alt={'book icon'}
-              src={bookIcon}
-              style={{height:'74%',marginTop:'13%',width:'auto'}} />
-          </div>
+          <img
+            alt={'book icon'}
+            src={bookIcon}
+            style={{height:'35px',width:'auto',marginTop:'3px',marginBottom:'4px'}} />          
           <h3 style={{height:'0',lineHeight:'0',fontSize:'0.8em',fontFamily:'BrandonGrotesque'}}>
             WORDS LEARNED
           </h3>

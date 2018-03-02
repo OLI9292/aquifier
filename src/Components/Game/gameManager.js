@@ -1,3 +1,4 @@
+import moment from 'moment';
 import queryString from 'query-string';
 import Firebase from '../../Networking/Firebase';
 import { connect } from 'react-redux'
@@ -6,14 +7,15 @@ import { Redirect } from 'react-router';
 import _ from 'underscore';
 import get from 'lodash/get';
 
-import { shouldRedirect } from '../../Library/helpers';
+import { shouldRedirect, mobileCheck } from '../../Library/helpers';
 
 import {
   fetchQuestionsAction,
   fetchLevelsAction,
   removeEntityAction,
   saveStatsAction,
-  saveLevelAction
+  saveLevelAction,
+  saveQuestionAction
 } from '../../Actions/index';
 
 import Game from './game';
@@ -68,15 +70,27 @@ class GameManager extends Component {
     }
   }
 
-  recordQuestion(word, correct, level, seconds) {
-    const stat = { word: word, correct: correct, difficulty: level, time: seconds };
+  recordQuestion(question, correct, timeSpent, gameState) {
+    const answeredAt = moment().format();
+    const mobile = mobileCheck();
+    const { hintCount, incorrectGuesses } = gameState;
+    const { word, type } = question;    
+    const userId = get(this.props.session, 'user');
+    const sessionId = get(this.props.session, 'sessionId');
+
+    const data = { answered_at: answeredAt, answers: null, choices: null, correct: correct,
+      mobile: mobile, hints_used: hintCount, incorrect_guesses: incorrectGuesses,
+      session_id: sessionId, time_spent: timeSpent, type: type, user_id: userId, word: word };
+
+    this.props.dispatch(saveQuestionAction(data));
+
+    const stat = { word: word, correct: correct, difficulty: type, time: timeSpent };
     const stats = (this.state.stats || []).concat(stat);
     this.setState({ stats });
   }
 
   saveStats(session, stats) {
     const params = { id: get(session, 'user'), stats: stats, platform: 'web' };
-    console.log(params)
     this.props.dispatch(saveStatsAction(params, session));
   }
 
@@ -90,7 +104,7 @@ class GameManager extends Component {
       level.progress = [settings.stage, level.progressBars];      
     } else if (_.contains(['explore', 'speed'], settings.type)) {
       level.fullname = level.slug.replace('-', ' ').toUpperCase();
-      level.time = get(level.speed, 'time') || 3;
+      time = parseInt(get(level.speed, 'time') || 3, 10);
     }
 
     this.setState({ level: level, time: time });
