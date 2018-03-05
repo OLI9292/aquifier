@@ -7,8 +7,6 @@ import { Redirect } from 'react-router';
 import _ from 'underscore';
 import get from 'lodash/get';
 
-import { requestFullscreen } from 'screenfull';
-
 import { shouldRedirect, mobileCheck } from '../../Library/helpers';
 
 import {
@@ -66,12 +64,6 @@ class GameManager extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log('yo')
-    if (document.fullscreenEnabled) {
-      console.log('hi')
-      requestFullscreen(document.documentElement);
-    }
-
     if (nextProps.user && !this.state.loading) {
       this.setState({ loading: true }, () => this.setupGame(nextProps.user));  
     } else if (nextProps.questions.length && !this.state.questions) {

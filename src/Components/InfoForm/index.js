@@ -174,7 +174,7 @@ class InfoForm extends Component {
 }
 
 const MobileExit = styled.img`
-  height: 50px;
+  height: 25px;
   width: auto;
   position: absolute;
   top: 20px;

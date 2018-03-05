@@ -85,18 +85,19 @@ class Login extends Component {
         </h1>
 
         <input
-          style={_.extend({}, InputStyles.default, {width:'100%',marginBottom:'10px'})}
+          style={_.extend({}, InputStyles.default, {width:'100%'})}
           placeholder={'username or email'} 
           onChange={(e) => this.setState({ email: e.target.value.replace(/ /g,'') })}
           ref={(input) => { this.emailInput = input; }}
-          onClick={() => this.setState({ focusedOn: 'email'})} />
+          onClick={() => this.setState({ focusedOn: 'email' })} />
 
         <input
-          style={_.extend({}, InputStyles.default, {width:'100%'})}
+          style={_.extend({}, InputStyles.default, {width:'100%',marginTop:'10px'})}
+          type={'password'}
           placeholder={'password'}
           onChange={(e) => this.setState({ password: e.target.value.replace(/ /g,'') })}
           ref={(input) => { this.passwordInput = input; }}
-          onClick={() => this.setState({ focusedOn: 'password'})} />
+          onClick={() => this.setState({ focusedOn: 'password' })} />
 
         <LoginButton onClick={this.handleLogin.bind(this)}>
           login
@@ -117,7 +118,7 @@ class Login extends Component {
 }
 
 const MobileExit = styled.img`
-  height: 50px;
+  height: 25px;
   width: auto;
   position: absolute;
   top: 20px;
