@@ -87,6 +87,7 @@ class Login extends Component {
         <input
           style={_.extend({}, InputStyles.default, {width:'100%'})}
           placeholder={'username or email'} 
+          autoCapitalize={'none'}
           onChange={(e) => this.setState({ email: e.target.value.replace(/ /g,'') })}
           ref={(input) => { this.emailInput = input; }}
           onClick={() => this.setState({ focusedOn: 'email' })} />
@@ -95,6 +96,7 @@ class Login extends Component {
           style={_.extend({}, InputStyles.default, {width:'100%',marginTop:'10px'})}
           type={'password'}
           placeholder={'password'}
+          autoCapitalize={'none'}
           onChange={(e) => this.setState({ password: e.target.value.replace(/ /g,'') })}
           ref={(input) => { this.passwordInput = input; }}
           onClick={() => this.setState({ focusedOn: 'password' })} />
