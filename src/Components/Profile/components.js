@@ -37,7 +37,6 @@ export const Definition = styled.p`
   margin-left: 50px;
   text-align: left;
   font-family: EBGaramond;
-  color: ${color.darkGray};
   ${media.phone`
     margin-left: 20px;
   `};    

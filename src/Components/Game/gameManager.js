@@ -7,6 +7,8 @@ import { Redirect } from 'react-router';
 import _ from 'underscore';
 import get from 'lodash/get';
 
+import { requestFullscreen } from 'screenfull';
+
 import { shouldRedirect, mobileCheck } from '../../Library/helpers';
 
 import {
@@ -41,7 +43,8 @@ class GameManager extends Component {
       type: settings.type,
       pauseMatch: pauseMatch 
     }, () => {
-      if (user) { this.setState({ loading: true }, () => { this.setupGame(user); }); }        
+      if (settings.type === 'demo') { this.setState({ loading: true }, () => { this.setupGame(); }); }
+      else if (user)                { this.setState({ loading: true }, () => { this.setupGame(user); }); }        
     })
   } 
 
@@ -53,7 +56,9 @@ class GameManager extends Component {
       this.exitMultiplayerGame(settings.id, user);
     }
 
-    this.saveStats(session, stats);
+    if (settings.type !== 'demo') {
+      this.saveStats(session, stats);
+    }
   }  
 
   exitMultiplayerGame(accessCode, user) {
@@ -61,6 +66,12 @@ class GameManager extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    console.log('yo')
+    if (document.fullscreenEnabled) {
+      console.log('hi')
+      requestFullscreen(document.documentElement);
+    }
+
     if (nextProps.user && !this.state.loading) {
       this.setState({ loading: true }, () => this.setupGame(nextProps.user));  
     } else if (nextProps.questions.length && !this.state.questions) {
@@ -140,6 +151,8 @@ class GameManager extends Component {
 
     if (settings.type === 'multiplayer') {
       this.joinGame(settings, user);
+    } else if (settings.type === 'demo') {
+      this.loadQuestions({ type: settings.type });
     } else {
       const params = _.extend({}, settings, { user_id: user._id });
       this.loadQuestions(params);

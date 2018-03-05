@@ -54,7 +54,7 @@ class MobileNav extends Component {
     const link = data => {
       const selected = path === data.path;
       const image = require('../../Library/Images/' + data.img + (selected ? '' : '-light') + '-blue.png');
-      return <Option onClick={() => this.props.redirect(data.path)}>
+      return <Option key={data.title} onClick={() => this.props.redirect(data.path)}>
         <Image src={image} />
         <Title selected={selected}>
           {data.title.toUpperCase()}

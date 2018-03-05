@@ -98,13 +98,6 @@ class Profile extends Component {
     }
   }
 
-  definition(words, wordValue) {
-    const wordObj = _.find(words, w => w.value === wordValue);
-    if (wordObj) {
-      return _.pluck(wordObj.definition, 'value').join('');
-    }
-  }
-
   headerText(user) {
     let text = user.firstName;
     if (user.lastName) { text += ' ' + user.lastName};
@@ -126,6 +119,15 @@ class Profile extends Component {
       user,
       words
     } = this.props;
+
+    const definition = value => {
+      const word = _.find(words, w => w.value === value);
+      return word && _.map(word.definition, d => {
+        return <span style={{color:d.isRoot ? color.warmYellow : color.darkGray}}>
+          {d.value}
+        </span>
+      });
+    }
 
     const header = () => {
       return <div style={{paddingTop:'20px'}}>
@@ -181,7 +183,7 @@ class Profile extends Component {
         </td>
         <DefinitionRow>
           <Definition>
-            {this.definition(words, word.name)}
+            {definition(word.name)}
           </Definition>
         </DefinitionRow>
         <BlankRow />
@@ -189,15 +191,13 @@ class Profile extends Component {
     };
 
     const wordsTable = () => {
-      const expSorted = _.sortBy(_.groupBy(user.words, 'experience'), (words, exp) => -exp);
-      const expAndNameSorted = _.flatten(_.values(_.map(expSorted, (v, k) => _.sortBy(v, 'name'))));
       return <div>
         <BookContainer>
           {sidebarStats()}
         </BookContainer>
         <table style={{borderCollapse:'collapse'}}>
           <tbody>
-            {_.map(expAndNameSorted, (word, idx) => tableRow(word, idx))}
+            {_.map(_.sortBy(user.words, 'name'), (word, idx) => tableRow(word, idx))}
           </tbody>
         </table>
       </div>

@@ -6,25 +6,22 @@ import { color, media } from '../../Library/Styles/index';
 //
 
 export const Alert = styled.div`
-  position: absolute;
   right: 0;
-  top: 40px;
   height: 25px;
   display: flex;
   align-items: center;
   transition: opacity 0.2s;
   display: ${props => props.display};
   opacity: ${props => props.hide ? 0 : 1};
-  ${media.phone`
-    right: 5px;
-    top: 5px;
-  `}     
 `
 
 export const AlertImage = styled.img`  
   height: 100%;
   width: auto;
   margin-right: 5px;
+  ${media.phone`
+    margin-right: 10px;
+  `}    
 `
 
 export const AlertText = styled.p`    
@@ -111,7 +108,6 @@ export const ButtonHint = styled.span`
 
 export const ButtonValue = styled.span`
   display: block;
-  text-transform: uppercase;
   margin-top: ${props => `${props.marginTop ? 0 : 35}px`};
   font-size: ${props => props.fontSize};
   transition: margin 200ms;
@@ -202,11 +198,13 @@ export const ChoiceButton = styled.div`
 //
 
 export const ExitOut = styled.img`
-  position: absolute;
   height: 40px;
   width: auto;
-  top: 35px;
   cursor: pointer;
+  ${media.phone`
+    height: 25px;
+    margin-left: 10px;
+  `}  
 `
 
 //

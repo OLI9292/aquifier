@@ -58,7 +58,7 @@ class Train extends Component {
     
     const groupedByLadder = _.groupBy(_.map(allLevels, level => {
       level.completed = _.contains(_.pluck(completedLevels, '_id'), level._id);
-      level.locked = !_.contains(open, level.ladder);
+      level.locked = false// !_.contains(open, level.ladder);
       return level;
     }), level => `${level.ladder}${level.type === 'speed' ? '-speed' : ''}`);
 

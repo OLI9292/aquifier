@@ -13,6 +13,7 @@ export const Content = styled.div`
   z-index: 5;
   min-height: 60vh;
   ${media.phone`
+    border-radius: 0px;
     margin-top: 10px;
   `};      
 `

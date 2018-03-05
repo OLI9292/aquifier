@@ -87,7 +87,7 @@ class Game extends Component {
     if (question) {
       const isSpellQuestion = _.every(question.answer, a => a.value.length === 1);
       this.setState({ question: question, isSpellQuestion: isSpellQuestion }, this.checkHint);
-      setTimeout(this.autohint.bind(this), 2000);
+      setTimeout(this.autohint.bind(this), 2500);
     } else {
       // Reset questions in multiplayer and speed rounds
       if (_.contains(['multiplayer','speed'], this.props.type)) {
@@ -112,7 +112,7 @@ class Game extends Component {
 
     const answer = _.map(this.state.question.answer, a => {
       if (correct) { return a; }
-      const correctGuess = a.missing && a.value === choice;
+      const correctGuess = a.missing && a.value.toLowerCase() === choice.toLowerCase();
       if (correctGuess) { correct = true; }
       return correctGuess ? { value: choice, missing: false } : a;
     });
@@ -135,11 +135,11 @@ class Game extends Component {
   animateAlerts() {
     if (this.state.isSpeedy) {
       this.setState({ alert: 'speedy' });
-      setTimeout(() => { this.setState({ alert: undefined }); }, 1100);
+      //setTimeout(() => { this.setState({ alert: undefined }); }, 1100);
     };
     const correctAlert = this.state.incorrectGuesses > 0 ? 'correct' : 'passed';
-    setTimeout(() => { this.setState({ alert: correctAlert }); }, this.state.isSpeedy ? 1200 : 0);
-    setTimeout(() => { this.setState({ alert: undefined }); }, this.state.isSpeedy ? 2300 : 1100);    
+    //setTimeout(() => { this.setState({ alert: correctAlert }); }, this.state.isSpeedy ? 1200 : 0);
+    //setTimeout(() => { this.setState({ alert: undefined }); }, this.state.isSpeedy ? 2300 : 1100);    
   }
 
   checkComplete() {
@@ -247,7 +247,7 @@ class Game extends Component {
 
     const progressComponent = type => {
       switch (type) {
-        case 'train': case 'explore':
+        case 'train': case 'explore': case 'demo':
           return <ProgressBar
             progress={Math.max(questionIndex) / get(questions, 'length', 1)} />;
         case 'speed': case 'multiplayer':
@@ -271,7 +271,7 @@ class Game extends Component {
     }
 
     const topInfo = (() => {
-      return <div style={{height:'10%',width:'100%'}}>
+      return <div style={{height:'10%',width:'100%',display:'flex',alignItems:'center'}}>
         <Link to={'/home'}>
           <ExitOut
             src={require('../../Library/Images/exit-gray.png')} />
@@ -382,13 +382,15 @@ class Game extends Component {
     })();
 
     const levelInfo = (() => {
-      return <div>
-        <p style={{fontFamily:'BrandonGrotesqueBold',fontSize:'1.25em'}}>
+      return <div style={{display:'flex',flexDirection:'column'}}>
+        <p style={{fontFamily:'BrandonGrotesqueBold',fontSize:'1.25em',margin:'0px 0px -5px 0px'}}>
           {get(this.props.level, 'fullname')}
         </p>
-        {_.has(this.props.level, 'progress') && _.map(_.range(1, this.props.level.progress[1] + 1), n => {
-          return <StageDot key={n} green={n <= this.props.level.progress[0]} />
-        })}
+        <div>
+          {_.has(this.props.level, 'progress') && _.map(_.range(1, this.props.level.progress[1] + 1), n => {
+            return <StageDot key={n} green={n <= this.props.level.progress[0]} />
+          })}
+        </div>
       </div>      
     })();
 

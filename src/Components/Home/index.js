@@ -77,7 +77,7 @@ class Home extends Component {
         </div>
       
         <ButtonContainer>
-          <Button color={color.blue} onClick={() => this.setState({ redirect: '/play'})}>
+          <Button color={color.blue} onClick={() => this.setState({ redirect: '/play/type=demo' })}>
             PLAY NOW
           </Button>
           <Button

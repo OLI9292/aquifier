@@ -2,9 +2,6 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
 
-import clock from '../../Library/Images/clock.png';
-import checkmark from '../../Library/Images/checkmark.png';
-
 import { color, media } from '../../Library/Styles/index';
 
 class SpeedRound extends Component {
@@ -48,18 +45,12 @@ class SpeedRound extends Component {
   render() {
     return (
       <Container>
-        <Timer>
-          <Icon src={clock} />
-          <p>
+        <Text color={color.red}>
             {this.state.timeLeft}
-          </p>
-        </Timer>
-        <Score>
-          <Icon src={checkmark} />
-          <p>
+        </Text>
+        <Text color={color.blue}>
             {this.props.score}
-          </p>
-        </Score>
+        </Text>
       </Container>
     );
   }
@@ -79,23 +70,9 @@ const Container = styled.div`
   `}     
 `
 
-const Timer = styled.div`
-  color: ${color.red};
+const Text = styled.p`
+  color: ${props => props.color};
   height: 100%;
-  display: flex;
-  align-items: center;  
-`
-
-const Score = styled.div`
-  color: ${color.blue};
-  height: 100%;
-  display: flex;
-  align-items: center;  
-`
-
-const Icon = styled.img`
-  height: 50px;
-  width: 50px;
 `
 
 export default SpeedRound;

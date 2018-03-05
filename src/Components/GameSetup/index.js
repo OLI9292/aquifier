@@ -44,15 +44,17 @@ class GameSetup extends Component {
 
   componentWillReceiveProps(nextProps) {
     const gameType = this.state.steps[0].selected;
-    if (nextProps.roots.length && !this.state.roots)   { 
-      this.setRoots(nextProps.roots, gameType);
-    }
+    if (nextProps.roots.length && !this.state.roots)   { this.setRoots(nextProps.roots, gameType); }
     if (nextProps.levels.length && !this.state.levels) { this.setLevels(nextProps.levels, gameType); }
   }
 
   setLevels(levels, gameType) {
+    const sortBy = ['beginner', 'intermediate', 'advanced'];
+    const generalVocabComparator = (a, b) => sortBy.indexOf(a.name) > sortBy.indexOf(b.name) ? 1 : -1;
+    const topicComparator = (a, b) => a.slug.localeCompare(b.slug);
     this.setState({ levels: levels
-      .sort((a, b) => a.slug.localeCompare(b.slug))
+      .sort((a, b) => a.type.localeCompare(b.type))
+      .sort((a, b) => a.type === 'general' ? generalVocabComparator(a, b) : topicComparator(a, b))
       .map(level => _.extend({}, level, { title: level.slug.replace('-', ' ') }))
     }, () => gameType && this.clickedGameType(gameType));
   }

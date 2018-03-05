@@ -13,7 +13,7 @@ export const Container = styled.div`
   position: relative;
   ${media.phone`
     font-size: 0.9em;
-    border-radius: 0;
+    border-radius: 0px;
     position: absolute;
     padding-bottom: 120px;    
   `};    

@@ -50,7 +50,7 @@ const Container = styled.div`
 const Progress = styled.div`
   width: ${props => props.progress};
   height: 13px;
-  margin-top: -6px;
+  margin-top: -2px;
   background: linear-gradient(to right, ${color.brightYellow}, ${color.warmYellow});
   border-radius: 8px;
   z-index: 1000;
@@ -62,7 +62,6 @@ const Progress = styled.div`
 const BackgroundBar = styled.div`
   width: ${props => props.width};
   height: 9px;
-  margin-top: -4px;
   z-index: 5;
   background-color: ${color.lightGray};
   border-radius: 5px;
