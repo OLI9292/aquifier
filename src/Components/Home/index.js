@@ -1,5 +1,6 @@
 import { connect } from 'react-redux'
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
 import styled from 'styled-components';
 
@@ -7,6 +8,7 @@ import { color } from '../../Library/Styles/index';
 import TESTIMONIALS from './testimonials';
 import Card from './card';
 import CTA from './cta';
+import Button from '../Common/button';
 import DaisyChain from './daisyChain';
 import Header from '../Header/index';
 import { shouldRedirect } from '../../Library/helpers';
@@ -77,14 +79,16 @@ class Home extends Component {
         </div>
       
         <ButtonContainer>
-          <Button color={color.blue} onClick={() => this.setState({ redirect: '/play/type=demo' })}>
-            PLAY NOW
-          </Button>
-          <Button
-            onClick={() => this.setState({ redirect: '/start-free-trial' })}
-            marginLeft color={color.green}>
-            SIGN UP
-          </Button>
+          <Link to={'/play/type=demo'}>
+            <Button.medium style={{width:'225px',marginRight:'10px'}}>
+              play now
+            </Button.medium>
+          </Link>
+          <Link to={'/start-free-trial'}>
+            <Button.medium style={{width:'225px',backgroundColor:color.green,marginLeft:'10px'}}>
+              sign up
+            </Button.medium>
+          </Link>
         </ButtonContainer>
 
         <TestimonialsContainer>
@@ -183,10 +187,11 @@ class Home extends Component {
               <p style={{cursor:'pointer',display:'none'}}>
                 PARTNERS
               </p>      
-              <p style={{transition:'0.5s'}}
-                onMouseOver={() => this.setState({ hoveredOverContact: true })}>
-                {this.state.hoveredOverContact ? 'SUPPORT@PLAYWORDCRAFT.COM' : 'CONTACT'}
-              </p>      
+              <a style={{color:'black',textDecoration:'none'}} href={'mailto:support@playwordcraft.com'}>
+                <p style={{textTransform:'uppercase'}}>
+                  contact
+                </p>   
+              </a>   
             </BottomNav>
           </BottomImage>        
         </BottomContainer>             
@@ -336,21 +341,6 @@ const AppleContainer = styled.div`
   @media (max-width: 900px) {
     width: 90%;
   }     
-`
-
-const Button = styled.button`
-  font-family: BrandonGrotesqueBold;
-  cursor: pointer;
-  background-color: ${props => props.color};
-  display: inline-block;
-  color: white;
-  margin-left: ${props => props.marginLeft ? '25px' : '0px'};
-  outline: 0;
-  border: 0;
-  width: 250px;
-  height: 60px;
-  border-radius: 30px;
-  font-size: 1.25em;
 `
 
 const mapStateToProps = (state, ownProps) => ({

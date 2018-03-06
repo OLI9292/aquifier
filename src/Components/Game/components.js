@@ -289,4 +289,5 @@ export const Pause = styled.div`
   height: 100vh;
   font-size: 2em;
   letter-spacing: 1px;
+  text-align: center;
 `

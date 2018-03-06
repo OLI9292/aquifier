@@ -14,6 +14,10 @@ const Large = Default.extend`
   font-size: 1.75em;
 `
 
+const ExtraLarge = Default.extend`
+  font-size: 2.25em;
+`
+
 const Small = Default.extend`
   font-size: 1em;
   letter-spacing: 1px;
@@ -25,6 +29,7 @@ const ExtraSmall = Default.extend`
 `
 
 const Header = {
+  extraLarge: ExtraLarge,
   large: Large,
   medium: Default,
   small: Small,

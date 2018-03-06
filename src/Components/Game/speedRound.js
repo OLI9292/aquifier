@@ -45,12 +45,14 @@ class SpeedRound extends Component {
   render() {
     return (
       <Container>
+        <InnerContainer>
         <Text color={color.red}>
             {this.state.timeLeft}
         </Text>
         <Text color={color.blue}>
             {this.props.score}
         </Text>
+        </InnerContainer>
       </Container>
     );
   }
@@ -58,21 +60,28 @@ class SpeedRound extends Component {
 
 const Container = styled.div`
   font-size: 3em;
-  color: ${color.red};
-  display: flex;
-  align-items: center;
   height: 100%;
-  width: 300px;
   margin: auto;
-  justify-content: space-between;
+`
+
+const InnerContainer = styled.div`
+  position: absolute;
+  left: 50%;
+  margin-left: -150px;
+  top: 30px;
+  height: 60px;
+  display: flex;
+  justify-content: space-between;  
   ${media.phone`
-    width: 200px;
-  `}     
+    width: 150px;
+    margin-left: -75px;
+  `};      
 `
 
 const Text = styled.p`
   color: ${props => props.color};
   height: 100%;
+  margin: 0;
 `
 
 export default SpeedRound;

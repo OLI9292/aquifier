@@ -134,6 +134,7 @@ const ComponentFrame = styled.div`
   border-radius: 10px;
   box-sizing: border-box;
   width: 100%;
+  min-height: 75vh;
   ${media.phone`
     width: 100%;
     border-radius: 0px;

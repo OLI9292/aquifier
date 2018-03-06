@@ -97,7 +97,6 @@ const Container = styled.div`
   font-family: BrandonGrotesqueBold;
   ${media.phone`
     padding: 0;
-    min-height: 80vh;
   `}; 
 `
 

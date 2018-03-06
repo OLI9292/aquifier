@@ -5,6 +5,7 @@ import _ from 'underscore';
 import Firebase from '../../Networking/Firebase';
 import { color } from '../../Library/Styles/index';
 import { Container } from '../Common/container';
+import Header from '../Common/header';
 
 class Leaderboard extends Component {
   constructor(props) {
@@ -58,12 +59,12 @@ class Leaderboard extends Component {
     };
 
     const rows = () => {
-      return this.state.players.map((p) => {
-        return <tr style={{width:'100%'}}>
+      return this.state.players.map((p, i) => {
+        return <tr key={i} style={{width:'100%'}}>
           <LeftAlignCell style={{ color: colors[p.position] || 'black' }}>
             {p.position}.
           </LeftAlignCell>
-          <LeftAlignCell>
+          <LeftAlignCell style={{fontFamily:'BrandonGrotesque'}}>
             {p.name}
           </LeftAlignCell>
           <RightAlignCell>
@@ -75,20 +76,24 @@ class Leaderboard extends Component {
 
     return (
       <Container>
-        <Header>
-          Game Over!
-        </Header>
+        <Header.extraLarge style={{color:'black'}}>
+          game over!
+        </Header.extraLarge>
         {
           this.state.dataLoaded &&
           <div style={{margin:'0 auto',width:'100%'}}>
-            <ResultsHeader>
+            <Header.medium>
               results
-            </ResultsHeader>
+            </Header.medium>
             <Table>
-              <col width="10%" />
-              <col width="20%" />
-              <col width="70%" />
-              {rows()}
+              <colgroup>
+                <col width='10%' />
+                <col width='35%' />
+                <col width='35%' />
+              </colgroup>
+              <tbody>
+                {rows()}
+              </tbody>
             </Table>
           </div>
         }
@@ -96,21 +101,6 @@ class Leaderboard extends Component {
     );
   }
 }
-
-const Header = styled.p`
-  font-size: 3em;
-  height: 1em;
-  padding-top: 20px;
-`
-
-const ResultsHeader = styled.p`
-  padding-top: 30px;
-  font-size: 1.5em;
-  padding-bottom: 10px;
-  text-transform: uppercase;
-  font-family: BrandonGrotesqueBold;
-  letter-spacing: 1px;
-`
 
 const Table = styled.table`
   width: 60%;

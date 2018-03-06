@@ -82,6 +82,7 @@ const Container = styled.div`
   height: 90px;
   background: ${props => props.isHome ? '' : `url(${background}) no-repeat center center`};
   background-size: 100% auto;
+  z-index: 2;
 ` 
 
 const LeftLinksContainer = styled.div`

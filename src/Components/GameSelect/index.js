@@ -50,7 +50,7 @@ class GameSelect extends Component {
     const containerBottom = this.container.getBoundingClientRect().bottom;
     const fixedSidebar = containerBottom > sidebarBottom;
     if (fixedSidebar !== this.state.fixedSidebar) { this.setState({ fixedSidebar }); }
-  }  
+  }
 
   render() {
     const {
@@ -83,6 +83,10 @@ class GameSelect extends Component {
       </TabContainer>
     })();
 
+    const sidebarStyles = this.state.gameType === 'train'
+      ? { position: 'fixed', width: '250px', bottom: this.state.fixedSidebar ? '' : '120px' }
+      : { width: '250px' };
+
     return (
       <div style={{display:'flex',paddingTop:'40px'}} ref={container => this.container = container}>
         <Main>
@@ -97,7 +101,7 @@ class GameSelect extends Component {
         </Main>
         <Sidebar>
           <div
-            style={{position:'fixed',width:'250px',bottom:this.state.fixedSidebar ? '' : '120px'}} 
+            style={sidebarStyles} 
             ref={sidebar => this.sidebar = sidebar}>
             {user && session && <MiniLeaderboard user={user} session={session} />}
             <br />
