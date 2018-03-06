@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { color, media } from '../../Library/Styles/index';
+import { media } from '../../Library/Styles/index';
 
 export const Container = styled.div`
   pointer-events: ${props => props.loading ? 'none' : 'auto'};
@@ -8,6 +8,7 @@ export const Container = styled.div`
   border-radius: 20px;
   min-height: 80vh;
   text-align: center;
+  padding-top: 20px;
   padding-bottom: 20px;
   font-family: BrandonGrotesqueBold;
   position: relative;

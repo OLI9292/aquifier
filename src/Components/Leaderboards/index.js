@@ -3,14 +3,15 @@ import moment from 'moment';
 import React, { Component } from 'react';
 import _ from 'underscore';
 import queryString from 'query-string';
+import { color } from '../../Library/Styles/index';
 
 import Dropdown from '../Common/dropdown';
 import { fetchLeaderboardsAction } from '../../Actions/index';
 import star from '../../Library/Images/star-yellow.png';
 import { Container } from '../Common/container';
+import Header from '../Common/header';
 
 import {
-  Header,
   DropdownContainer,
   LoadMoreButton,
   Rank,
@@ -92,16 +93,18 @@ class Leaderboards extends Component {
               {user.position}
             </Rank>
           </td>
-          <td style={{width:'50%',textAlign:'left'}}>
+          <td style={{width:'50%',textAlign:'left',fontFamily:'BrandonGrotesque',color:color.gray2}}>
             <h3>
               {content}
             </h3>
           </td>
-          <td style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
-            <p style={{fontSize:'1.1em'}}>{user.score}</p>
+          <td style={{display:'flex',alignItems:'center',justifyContent:'center',height:'70px'}}>
+            <p style={{fontSize:'1.1em',color:color.gray2}}>
+              {user.score}
+            </p>
             <img 
               alt="star"
-              style={{height:'25px',margin:'0px 0px 4px 5px'}} 
+              style={{height:'25px',margin:'0px 0px 4px 7px'}} 
               src={star} />
           </td>
         </Row>
@@ -117,15 +120,15 @@ class Leaderboards extends Component {
         onClick={() => this.loadMore(direction)}
         loadingMore={this.state.loadingMore}
         hide={hide}>
-        Load More
+        load more
       </LoadMoreButton>;      
     };
 
     return (
       <Container loading={this.state.loading}>
-        <Header>
+        <Header.medium>
           leaderboards
-        </Header>
+        </Header.medium>
 
         <DropdownContainer>
           <Dropdown 
@@ -139,14 +142,14 @@ class Leaderboards extends Component {
         </DropdownContainer>
 
         <TableContainer>
-          <p style={{lineHeight:'0px',paddingTop:'20px',fontSize:'1.5em'}}>
-            <b>{this.state.location}</b>
+          <p style={{lineHeight:'0px',paddingTop:'20px',fontSize:'1.5em',color:color.gray2}}>
+            {this.state.location}
           </p>
-          <p>
+          <p style={{color:color.mediumLGray,fontSize:'0.8em'}}>
             {this.periodTitle()}
           </p>
           {loadMore('prev')}
-          <table style={{padding:'5px 20px 20px 20px',width:'100%',margin:'0 auto',borderCollapse:'separate',borderSpacing:'0'}}>  
+          <table style={{padding:'5px 0px 20px 0px',width:'100%',margin:'0 auto',borderCollapse:'separate',borderSpacing:'0'}}>  
             <tbody>
               {leaderboard()}
             </tbody>

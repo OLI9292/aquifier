@@ -135,11 +135,11 @@ class Game extends Component {
   animateAlerts() {
     if (this.state.isSpeedy) {
       this.setState({ alert: 'speedy' });
-      //setTimeout(() => { this.setState({ alert: undefined }); }, 1100);
+      setTimeout(() => { this.setState({ alert: undefined }); }, 1100);
     };
     const correctAlert = this.state.incorrectGuesses > 0 ? 'correct' : 'passed';
-    //setTimeout(() => { this.setState({ alert: correctAlert }); }, this.state.isSpeedy ? 1200 : 0);
-    //setTimeout(() => { this.setState({ alert: undefined }); }, this.state.isSpeedy ? 2300 : 1100);    
+    setTimeout(() => { this.setState({ alert: correctAlert }); }, this.state.isSpeedy ? 1200 : 0);
+    setTimeout(() => { this.setState({ alert: undefined }); }, this.state.isSpeedy ? 2300 : 1100);    
   }
 
   checkComplete() {
@@ -150,7 +150,8 @@ class Game extends Component {
       question,
       questionIndex,
       questionStartTime,
-      points
+      points,
+      type
     } = this.state;
 
     const isComplete = _.every(question.answer, a => !a.missing);
@@ -158,14 +159,15 @@ class Game extends Component {
 
     const correct = incorrectGuesses === 0 && hintCount === 0;
     const seconds = Math.ceil(moment.duration(moment().diff(questionStartTime)).asSeconds());
-    const isSpeedy = seconds < 5;
+    const isSpeedy = seconds < 4;
+    const nextQuestionIndex = questionIndex + (isSpeedy && _.contains(['train','explore'], type) ? 2 : 1);
 
     this.setState({
       questionComplete: true,
       isSpeedy: isSpeedy,
       points: points + 1,
       correctCounter: [correctCounter[0] + (correct ? 1 : 0), correctCounter[1] + 1],
-      questionIndex: questionIndex + 1
+      questionIndex: nextQuestionIndex
      }, () => {
       this.props.recordQuestion(question, correct, seconds, this.state);        
       this.animateAlerts();

@@ -15,6 +15,7 @@ import book from '../../Library/Images/Book.png';
 
 import { color, } from '../../Library/Styles/index';
 import { Container } from '../Common/container';
+import Header from '../Common/header';
 
 import { fetchSchoolAction, fetchWordsAction, fetchLeaderboardsAction } from '../../Actions/index';
 
@@ -63,6 +64,10 @@ class Profile extends Component {
     if (!this.state.loadingLeaderboards) { this.loadLeaderboards(); }
   }
 
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this.checkScroll);
+  }
+
   loadSchool() {
     const id = get(this.props.user, 'school')
     if (id) {
@@ -82,17 +87,18 @@ class Profile extends Component {
   }  
 
   stat(type) {
-    const user = this.props.user;
+    const words = get(this.props.user, 'words');
+    if (!words) { return; }
 
     switch (type) {
       case 'totalStars':
-        return _.reduce(user.words, (acc, w) => acc + w.experience, 0);
+        return _.reduce(words, (acc, w) => acc + w.experience, 0);
       case 'wordsLearned':
-        return user.words.length;
+        return words.length;
       case 'wordAccuracy':
-        const seen = _.reduce(user.words, (acc, w) => acc + w.seen, 0);
-        const correct = _.reduce(user.words, (acc, w) => acc + w.correct, 0);
-        return Math.round((seen / Math.max(correct, 1)) * 100);
+        const correct = _.reduce(words, (acc, w) => acc + w.correct, 0);
+        const seen = _.reduce(words, (acc, w) => acc + w.seen, 0);
+        return Math.round((correct / Math.max(seen, 1)) * 100) + '%';
       default:
         return 'N/A';        
     }
@@ -122,8 +128,8 @@ class Profile extends Component {
 
     const definition = value => {
       const word = _.find(words, w => w.value === value);
-      return word && _.map(word.definition, d => {
-        return <span style={{color:d.isRoot ? color.warmYellow : color.darkGray}}>
+      return word && _.map(word.definition, (d, i) => {
+        return <span key={i} style={{color:d.isRoot ? color.warmYellow : color.darkGray}}>
           {d.value}
         </span>
       });
@@ -131,12 +137,12 @@ class Profile extends Component {
 
     const header = () => {
       return <div style={{paddingTop:'20px'}}>
-        <p style={{fontFamily:'EBGaramond'}}>
+        <Header.small style={{margin:'0'}}>
           {get(school, 'name')}
-        </p>      
-        <p style={{fontFamily:'BrandonGrotesqueBold',fontSize:'2em',color:color.honey,height:'20px',lineHeight:'20px'}}>
+        </Header.small>
+        <Header.large style={{color:color.green,margin:'5px 0px'}}>
           {this.headerText(user)}
-        </p>
+        </Header.large>
       </div>
     };
     
@@ -147,10 +153,10 @@ class Profile extends Component {
             alt={'star icon'}
             src={starIcon}
             style={{height:'42px',width:'auto'}} />
-          <h3 style={{height:'0',lineHeight:'0',fontSize:'0.8em',fontFamily:'BrandonGrotesque'}}>
-            TOTAL STARS
-          </h3>
-          <h1 style={{fontFamily:'EBGaramondSemiBold',color:color.mainBlue,fontSize:'2.5em',height:'0',lineHeight:'10px'}}>
+          <Header.extraSmall style={{color:'black',margin:'0'}}>
+            total stars
+          </Header.extraSmall>
+          <h1 style={{fontFamily:'EBGaramondSemiBold',color:color.mainBlue,fontSize:'2.5em',margin:'0'}}>
             {this.stat('totalStars')}
           </h1>
         </div>
@@ -158,11 +164,11 @@ class Profile extends Component {
           <img
             alt={'book icon'}
             src={bookIcon}
-            style={{height:'35px',width:'auto',marginTop:'3px',marginBottom:'4px'}} />          
-          <h3 style={{height:'0',lineHeight:'0',fontSize:'0.8em',fontFamily:'BrandonGrotesque'}}>
-            WORDS LEARNED
-          </h3>
-          <h1 style={{fontFamily:'EBGaramondSemiBold',color:color.mainBlue,fontSize:'2.5em',height:'0',lineHeight:'10px'}}>    
+            style={{height:'35px',width:'auto',marginTop:'7px'}} />          
+          <Header.extraSmall style={{color:'black',margin:'0'}}>
+            words learned
+          </Header.extraSmall>
+          <h1 style={{fontFamily:'EBGaramondSemiBold',color:color.mainBlue,fontSize:'2.5em',margin:'0'}}>    
             {this.stat('wordsLearned')}
           </h1>
         </div>        
@@ -205,52 +211,56 @@ class Profile extends Component {
 
     const sidebarStats = () => {
       const [schoolRank, worldRank] = this.ranks(ranks, session.user);
-      const styles = this.state.fixedStats
-        ? { position:'fixed',top:'15%',width:'225px',right:'0' }
-        : { position:'absolute',width:'225px',right:'0' }; 
-      return <div ref={book => this.book = book} style={styles}>
-        <img
-          alt={'book icon'}
-          src={book}
-          style={{width:'100%',height:'auto'}} />
-        <BookStats id={'book'}>
-          <div style={{marginRight:'10px'}}>
-            <img
-              alt={'badge icon'}
-              src={redBadge}
-              style={{height:'45px',width:'auto'}} />
-            <h3 style={{height:'0',lineHeight:'0',fontSize:'0.7em',fontFamily:'BrandonGrotesque'}}>
-              SCHOOL RANK
-            </h3>                    
-            <h1 style={{fontFamily:'EBGaramondSemiBold',color:color.red,fontSize:'2.25em',lineHeight:'10px'}}>
-              {schoolRank}
-            </h1>
-          </div>
-          <div style={{marginRight:'10px'}}>
-            <img
-              alt={'book icon'}
-              src={orangeBadge}
-              style={{height:'45px',width:'auto'}} />          
-            <h3 style={{height:'0',lineHeight:'0',fontSize:'0.7em',fontFamily:'BrandonGrotesque'}}>
-              WORLD RANK
-            </h3>                    
-            <h1 style={{fontFamily:'EBGaramondSemiBold',color:color.orange,fontSize:'2.25em',lineHeight:'10px'}}>
-              {worldRank}
-            </h1>            
-          </div>
-          <div style={{marginRight:'10px'}}>
-            <img
-              alt={'archer icon'}
-              src={archer}
-              style={{height:'45px',width:'auto'}} />          
-            <h3 style={{height:'0',lineHeight:'0',fontSize:'0.7em',fontFamily:'BrandonGrotesque'}}>
-              WORD ACCURACY
-            </h3>            
-            <h1 style={{fontFamily:'EBGaramondSemiBold',color:color.purple,fontSize:'2.25em',lineHeight:'10px'}}>
-              {this.stat('wordAccuracy')}
-            </h1>                   
-          </div>
-        </BookStats>
+      
+      const [outerStyles, innerStyles] = this.state.fixedStats
+        ? [ { position:'absolute', right:'225px' }, { position:'fixed', top:'15%', width:'225px' } ]
+        : [ {}, { position:'absolute', width:'225px', right:'0' } ];
+
+      return <div style={outerStyles}>
+        <div ref={book => this.book = book} style={innerStyles}>
+          <img
+            alt={'book icon'}
+            src={book}
+            style={{width:'100%',height:'auto'}} />
+          <BookStats id={'book'}>
+            <div style={{marginRight:'10px'}}>
+              <img
+                alt={'badge icon'}
+                src={redBadge}
+                style={{height:'45px',width:'auto'}} />
+              <h3 style={{height:'0',lineHeight:'0',fontSize:'0.7em',fontFamily:'BrandonGrotesque'}}>
+                SCHOOL RANK
+              </h3>                    
+              <h1 style={{fontFamily:'EBGaramondSemiBold',color:color.red,fontSize:'2.25em',lineHeight:'10px'}}>
+                {schoolRank}
+              </h1>
+            </div>
+            <div style={{marginRight:'10px'}}>
+              <img
+                alt={'book icon'}
+                src={orangeBadge}
+                style={{height:'45px',width:'auto'}} />          
+              <h3 style={{height:'0',lineHeight:'0',fontSize:'0.7em',fontFamily:'BrandonGrotesque'}}>
+                WORLD RANK
+              </h3>                    
+              <h1 style={{fontFamily:'EBGaramondSemiBold',color:color.orange,fontSize:'2.25em',lineHeight:'10px'}}>
+                {worldRank}
+              </h1>            
+            </div>
+            <div style={{marginRight:'10px'}}>
+              <img
+                alt={'archer icon'}
+                src={archer}
+                style={{height:'45px',width:'auto'}} />          
+              <h3 style={{height:'0',lineHeight:'0',fontSize:'0.7em',fontFamily:'BrandonGrotesque'}}>
+                WORD ACCURACY
+              </h3>            
+              <h1 style={{fontFamily:'EBGaramondSemiBold',color:color.purple,fontSize:'2.25em',lineHeight:'10px'}}>
+                {this.stat('wordAccuracy')}
+              </h1>                   
+            </div>
+          </BookStats>
+        </div>
       </div>
     }
 

@@ -9,6 +9,10 @@ export const BackArrow = styled.img`
   top: 10px;
   left: 20px;
   cursor: pointer;
+  ${media.phone`
+    top: 20px;
+    height: 35px;
+  `};    
 `
 
 export const StepsContainer = styled.div`
@@ -18,6 +22,11 @@ export const StepsContainer = styled.div`
   justify-content: space-between;
   align-items: center;
   padding-top: 40px;
+  ${media.phone`
+    padding-top: 50px;
+    width: 275px;
+    font-size: 0.8em;
+  `};     
 `
 
 export const Step = styled.div`
@@ -38,6 +47,11 @@ export const Circle = styled.div`
   justify-content: center;
   height: 50px;
   margin: 0 auto;
+  ${media.phone`
+    width: 30px;
+    height: 30px;
+    border: ${props => props.selected ? `3px solid ${color.green}` : `1px solid ${color.mediumLGray}`};
+  `};  
 `
 
 export const StepDescription = styled.p`
@@ -49,6 +63,10 @@ export const StepDescription = styled.p`
   font-family: BrandonGrotesqueBold;
   letter-spacing: 1px;
   width: 75px;
+  ${media.phone`
+    width: 50px;
+    font-size: 8px;
+  `};   
 `
 
 export const Header = styled.h1`
@@ -66,6 +84,9 @@ export const OptionsContainer = styled.div`
   margin-top: 30px;
   display: ${props => props.grid ? 'grid' : ''};
   grid-template-columns: ${props => props.grid ? '1fr 1fr 1fr 1fr 1fr' : ''};  
+  ${media.phone`
+    grid-template-columns: ${props => props.grid ? '1fr 1fr 1fr' : ''};  
+  `};     
 `
 
 export const OptionButton = styled.div`

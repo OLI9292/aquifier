@@ -14,8 +14,8 @@ import {
 
 const STATS = [
   {
-    name: 'POINTS',
-    slug: 'points',
+    name: 'STARS',
+    slug: 'stars',
     image: require('../../Library/Images/icon-star.png'),
     color: color.yellow
   },
@@ -23,7 +23,7 @@ const STATS = [
     name: 'WORDS',
     slug: 'wordsLearned',
     image: require('../../Library/Images/icon-book.png'),
-    color: color.green
+    color: color.yellow
   },
   {
     name: 'ACCURACY',
@@ -47,14 +47,14 @@ class MiniProgress extends Component {
   formatData(user) {
     const words = user.words;
     const stats = {
-      points: this.points(words),
+      stars: this.stars(words),
       wordsLearned: this.wordsLearned(words),
       accuracy: this.accuracy(words)
     };
     this.setState({ stats });
   }
 
-  points(words) {
+  stars(words) {
     return _.reduce(words, (acc, w) => acc + w.experience, 0);
   }
 
@@ -63,9 +63,9 @@ class MiniProgress extends Component {
   }  
 
   accuracy(words) {
-    const seen = _.reduce(words, (acc, w) => acc + w.seen, 0);
     const correct = _.reduce(words, (acc, w) => acc + w.correct, 0);
-    return Math.round((seen / Math.max(correct, 1)) * 100);
+    const seen = _.reduce(words, (acc, w) => acc + w.seen, 0);
+    return Math.round((correct / Math.max(seen, 1)) * 100) + '%';
   }    
 
   render() {
@@ -76,7 +76,7 @@ class MiniProgress extends Component {
         <Header>
           Progress
         </Header>
-        <ul style={{listStyle:'none',margin:'0 auto',width:'60%',padding:'0'}}>
+        <ul style={{listStyle:'none',margin:'0 auto',padding:'10px 0px'}}>
           {stats && _.map(STATS,  data => {
             return <ProgressListItem key={data.slug}>
               <Icon src={data.image} />

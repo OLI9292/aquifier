@@ -10,11 +10,15 @@ import get from 'lodash/get';
 import { shouldRedirect } from '../../../Library/helpers'
 import { color, media } from '../../../Library/Styles/index';
 import InputStyles from '../../Common/inputStyles';
+import Header from '../../Common/header';
+import Button from '../../Common/button';
 
 class JoinGame extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      placeholder: 'ex. 1324'
+    };
   }
 
   entered(event) {
@@ -52,26 +56,31 @@ class JoinGame extends Component {
     }
   }  
 
+
   render() {
     if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }    
 
+    const submitStyles = _.extend({}, InputStyles.default,
+      { display: 'block', margin: '0 auto', width: '180px', borderRadius: '40px', marginBottom: '15px' });
+
     return (
       <Container>
-        <Header>
+        <Header.small>
           access code
-        </Header>
+        </Header.small>
 
         <input
           onChange={event => this.entered(event)}
+          onFocus={() => this.setState({ placeholder: '' })}
           type={'text'}
-          placeholder={'ex. 1324'}
-          style={_.extend(InputStyles.default, { textAlign: 'center', height: '45px', width: '150px' })} />
+          placeholder={this.state.placeholder}
+          style={submitStyles} />
 
-        <Submit
+        <Button.medium
           color={this.state.isValid ? color.mainBlue : color.lightGray} 
           onClick={() => this.submit(this.state.accessCode)}>
           submit
-        </Submit>
+        </Button.medium>
 
         <ErrorMessage>
           {this.state.error}
@@ -80,14 +89,6 @@ class JoinGame extends Component {
     );
   }
 }
-
-const Header = styled.p`
-  text-transform: uppercase;
-  font-family: BrandonGrotesqueBold;
-  letter-spacing: 1px;
-  margin-top: 30px;
-  margin-top: 30px;
-`
 
 const Container = styled.div`
   text-align: center;
@@ -98,20 +99,6 @@ const Container = styled.div`
     padding: 0;
     min-height: 80vh;
   `}; 
-`
-
-const Submit = styled.p`
-  margin: 0 auto;
-  background-color: ${props => props.color};
-  width: 150px;
-  margin-top: 15px;
-  cursor: pointer;
-  height: 45px;
-  color: white;
-  border-radius: 5px;
-  line-height: 45px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
 `
 
 const ErrorMessage = styled.p`

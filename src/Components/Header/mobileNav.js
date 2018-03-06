@@ -96,6 +96,7 @@ const Logout = styled.p`
   font-size: 0.9em;
   text-transform: uppercase;
   z-index: 10;
+  color: ${color.mediumLGray};
 `
 
 const Option = styled.div`

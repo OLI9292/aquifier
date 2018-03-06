@@ -12,7 +12,6 @@ import Explore from './Explore/index';
 import { fetchLevelsAction } from '../../Actions/index';
 
 import {
-  Container,
   Content,
   GrayLine,
   Main,
@@ -20,7 +19,7 @@ import {
   Tab,
   TabContainer,
   Sidebar
-} from './components'
+} from './components';
 
 const GAME_TYPES = ['train', 'explore', 'join game'];
 
@@ -29,13 +28,29 @@ class GameSelect extends Component {
     super(props);
 
     this.state = {
-      gameType: GAME_TYPES[0]
+      gameType: GAME_TYPES[0],
+      fixedSidebar: true
     };
+
+    this.checkScroll = this.checkScroll.bind(this);    
   }
 
   componentDidMount() {
+    window.addEventListener('scroll', this.checkScroll);    
     if (_.isEmpty(this.props.levels)) { this.props.dispatch(fetchLevelsAction()); }
   }
+
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this.checkScroll);
+  }
+
+  checkScroll() {
+    if (!this.sidebar || !this.container) { return; }
+    const sidebarBottom = this.sidebar.getBoundingClientRect().bottom + (this.state.fixedSidebar ? 0 : 120);
+    const containerBottom = this.container.getBoundingClientRect().bottom;
+    const fixedSidebar = containerBottom > sidebarBottom;
+    if (fixedSidebar !== this.state.fixedSidebar) { this.setState({ fixedSidebar }); }
+  }  
 
   render() {
     const {
@@ -67,9 +82,9 @@ class GameSelect extends Component {
         })}
       </TabContainer>
     })();
-    
+
     return (
-      <Container>
+      <div style={{display:'flex',paddingTop:'40px'}} ref={container => this.container = container}>
         <Main>
           {tabs}
           <Content>
@@ -81,10 +96,15 @@ class GameSelect extends Component {
           </Content>
         </Main>
         <Sidebar>
-          {user && session && <MiniLeaderboard user={user} session={session} />}
-          {user && <MiniProgress user={user} />}
+          <div
+            style={{position:'fixed',width:'250px',bottom:this.state.fixedSidebar ? '' : '120px'}} 
+            ref={sidebar => this.sidebar = sidebar}>
+            {user && session && <MiniLeaderboard user={user} session={session} />}
+            <br />
+            {user && <MiniProgress user={user} />}
+          </div>
         </Sidebar>
-      </Container>
+      </div>
     );
   }
 }

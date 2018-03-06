@@ -4,9 +4,10 @@ import { Redirect } from 'react-router';
 import styled from 'styled-components';
 import _ from 'underscore';
 
-import { color, media } from '../../Library/Styles/index';
+import { color } from '../../Library/Styles/index';
 import { shouldRedirect, sum } from '../../Library/helpers';
 import { Container } from '../Common/container';
+import Header from '../Common/header';
 
 import { fetchStudentsAction } from '../../Actions/index';
 
@@ -65,30 +66,30 @@ class MyClass extends Component {
 
     return (
       <Container>
-        <Header>
+        <Header.medium>
           my class
-        </Header>
+        </Header.medium>
         {
           !_.isEmpty(this.state.students) &&
           <Table>
             <tbody>
               <Row>
-                <TableCell left header onClick={() => this.sortStudents('name')}>Name</TableCell>
-                <TableCell header onClick={() => this.sortStudents('wordsLearned')}>Words Learned</TableCell>
-                <TableCell header onClick={() => this.sortStudents('timePlayed')}>Time Played</TableCell>
+                <TableCell left header onClick={() => this.sortStudents('name')}>NAME</TableCell>
+                <TableCell header onClick={() => this.sortStudents('wordsLearned')}>WORDS LEARNED</TableCell>
+                <TableCell right header onClick={() => this.sortStudents('timePlayed')}>TIME PLAYED</TableCell>
               </Row>
             
               <Row holistic>
                 <TableCell holistic left>Class Average</TableCell>
                 <TableCell holistic>{this.average('wordsLearned')}</TableCell>
-                <TableCell holistic>{`${this.average('timePlayed')}m`}</TableCell>
+                <TableCell holistic right>{`${this.average('timePlayed')}m`}</TableCell>
               </Row>
               
               {this.state.students.map((s, i) => {
                 return <Row dark={i % 2 === 0} key={i} onClick={() => this.setState({ redirect: `/profile/${s.id}` })}>
                   <TableCell left>{s.name}</TableCell>
                   <TableCell>{s.wordsLearned}</TableCell>
-                  <TableCell>{`${s.timePlayed}m`}</TableCell>
+                  <TableCell right>{`${s.timePlayed}m`}</TableCell>
                 </Row>
               })}
             </tbody>
@@ -99,41 +100,33 @@ class MyClass extends Component {
   }
 }
 
-export const Header = styled.h1`
-  font-size: 1.5em;
-  font-family: BrandonGrotesqueBold;
-  letter-spacing: 2px;  
-  line-height: 45px;
-  text-transform: uppercase;
-  padding-top: 20px;
-`
-
 const Row = styled.tr`
   height: 75px;
   background-color: ${props => props.holistic
-    ? color.blue
+    ? color.mainBlue
     : props.dark ? color.lightestGray : 'white'
   };
   cursor: pointer;
 `
 
 const Table = styled.table`
-  width: 90%;
+  width: 100%;
   margin: auto;
   border-collapse: collapse;
   text-align: center;
 `
 
 const TableCell = styled.td`
-  border-left: ${props => props.border ? `5px solid ${color.blue}` : ''};
-  border-right: ${props => props.border ? `5px solid ${color.blue}` : ''};
-  font-weight: ${props => props.bold ? '600' : '300'};
+  border-left: ${props => props.border ? `5px solid ${color.mainBlue}` : ''};
+  border-right: ${props => props.border ? `5px solid ${color.mainBlue}` : ''};
   color: ${props => props.header
-    ? color.gray
+    ? color.gray2
     : props.holistic ? 'white' : 'black'};
-  font-size: ${props => props.header ? '1.25em' : '1.5em'};
+  font-family: ${props => props.header ? 'BrandonGrotesqueBold' : 'BrandonGrotesque'};
+  font-size: ${props => props.header ? '1em' : '1.5em'};
   text-align: ${props => props.left ? 'left' : 'center'};
-  padding-left: ${props => props.left ? '10px' : '0px'};
+  padding-left: ${props => props.left ? '7.5%' : '0'};
+  padding-right: ${props => props.right ? '7.5%' : '0'};
 `
 
 const mapStateToProps = (state, ownProps) => ({

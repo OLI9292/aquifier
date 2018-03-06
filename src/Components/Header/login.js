@@ -9,6 +9,7 @@ import { color, media } from '../../Library/Styles/index';
 import InputStyles from '../Common/inputStyles';
 import LocalStorage from '../../Models/LocalStorage'
 import { shouldRedirect } from '../../Library/helpers';
+import Header from '../Common/header';
 
 import { loginUserAction } from '../../Actions/index';
 
@@ -80,30 +81,32 @@ class Login extends Component {
           onClick={() => this.props.exitLogin()}
           src={require('../../Library/Images/exit-gray.png')}
           display={'fixed'} />
-        <h1 style={{fontSize:'1.75em',marginBottom:'20px'}}>
-          Login
-        </h1>
-
-        <input
-          style={_.extend({}, InputStyles.default, {width:'100%'})}
-          placeholder={'username or email'} 
-          autoCapitalize={'none'}
-          onChange={(e) => this.setState({ email: e.target.value.replace(/ /g,'') })}
-          ref={(input) => { this.emailInput = input; }}
-          onClick={() => this.setState({ focusedOn: 'email' })} />
-
-        <input
-          style={_.extend({}, InputStyles.default, {width:'100%',marginTop:'10px'})}
-          type={'password'}
-          placeholder={'password'}
-          autoCapitalize={'none'}
-          onChange={(e) => this.setState({ password: e.target.value.replace(/ /g,'') })}
-          ref={(input) => { this.passwordInput = input; }}
-          onClick={() => this.setState({ focusedOn: 'password' })} />
-
-        <LoginButton onClick={this.handleLogin.bind(this)}>
+        <Header.small>
           login
-        </LoginButton>
+        </Header.small>
+
+        <div style={{marginTop:'25px',marginBottom:'25px'}}>
+          <input
+            style={_.extend({}, InputStyles.default, {width:'100%'})}
+            placeholder={'username or email'} 
+            autoCapitalize={'none'}
+            onChange={(e) => this.setState({ email: e.target.value.replace(/ /g,'') })}
+            ref={(input) => { this.emailInput = input; }}
+            onClick={() => this.setState({ focusedOn: 'email' })} />
+
+          <input
+            style={_.extend({}, InputStyles.default, {width:'100%',marginTop:'10px'})}
+            type={'password'}
+            placeholder={'password'}
+            autoCapitalize={'none'}
+            onChange={(e) => this.setState({ password: e.target.value.replace(/ /g,'') })}
+            ref={(input) => { this.passwordInput = input; }}
+            onClick={() => this.setState({ focusedOn: 'password' })} />
+        </div>
+
+        <Button.medium onClick={this.handleLogin.bind(this)}>
+          login
+        </Button.medium>
 
         <p 
           onClick={() => this.setState({ redirect: '/start-free-trial' })} 
@@ -123,8 +126,8 @@ const MobileExit = styled.img`
   height: 25px;
   width: auto;
   position: absolute;
-  top: 20px;
-  left: 20px;
+  top: 15px;
+  right: 15px;
   cursor: pointer;
 `
 
@@ -133,12 +136,14 @@ const Container = styled.div`
   border-radius: 15px;
   left: 50%;
   margin-top: -225px;
-  margin-left: -300px;
-  min-width: 600px;
+  margin-left: -225px;
+  width: 450px;
   position: fixed;
   text-align: center;
   top: 50%;
   z-index: 10;
+  padding: 20px 75px;
+  box-sizing: border-box;
   ${media.phone`
     width: 100%;
     left: 0;
@@ -151,11 +156,6 @@ const Container = styled.div`
     box-sizing: border-box;
     padding: 10%;
   `};   
-`
-
-const LoginButton = Button.medium.extend`
-  margin-top: 20px;
-  width: 100%;
 `
 
 export default connect()(Login)

@@ -28,14 +28,15 @@ class GameSetup extends Component {
   constructor(props) {
     super(props);
 
+    const steps = _.map(STEPS, step => _.omit(step, 'selected'));
+
     this.state = {
-      steps: STEPS,
-      current: STEPS[0]
+      steps: steps,
+      current: steps[0]
     };
   }
 
   componentDidMount() {
-
     const { levels, roots, words } = this.props;
     if (_.isEmpty(levels)) { this.props.dispatch(fetchLevelsAction()); } else { this.setLevels(levels); }
     if (_.isEmpty(roots))  { this.props.dispatch(fetchRootsAction()); }  else { this.setRoots(roots); }
@@ -78,10 +79,10 @@ class GameSetup extends Component {
   }    
 
   clickedBack() {
-    this.setState({
-      steps: this.updateSteps(this.state.current.index - 1, 'selected'),
-      current: STEPS[this.state.current.index - 2]
-    })
+    let { steps, current } = this.state;    
+    if (this.isSelectingRoots()) { steps[1]['selected'] = undefined };
+    steps = this.updateSteps(current.index - 1, 'selected');
+    this.setState({ steps: steps, current: steps[current.index - 2] });
   }
 
   updateSteps(index, attr, data) {
@@ -112,7 +113,7 @@ class GameSetup extends Component {
         this.setState({ steps });
       } else {
         const steps = this.updateSteps(currentIdx, 'selected', option);
-        this.setState({ steps: steps, current: STEPS[currentIdx] });              
+        this.setState({ steps: steps, current: steps[currentIdx] });              
       }
     } else {
       option.includes('create') ? this.createMatch() : this.previewMatch();
@@ -145,8 +146,8 @@ class GameSetup extends Component {
 
   previewMatch() {
     // TODO: - implement 
-    const { levels, steps } = this.state;
-    const level = _.find(levels, level => level.title === steps[1].selected)
+    // const { levels, steps } = this.state;
+    // const level = _.find(levels, level => level.title === steps[1].selected)
   }
 
   render() {
@@ -175,7 +176,7 @@ class GameSetup extends Component {
           onClick={() => this.clickedBack()}
           src={require('../../Library/Images/icon-back-arrow.png')} />
         <StepsContainer>
-          {_.map(STEPS, step)}
+          {_.map(steps, step)}
         </StepsContainer>
         <Header>
           {this.isSelectingRoots() ? 'choose roots' : current.header}
@@ -191,7 +192,7 @@ class GameSetup extends Component {
           }
         </OptionsContainer>
         <NextButton
-          onClick={() => this.setState({ current: STEPS[2] })}
+          onClick={() => this.setState({ current: steps[2] })}
           hide={!this.isSelectingRoots()}>
           NEXT
         </NextButton>

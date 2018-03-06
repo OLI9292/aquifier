@@ -1,59 +1,54 @@
-import React from 'react';
 import styled from 'styled-components';
-import { lighten10 } from '../../Library/helpers';
 import { color } from '../../Library/Styles/index';
 
 const Default = styled.button`
   &:focus {
     outline: 0;
   }
-  background-color: ${props => props.color || color.blue};
-  &:hover {
-    background-color: ${props => lighten10(props.color) || props.color};
-  }
-  margin: ${props => props.margin || '0'};  
-  vertical-align: ${props => props.verticalAlign || 'baseline'};
+  background-color: ${props => props.bColor || color.mainBlue};
   text-align: center;
-  border-radius: 10px;
+  border-radius: 40px;
   padding: 0px 15px;
   border-width: 0px;
-  color: white;
-  font-family: BrandonGrotesque;
+  color: ${props => props.fColor || 'white'};
+  font-family: BrandonGrotesqueBold;
   cursor: pointer;
-  transition: 0.2s;
-  line-height: 1em;
+  height: 60px;
+  line-height: 60px;
+  width: 180px;
+  font-size: 1.2em;
+  text-transform: uppercase;
+  letter-spacing: 2px;
 `
 
-const LargeButton = Default.extend`
+const Large = Default.extend`
   height: 70px;
-  min-width: 180px;
+  line-height: 70px;
+  width: 180px;
   font-size: 1.6em;
 `
 
-const MediumButton = Default.extend`
-  height: 60px;
-  min-width: 150px;
-  font-size: 1.4em;
+const Small = Default.extend`
+  height: 45px;
+  line-height: 45px;
+  width: 150px;
+  font-size: 1em;
+  letter-spacing: 1px;
 `
 
-const SmallButton = Default.extend`
-  height: 50px;
-  min-width: 120px;
-  font-size: 1.2em;
+const ExtraSmall = Default.extend`
+  height: 40px;
+  line-height: 40px;
+  width: 120px;
+  font-size: 0.8em;
+  letter-spacing: 1px;
 `
-
-const imageAndText = (src, text) => {
-  return <div style={{width:'90%',height:'90%',display:'flex',justifyContent:'center',alignItems:'center'}}>
-    <img alt={text} src={src} style={{height:'75%',marginRight:'5%',width:'auto'}} />
-    <p style={{display:'table-cell',verticalAlign:'middle'}}>{text}</p>
-  </div>;
-}
 
 const Button = {
-  large: LargeButton,
-  medium: MediumButton,
-  small: SmallButton,
-  imageAndText: imageAndText
+  large: Large,
+  medium: Default,
+  small: Small,
+  extraSmall: ExtraSmall
 }
 
 export default Button;

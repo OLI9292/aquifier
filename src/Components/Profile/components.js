@@ -1,16 +1,17 @@
 import styled from 'styled-components';
-import { color, media } from '../../Library/Styles/index';
+import { media } from '../../Library/Styles/index';
 
 export const HeaderStats = styled.div`
   display: flex;
   align-items: center;
-  height: 200px;
   width: 50%;
   margin: 0 auto;
-  margin-top: 20px;
-  margin-bottom: 20px;
+  margin-top: 30px;
+  margin-bottom: 40px;
   justify-content: space-evenly;
   ${media.phone`
+    margin-top: 10px;
+    margin-bottom: 20px;
     width: 100%;
     height: 100px;
   `};      

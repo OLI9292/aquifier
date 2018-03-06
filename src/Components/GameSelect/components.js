@@ -1,11 +1,6 @@
 import styled from 'styled-components';
 import { color, media } from '../../Library/Styles/index';
 
-export const Container = styled.div`
-  display: flex;
-  padding-top: 40px;
-`
-
 export const Content = styled.div`
   width: 100%;
   background-color: white;
@@ -33,23 +28,24 @@ export const GrayLine = styled.div`
 export const Header = styled.p`
   text-align: center;
   font-size: 1.5em;
-  height: 15px;
+  height: 0px;
+  line-height: 0px;
 `
 
 export const Icon = styled.img`
-  height: 35px;
+  height: 30px;
   width: auto;
 `
 
 export const LeaderboardListItem = styled.li`
-  height: 60px;
+  height: 50px;
   display: flex;
   align-items: center;
   justify-content: start;
 `
 
 export const Main = styled.div`
-  flex: 2.5;
+  flex: auto;
   margin-right: 25px;
   position: relative;
   ${media.phone`
@@ -59,42 +55,43 @@ export const Main = styled.div`
 `
 
 export const ProgressListItem = styled.li`
-  height: 100px;
+  height: 80px;
   text-align: center
 `
 
 export const Sidebar = styled.div`
-  flex: 1;
+  width: 250px;
   display: flex;
   flex-direction: column;
   ${media.phone`
     display: none;
-  `};`
+  `};  
+`
 
 export const SidebarContainer = styled.div`
   background-color: white;
-  margin-bottom: 25px;
   border-radius: 20px;
-  padding-bottom: 25px;
+  padding: 10px;
+  box-sizing: border-box;
 `
 
 export const Stat = styled.p`
-  margin-left: ${props => props.forLeaderboards ? '10px' : '0'};
+  margin-left: ${props => props.forLeaderboards ? '5px' : '0'};
   line-height: ${props => props.forLeaderboards ? '' : '0px'};
   font-family: EBGaramondSemiBold;
   color: ${props => props.color};
-  font-size: ${props => props.forLeaderboards ? '2em' : '1.75em'};
+  font-size: ${props => props.forLeaderboards ? '1.75em' : '1.5em'};
   margin-top: ${props => props.forLeaderboards ? '' : '20px'};
 `
 
 export const StatName = styled.div`
   height: 0px;
   line-height: 0px;
-  font-size: 0.7em;
+  font-size: 0.65em;
   font-family: BrandonGrotesqueBold;
   color: ${color.gray};
   letter-spacing: 1px;
-  margin-top: -2px;
+  padding: 2px 0px;
 `
 
 export const Tab = styled.div`

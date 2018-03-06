@@ -18,14 +18,14 @@ import {
 
 const STATS = [
   {
-    slug: 'earthAllTime',
-    image: require('../../Library/Images/icon-earth.png'),
-    color: color.mainBlue
-  },
-  {
     slug: 'schoolAllTime',
     image: require('../../Library/Images/icon-house.png'),
     color: color.red
+  },
+  {
+    slug: 'earthAllTime',
+    image: require('../../Library/Images/icon-earth.png'),
+    color: color.mainBlue
   }
 ]
 
@@ -89,7 +89,7 @@ class MiniLeaderboard extends Component {
           Leaderboards
         </Header>
         {ranks &&
-          <ul style={{listStyle:'none',margin:'0 auto',width:'60%',padding:'0'}}>
+          <ul style={{listStyle:'none',margin:'0 auto',width:'50%',padding:'0px 0px 10px 0px'}}>
             {_.map(STATS,  data => {
               return <LeaderboardListItem key={data.slug}>
                 <Icon src={data.image} />

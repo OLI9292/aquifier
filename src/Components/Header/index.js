@@ -11,7 +11,7 @@ import { shouldRedirect } from '../../Library/helpers';
 import LocalStorage from '../../Models/LocalStorage'
 import { logoutUserAction } from '../../Actions/index';
 
-import { media, color, PHONE_MAX_WIDTH } from '../../Library/Styles/index';
+import { media } from '../../Library/Styles/index';
 
 class Header extends Component {
   constructor(props) {
@@ -20,7 +20,6 @@ class Header extends Component {
   }
 
   displayLogin() {
-    console.log('displayLogin')
     this.setState({ displayLoginModal: true });
   }
 

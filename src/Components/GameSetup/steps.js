@@ -23,6 +23,6 @@ export const STEPS = [
     index: 4,
     name: 'matchPreview',
     header: 'match preview',
-    options: ['test as student', 'create match']
+    options: ['create match']
   }   
 ]
