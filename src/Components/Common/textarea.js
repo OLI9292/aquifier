@@ -1,8 +1,9 @@
 import styled from 'styled-components';
+import { color } from '../../Library/Styles/index';
 
 const Default = styled.textarea`
-  background-color: #f1f1f1;
-  border: none;
+  background-color: white;
+  border: 2px solid ${color.lightGray};
   border-radius: 5px;
   font-family: BrandonGrotesque;
   &:focus {

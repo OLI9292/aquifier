@@ -7,6 +7,9 @@ import _ from 'underscore';
 import Textarea from '../Common/textarea';
 import { shouldRedirect } from '../../Library/helpers';
 import InputStyles from '../Common/inputStyles';
+import { Container } from '../Common/container';
+import Header from '../Common/header';
+
 import { color, media } from '../../Library/Styles/index';
 
 class InfoForm extends Component {
@@ -137,15 +140,10 @@ class InfoForm extends Component {
     })()
 
     return (
-      <Container>
-        <MobileExit
-          onClick={() => this.setState({ redirect: '/' })}
-          src={require('../../Library/Images/exit-gray.png')}
-          display={this.props.smallScreen ? 'fixed' : 'none'} />
-
-        <h1 style={{height:'10px',lineHeight:'0px',letterSpacing:'1px'}}>
-          START FREE TRIAL
-        </h1>
+      <_Container>
+        <Header.large style={{color:'black'}}>
+          start free trial
+        </Header.large>
 
         {description}
         
@@ -168,31 +166,18 @@ class InfoForm extends Component {
             {this.state.success ? 'Submitted.  We\'ll be in touch soon!' : this.state.errorMessage}
           </ErrorMessage>
         </form>
-      </Container>
+      </_Container>
     );
   }
 }
 
-const MobileExit = styled.img`
-  height: 25px;
-  width: auto;
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  cursor: pointer;
+const _Container = Container.extend`
+  box-sizing: border-box;
+  padding: 20px 5% 20px 5%;
+  text-align: left;
+  margin-top: 70px;
 `
 
-const Container = styled.div`
-  padding: 50px;
-  ${media.phone`
-    position: absolute;
-    z-index: 100000000;
-    background-color: white;
-    width: 100%;
-    padding: 100px 50px 50px 50px;
-    box-sizing: border-box;
-  `};
-`
 
 // TODO: - move to inputStyles.js
 const SubmitButton = styled.input`
@@ -214,9 +199,6 @@ const SubmitButton = styled.input`
 `
 
 const ErrorMessage = styled.p`
-  font-size: 1.25em;
-  position: relative;
-  padding-left: 10%;
   color: ${props => props.success ? color.green : color.red};
   visibility: ${props => props.show ? 'visible' : 'hidden'};
 `

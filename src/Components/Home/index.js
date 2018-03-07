@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
 import styled from 'styled-components';
 
-import { color } from '../../Library/Styles/index';
+import { color, media } from '../../Library/Styles/index';
 import TESTIMONIALS from './testimonials';
 import Card from './card';
 import CTA from './cta';
@@ -55,7 +55,7 @@ class Home extends Component {
     if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }
 
     return (
-      <Container>
+      <div>
         <TopContainer>
           <TopImage image={bgYellow} />
         </TopContainer>
@@ -64,11 +64,11 @@ class Home extends Component {
           <Header path={'/'} />
 
           <TopContentContainer>
-            <h1 style={{fontFamily:'BrandonGrotesqueBold',fontSize:'2.5em'}}>
+            <h1 style={{fontFamily:'BrandonGrotesqueBold',fontSize:'2.25em'}}>
               THE BUILDING BLOCKS OF ENGLISH
             </h1>
 
-            <h3 style={{fontFamily:'EBGaramondSemiBold',fontSize:'1.5em'}}>
+            <h3 style={{fontFamily:'EBGaramondSemiBold',fontSize:'1.25em'}}>
               Decipher vocabulary and enhance literacy with gamified Latin and Greek roots.
             </h3>
           </TopContentContainer>   
@@ -79,15 +79,15 @@ class Home extends Component {
         </div>
       
         <ButtonContainer>
-          <Link to={'/play/type=demo'}>
-            <Button.medium style={{width:'225px',marginRight:'10px'}}>
+          <Link style={{margin:'0 auto',textDecoration:'none'}} to={'/play/type=demo'}>
+            <_Button color={color.mainBlue}>
               play now
-            </Button.medium>
+            </_Button>
           </Link>
-          <Link to={'/start-free-trial'}>
-            <Button.medium style={{width:'225px',backgroundColor:color.green,marginLeft:'10px'}}>
+          <Link style={{margin:'0 auto',textDecoration:'none'}} to={'/start-free-trial'}>
+            <_Button color={color.green}>
               sign up
-            </Button.medium>
+            </_Button>
           </Link>
         </ButtonContainer>
 
@@ -96,20 +96,20 @@ class Home extends Component {
 
             <div style={{display:'flex',color:'white'}}>
               <div style={{textAlign:'right',margin:'35px 5% 35px 15%'}}>
-                <p style={{fontFamily:'BrandonGrotesqueBold',fontSize:'1.5em'}}>
+                <p style={{fontFamily:'BrandonGrotesqueBold',fontSize:'1.25em'}}>
                   {TESTIMONIALS[0].quote}
                 </p>
                 <WhiteLine align={'right'}/>
-                <p style={{fontFamily:'EBGaramond',fontSize:'1.25em',paddingTop:'25px'}}>
+                <p style={{fontFamily:'EBGaramond',paddingTop:'25px'}}>
                   {TESTIMONIALS[0].from}
                 </p>
               </div>
               <div style={{textAlign:'left',margin:'35px 15% 35px 5%'}}>
-                <p style={{fontFamily:'BrandonGrotesqueBold',fontSize:'1.5em'}}>
+                <p style={{fontFamily:'BrandonGrotesqueBold',fontSize:'1.25em'}}>
                   {TESTIMONIALS[1].quote}
                 </p>
                 <WhiteLine align={'left'}/>
-                <p style={{fontFamily:'EBGaramond',fontSize:'1.25em',paddingTop:'25px'}}>
+                <p style={{fontFamily:'EBGaramond',paddingTop:'25px'}}>
                   {TESTIMONIALS[1].from}
                 </p>
               </div>
@@ -129,10 +129,10 @@ class Home extends Component {
           </MorphemeCubeContainer>
 
           <div>
-            <p style={{fontFamily:'BrandonGrotesqueBold',color:color.gray2,fontSize:'1.75em'}}>
+            <p style={{fontFamily:'BrandonGrotesqueBold',color:color.gray2,fontSize:'1.5em'}}>
               Morphemes are the best way to build vocabulary
             </p>
-            <p style={{fontFamily:'EBGaramond',fontSize:'1.25em',lineHeight:'30px'}}>
+            <p style={{fontFamily:'EBGaramond',lineHeight:'30px'}}>
               {morphemeText}
             </p>          
           </div>
@@ -161,7 +161,7 @@ class Home extends Component {
         <CTA smallScreen={this.state.smallScreen} /> 
 
         <AppleContainer>
-          <p style={{fontFamily:'BrandonGrotesqueBold',textAlign:'right',fontSize:'1.5em',width:'45%'}}>
+          <p style={{fontFamily:'BrandonGrotesqueBold',textAlign:'right',fontSize:'1.25em',width:'45%'}}>
             Also available for solo or supplemental training
           </p>
           <div style={{width:'10%',height:'100%'}} />
@@ -195,14 +195,11 @@ class Home extends Component {
             </BottomNav>
           </BottomImage>        
         </BottomContainer>             
-      </Container>
+      </div>
     );
   }
 }
 
-const Container = styled.div`
-  font-size: 0.8em;
-`
 
 const TopContainer = styled.div`
   height: 550px;
@@ -246,13 +243,22 @@ const ButtonContainer = styled.div`
   display: flex;
   margin-left: 10%;
   width: 50%;
-  margin-top: 40px;
+  margin-top: 40px !important;
   position: relative;
-  @media (max-width: 900px) {
-    width: 80%;
-    margin-top: 50px;
-    justify-content: space-evenly;
-  }  
+  ${media.phone`
+    margin: 0 auto;
+    flex-direction: column;
+  `};
+`
+
+const _Button = Button.medium.extend`
+  width: 225px;
+  background-color: ${props => props.color};
+  margin: 0px 10px;
+  ${media.phone`
+    margin: 10px 0px;
+    width: 180px;
+  `}; 
 `
 
 const BottomNav = styled.div`

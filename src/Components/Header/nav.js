@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
+import { media } from '../../Library/Styles/index';
 import background from '../../Library/Images/header-bg.png';
 
 class Nav extends Component {
@@ -34,7 +35,7 @@ class Nav extends Component {
     const links = (() => {
       return <div style={{display:'flex',width:'100%',alignItems:'center',justifyContent:'space-between'}}>
         <LeftLinksContainer
-          width={path === '/' ? '25px' : '325px'}
+          width={'325px'}
           show={loggedIn}>
           {_.map(paths, link)}
         </LeftLinksContainer>
@@ -42,31 +43,25 @@ class Nav extends Component {
           loggedIn
           ?
           <LinkText onClick={() => this.props.logout()}>
-            LOGOUT
+            logout
           </LinkText>  
           :
-          <div>
-            <Link style={{display:'block'}} to={'/start-free-trial'}>
-              <LinkText style={{margin:'30px 0px 10px 0px'}}>
-                START FREE TRIAL
-              </LinkText>
-            </Link>
-
-            <LinkText style={{display:'block',textAlign:'right'}} onClick={() => this.props.displayLogin()}>
-              LOGIN
-            </LinkText>
-          </div>
+          <LinkText style={{display:'block',textAlign:'right'}} onClick={() => this.props.displayLogin()}>
+            login
+          </LinkText>
         }
       </div>
     })();
 
     return (
       <Container isHome={path === '/'}>
-        <div style={{width:'90%',maxWidth:'1100px',margin:'0 auto'}}>
+        <div style={{width:'90%',margin:'0 auto'}}>
           <div style={{display:'flex',width:'100%',alignItems:'center',height:'90px'}}>
-            <FullLogo onClick={() => this.props.redirect('/')}>
-              WORDCRAFT
-            </FullLogo>
+            <Link style={{textDecoration:'none',color:'black'}} to={'/'}>
+              <FullLogo>
+                WORDCRAFT
+              </FullLogo>
+            </Link>
             {links}
           </div>
         </div>  
@@ -83,6 +78,9 @@ const Container = styled.div`
   background: ${props => props.isHome ? '' : `url(${background}) no-repeat center center`};
   background-size: 100% auto;
   z-index: 2;
+  ${media.phone`
+    background-size: auto 100%;
+  `};    
 ` 
 
 const LeftLinksContainer = styled.div`
@@ -91,13 +89,14 @@ const LeftLinksContainer = styled.div`
   pointer-events: ${props => props.show ? 'auto' : 'none'};
   align-items: center;
   justify-content: space-between;
-  width: ${props => props.width};
+  width: ${props => props.show ? '300px' : '0'};
+  margin-left: 25px;
 `
 
 const FullLogo = styled.h2`
   font-family: BrandonGrotesqueBold;
-  font-size: 2em;
-  letter-spacing: 1px;
+  font-size: 1.75em;
+  letter-spacing: 2px;
   margin-right: 5%;
   cursor: pointer;
 `
@@ -108,6 +107,8 @@ const LinkText = styled.div`
   cursor: pointer;
   display: inline-block;
   color: black;
+  text-transform: uppercase;
+  font-size: 0.9em;
 `
 
 const Highlight = styled.div`
@@ -116,7 +117,7 @@ const Highlight = styled.div`
   height: 2px;
   background-color: black;
   position: absolute;
-  margin-top: -25px;
+  margin-top: -22px;
   border-radius: 1px;
 `
 

@@ -274,7 +274,7 @@ class Game extends Component {
 
     const topInfo = (() => {
       return <div style={{height:'10%',width:'100%',display:'flex',alignItems:'center'}}>
-        <Link to={'/home'}>
+        <Link to={'/'}>
           <ExitOut
             src={require('../../Library/Images/exit-gray.png')} />
         </Link>

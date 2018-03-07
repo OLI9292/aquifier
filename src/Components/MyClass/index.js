@@ -86,7 +86,7 @@ class MyClass extends Component {
               </Row>
               
               {this.state.students.map((s, i) => {
-                return <Row dark={i % 2 === 0} key={i} onClick={() => this.setState({ redirect: `/profile/${s.id}` })}>
+                return <Row dark={i % 2 === 0} key={i}>
                   <TableCell left>{s.name}</TableCell>
                   <TableCell>{s.wordsLearned}</TableCell>
                   <TableCell right>{`${s.timePlayed}m`}</TableCell>

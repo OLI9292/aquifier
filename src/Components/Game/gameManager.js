@@ -64,12 +64,21 @@ class GameManager extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.user && !this.state.loading) {
+    const {
+      level,
+      loading,
+      questions,
+      settings
+    } = this.state;
+
+    if (nextProps.user && !loading) {
       this.setState({ loading: true }, () => this.setupGame(nextProps.user));  
-    } else if (nextProps.questions.length && !this.state.questions) {
+    }
+    if (nextProps.questions.length && !questions) {
       this.setState({ questions: nextProps.questions });
-    } else if (nextProps.levels.length && !this.state.level) {
-      this.setLevelName(nextProps, this.state.settings);
+    }
+    if (nextProps.levels.length && !level && settings) {
+      this.setLevelName(nextProps, settings);
     }
   }
 
@@ -114,9 +123,17 @@ class GameManager extends Component {
   }
 
   gameOver(accuracy, score, time) {
-    this.setState({ gameOver: true });
     const { settings, type } = this.state;
 
+    // Return to home screen if demo
+    if (type === 'demo') {
+      this.setState({ redirect: '/' });
+      return;
+    }
+
+    this.setState({ gameOver: true });
+
+    // Save data and return to user home if train
     if (type === 'train') {
       const levelId = settings.id;
       const stage = parseInt(settings.stage, 10);
@@ -130,7 +147,10 @@ class GameManager extends Component {
       };      
       this.props.dispatch(saveLevelAction(data, userId));
       this.setState({ redirect: '/home' });      
-    } else if (type === 'multiplayer') {
+    }
+
+    // Save score and redirect to leaderboard if multiplayer
+    if (type === 'multiplayer') {
       const username = this.username(this.props.user);
       Firebase.refs.games.child(settings.id).child('players').child(username).set(score);
       const redirect = '/leaderboard/' + settings.id;
