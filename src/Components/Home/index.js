@@ -80,14 +80,14 @@ class Home extends Component {
       
         <ButtonContainer>
           <Link style={{margin:'0 auto',textDecoration:'none'}} to={'/play/type=demo'}>
-            <_Button color={color.mainBlue}>
+            <ButtonExt color={color.mainBlue}>
               play now
-            </_Button>
+            </ButtonExt>
           </Link>
           <Link style={{margin:'0 auto',textDecoration:'none'}} to={'/start-free-trial'}>
-            <_Button color={color.green}>
+            <ButtonExt color={color.green}>
               sign up
-            </_Button>
+            </ButtonExt>
           </Link>
         </ButtonContainer>
 
@@ -251,7 +251,7 @@ const ButtonContainer = styled.div`
   `};
 `
 
-const _Button = Button.medium.extend`
+const ButtonExt = Button.medium.extend`
   width: 225px;
   background-color: ${props => props.color};
   margin: 0px 10px;

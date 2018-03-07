@@ -43,17 +43,6 @@ class Explore extends Component {
       </LevelButton>
     }
 
-    const difficultySelect = (() => {
-      return <div style={{marginTop:'50px'}}>
-        <p>
-          Difficulty Select <span style={{color:'#828282'}}>(for testing)</span>
-        </p>
-        <select value={this.state.difficulty} onChange={e => this.setState({ difficulty: e.target.value })}>
-          {_.map(_.range(1, 11), diff => <option key={diff} value={diff}>{diff}</option>)}
-        </select>
-      </div>
-    })();
-
     return (
       <LevelSelectContainer>
         <BackArrow
@@ -71,7 +60,6 @@ class Explore extends Component {
         <LevelButtonsContainer>
           {_.map(_.sortBy(subcategory.levels, 'ladder'), button)}
         </LevelButtonsContainer>
-        {difficultySelect}
       </LevelSelectContainer>
     );
   }

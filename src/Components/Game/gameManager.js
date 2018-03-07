@@ -122,7 +122,7 @@ class GameManager extends Component {
     this.setState({ level: level, time: time });
   }
 
-  gameOver(accuracy, score, time) {
+  gameOver = async (accuracy, score, time) => {
     const { settings, type } = this.state;
 
     // Return to home screen if demo
@@ -134,7 +134,7 @@ class GameManager extends Component {
     this.setState({ gameOver: true });
 
     // Save data and return to user home if train
-    if (type === 'train') {
+    if (type === 'train' || type === 'speed') {
       const levelId = settings.id;
       const stage = parseInt(settings.stage, 10);
       const userId = this.props.session.user;
@@ -143,9 +143,11 @@ class GameManager extends Component {
         levelId: levelId,
         score: score,
         stage: stage,
-        time: time
-      };      
-      this.props.dispatch(saveLevelAction(data, userId));
+        time: time,
+        type: type
+      };    
+
+      await this.props.dispatch(saveLevelAction(data, userId));
       this.setState({ redirect: '/home' });      
     }
 

@@ -10,7 +10,7 @@ import InputStyles from '../Common/inputStyles';
 import { Container } from '../Common/container';
 import Header from '../Common/header';
 
-import { color, media } from '../../Library/Styles/index';
+import { color } from '../../Library/Styles/index';
 
 class InfoForm extends Component {
   constructor(props) {
@@ -140,7 +140,7 @@ class InfoForm extends Component {
     })()
 
     return (
-      <_Container>
+      <ContainerExt>
         <Header.large style={{color:'black'}}>
           start free trial
         </Header.large>
@@ -166,12 +166,12 @@ class InfoForm extends Component {
             {this.state.success ? 'Submitted.  We\'ll be in touch soon!' : this.state.errorMessage}
           </ErrorMessage>
         </form>
-      </_Container>
+      </ContainerExt>
     );
   }
 }
 
-const _Container = Container.extend`
+const ContainerExt = Container.extend`
   box-sizing: border-box;
   padding: 20px 5% 20px 5%;
   text-align: left;

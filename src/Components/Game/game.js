@@ -73,12 +73,8 @@ class Game extends Component {
   }  
 
   componentWillReceiveProps(nextProps) {
-    const questions = nextProps.questions;
-
-    if (questions && !this.state.questions) { 
-      const gameStartTime = moment();
-      this.setState({ questions: questions, gameStartTime: gameStartTime }, this.setQuestion); 
-    }
+    if (!nextProps.questions || this.state.questions) { return; }
+    this.setState({ questions: nextProps.questions, gameStartTime: moment() }, this.setQuestion);
   }
 
   setQuestion() {
@@ -95,7 +91,7 @@ class Game extends Component {
         const questionIndex = 0;
         this.setState({ questions: questions, questionIndex: questionIndex }, this.setQuestion);
       } else {
-        this.gameOver();        
+        this.gameOver();
       }
     }
   }
@@ -104,7 +100,7 @@ class Game extends Component {
     const accuracy = this.state.correctCounter[0] / Math.max(this.state.correctCounter[1], 1);
     const score = this.state.points;
     const time = Math.floor(moment.duration(moment().diff(this.state.gameStartTime)).asSeconds());
-    this.props.gameOver(accuracy, score, time);
+    this.setState({ gameOver: true }, () => this.props.gameOver(accuracy, score, time));
   }
 
   guessed(choice, idx) {
@@ -169,6 +165,7 @@ class Game extends Component {
       correctCounter: [correctCounter[0] + (correct ? 1 : 0), correctCounter[1] + 1],
       questionIndex: nextQuestionIndex
      }, () => {
+      console.log(this.state.correctCounter)
       this.props.recordQuestion(question, correct, seconds, this.state);        
       this.animateAlerts();
       this.continue = setTimeout(() => { this.reset(() => this.setQuestion()) }, 100000);
@@ -234,6 +231,7 @@ class Game extends Component {
     if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }  
 
     const {
+      gameOver,
       guessed,
       highlightPrompt,
       hintButtonsOn,
@@ -431,15 +429,15 @@ class Game extends Component {
             Waiting for admin to start game.
           </Pause>
           :
-          this.state.questions
+          !this.state.questions || gameOver
           ?
+          <LoadingSpinner />
+          :
           <Content opacity={this.state.gameOpaqueness}>
             {topInfo}
             {questionComponents}
             {bottomInfo}
           </Content>
-          :
-          <LoadingSpinner />
         }
       </div>
     );
