@@ -5,10 +5,10 @@ import queryString from 'query-string';
 import get from 'lodash/get';
 
 import starIcon from '../../Library/Images/icon-stars.png';
-import bookIcon from '../../Library/Images/icon-book.png';
+import bookIcon from '../../Library/Images/icon-book-green.png';
 import yellowStar from '../../Library/Images/icon-star-yellow.png';
-import orangeBadge from '../../Library/Images/icon-badge-orange.png';
-import redBadge from '../../Library/Images/icon-badge-red.png';
+import iconSchool from '../../Library/Images/icon-house.png';
+import iconEarth from '../../Library/Images/icon-earth.png';
 import archer from '../../Library/Images/icon-archer-purple.png';
 import grayStar from '../../Library/Images/icon-star-gray.png';
 import book from '../../Library/Images/Book.png';
@@ -210,7 +210,7 @@ class Profile extends Component {
     };
 
     const sidebarStats = () => {
-      const [schoolRank, worldRank] = this.ranks(ranks, session.user);
+      const [worldRank, schoolRank] = this.ranks(ranks, session.user);
       
       const [outerStyles, innerStyles] = this.state.fixedStats
         ? [ { position:'absolute', right:'225px' }, { position:'fixed', top:'15%', width:'225px' } ]
@@ -225,28 +225,30 @@ class Profile extends Component {
           <BookStats id={'book'}>
             <div style={{marginRight:'10px'}}>
               <img
-                alt={'badge icon'}
-                src={redBadge}
-                style={{height:'45px',width:'auto'}} />
+                alt={'school icon'}
+                src={iconSchool}
+                style={{height:'45px',width:'auto'}} />          
               <h3 style={{height:'0',lineHeight:'0',fontSize:'0.7em',fontFamily:'BrandonGrotesque'}}>
                 SCHOOL RANK
               </h3>                    
               <h1 style={{fontFamily:'EBGaramondSemiBold',color:color.red,fontSize:'2.25em',lineHeight:'10px'}}>
                 {schoolRank}
-              </h1>
+              </h1>            
             </div>
+
             <div style={{marginRight:'10px'}}>
               <img
-                alt={'book icon'}
-                src={orangeBadge}
-                style={{height:'45px',width:'auto'}} />          
+                alt={'earth icon'}
+                src={iconEarth}
+                style={{height:'45px',width:'auto'}} />
               <h3 style={{height:'0',lineHeight:'0',fontSize:'0.7em',fontFamily:'BrandonGrotesque'}}>
                 WORLD RANK
               </h3>                    
-              <h1 style={{fontFamily:'EBGaramondSemiBold',color:color.orange,fontSize:'2.25em',lineHeight:'10px'}}>
+              <h1 style={{fontFamily:'EBGaramondSemiBold',color:color.mainBlue,fontSize:'2.25em',lineHeight:'10px'}}>
                 {worldRank}
-              </h1>            
+              </h1>
             </div>
+
             <div style={{marginRight:'10px'}}>
               <img
                 alt={'archer icon'}

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
 import styled from 'styled-components';
 
-import { color, media } from '../../Library/Styles/index';
+import { color } from '../../Library/Styles/index';
 import TESTIMONIALS from './testimonials';
 import Card from './card';
 import CTA from './cta';
@@ -31,6 +31,7 @@ class Home extends Component {
   }
 
   componentDidMount() {
+    this.redirectIfLoggedIn(this.props);
     window.addEventListener('resize', this.checkWindowSize);
     this.checkWindowSize();
   }
@@ -40,10 +41,14 @@ class Home extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.session) { 
-      const redirect = nextProps.session.isTeacher ? '/setup-game' : '/home'
+    this.redirectIfLoggedIn(nextProps);
+  }
+
+  redirectIfLoggedIn(props) {
+    if (props.session) { 
+      const redirect = props.session.isTeacher ? '/setup-game' : '/home'
       this.setState({ redirect });
-    };    
+    };     
   }
 
   checkWindowSize() {
@@ -64,11 +69,11 @@ class Home extends Component {
           <Header path={'/'} />
 
           <TopContentContainer>
-            <h1 style={{fontFamily:'BrandonGrotesqueBold',fontSize:'2.25em'}}>
+            <h1 style={{fontFamily:'BrandonGrotesqueBold',fontSize:'2.5em'}}>
               THE BUILDING BLOCKS OF ENGLISH
             </h1>
 
-            <h3 style={{fontFamily:'EBGaramondSemiBold',fontSize:'1.25em'}}>
+            <h3 style={{fontFamily:'EBGaramondSemiBold',fontSize:'1.5em'}}>
               Decipher vocabulary and enhance literacy with gamified Latin and Greek roots.
             </h3>
           </TopContentContainer>   
@@ -78,17 +83,18 @@ class Home extends Component {
           </DaisyChainContainer>
         </div>
       
-        <ButtonContainer>
-          <Link style={{margin:'0 auto',textDecoration:'none'}} to={'/play/type=demo'}>
-            <ButtonExt color={color.mainBlue}>
+        <ButtonContainer smallScreen={this.state.smallScreen}>
+          <ButtonExt smallScreen={this.state.smallScreen} color={color.mainBlue}>
+            <Link style={{textDecoration:'none',color:'white'}} to={'/play/type=demo'}>
               play now
-            </ButtonExt>
-          </Link>
-          <Link style={{margin:'0 auto',textDecoration:'none'}} to={'/start-free-trial'}>
-            <ButtonExt color={color.green}>
+            </Link>
+          </ButtonExt>
+          {this.state.smallScreen && <br />}
+          <ButtonExt smallScreen={this.state.smallScreen} color={color.green}>
+            <Link style={{textDecoration:'none',color:'white'}} to={'/start-free-trial'}>
               sign up
-            </ButtonExt>
-          </Link>
+            </Link>
+          </ButtonExt>
         </ButtonContainer>
 
         <TestimonialsContainer>
@@ -96,7 +102,7 @@ class Home extends Component {
 
             <div style={{display:'flex',color:'white'}}>
               <div style={{textAlign:'right',margin:'35px 5% 35px 15%'}}>
-                <p style={{fontFamily:'BrandonGrotesqueBold',fontSize:'1.25em'}}>
+                <p style={{fontFamily:'BrandonGrotesqueBold',fontSize:'1.5em'}}>
                   {TESTIMONIALS[0].quote}
                 </p>
                 <WhiteLine align={'right'}/>
@@ -105,7 +111,7 @@ class Home extends Component {
                 </p>
               </div>
               <div style={{textAlign:'left',margin:'35px 15% 35px 5%'}}>
-                <p style={{fontFamily:'BrandonGrotesqueBold',fontSize:'1.25em'}}>
+                <p style={{fontFamily:'BrandonGrotesqueBold',fontSize:'1.5em'}}>
                   {TESTIMONIALS[1].quote}
                 </p>
                 <WhiteLine align={'left'}/>
@@ -129,10 +135,10 @@ class Home extends Component {
           </MorphemeCubeContainer>
 
           <div>
-            <p style={{fontFamily:'BrandonGrotesqueBold',color:color.gray2,fontSize:'1.5em'}}>
+            <p style={{fontFamily:'BrandonGrotesqueBold',color:color.gray2,fontSize:'1.75em'}}>
               Morphemes are the best way to build vocabulary
             </p>
-            <p style={{fontFamily:'EBGaramond',lineHeight:'30px'}}>
+            <p style={{fontFamily:'EBGaramond',lineHeight:'30px',fontSize:'1.25em'}}>
               {morphemeText}
             </p>          
           </div>
@@ -161,7 +167,7 @@ class Home extends Component {
         <CTA smallScreen={this.state.smallScreen} /> 
 
         <AppleContainer>
-          <p style={{fontFamily:'BrandonGrotesqueBold',textAlign:'right',fontSize:'1.25em',width:'45%'}}>
+          <p style={{fontFamily:'BrandonGrotesqueBold',textAlign:'right',fontSize:'1.5em',width:'45%'}}>
             Also available for solo or supplemental training
           </p>
           <div style={{width:'10%',height:'100%'}} />
@@ -240,25 +246,17 @@ const DaisyChainContainer = styled.div`
 `
 
 const ButtonContainer = styled.div`
-  display: flex;
-  margin-left: 10%;
-  width: 50%;
+  margin-left: ${props => props.smallScreen ? '' : '10%'};
   margin-top: 40px !important;
   position: relative;
-  ${media.phone`
-    margin: 0 auto;
-    flex-direction: column;
-  `};
+  display: ${props => props.smallScreen ? 'flex' : ''};
+  flex-direction: ${props => props.smallScreen ? 'column' : ''};
 `
 
 const ButtonExt = Button.medium.extend`
   width: 225px;
   background-color: ${props => props.color};
-  margin: 0px 10px;
-  ${media.phone`
-    margin: 10px 0px;
-    width: 180px;
-  `}; 
+  margin: ${props => props.smallScreen ? '0 auto' : '0px 20px 0px 0px'};
 `
 
 const BottomNav = styled.div`
@@ -326,7 +324,7 @@ const WhiteLine = styled.div`
 `
 
 const TestimonialsContainer = styled.div`
-  margin-top: 100px;
+  margin-top: 60px;
   width: 100%;
 `
 

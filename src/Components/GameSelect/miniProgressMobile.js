@@ -17,8 +17,8 @@ const STATS = [
   {
     name: 'WORDS',
     slug: 'wordsLearned',
-    image: require('../../Library/Images/icon-book.png'),
-    color: color.yellow
+    image: require('../../Library/Images/icon-book-green.png'),
+    color: color.green
   }
 ]
 

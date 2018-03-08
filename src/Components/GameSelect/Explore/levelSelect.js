@@ -20,13 +20,11 @@ import {
 class Explore extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      difficulty: 1
-    };
+    this.state = {};
   }
 
   play(level) {
-    const params = { type: 'explore', id: level._id, questionLevel: this.state.difficulty };
+    const params = { type: 'explore', id: level._id };
     this.setState({ redirect: '/play/' + queryString.stringify(params) });
   }  
 

@@ -6,7 +6,7 @@ import get from 'lodash/get'
 import { Link } from 'react-router-dom';
 
 import { color } from '../../Library/Styles/index';
-import { shouldRedirect } from '../../Library/helpers';
+import { caseInsEq, shouldRedirect } from '../../Library/helpers';
 import LoadingSpinner from '../Common/loadingSpinner';
 
 import hintChecker from './hintChecker';
@@ -38,7 +38,6 @@ class Game extends Component {
       hintCount: 0,
       guessed: {},
       prompt: 'normal',
-      points: 0,
       incorrectGuesses: 0,
       correctCounter: [0,0],
       questionStartTime: moment()
@@ -63,7 +62,7 @@ class Game extends Component {
       this.reset(() => this.setQuestion());
     } else {
       const choices = this.state.question.choices;
-      const index = _.findIndex(choices, c => c.value.toLowerCase() === e.key.toLowerCase());
+      const index = _.findIndex(choices, c => caseInsEq(c.value, e.key));
 
       if (this.state.isSpellQuestion && index > -1) {
         e.preventDefault();      
@@ -97,9 +96,10 @@ class Game extends Component {
   }
 
   gameOver() {
-    const accuracy = this.state.correctCounter[0] / Math.max(this.state.correctCounter[1], 1);
-    const score = this.state.points;
-    const time = Math.floor(moment.duration(moment().diff(this.state.gameStartTime)).asSeconds());
+    const { correctCounter, gameStartTime } = this.state;
+    const accuracy = correctCounter[0] / Math.max(correctCounter[1], 1);
+    const score = correctCounter[0];
+    const time = Math.floor(moment.duration(moment().diff(gameStartTime)).asSeconds());
     this.setState({ gameOver: true }, () => this.props.gameOver(accuracy, score, time));
   }
 
@@ -108,7 +108,7 @@ class Game extends Component {
 
     const answer = _.map(this.state.question.answer, a => {
       if (correct) { return a; }
-      const correctGuess = a.missing && a.value.toLowerCase() === choice.toLowerCase();
+      const correctGuess = a.missing && caseInsEq(a.value, choice);
       if (correctGuess) { correct = true; }
       return correctGuess ? { value: choice, missing: false } : a;
     });
@@ -128,32 +128,33 @@ class Game extends Component {
     })
   }
 
-  animateAlerts() {
-    if (this.state.isSpeedy) {
+  animateAlerts(correct, speedy) {
+    if (speedy) {
       this.setState({ alert: 'speedy' });
       setTimeout(() => { this.setState({ alert: undefined }); }, 1100);
     };
-    const correctAlert = this.state.incorrectGuesses > 0 ? 'correct' : 'passed';
-    setTimeout(() => { this.setState({ alert: correctAlert }); }, this.state.isSpeedy ? 1200 : 0);
-    setTimeout(() => { this.setState({ alert: undefined }); }, this.state.isSpeedy ? 2300 : 1100);    
+    const correctAlert = correct ? 'correct' : 'passed';
+    setTimeout(() => { this.setState({ alert: correctAlert }); }, speedy ? 1200 : 0);
+    setTimeout(() => { this.setState({ alert: undefined }); }, speedy ? 2300 : 1100);    
+  }
+
+  currentlyCorrect() {
+    return this.state.incorrectGuesses === 0 && this.state.hintCount === 0;
   }
 
   checkComplete() {
     const {
       correctCounter,
-      hintCount,
-      incorrectGuesses,
       question,
       questionIndex,
       questionStartTime,
-      points,
       type
     } = this.state;
 
     const isComplete = _.every(question.answer, a => !a.missing);
     if (!isComplete) { return; }
 
-    const correct = incorrectGuesses === 0 && hintCount === 0;
+    const correct = this.currentlyCorrect();
     const seconds = Math.ceil(moment.duration(moment().diff(questionStartTime)).asSeconds());
     const isSpeedy = seconds < 4;
     const nextQuestionIndex = questionIndex + (isSpeedy && _.contains(['train','explore'], type) ? 2 : 1);
@@ -161,13 +162,11 @@ class Game extends Component {
     this.setState({
       questionComplete: true,
       isSpeedy: isSpeedy,
-      points: points + 1,
       correctCounter: [correctCounter[0] + (correct ? 1 : 0), correctCounter[1] + 1],
       questionIndex: nextQuestionIndex
      }, () => {
-      console.log(this.state.correctCounter)
       this.props.recordQuestion(question, correct, seconds, this.state);        
-      this.animateAlerts();
+      this.animateAlerts(correct, isSpeedy);
       this.continue = setTimeout(() => { this.reset(() => this.setQuestion()) }, 100000);
     });
   }
@@ -183,6 +182,7 @@ class Game extends Component {
           hintButtonsOn: false,
           correct: true,
           questionStartTime: moment(),
+          incorrectGuesses: 0,
           gameOpaqueness: 1
         }, cb);
       }, 200);
@@ -193,7 +193,7 @@ class Game extends Component {
     const q = this.state.question;
     const nextCorrect = _.find(q.answer, a => a.missing);
     if (!nextCorrect) { return; }
-    const idx = _.findIndex(q.choices, c => c.value === nextCorrect.value);  
+    const idx = _.findIndex(q.choices, c => caseInsEq(c.value, nextCorrect.value));  
     this.setState({ glowIdx: idx });
     if (giveAnswer) { this.guessed(q.choices[idx].value, idx); }
     setTimeout(() => this.setState({ glowIdx: -1 }), 200);
@@ -217,6 +217,7 @@ class Game extends Component {
 
   checkHint() {
     const hint = hintChecker(this.state.hintCount, this.state.question.type);
+
     switch (hint) {
       case 'highlightPrompt': this.setState({ highlightPrompt: true }); break;
       case 'easyPrompt':      this.setState({ prompt: 'easy' }); break;
@@ -231,13 +232,13 @@ class Game extends Component {
     if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }  
 
     const {
+      correctCounter,
       gameOver,
       guessed,
       highlightPrompt,
       hintButtonsOn,
       hintCount,
       isSpellQuestion,
-      points,
       questionComplete,
       questionIndex,
       question,
@@ -254,7 +255,7 @@ class Game extends Component {
           return <SpeedRound
             time={this.props.time}
             end={this.props.end}
-            score={points}
+            score={correctCounter[0]}
             gameOver={this.gameOver.bind(this)} />;
         default:
           return;
@@ -272,7 +273,7 @@ class Game extends Component {
 
     const topInfo = (() => {
       return <div style={{height:'10%',width:'100%',display:'flex',alignItems:'center'}}>
-        <Link to={'/'}>
+        <Link to={'/home'}>
           <ExitOut
             src={require('../../Library/Images/exit-gray.png')} />
         </Link>

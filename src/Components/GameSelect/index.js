@@ -1,7 +1,9 @@
+import { Redirect } from 'react-router';
 import _ from 'underscore';
 import { connect } from 'react-redux'
 import React, { Component } from 'react';
 
+import { shouldRedirect } from '../../Library/helpers'
 import MiniLeaderboard from './miniLeaderboard';
 import MiniProgress from './miniProgress';
 import MiniProgressMobile from './miniProgressMobile';
@@ -36,6 +38,7 @@ class GameSelect extends Component {
   }
 
   componentDidMount() {
+    if (!this.props.session) { this.setState({ redirect: '/' }); }
     window.addEventListener('scroll', this.checkScroll);    
     if (_.isEmpty(this.props.levels)) { this.props.dispatch(fetchLevelsAction()); }
   }
@@ -53,6 +56,8 @@ class GameSelect extends Component {
   }
 
   render() {
+    if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }    
+
     const {
       levels,
       session,

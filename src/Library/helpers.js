@@ -68,3 +68,5 @@ export const isHome = () => window.location.pathname === '/'
 export const shouldRedirect = (state, currentLocation) => state.redirect && !currentLocation.href.endsWith(state.redirect)
 
 export const mobileCheck = () => window.matchMedia("only screen and (max-width: 760px)").matches
+
+export const caseInsEq = (strA, strB) => _.isString(strA) && _.isString(strB) && (strA.toLowerCase() === strB.toLowerCase())
