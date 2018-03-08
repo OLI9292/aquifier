@@ -5,6 +5,7 @@ import { Provider } from 'react-redux'
 import styled from 'styled-components';
 
 // COMPONENTS
+import About from '../About/index';
 import Admin from '../Admin/index';
 import Footer from '../Footer/index';
 import GameManager from '../Game/gameManager';
@@ -48,7 +49,9 @@ class App extends Component {
         <BrowserRouter>
           <Switch>
             <Route exact path='/'                 component={Home} />
-            <Route exact path='/admin'            component={contained('admin')} />            
+            <Route exact path='/admin'            component={contained('admin')} />
+            <Route exact path='/team'             component={contained('about')} />            
+            <Route exact path='/contact'          component={contained('about')} />            
             <Route exact path='/leaderboard/:id'  component={contained('leaderboard')} />
             <Route exact path='/leaderboards'     component={contained('leaderboards')} />
             <Route exact path='/home'             component={contained('gameSelect')} />
@@ -57,6 +60,7 @@ class App extends Component {
             <Route exact path='/play/:settings'   component={({ match }) => {
               return <GameManager settings={match.params.settings} /> 
             }} />
+            <Route exact path='/research'         component={contained('about')} />
             <Route exact path='/setup-game'       component={contained('gameSetup')} />
             <Route exact path='/start-free-trial' component={contained('infoForm')} />
             <Route                                component={contained('notFound')} />
@@ -73,6 +77,7 @@ class Container extends Component {
   render() {
     const Component = () => {
       switch (this.props.component) {
+        case 'about':        return <About />
         case 'admin':        return <Admin />
         case 'gameSelect':   return <GameSelect />
         case 'gameSetup':    return <GameSetup />

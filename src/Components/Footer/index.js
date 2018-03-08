@@ -8,17 +8,16 @@ class Footer extends Component {
     const link = (text, path) => {
       return <Link
         to={path}
-        style={{textDecoration:'none',color:'black',fontFamily:'BrandonGrotesque',fontSize:'0.9em'}}>
+        style={{textTransform:'uppercase',textDecoration:'none',color:'black',fontFamily:'BrandonGrotesque',fontSize:'0.9em'}}>
         {text}
       </Link>
     }
 
     return (
       <Container hide={this.props.smallScreen}>
-        {link('About', '/about')}
-        {link('Methodology', '/methodology')}
-        {link('Partners', '/partners')}
-        {link('support@playwordcraft.com', 'mailto:support@playwordcraft.com')}
+        {link('about', '/team')}
+        {link('research', '/research')}
+        {link('contact', '/contact')}
       </Container>
     );
   }
