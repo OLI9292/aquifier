@@ -12,33 +12,31 @@ class OnCorrectImage extends Component {
 
   componentDidMount() {
     const request = AWSs3.imageObjects();
+    
     request.on('success', (response) => {
-      this.setState({ data: response.data.Contents });
+      const data = _.map(response.data.Contents, obj => {
+        const word = obj.Key.split('.')[0].split('-')[0];
+        const key = obj.Key;
+        return { word: word, key: key };
+      });
+      this.props.setImages(data);
     });
   }
 
   componentWillReceiveProps(nextProps) {
-    if (!nextProps.word || _.isEqual(nextProps.word, this.state.word)) { return };
-    this.setState({ source: null });
+    if (!nextProps.image) { return; }
 
-    const image = _.find(this.state.data, (obj) => {
-      let words = obj.Key.split('.')[0].split('-');
-      return _.contains(words, nextProps.word);
+    const params = {
+      Bucket: 'wordcraft-images',
+      Key: nextProps.image.key
+    };
+
+    const request = AWSs3.object(params);
+
+    request.on('success', (response) => {
+      const imageSource = 'data:image/jpeg;base64,' + this.encode(response.data.Body);
+      this.setState({ source: imageSource });
     });
-
-    if (image) {
-      const params = {
-        Bucket: 'wordcraft-images',
-        Key: image.Key
-      };
-
-      const request = AWSs3.object(params);
-
-      request.on('success', (response) => {
-        const imageSource = 'data:image/jpeg;base64,' + this.encode(response.data.Body);
-        this.setState({ source: imageSource, word: nextProps.word });
-      });
-    }
   }
 
   encode(data) {

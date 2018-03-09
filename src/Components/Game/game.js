@@ -24,6 +24,7 @@ import {
   Choices, ChoiceButton,
   ExitOut,
   HelpButton, HelpSpan,
+  OnCorrectFactoid,
   Pause,
   Prompt, PromptContainer, PromptValue,
   StageDot
@@ -238,6 +239,7 @@ class Game extends Component {
       highlightPrompt,
       hintButtonsOn,
       hintCount,
+      images,
       isSpellQuestion,
       questionComplete,
       questionIndex,
@@ -364,10 +366,22 @@ class Game extends Component {
     };
 
     const interlude = (() => {
-      return <div style={{height:'50%',width:'80%',margin:'0 auto',display:!questionComplete ? 'none' : ''}}>
+      const word = get(question, 'word');
+      const image = _.find(images, image => image.word === word);
+      /*const showFactoid = (factoid && !image) || (factoid && image && (Math.random() > 0.5));
+      const factoid = _.find(this.props.factoids, factoid => factoid.word === word);
+
+      if (get(this.state.interlude, 'word') !== word) { 
+        this.setState({ interlude: { word: word, showFactoid: showFactoid} });
+      }
+        <OnCorrectFactoid show={showFactoid}>
+          {get(factoid, 'value')}
+        </OnCorrectFactoid>*/
+      return <div style={{height:'50%',width:'80%',margin:'0 auto',display:questionComplete ? '' : 'none'}}>
         <OnCorrectImage
-          display={questionComplete}
-          word={get(question, 'word')} />
+          setImages={images => this.setState({ images })}
+          image={image}
+          didLoadImages={this.state.images !== undefined} />
       </div>
     })();    
 

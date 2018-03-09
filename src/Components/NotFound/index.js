@@ -7,7 +7,7 @@ class Leaderboards extends Component {
   render() {
     return (
       <Container>
-        <div style={{height:'200px',width:'500px',display:'flex',alignItems:'center',justifyContent:'space-around'}}>
+        <InnerContainer>
           <img
             alt={'monk meditating'}
             src={require('../../Library/Images/astral.gif')}
@@ -25,11 +25,23 @@ class Leaderboards extends Component {
               WORDCRAFT
             </p>
           </div>
-        </div>
+        </InnerContainer>
       </Container>
     );
   }
 }
+
+const InnerContainer = styled.div`
+  height: 200px;
+  width: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  ${media.phone`
+    width: 90%;
+    margin: 0 auto;
+  `};    
+`
 
 const Container = styled.div`
   display: flex;
@@ -44,6 +56,7 @@ const Container = styled.div`
   padding-bottom: 20px;
   ${media.phone`
     font-size: 0.9em;
+    min-height: 90vh;
   `};    
 `
 

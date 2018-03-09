@@ -2,8 +2,7 @@ import { normalize, schema } from 'normalizr'
 import _ from 'underscore';
 
 const API_ROOT = {
-  'accounts': 'https://desolate-plains-35942.herokuapp.com/api/v2/',
-  'curriculum': 'https://desolate-plains-35942.herokuapp.com/api/v2/'
+  'main': 'https://dry-ocean-39738.herokuapp.com/api/v2/'
 }
 
 const formatSession = session => session ? {
@@ -37,6 +36,7 @@ const callApi = (api, endpoint, schema, method, data, session) => {
 // to a flat form where models are placed in `entities`, and nested
 // JSON objects are replaced with their IDs
 
+const factoidSchema = new schema.Entity('factoids', {}, { idAttribute: '_id' })
 const levelSchema = new schema.Entity('levels', {}, { idAttribute: '_id' })
 const questionSchema = new schema.Entity('questions')
 const rankSchema = new schema.Entity('ranks')
@@ -50,6 +50,7 @@ const wordSchema = new schema.Entity('words', {}, { idAttribute: '_id' })
 
 // Schemas for API responses.
 export const Schemas = {
+  FACTOID_ARRAY: [factoidSchema],
   LEADERBOARDS: [rankSchema],
   LEVEL_ARRAY: [levelSchema],
   QUESTION_ARRAY: questionSchema,
