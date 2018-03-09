@@ -33,12 +33,14 @@ class Nav extends Component {
       : ['/home','/profile','/leaderboards'];
 
     const links = (() => {
-      return <div style={{display:'flex',width:'100%',alignItems:'center',justifyContent:'space-between'}}>
-        <LeftLinksContainer
-          width={'325px'}
-          show={loggedIn}>
-          {_.map(paths, link)}
-        </LeftLinksContainer>
+      return <LinksContainer loggedIn={loggedIn}>
+        {
+          loggedIn
+          &&
+          <LeftLinksContainer>
+            {_.map(paths, link)}
+          </LeftLinksContainer>
+        }
         {
           loggedIn
           ?
@@ -50,7 +52,7 @@ class Nav extends Component {
             login
           </LinkText>
         }
-      </div>
+      </LinksContainer>
     })();
 
     return (
@@ -69,6 +71,13 @@ class Nav extends Component {
     );
   }
 }
+
+const LinksContainer = styled.div`
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: ${props => props.loggedIn ? 'space-between' : 'flex-end'};
+`
 
 const Container = styled.div`
   position: ${props => props.isHome ? 'relative' : 'fixed'};

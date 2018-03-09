@@ -186,17 +186,17 @@ class Home extends Component {
             <BottomNav>
               <Link
                 to={'/team'}
-                style={{textTransform:'uppercase',textDecoration:'none',color:'black',fontSize:'0.9em'}}>
+                style={{textTransform:'uppercase',textDecoration:'none',color:'black',fontSize:'0.75em',letterSpacing:'1px'}}>
                 about
               </Link>
                  <Link
                 to={'/research'}
-                style={{textTransform:'uppercase',textDecoration:'none',color:'black',fontSize:'0.9em'}}>
+                style={{textTransform:'uppercase',textDecoration:'none',color:'black',fontSize:'0.75em',letterSpacing:'1px'}}>
                 research
               </Link>
               <Link
                 to={'/contact'}
-                style={{textTransform:'uppercase',textDecoration:'none',color:'black',fontSize:'0.9em'}}>
+                style={{textTransform:'uppercase',textDecoration:'none',color:'black',fontSize:'0.75em',letterSpacing:'1px'}}>
                 contact
               </Link>              
             </BottomNav>
