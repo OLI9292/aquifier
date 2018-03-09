@@ -10,6 +10,7 @@ import get from 'lodash/get';
 import { shouldRedirect, mobileCheck } from '../../Library/helpers';
 
 import {
+  fetchFactoidsAction,
   fetchQuestionsAction,
   fetchLevelsAction,
   removeEntityAction,
@@ -29,11 +30,12 @@ class GameManager extends Component {
   componentDidMount() {
     this.props.dispatch(removeEntityAction('questions'));    
 
-    const { user, levels } = this.props;
+    const { user, factoids, levels } = this.props;
     const settings = queryString.parse(this.props.settings);
     const pauseMatch = settings.type === 'multiplayer';
 
     if (!levels.length) { this.props.dispatch(fetchLevelsAction()); }
+    if (!factoids.length) { this.props.dispatch(fetchFactoidsAction()); }
 
     this.setState({
       settings: settings,
@@ -69,6 +71,7 @@ class GameManager extends Component {
       questions,
       settings
     } = this.state;
+    console.log(nextProps)
 
     if (nextProps.user && !loading) {
       this.setState({ loading: true }, () => this.setupGame(nextProps.user));  
@@ -82,6 +85,8 @@ class GameManager extends Component {
   }
 
   recordQuestion(question, correct, timeSpent, gameState) {
+    if (this.state.type === 'demo') { return; }
+    
     const answeredAt = moment().format();
     const mobile = mobileCheck();
     const { hintCount, incorrectGuesses } = gameState;
@@ -213,6 +218,7 @@ class GameManager extends Component {
     return (
       <div>
         <Game
+          factoids={this.props.factoids}
           gameOver={this.gameOver.bind(this)}
           level={this.state.level}
           end={this.state.end}
@@ -231,6 +237,7 @@ const mapStateToProps = (state, ownProps) => ({
   session: state.entities.session,
   user: _.first(_.values(state.entities.user)),
   questions: _.values(state.entities.questions),
+  factoids: _.values(state.entities.factoids),
   levels: _.values(state.entities.levels)  
 });
 

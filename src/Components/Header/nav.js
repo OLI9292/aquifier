@@ -33,6 +33,7 @@ class Nav extends Component {
       : ['/home','/profile','/leaderboards'];
 
     const links = (() => {
+      console.log(loggedIn)
       return <LinksContainer loggedIn={loggedIn}>
         {
           loggedIn
@@ -94,11 +95,9 @@ const Container = styled.div`
 
 const LeftLinksContainer = styled.div`
   display: flex;
-  opacity: ${props => props.show ? 1 : 0};
-  pointer-events: ${props => props.show ? 'auto' : 'none'};
   align-items: center;
   justify-content: space-between;
-  width: ${props => props.show ? '300px' : '0'};
+  width: 300px;
   margin-left: 25px;
 `
 
