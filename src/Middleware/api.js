@@ -2,8 +2,8 @@ import { normalize, schema } from 'normalizr'
 import _ from 'underscore';
 
 const API_ROOT = {
-  'accounts': 'https://desolate-plains-35942.herokuapp.com/api/v2/',
-  'curriculum': 'https://desolate-plains-35942.herokuapp.com/api/v2/'
+  'accounts': 'https://dry-ocean-39738.herokuapp.com/api/v2/',
+  'curriculum': 'https://dry-ocean-39738.herokuapp.com/api/v2/'
 }
 
 const formatSession = session => session ? {
