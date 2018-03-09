@@ -1,226 +1,127 @@
+import { Redirect } from 'react-router';
+import _ from 'underscore';
 import { connect } from 'react-redux'
 import React, { Component } from 'react';
-import queryString from 'query-string';
-import { Redirect } from 'react-router';
-import styled from 'styled-components';
-import _ from 'underscore';
-import Firebase from '../../Networking/Firebase';
 
-import Button from '../Common/button';
-import Textarea from '../Common/textarea';
-import { color } from '../../Library/Styles/index';
-import { lighten10 } from '../../Library/helpers';
 import { shouldRedirect } from '../../Library/helpers'
+import MiniLeaderboard from './miniLeaderboard';
+import MiniProgress from './miniProgress';
+import MiniProgressMobile from './miniProgressMobile';
+import Train from './Train/index';
+import JoinGame from './JoinGame/index';
+import Explore from './Explore/index';
+
+import { fetchLevelsAction } from '../../Actions/index';
+
+import {
+  Content,
+  GrayLine,
+  Main,
+  MiniProgressMobileContainer,
+  Tab,
+  TabContainer,
+  Sidebar
+} from './components';
+
+const GAME_TYPES = ['train', 'explore', 'join game'];
 
 class GameSelect extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
 
-    this.handleKeydown = this.handleKeydown.bind(this);
+    this.state = {
+      gameType: GAME_TYPES[0],
+      fixedSidebar: true
+    };
+
+    this.checkScroll = this.checkScroll.bind(this);    
   }
 
   componentDidMount() {
-    document.body.addEventListener('keydown', this.handleKeydown);
+    if (!this.props.session) { this.setState({ redirect: '/' }); }
+    window.addEventListener('scroll', this.checkScroll);    
+    if (_.isEmpty(this.props.levels)) { this.props.dispatch(fetchLevelsAction()); }
   }
 
   componentWillUnmount() {
-    document.body.removeEventListener('keydown', this.handleKeydown);
+    window.removeEventListener('scroll', this.checkScroll);
   }
 
-  handleKeydown(event) {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      const code = this.state.accessCode;
-      if (code && code.trim().length === 4) { this.joinMatch(); }
-    }
-  }
-
-  handleClick(game, multiplayer = false) {
-    const players = multiplayer ? 'multi' : 'single';
-    this.setState({ redirect: `/play/game=${game}&players=${players}&setup=true` });
-  }
-
-  handleGameButtonClick(game) {
-    if (this.props.user && this.props.user.isTeacher) { return; }
-    this.setState({ redirect: `/play/game=${game}&players=single&setup=true` });
-  }
-
-  joinMatch = async () => {
-    const name = this.props.user && `${this.props.user.firstName} ${this.props.user.lastName.charAt(0)}`;
-    const accessCode = this.state.accessCode;
-
-    const result = await Firebase.canEnterGame(name, accessCode);
-    const canEnterMatch = result[0];
-
-    if (!canEnterMatch) {
-      this.setState({ error: result[1] });
-    } else {
-      const joined = await Firebase.joinGame(name, accessCode);
-
-      if (joined) {
-        result[1].accessCode = accessCode;
-        const match = queryString.stringify(_.pick(result[1], 'status', 'accessCode'));
-        this.setState({ redirect: `/play/${match}` });
-      } else {
-        this.setState({ error: 'Unable to join game.' });
-      }
-    }
-  }
-
-  updateAccessCode(event) {
-    this.setState({ accessCode: event.target.value.trim() });
+  checkScroll() {
+    if (!this.sidebar || !this.container) { return; }
+    const sidebarBottom = this.sidebar.getBoundingClientRect().bottom + (this.state.fixedSidebar ? 0 : 120);
+    const containerBottom = this.container.getBoundingClientRect().bottom;
+    const fixedSidebar = containerBottom > sidebarBottom;
+    if (fixedSidebar !== this.state.fixedSidebar) { this.setState({ fixedSidebar }); }
   }
 
   render() {
-    if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }
+    if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }    
 
-    const isTeacher = this.props.user && this.props.user.isTeacher;
-    const isStudent = this.props.user && !this.props.user.isTeacher;
+    const {
+      levels,
+      session,
+      user
+    } = this.props;
 
-    const buttons = (game) => {
-      const display = isTeacher && game !== 'read' ? 'block' : 'none';
+    const mainComponent = {
+      train: <Train 
+        user={user} 
+        levels={_.filter(levels, l => _.contains(['train', 'speed'], l.type))} />,
+      explore: <Explore
+        levels={_.filter(levels, l => l.type === 'topic')} />,
+      'join game': <JoinGame />,
+    }[this.state.gameType];
 
-      return isTeacher 
-      ?
-      <div style={{margin:'20px 0px'}}>
-        <PlayButton onClick={() => this.handleClick(game)} color={'white'}>
-          {Button.imageAndText(require('../../Library/Images/singleplayer.png'), 'Preview Game')}
-        </PlayButton>
-        <PlayButton onClick={() => this.handleClick(game, true)} color={'white'} style={{display:display}}>
-          {Button.imageAndText(require('../../Library/Images/setupmatch.png'), 'Setup Match')}
-        </PlayButton>
-      </div>
-      :
-      <div style={{margin:'20px 0px'}}>
-        <Button.medium 
-          onClick={() => this.handleClick(game)} 
-          style={{backgroundColor:'white', color:color.darkGray}}>
-          Play
-        </Button.medium>
-      </div>
-    }
+    const tabs = (() => {
+      return <TabContainer>
+        {_.map(GAME_TYPES, (gameType, i) => {
+          const margin = i === 1 ? '0px 20px 0px 20px' : '0';
+          return <Tab
+            key={i}
+            onClick={() => this.setState({ gameType })}
+            selected={this.state.gameType === gameType}
+            margin={margin}>
+            {gameType.toUpperCase()}
+          </Tab>
+        })}
+      </TabContainer>
+    })();
 
-    const compete = () => {
-      return isStudent && 
-        <GameButton color={'white'} border={`1px solid ${color.orange}`}>
-          <Image src={require('../../Library/Images/compete-color.png')} />
-          <p style={{color:color.orange,fontSize:'2em',height:'10px',lineHeight:'10px'}}>
-            Compete
-          </p>
-          <div style={{width:'250px'}}>
-            <p style={{color:color.orange,width:'90%',margin:'0 auto',fontSize:'1.25em'}}>
-              Compete against your classmates.
-            </p>
-            <div style={{display:'flex',justifyContent:'space-around',margin:'25px 10px 25px 10px'}}>
-              <Textarea.medium 
-                onChange={this.updateAccessCode.bind(this)}
-                style={{textAlign:'center'}} 
-                placeholder={'access code'} />
-              <Button.small
-                color={color.orange}
-                onClick={() => this.joinMatch()}
-                style={{marginLeft:'5px',minWidth:'75px'}}>
-                Play
-              </Button.small>
-            </div>
-          </div>
-      </GameButton>
-    }
+    const sidebarStyles = this.state.gameType === 'train'
+      ? { position: 'fixed', width: '250px', bottom: this.state.fixedSidebar ? '' : '120px' }
+      : { width: '250px' };
 
     return (
-      <div style={{paddingTop:'25px'}}>
-        <Title>Choose Your Game</Title>
-
-        <div style={{width:'90%',margin:'0 auto',display:'flex',justifyContent:'space-evenly',flexWrap:'wrap'}}>
-          <GameButton color={color.blue} onClick={() => this.handleGameButtonClick('study') }>
-            <Image src={require('../../Library/Images/study-white.png')} />
-            <p style={{color:'white',fontSize:'2em',height:'10px',lineHeight:'10px'}}>Study</p>
-            <div style={{width:'250px'}}>
-              <p style={{color:'white',width:'90%',margin:'0 auto',fontSize:'1.25em'}}>
-                Thousands of words grouped by curriculum.
-              </p>
-              {buttons('study')}
-            </div>
-          </GameButton>
-
-          <GameButton color={color.green} onClick={() => this.handleGameButtonClick('explore') }>
-            <Image src={require('../../Library/Images/explore-white.png')} />
-            <p style={{color:'white',fontSize:'2em',height:'10px',lineHeight:'10px'}}>Explore</p>
-            <div style={{width:'250px'}}>
-              <p style={{color:'white',width:'90%',margin:'0 auto',fontSize:'1.25em'}}>
-                The core vocabulary of dozens of subjects.
-              </p>
-              {buttons('explore')}
-            </div>
-          </GameButton>
-
-          <GameButton color={color.red} onClick={() => this.handleGameButtonClick('read') }>
-            <Image src={require('../../Library/Images/read-white.png')} />
-            <p style={{color:'white',fontSize:'2em',height:'10px',lineHeight:'10px'}}>Read</p>
-            <div style={{width:'250px'}}>
-              <p style={{color:'white',width:'90%',margin:'0 auto',fontSize:'1.25em'}}>
-                Passages with vocabulary in context.
-              </p>
-              {buttons('read')}
-            </div>
-          </GameButton>
-
-          {compete()}
-        </div>
-        <p style={{textAlign:'center',color:color.red}}>
-          {this.state.error}
-        </p> 
+      <div style={{display:'flex',paddingTop:'40px'}} ref={container => this.container = container}>
+        <Main>
+          {tabs}
+          <Content>
+            <GrayLine />
+            <MiniProgressMobileContainer>
+              {user && <MiniProgressMobile user={user} />}
+            </MiniProgressMobileContainer>
+            {mainComponent}
+          </Content>
+        </Main>
+        <Sidebar>
+          <div
+            style={sidebarStyles} 
+            ref={sidebar => this.sidebar = sidebar}>
+            {user && session && <MiniLeaderboard user={user} session={session} />}
+            <br />
+            {user && <MiniProgress user={user} />}
+          </div>
+        </Sidebar>
       </div>
     );
   }
 }
 
-const Title = styled.div`
-  background-color: ${color.orange};
-  width: 450px;
-  margin: 0 auto;
-  height: 90px;
-  line-height: 90px;
-  margin-bottom: 25px;
-  border-radius: 5px;
-  text-align: center;
-  font-size: 2.75em;
-  color: white;
-`
-
-const Image = styled.img`
-  height: 75px;
-  width: 75px;
-  padding-top: 20px;
-`
-const PlayButton = Button.small.extend`
-  color: black;
-  margin: 0 auto;
-  width: 150px;
-  margin-top: 5px;
-  margin-bottom: 5px;
-  &:hover {
-    background-color: ${color.lightGray};
-  }
-`
-const GameButton = styled.div`
-  background-color: ${props => props.color};
-  &:hover {
-   background-color: ${props => lighten10(props.color)};
-  }
-  transition: 0.2s;
-  cursor: pointer;
-  border: ${props => props.border};
-  text-align: center;
-  margin: 10px;
-  border-radius: 5px;
-  width: 250px;
-`
-
 const mapStateToProps = (state, ownProps) => ({
   session: state.entities.session,
-  user: _.first(_.values(state.entities.user))
+  user: _.first(_.values(state.entities.user)),
+  levels: _.values(state.entities.levels)
 });
 
 export default connect(mapStateToProps)(GameSelect);

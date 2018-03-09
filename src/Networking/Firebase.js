@@ -35,12 +35,6 @@ const Firebase = {
   refs: refs,
 
   canEnterGame: (name, accessCode) => {
-    if (!accessCode) {
-      return [false, 'Please enter an access code.'];
-    }
-    if (!name) {
-      return [false, 'Please enter your name.'];
-    }
     return refs.games.child(accessCode).once('value').then(snapshot => validate(snapshot.val(), name, accessCode));
   },
 

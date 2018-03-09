@@ -37,7 +37,6 @@
     "html-webpack-plugin": "2.29.0",
     "lodash": "^4.17.4",
     "moment": "^2.19.1",
-    "morgan": "^1.8.2",
     "node-slack": "0.0.7",
     "normalizr": "^3.2.4",
     "object-assign": "4.1.1",
@@ -48,6 +47,7 @@
     "query-string": "^5.0.0",
     "react": "^16.2.0",
     "react-autosize-textarea": "^0.4.9",
+    "react-circular-progressbar": "^0.8.0",
     "react-dev-utils": "^3.1.0",
     "react-dom": "^16.0.0",
     "react-error-overlay": "^1.0.10",
@@ -81,7 +81,7 @@
   },
   "engines": {
     "node": "6.9.3"
-  },  
+  },
   "jest": {
     "collectCoverageFrom": [
       "src/**/*.{js,jsx}"

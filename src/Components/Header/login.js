@@ -5,12 +5,13 @@ import styled from 'styled-components';
 import _ from 'underscore';
 
 import Button from '../Common/button';
-import { color } from '../../Library/Styles/index';
+import { color, media } from '../../Library/Styles/index';
 import InputStyles from '../Common/inputStyles';
 import LocalStorage from '../../Models/LocalStorage'
 import { shouldRedirect } from '../../Library/helpers';
+import Header from '../Common/header';
 
-import { loginUser } from '../../Actions/index';
+import { loginUserAction } from '../../Actions/index';
 
 class Login extends Component {
   constructor(props) {
@@ -31,6 +32,7 @@ class Login extends Component {
   }
 
   componentWillUnmount() {
+    document.body.style.overflow = 'visible';
     document.body.removeEventListener('keydown', this.handleKeydown);
   }    
 
@@ -59,7 +61,7 @@ class Login extends Component {
     }
 
     const data = { email: this.state.email, password: this.state.password };
-    const result = await this.props.dispatch(loginUser(data));
+    const result = await this.props.dispatch(loginUserAction(data));
 
     if (result.error) {
       this.setState({ isError: true, message: result.error })
@@ -75,36 +77,43 @@ class Login extends Component {
 
     return (
       <Container>
-        <div style={{width:'90%',margin:'0 auto'}}>
-          <h1 style={{fontSize:'1.75em',marginBottom:'20px'}}>
-            Login
-          </h1>
+        <MobileExit
+          onClick={() => this.props.exitLogin()}
+          src={require('../../Library/Images/exit-gray.png')}
+          display={'fixed'} />
+        <Header.small>
+          login
+        </Header.small>
 
-          <input
-            style={_.extend({}, InputStyles.default, {width:'100%',marginBottom:'10px'})}
-            placeholder={'username or email'} 
-            onChange={(e) => this.setState({ email: e.target.value.replace(/ /g,'') })}
-            ref={(input) => { this.emailInput = input; }}
-            onClick={() => this.setState({ focusedOn: 'email'})} />
-
+        <div style={{marginTop:'25px',marginBottom:'25px'}}>
           <input
             style={_.extend({}, InputStyles.default, {width:'100%'})}
+            placeholder={'username or email'} 
+            autoCapitalize={'none'}
+            onChange={(e) => this.setState({ email: e.target.value.replace(/ /g,'') })}
+            ref={(input) => { this.emailInput = input; }}
+            onClick={() => this.setState({ focusedOn: 'email' })} />
+
+          <input
+            style={_.extend({}, InputStyles.default, {width:'100%',marginTop:'10px'})}
+            type={'password'}
             placeholder={'password'}
+            autoCapitalize={'none'}
             onChange={(e) => this.setState({ password: e.target.value.replace(/ /g,'') })}
             ref={(input) => { this.passwordInput = input; }}
-            onClick={() => this.setState({ focusedOn: 'password'})} />
-
-          <LoginButton onClick={this.handleLogin.bind(this)}>
-            login
-          </LoginButton>
-
-          <p 
-            onClick={() => this.setState({ redirect: '/start-free-trial' })} 
-            style={{color:color.blue,fontSize:'1.2em',cursor:'pointer'}}>
-            No account? Start Free Trial Now!
-          </p>
+            onClick={() => this.setState({ focusedOn: 'password' })} />
         </div>
-        
+
+        <Button.medium onClick={this.handleLogin.bind(this)}>
+          login
+        </Button.medium>
+
+        <p 
+          onClick={() => this.setState({ redirect: '/start-free-trial' })} 
+          style={{color:color.blue,fontSize:'1.2em',cursor:'pointer'}}>
+          No account? Start Free Trial Now!
+        </p>
+      
         <p style={{marginTop:'0',color:(this.state.isError ? color.red : color.green)}}>
           {this.state.message}
         </p>
@@ -113,22 +122,40 @@ class Login extends Component {
   }
 }
 
+const MobileExit = styled.img`
+  height: 25px;
+  width: auto;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  cursor: pointer;
+`
+
 const Container = styled.div`
   background-color: white;
   border-radius: 15px;
   left: 50%;
   margin-top: -225px;
-  margin-left: -300px;
-  min-width: 600px;
+  margin-left: -225px;
+  width: 450px;
   position: fixed;
   text-align: center;
   top: 50%;
   z-index: 10;
-`
-
-const LoginButton = Button.medium.extend`
-  margin-top: 20px;
-  width: 100%;
+  padding: 20px 75px;
+  box-sizing: border-box;
+  ${media.phone`
+    width: 100%;
+    left: 0;
+    top: 0;
+    margin: 0;
+    height: 100%;
+    border-radius: 0;
+    min-width: 0;
+    z-index: 9999999;
+    box-sizing: border-box;
+    padding: 10%;
+  `};   
 `
 
 export default connect()(Login)

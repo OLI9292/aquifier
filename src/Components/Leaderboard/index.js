@@ -4,6 +4,8 @@ import _ from 'underscore';
 
 import Firebase from '../../Networking/Firebase';
 import { color } from '../../Library/Styles/index';
+import { Container } from '../Common/container';
+import Header from '../Common/header';
 
 class Leaderboard extends Component {
   constructor(props) {
@@ -57,68 +59,52 @@ class Leaderboard extends Component {
     };
 
     const rows = () => {
-      return this.state.players.map((p) => {
-        return <Row>
+      return this.state.players.map((p, i) => {
+        return <tr key={i} style={{width:'100%'}}>
           <LeftAlignCell style={{ color: colors[p.position] || 'black' }}>
             {p.position}.
           </LeftAlignCell>
-          <LeftAlignCell>
+          <LeftAlignCell style={{fontFamily:'BrandonGrotesque'}}>
             {p.name}
           </LeftAlignCell>
           <RightAlignCell>
             {p.score}
           </RightAlignCell>
-        </Row>
+        </tr>
       })
     }
 
     return (
-      <Layout>
-        <Header>Game Over!</Header>
+      <Container>
+        <Header.extraLarge style={{color:'black'}}>
+          game over!
+        </Header.extraLarge>
         {
           this.state.dataLoaded &&
-          <Container>
-            <ResultsHeader>Results</ResultsHeader>
+          <div style={{margin:'0 auto',width:'100%'}}>
+            <Header.medium>
+              results
+            </Header.medium>
             <Table>
-              <col width="10%" />
-              <col width="20%" />
-              <col width="70%" />
-              {rows()}
+              <colgroup>
+                <col width='10%' />
+                <col width='35%' />
+                <col width='35%' />
+              </colgroup>
+              <tbody>
+                {rows()}
+              </tbody>
             </Table>
-          </Container>
+          </div>
         }
-      </Layout>
+      </Container>
     );
   }
 }
 
-const Row = styled.tr`
-  width: 100%;
-`
-
-const Layout = styled.div`
-  padding-top: 1em;
-  margin: auto;
-  text-align: center;
-  width: 75%;
-`
-
-const Header = styled.p`
-  font-size: 3em;
-  height: 1em;
-`
-
-const Container = styled.div`
-  margin: auto;
-  width: 100%;
-`
-
-const ResultsHeader = styled.h2`
-  font-size: 2em;
-`
-
 const Table = styled.table`
-  width: 100%;
+  width: 60%;
+  margin: 0 auto;
 `
 
 const LeftAlignCell = styled.td`

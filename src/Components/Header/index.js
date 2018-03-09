@@ -1,11 +1,17 @@
+import _ from 'underscore';
+import { connect } from 'react-redux'
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { Redirect } from 'react-router';
 
-import { color } from '../../Library/Styles/index';
+import Nav from './nav';
+import MobileNav from './mobileNav';
 import Login from './login';
-import Navigation from './navigation';
-import { sleep, shouldRedirect } from '../../Library/helpers';
+import { shouldRedirect } from '../../Library/helpers';
+import LocalStorage from '../../Models/LocalStorage'
+import { logoutUserAction } from '../../Actions/index';
+
+import { media } from '../../Library/Styles/index';
 
 class Header extends Component {
   constructor(props) {
@@ -13,42 +19,84 @@ class Header extends Component {
     this.state = {};
   }
 
-  exitLogin = async () => {
-    await sleep(500);
-    this.setState({ displayLogin: false });
+  displayLogin() {
+    this.setState({ displayLoginModal: true });
   }
+
+  exitLogin() {
+    this.setState({ displayLoginModal: false });
+  }  
+
+  logout() {
+    this.setState({ redirect: '/' }, () => { 
+      LocalStorage.logout(); 
+      this.props.dispatch(logoutUserAction());
+    })    
+  }
+
+  redirect(path) {
+    this.setState({ redirect: path });
+  }  
 
   render() {
     if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }
 
-    return (
-      <div style={{backgroundColor:'white',height:'90px',width:'100%'}}>
-        <Content>
-          <Title onClick={() => this.setState({ redirect: '/' })}>
-            WORDCRAFT
-          </Title>
+    const { 
+      loggedIn,
+      path,
+      isTeacher
+    } = this.props;
 
-          {
-            this.state.displayLogin &&
-            <div>
-              <Login exitLogin={this.exitLogin.bind(this)}/>
-              <DarkBackground onClick={this.exitLogin.bind(this)} />
-            </div>
-          }
-
-          <Navigation clickedLogin={() => this.setState({ displayLogin: true })} />
-        </Content>
+    const loginModal = (() => {
+      return this.state.displayLoginModal && <div>
+        <Login
+          exitLogin={this.exitLogin.bind(this)} />
+        <DarkBackground
+          onClick={() => this.exitLogin()} />
       </div>
+    })()    
+
+    const showMobileNav = loggedIn && !_.contains(['/team','/research','/contact'], path);
+
+    return (
+      <div>
+        {loginModal}
+        <NonMobileContainer show={!showMobileNav}>
+          <Nav
+            isTeacher={isTeacher}
+            loggedIn={loggedIn}
+            path={path}
+            displayLogin={this.displayLogin.bind(this)}
+            exitLogin={this.exitLogin.bind(this)}
+            logout={this.logout.bind(this)}
+            redirect={this.redirect.bind(this)} />
+        </NonMobileContainer>        
+        <MobileContainer show={showMobileNav}>
+          <MobileNav
+            isTeacher={isTeacher}
+            loggedIn={loggedIn}
+            path={path}
+            displayLogin={this.displayLogin.bind(this)}
+            exitLogin={this.exitLogin.bind(this)}
+            logout={this.logout.bind(this)}
+            redirect={this.redirect.bind(this)} />
+        </MobileContainer>
+      </div>      
     );
   }
 }
 
-const Content = styled.div`
-  width: 95%;
-  max-width: 1100px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
+const NonMobileContainer = styled.div`
+  ${media.phone`
+    display: ${props => props.show ? '' : 'none'};
+  `}
+`
+
+const MobileContainer = styled.div`
+  display: none;
+  ${media.phone`
+    display: ${props => props.show ? 'inline-block' : 'none'};
+  `}
 `
 
 const DarkBackground = styled.div`
@@ -65,14 +113,16 @@ const DarkBackground = styled.div`
   z-index: 5;
 `
 
-const Title = styled.h1`
-  color: ${color.yellow};
-  font-size: 2.5em;
-  cursor: pointer;
-  margin-top: 20px;
-  @media (max-width: 600px) {
-    font-size: 1.5em;
-  }
-`
+const mapStateToProps = (state, ownProps) => {
+  const user = _.first(_.values(state.entities.user));
+  const loggedIn = user !== undefined;
+  const isTeacher = loggedIn && user.isTeacher;
 
-export default Header;
+  return {
+    user: user,
+    loggedIn: loggedIn,
+    isTeacher: isTeacher
+  };
+};
+
+export default connect(mapStateToProps)(Header);
