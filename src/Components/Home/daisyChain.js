@@ -122,6 +122,12 @@ const Container = styled.div`
   border: 2px solid ${color.gray};
   padding: 30px;
   margin: 0 auto;
+  @media (max-width: 400px) {
+    width: 250px;
+    height: 250px;
+    padding: 20px;
+    font-size: 0.8em;
+  }  
 `
 
 const SVG = styled.svg`
@@ -134,11 +140,16 @@ const SVG = styled.svg`
 const ImageContainer = styled.div`
   height: 150px;
   width: 100%;
+  @media (max-width: 400px) {
+    height: 125px;
+  }  
 `
 
 const Image = styled.img`
+  max-height: 100%;
+  max-width: 100%;
   width: auto;
-  height: 100%;
+  height: auto;
   margin: auto;
   display: block;
 `

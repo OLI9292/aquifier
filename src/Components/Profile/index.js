@@ -1,207 +1,291 @@
 import { connect } from 'react-redux'
 import React, { Component } from 'react';
-import styled from 'styled-components';
 import _ from 'underscore';
+import queryString from 'query-string';
+import get from 'lodash/get';
 
-import { color } from '../../Library/Styles/index';
-import { capitalizeOne, sum } from '../../Library/helpers'
-import { loadUser } from '../../Actions/index';
+import starIcon from '../../Library/Images/icon-stars.png';
+import bookIcon from '../../Library/Images/icon-book-green.png';
+import yellowStar from '../../Library/Images/icon-star-yellow.png';
+import iconSchool from '../../Library/Images/icon-house.png';
+import iconEarth from '../../Library/Images/icon-earth.png';
+import archer from '../../Library/Images/icon-archer-purple.png';
+import grayStar from '../../Library/Images/icon-star-gray.png';
+
+import { color, } from '../../Library/Styles/index';
+import { Container } from '../Common/container';
+import Header from '../Common/header';
+
+import { fetchSchoolAction, fetchWordsAction, fetchLeaderboardsAction } from '../../Actions/index';
+
+import {
+  BlankRow,
+  BookContainer,
+  BookStats,
+  Definition,
+  DefinitionRow,
+  HeaderStats,
+  LeftRowContent,
+  StarImage
+} from './components';
 
 class Profile extends Component {
   constructor(props) {
     super(props);
+    this.state = {}
 
-    this.state = {
-      name: '',
-      wordExperience: [],
-      stats: {
-        wordsLearned: {
-          name: 'words learned',
-          image: 'book',
-          color: color.blue
-        },
-        wordAccuracy: {
-          name: 'word accuracy',
-          image: 'archer',
-          color: color.red
-        },
-      },
-      wordsLearned: 0,
-      wordAccuracy: 0
+    this.checkScroll = this.checkScroll.bind(this);
+  }
+
+  checkScroll() {
+    if (!this.book) { return; }
+    const { fixedStats } = this.state;
+    const distFromTop = this.book.getBoundingClientRect().top;  
+    const scrollTop = document.documentElement.scrollTop;
+
+    if (fixedStats && scrollTop < this.state.scrollTop) {
+      this.setState({ fixedStats: false });
+    } else if (!fixedStats && distFromTop < window.innerHeight * 0.15) {
+      this.setState({ fixedStats: true, scrollTop: scrollTop });
     }
   }
 
-  async componentDidMount() {
-    const id = _.last(window.location.href.split('/'));
-    const result = await this.props.dispatch(loadUser(id, this.props.session, false));
+  componentDidMount() {
+    window.addEventListener('scroll', this.checkScroll);
 
-    if (!result.error) {
-      const user = _.first(_.values(result.response.entities.user));
+    if (_.isEmpty(this.props.words)) { this.props.dispatch(fetchWordsAction()); }
+    this.loadSchool();
+    this.loadLeaderboards();
+  }
 
-      this.setState({
-        name: capitalizeOne(user.firstName),
-        wordExperience: _.sortBy(user.words, 'name'),
-        wordsLearned: user.words.length,
-        wordsMastered: user.words.filter((w) => w.experience >= 7).length,
-        wordAccuracy: `${parseInt(100 * sum(user.words, 'correct')/sum(user.words, 'seen'), 10) || 0}%`
-      });
+  componentWillReceiveProps(nextProps) {
+    if (!this.state.loadingSchool) { this.loadSchool(); }
+    if (!this.state.loadingLeaderboards) { this.loadLeaderboards(); }
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this.checkScroll);
+  }
+
+  loadSchool() {
+    const id = get(this.props.user, 'school')
+    if (id) {
+      this.setState({ loadingSchool: true });
+      this.props.dispatch(fetchSchoolAction(id));
     }
   }
+
+  loadLeaderboards() {
+    const id = get(this.props.user, '_id');
+    const session = this.props.session;
+    if (id && session) {
+      const query = queryString.stringify({ user: id });
+      this.setState({ loadingLeaderboards: true });
+      this.props.dispatch(fetchLeaderboardsAction(query, session));
+    }
+  }  
+
+  stat(type) {
+    const words = get(this.props.user, 'words');
+    if (!words) { return; }
+
+    switch (type) {
+      case 'totalStars':
+        return _.reduce(words, (acc, w) => acc + w.experience, 0);
+      case 'wordsLearned':
+        return words.length;
+      case 'wordAccuracy':
+        const correct = _.reduce(words, (acc, w) => acc + w.correct, 0);
+        const seen = _.reduce(words, (acc, w) => acc + w.seen, 0);
+        return Math.round((correct / Math.max(seen, 1)) * 100) + '%';
+      default:
+        return 'N/A';        
+    }
+  }
+
+  headerText(user) {
+    let text = user.firstName;
+    if (user.lastName) { text += ' ' + user.lastName};
+    text += "'s progress";
+    return text.toUpperCase();
+  }
+
+  ranks(ranks, userId) {
+    if (_.isEmpty(ranks) || !userId) { return ['-','-']; }
+    const myAllTimeRanks = _.filter(ranks, r => r.id.includes(userId) && r.period === 'all');
+    return _.map(_.partition(myAllTimeRanks, r => r.group === 'Earth'), ranks => get(_.first(ranks), 'position'));
+  }  
 
   render() {
-    const wordExperience = this.state.wordExperience.map((obj) => {
-      const idx = _.findIndex(this.props.words, (w) => w.value === obj.name);
-      if (idx >= 0) { obj.definition = _.pluck(this.props.words[idx].definition, 'value').join('') };
-      return obj;      
-    })
+    const {
+      ranks,
+      school,
+      session,
+      user,
+      words
+    } = this.props;
 
-    const wordProgress = () => {
-      return wordExperience.map((w, i) => {
-        const stars = _.range(1, 11).map((n, i2) => {
-          return <StarImage 
-            key={i * 10 + i2}
-            src={require(`../../Library/Images/star-${n <= w.experience ? 'yellow': 'grey'}.png`)} />;
-        })
-
-        return <Row key={i} backgroundColor={i % 2 === 0 ? color.lightestGray : 'white'}>
-          <WordCell>
-            <WordValue>{w.name}</WordValue>
-            <div style={{display: 'inline-block'}}>
-              {stars}
-            </div>
-          </WordCell>
-          <DefinitionCell>
-            {w.definition}
-          </DefinitionCell>
-        </Row>
-      })
+    const definition = value => {
+      const word = _.find(words, w => w.value === value);
+      return word && _.map(word.definition, (d, i) => {
+        return <span key={i} style={{color:d.isRoot ? color.warmYellow : color.darkGray}}>
+          {d.value}
+        </span>
+      });
     }
 
-    const stats = () => {
-      return _.keys(this.state.stats).map((k) => {
-        return <StatContainer key={k}>
-          <div>
-            <StatImage src={require(`../../Library/Images/${this.state.stats[k].image}.png`)} />
-            <Stat color={this.state.stats[k].color}>
-              {this.state[k]}
-            </Stat>
-          </div>
-          <StatDescription>
-            {this.state.stats[k].name}
-          </StatDescription>
-        </StatContainer>
-      })
+    const header = () => {
+      return <div style={{paddingTop:'20px'}}>
+        <Header.small style={{margin:'0'}}>
+          {get(school, 'name')}
+        </Header.small>
+        <Header.large style={{color:color.green,margin:'5px 0px'}}>
+          {this.headerText(user)}
+        </Header.large>
+      </div>
+    };
+    
+    const headerStats = () => {
+      return <HeaderStats>
+        <div style={{height:'100%'}}>
+          <img
+            alt={'star icon'}
+            src={starIcon}
+            style={{height:'42px',width:'auto'}} />
+          <Header.extraSmall style={{color:'black',margin:'0'}}>
+            total stars
+          </Header.extraSmall>
+          <h1 style={{fontFamily:'EBGaramondSemiBold',color:color.mainBlue,fontSize:'2.5em',margin:'0'}}>
+            {this.stat('totalStars')}
+          </h1>
+        </div>
+        <div style={{height:'100%'}}>
+          <img
+            alt={'book icon'}
+            src={bookIcon}
+            style={{height:'35px',width:'auto',marginTop:'7px'}} />          
+          <Header.extraSmall style={{color:'black',margin:'0'}}>
+            words learned
+          </Header.extraSmall>
+          <h1 style={{fontFamily:'EBGaramondSemiBold',color:color.mainBlue,fontSize:'2.5em',margin:'0'}}>    
+            {this.stat('wordsLearned')}
+          </h1>
+        </div>        
+      </HeaderStats>
+    };
+
+    const tableRow = (word, idx) => {
+      return <tr key={word.name} style={{backgroundColor:idx % 2 === 0 ? color.lightestGray : 'white',height:'75px'}}>
+        <td style={{width:'25%'}}>
+          <LeftRowContent>
+            <p style={{letterSpacing:'1px',fontFamily:'BrandonGrotesqueBold',fontSize:'0.9em'}}>
+              {word.name.toUpperCase()}
+            </p>
+            <div>
+              {_.map(_.range(1,11), n => <StarImage alt={'star icon'} key={n} src={n <= word.experience ? yellowStar : grayStar} />)}
+            </div>
+          </LeftRowContent>
+        </td>
+        <DefinitionRow>
+          <Definition>
+            {definition(word.name)}
+          </Definition>
+        </DefinitionRow>
+        <BlankRow />
+      </tr>
+    };
+
+    const wordsTable = () => {
+      return <div>
+        <BookContainer>
+          {sidebarStats()}
+        </BookContainer>
+        <table style={{borderCollapse:'collapse'}}>
+          <tbody>
+            {_.map(_.sortBy(user.words, 'name'), (word, idx) => tableRow(word, idx))}
+          </tbody>
+        </table>
+      </div>
+    };
+
+    const sidebarStats = () => {
+      const [worldRank, schoolRank] = this.ranks(ranks, session.user);
+      
+      const [outerStyles, innerStyles] = this.state.fixedStats
+        ? [ { position:'absolute', right:'225px' }, { position:'fixed', top:'15%', width:'225px' } ]
+        : [ {}, { position:'absolute', width:'225px', right:'0' } ];
+
+      return <div style={outerStyles}>
+        <div ref={book => this.book = book} style={innerStyles}>
+          <img
+            alt={'book icon'}
+            src={bookIcon}
+            style={{width:'100%',height:'auto'}} />
+          <BookStats id={'book'}>
+            <div style={{marginRight:'10px'}}>
+              <img
+                alt={'school icon'}
+                src={iconSchool}
+                style={{height:'45px',width:'auto'}} />          
+              <h3 style={{height:'0',lineHeight:'0',fontSize:'0.7em',fontFamily:'BrandonGrotesque'}}>
+                SCHOOL RANK
+              </h3>                    
+              <h1 style={{fontFamily:'EBGaramondSemiBold',color:color.red,fontSize:'2.25em',lineHeight:'10px'}}>
+                {schoolRank}
+              </h1>            
+            </div>
+
+            <div style={{marginRight:'10px'}}>
+              <img
+                alt={'earth icon'}
+                src={iconEarth}
+                style={{height:'45px',width:'auto'}} />
+              <h3 style={{height:'0',lineHeight:'0',fontSize:'0.7em',fontFamily:'BrandonGrotesque'}}>
+                WORLD RANK
+              </h3>                    
+              <h1 style={{fontFamily:'EBGaramondSemiBold',color:color.mainBlue,fontSize:'2.25em',lineHeight:'10px'}}>
+                {worldRank}
+              </h1>
+            </div>
+
+            <div style={{marginRight:'10px'}}>
+              <img
+                alt={'archer icon'}
+                src={archer}
+                style={{height:'45px',width:'auto'}} />          
+              <h3 style={{height:'0',lineHeight:'0',fontSize:'0.7em',fontFamily:'BrandonGrotesque'}}>
+                WORD ACCURACY
+              </h3>            
+              <h1 style={{fontFamily:'EBGaramondSemiBold',color:color.purple,fontSize:'2.25em',lineHeight:'10px'}}>
+                {this.stat('wordAccuracy')}
+              </h1>                   
+            </div>
+          </BookStats>
+        </div>
+      </div>
     }
 
     return (
-      <div>
-        <ProgressSection>
-          <Header>
-            {this.state.name}'s Progress
-          </Header>
-          <ProgressTable>
-            {wordProgress()}
-          </ProgressTable>
-        </ProgressSection>
-        <Sidebar>
-          {stats()}
-        </Sidebar>
-      </div>
+      <Container>
+        {
+          user && 
+          <div>
+            {header()}
+            {headerStats()}
+            {wordsTable()}
+          </div>
+        }
+      </Container>
     );
   }
 }
 
-const ProgressSection = styled.div`
-  width: 70%;
-  display: inline-block;
-  vertical-align: top;
-  margin-left: 2.5%;
-`
-
-// Header
-
-const Header = styled.p`
-  height: 75px;
-  line-height: 75px;
-  margin-left: 25px;
-  font-size: 2.75em;
-  vertical-align: top;
-  text-align: center;
-`
-
-// Table
-
-const ProgressTable = styled.table`
-  margin: 25px 0px 25px 0px;
-  width: 100%;
-  border-collapse: collapse;
-`
-
-const Row = styled.tr`
-  background-color: ${props => props.backgroundColor};
-  height: 75px;
-`
-
-const WordCell = styled.td`
-  width: 50%;
-  text-align: center;
-`
-
-const WordValue = styled.p`
-  display: block;
-  height: 0%;
-  line-height: 0%;
-`
-const StarImage = styled.img`
-  height: 20px;
-  width: 20px;
-`
-
-const DefinitionCell = styled.td`
-  padding-left: 10px;
-`
-
-// Sidebar
-
-const Sidebar = styled.div`
-  width: 27.5%;
-  text-align: center;
-  display: inline-block;
-  margin-top: 25px;
-`
-
-// Stats Section
-
-const StatContainer = styled.div`
-  text-align: center;
-  margin-top: -5px;
-`
-
-const StatImage = styled.img`
-  height: 45px;
-  width: 45px;
-  display: inline-block;
-  vertical-align: middle;
-  margin-right: 5px;
-`
-
-const Stat = styled.h1`
-  font-size: 2.25em;
-  color: ${props => props.color};
-  display: inline-block;
-  vertical-align: middle;
-  margin-left: 5px;
-`
-
-const StatDescription = styled.h4`
-  color: ${color.gray};
-  margin-top: -20px;
-  font-size: 1em;
-`
-
 const mapStateToProps = (state, ownProps) => ({
-  session: state.entities.session,
   words: _.values(state.entities.words),
+  session: state.entities.session,
+  user: _.first(_.values(state.entities.user)),
+  school: _.first(_.values(state.entities.school)),
+  ranks: _.values(state.entities.ranks)  
 })
 
 export default connect(mapStateToProps)(Profile)

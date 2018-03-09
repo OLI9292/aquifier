@@ -2,8 +2,8 @@ import { normalize, schema } from 'normalizr'
 import _ from 'underscore';
 
 const API_ROOT = {
-  'accounts': 'https://dry-ocean-39738.herokuapp.com/api/v2/',
-  'curriculum': 'https://rocky-garden-48841.herokuapp.com/api/v2/'
+  'accounts': 'https://desolate-plains-35942.herokuapp.com/api/v2/',
+  'curriculum': 'https://desolate-plains-35942.herokuapp.com/api/v2/'
 }
 
 const formatSession = session => session ? {
@@ -18,15 +18,16 @@ const callApi = (api, endpoint, schema, method, data, session) => {
   const fullUrl = API_ROOT[api] + endpoint
   const headers = _.extend({}, { 'Content-Type': 'application/json' }, formatSession(session));
   const body = { method: method, body: JSON.stringify(data), headers: headers };
-  console.log(`method: ${method}\napi: ${api}\nendpoint: ${endpoint}\nheaders: ${JSON.stringify(headers)}`)
 
+  console.log(`method: ${method}\napi: ${api}\nendpoint: ${endpoint}\nheaders: ${JSON.stringify(headers)}`)
+  
   return fetch(fullUrl, body)
     .then(response =>
       response.json().then(json => {
         if (!response.ok) { return Promise.reject(json) }
         const normalized = Object.assign({},normalize(json, schema))
         // Removes undefined keys
-        normalized.entities = _.mapObject(normalized.entities, (v, k) => v.undefined ? v.undefined : v )
+        normalized.entities = _.mapObject(normalized.entities, (v, k) => v.undefined ? v.undefined : v)
         return normalized
       })
     )
@@ -36,36 +37,29 @@ const callApi = (api, endpoint, schema, method, data, session) => {
 // to a flat form where models are placed in `entities`, and nested
 // JSON objects are replaced with their IDs
 
-const successSchema = new schema.Entity('Success')
-
-// CURRICULUM
-const wordSchema = new schema.Entity('words', {}, { idAttribute: '_id' })
-const rootSchema = new schema.Entity('roots', {}, { idAttribute: '_id' })
-const wordListSchema = new schema.Entity('wordLists', {}, { idAttribute: '_id' })
-const lessonSchema = new schema.Entity('lessons', {}, { idAttribute: '_id' })
-const relatedWordSchema = new schema.Entity('relatedWords', {}, { idAttribute: 'word' })
+const levelSchema = new schema.Entity('levels', {}, { idAttribute: '_id' })
+const questionSchema = new schema.Entity('questions')
 const rankSchema = new schema.Entity('ranks')
-
-// ACCOUNTS
+const rootSchema = new schema.Entity('roots', {}, { idAttribute: '_id' })
+const schoolSchema = new schema.Entity('school', {}, { idAttribute: '_id' })
 const userSchema = new schema.Entity('user', {}, { idAttribute: '_id' })
 const sessionSchema = new schema.Entity('session', { user: userSchema })
 const studentsSchema = new schema.Entity('students', { students: [userSchema] })
+const successSchema = new schema.Entity('Success')
+const wordSchema = new schema.Entity('words', {}, { idAttribute: '_id' })
 
 // Schemas for API responses.
 export const Schemas = {
-  WORD: wordSchema,
-  WORD_ARRAY: [wordSchema],
-  WORD_LIST: wordListSchema,
-  WORD_LIST_ARRAY: [wordListSchema],
-  LESSON: lessonSchema,
-  LESSON_ARRAY: [lessonSchema],
-  USER: userSchema,
-  ROOT_ARRAY: [rootSchema],
-  SESSION: sessionSchema,
-  STUDENTS: studentsSchema,
   LEADERBOARDS: [rankSchema],
-  RELATED_WORDS_ARRAY: [relatedWordSchema],
-  SUCCESS: successSchema
+  LEVEL_ARRAY: [levelSchema],
+  QUESTION_ARRAY: questionSchema,
+  ROOT_ARRAY: [rootSchema],
+  SCHOOL: schoolSchema,
+  SESSION: sessionSchema,
+  STUDENT_ARRAY: studentsSchema,
+  SUCCESS: successSchema,
+  USER: userSchema,
+  WORD_ARRAY: [wordSchema]
 }
 
 // Action key that carries API call info interpreted by this Redux middleware.

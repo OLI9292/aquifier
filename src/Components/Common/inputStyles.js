@@ -1,12 +1,15 @@
+import { color } from '../../Library/Styles/index';
+
 const Default = {
-  backgroundColor: '#f1f1f1',
-  border: '0px',
+  border: `2px solid ${color.lightGray}`,
   borderRadius: '5px',
   fontFamily: 'BrandonGrotesque',
   fontSize: '1.25em',
   outline: 'none',
-  padding: '10px',
-  boxSizing: 'border-box'
+  padding: '15px 10px',
+  minWidth: '180px',
+  boxSizing: 'border-box',
+  textAlign: 'left'
 };
 
 const InputStyles = {

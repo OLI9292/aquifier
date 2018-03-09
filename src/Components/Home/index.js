@@ -1,5 +1,6 @@
 import { connect } from 'react-redux'
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
 import styled from 'styled-components';
 
@@ -7,9 +8,10 @@ import { color } from '../../Library/Styles/index';
 import TESTIMONIALS from './testimonials';
 import Card from './card';
 import CTA from './cta';
+import Button from '../Common/button';
 import DaisyChain from './daisyChain';
-import Header from './header';
-import { sleep, shouldRedirect } from '../../Library/helpers';
+import Header from '../Header/index';
+import { shouldRedirect } from '../../Library/helpers';
 
 import bgYellow from '../../Library/Images/Home/bg-yellow.png';
 import bgYellowFooter from '../../Library/Images/Home/bg-yellow-footer.png';
@@ -29,12 +31,24 @@ class Home extends Component {
   }
 
   componentDidMount() {
+    this.redirectIfLoggedIn(this.props);
     window.addEventListener('resize', this.checkWindowSize);
     this.checkWindowSize();
   }
 
   componentWillUnmount() {
-    window.addEventListener('resize', this.checkWindowSize);
+    window.removeEventListener('resize', this.checkWindowSize);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.redirectIfLoggedIn(nextProps);
+  }
+
+  redirectIfLoggedIn(props) {
+    if (props.session) { 
+      const redirect = props.session.isTeacher ? '/setup-game' : '/home'
+      this.setState({ redirect });
+    };     
   }
 
   checkWindowSize() {
@@ -44,7 +58,6 @@ class Home extends Component {
 
   render() {
     if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }
-    if (this.props.session) { this.setState({ redirect: '/play'} )};
 
     return (
       <div>
@@ -53,7 +66,7 @@ class Home extends Component {
         </TopContainer>
 
         <div style={{position:'relative'}}>
-          <Header smallScreen={this.state.smallScreen} />
+          <Header path={'/'} />
 
           <TopContentContainer>
             <h1 style={{fontFamily:'BrandonGrotesqueBold',fontSize:'2.5em'}}>
@@ -66,19 +79,22 @@ class Home extends Component {
           </TopContentContainer>   
 
           <DaisyChainContainer>
-            <DaisyChain />
+            <DaisyChain smallScreen={this.state.smallScreen} />
           </DaisyChainContainer>
         </div>
       
-        <ButtonContainer>
-          <Button color={color.blue} onClick={() => this.setState({ redirect: '/play'})}>
-            PLAY NOW
-          </Button>
-          <Button
-            onClick={() => this.setState({ redirect: '/start-free-trial' })}
-            marginLeft color={color.green}>
-            SIGN UP
-          </Button>
+        <ButtonContainer smallScreen={this.state.smallScreen}>
+          <ButtonExt smallScreen={this.state.smallScreen} color={color.mainBlue}>
+            <Link style={{textDecoration:'none',color:'white'}} to={'/play/type=demo'}>
+              play now
+            </Link>
+          </ButtonExt>
+          {this.state.smallScreen && <br />}
+          <ButtonExt smallScreen={this.state.smallScreen} color={color.green}>
+            <Link style={{textDecoration:'none',color:'white'}} to={'/start-free-trial'}>
+              sign up
+            </Link>
+          </ButtonExt>
         </ButtonContainer>
 
         <TestimonialsContainer>
@@ -90,7 +106,7 @@ class Home extends Component {
                   {TESTIMONIALS[0].quote}
                 </p>
                 <WhiteLine align={'right'}/>
-                <p style={{fontFamily:'EBGaramond',fontSize:'1.25em',paddingTop:'25px'}}>
+                <p style={{fontFamily:'EBGaramond',paddingTop:'25px'}}>
                   {TESTIMONIALS[0].from}
                 </p>
               </div>
@@ -99,7 +115,7 @@ class Home extends Component {
                   {TESTIMONIALS[1].quote}
                 </p>
                 <WhiteLine align={'left'}/>
-                <p style={{fontFamily:'EBGaramond',fontSize:'1.25em',paddingTop:'25px'}}>
+                <p style={{fontFamily:'EBGaramond',paddingTop:'25px'}}>
                   {TESTIMONIALS[1].from}
                 </p>
               </div>
@@ -122,7 +138,7 @@ class Home extends Component {
             <p style={{fontFamily:'BrandonGrotesqueBold',color:color.gray2,fontSize:'1.75em'}}>
               Morphemes are the best way to build vocabulary
             </p>
-            <p style={{fontFamily:'EBGaramond',fontSize:'1.25em',lineHeight:'30px'}}>
+            <p style={{fontFamily:'EBGaramond',lineHeight:'30px',fontSize:'1.25em'}}>
               {morphemeText}
             </p>          
           </div>
@@ -156,7 +172,7 @@ class Home extends Component {
           </p>
           <div style={{width:'10%',height:'100%'}} />
           <div style={{width:'45%'}}>
-            <a href='https://www.bit.ly/playwordcraft' target='_blank'>
+            <a href='https://www.bit.ly/playwordcraft' target='_blank' rel='noopener noreferrer'>
               <img
                 alt={'download-on-app-store'}
                 src={downloadOnAppStore}
@@ -168,18 +184,21 @@ class Home extends Component {
         <BottomContainer>             
           <BottomImage image={bgYellowFooter}>        
             <BottomNav>
-              <p style={{cursor:'pointer',display:'none'}}>
-                ABOUT              
-              </p>
-              <p style={{cursor:'pointer',display:'none'}}>
-                METHODOLOGY
-              </p>
-              <p style={{cursor:'pointer',display:'none'}}>
-                PARTNERS
-              </p>     
-              <a style={{color:'black',textDecoration:'none'}} href={'mailto:support@playwordcraft.com'}>
-                <p>CONTACT</p>      
-              </a> 
+              <Link
+                to={'/team'}
+                style={{textTransform:'uppercase',textDecoration:'none',color:'black',fontSize:'0.9em'}}>
+                about
+              </Link>
+                 <Link
+                to={'/research'}
+                style={{textTransform:'uppercase',textDecoration:'none',color:'black',fontSize:'0.9em'}}>
+                research
+              </Link>
+              <Link
+                to={'/contact'}
+                style={{textTransform:'uppercase',textDecoration:'none',color:'black',fontSize:'0.9em'}}>
+                contact
+              </Link>              
             </BottomNav>
           </BottomImage>        
         </BottomContainer>             
@@ -187,6 +206,7 @@ class Home extends Component {
     );
   }
 }
+
 
 const TopContainer = styled.div`
   height: 550px;
@@ -227,17 +247,17 @@ const DaisyChainContainer = styled.div`
 `
 
 const ButtonContainer = styled.div`
-  display: flex;
-  margin-left: 10%;
-  width: 50%;
-  margin-top: 40px;
+  margin-left: ${props => props.smallScreen ? '' : '10%'};
+  margin-top: 40px !important;
   position: relative;
-  @media (max-width: 900px) {
-    display: none;
-    width: 80%;
-    margin-top: 50px;
-    justify-content: space-evenly;
-  }  
+  display: ${props => props.smallScreen ? 'flex' : ''};
+  flex-direction: ${props => props.smallScreen ? 'column' : ''};
+`
+
+const ButtonExt = Button.medium.extend`
+  width: 225px;
+  background-color: ${props => props.color};
+  margin: ${props => props.smallScreen ? '0 auto' : '0px 20px 0px 0px'};
 `
 
 const BottomNav = styled.div`
@@ -305,7 +325,7 @@ const WhiteLine = styled.div`
 `
 
 const TestimonialsContainer = styled.div`
-  margin-top: 100px;
+  margin-top: 60px;
   width: 100%;
 `
 
@@ -326,21 +346,6 @@ const AppleContainer = styled.div`
   @media (max-width: 900px) {
     width: 90%;
   }     
-`
-
-const Button = styled.button`
-  font-family: BrandonGrotesqueBold;
-  cursor: pointer;
-  background-color: ${props => props.color};
-  display: inline-block;
-  color: white;
-  margin-left: ${props => props.marginLeft ? '25px' : '0px'};
-  outline: 0;
-  border: 0;
-  width: 250px;
-  height: 60px;
-  border-radius: 30px;
-  font-size: 1.25em;
 `
 
 const mapStateToProps = (state, ownProps) => ({

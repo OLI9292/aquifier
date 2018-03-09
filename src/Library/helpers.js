@@ -37,8 +37,6 @@ export const capitalizeOne = (str) => {
 
 export const concat = (x, y) => x.concat(y)
 
-export const flatMap = (f, xs) => xs.map(f).reduce(concat, [])
-
 export const sum = (arr, attr) => _.reduce(_.pluck(arr, attr), (n, m) => n + m, 0)
 
 export const move = (array, fromIndex, toIndex) => {
@@ -68,3 +66,7 @@ export const unixTime = () => {
 export const isHome = () => window.location.pathname === '/'
 
 export const shouldRedirect = (state, currentLocation) => state.redirect && !currentLocation.href.endsWith(state.redirect)
+
+export const mobileCheck = () => window.matchMedia("only screen and (max-width: 760px)").matches
+
+export const caseInsEq = (strA, strB) => _.isString(strA) && _.isString(strB) && (strA.toLowerCase() === strB.toLowerCase())

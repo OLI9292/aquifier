@@ -1,8 +1,9 @@
 import styled from 'styled-components';
+import { color } from '../../Library/Styles/index';
 
 const Default = styled.textarea`
-  background-color: #f1f1f1;
-  border: none;
+  background-color: white;
+  border: 2px solid ${color.lightGray};
   border-radius: 5px;
   font-family: BrandonGrotesque;
   &:focus {
@@ -15,17 +16,10 @@ const Default = styled.textarea`
 `
 
 const Medium = Default.extend`
-  width: ${props => props.long 
-    ? '500px'
-    : props.short ? '125px' : '250px'};
+  width: 250px
   height: 50px;
   line-height: 45px;
   font-size: 1.2em;
-
-  @media (max-width: 768px) {
-    width: 200px;
-    font-size: 1em;
-  }
 `
 
 const Small = Default.extend`
@@ -35,23 +29,8 @@ const Small = Default.extend`
   font-size: 0.75em;
 `
 
-const ExtraLarge = Default.extend`
-  width: 400px;
-  height: 100px;
-  line-height: 90px;
-  font-size: 2.25em;
-
-  @media (max-width: 768px) {
-    width: 300px;
-    height: 80px;
-    line-height: 70px;
-    font-size: 2em;
-  }
-`
-
 const TextArea = {
   default: Default,
-  extraLarge: ExtraLarge,
   medium: Medium,
   small: Small
 }
