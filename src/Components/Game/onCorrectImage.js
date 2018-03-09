@@ -45,11 +45,9 @@ class OnCorrectImage extends Component {
   }
 
   render() {
-    const show = this.props.show && this.state.source;
-
     return (
       <Container>
-        {show && <Image src={this.state.source} /> }
+        {this.state.source && <Image src={this.state.source} /> }
       </Container>
     );
   }
