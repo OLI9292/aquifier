@@ -6,7 +6,7 @@ import get from 'lodash/get';
 
 import starIcon from '../../Library/Images/icon-stars.png';
 import bookIcon from '../../Library/Images/icon-book-green.png';
-import largeBook from '../../Library/Images/book.png';
+import largeBook from '../../Library/Images/Book.png';
 import yellowStar from '../../Library/Images/icon-star-yellow.png';
 import iconSchool from '../../Library/Images/icon-house.png';
 import iconEarth from '../../Library/Images/icon-earth.png';
