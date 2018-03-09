@@ -27,7 +27,6 @@ class GameManager extends Component {
   }
 
   componentDidMount() {
-    this.hideZendesk();
     this.props.dispatch(removeEntityAction('questions'));    
 
     const { user, levels } = this.props;
@@ -207,16 +206,6 @@ class GameManager extends Component {
       }
     });    
   }
-
-  hideZendesk() {
-    this.interval = setInterval(() => {
-      const zendesk = window.$zopim.livechat;
-      if (zendesk) {
-        zendesk.hideAll();
-        clearInterval(this.interval);
-      }
-    }, 50);
-  }  
 
   render() {
     if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }  

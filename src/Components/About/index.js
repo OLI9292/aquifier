@@ -3,11 +3,11 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
 import { color } from '../../Library/Styles/index';
-import { Container } from '../Common/container';
 import Header from '../Common/header';
 import data from './data';
 
 import {
+  ContainerExt,
   ContentContainer,
   LinksContainer,
   NavContainer,
@@ -29,7 +29,7 @@ class About extends Component {
   render() {
     const link = type => {
       const selected = type === this.state.type;
-      return <NavLink selected={selected}>
+      return <NavLink key={type} selected={selected}>
         <Link to={'/' + type} style={{color:selected ? 'black' : 'white',textDecoration:'none'}}>
           {type}
         </Link>
@@ -37,13 +37,13 @@ class About extends Component {
     }
 
     const profile = data => {
-      return <div style={{marginBottom:'30px'}}>
+      return <div key={data.name} style={{marginBottom:'30px'}}>
         <ProfileImage
           src={require('../../Library/Images/Headshots/' + data.imageSrc + '.png')} />
-        <p style={{height:'10px',lineHeight:'10px'}}>
+        <p style={{marginTop:'0px'}}>
           {data.name}
         </p>
-        <p style={{fontFamily:'BrandonGrotesque',color:color.gray2,lineHeight:'10px'}}>
+        <p style={{fontFamily:'BrandonGrotesque',color:color.gray2,marginTop:'-10px'}}>
           {data.title}
         </p>        
       </div>
@@ -52,11 +52,11 @@ class About extends Component {
     const study = data => {
       return <div style={{marginBottom:'60px'}}>
         <p>
-          <Link target={'_blank'} to={data.url} style={{color:color.blue,textDecoration:'none'}}>
+          <Link key={data.url} target={'_blank'} to={data.url} style={{color:color.blue,textDecoration:'none'}}>
             {data.name}
           </Link>
         </p>
-        <p style={{fontFamily:'BrandonGrotesque',lineHeight:'0px'}}>
+        <p style={{fontFamily:'BrandonGrotesque',marginTop:'-10px'}}>
           {data.by}
         </p>        
       </div>      
@@ -65,14 +65,14 @@ class About extends Component {
     const primaryContent = (() => {
       if (this.state.type === 'team') {
         return <ContentContainer>
-          {_.map(data[this.state.type].content, block => <Text>{block}</Text>)}
+          {_.map(data[this.state.type].content, (block, i) => <Text key={i}>{block}</Text>)}
           <ProfilesContainer>
             {_.map(data[this.state.type].people, profile)}
           </ProfilesContainer>
         </ContentContainer>
       } else if (this.state.type === 'research') {
         return <ContentContainer>
-          {_.map(data[this.state.type].content, block => <Text>{block}</Text>)}
+          {_.map(data[this.state.type].content, (block, i) => <Text key={i}>{block}</Text>)}
           <LinksContainer>
             {_.map(data[this.state.type].studies, study)}
           </LinksContainer>
@@ -94,7 +94,7 @@ class About extends Component {
     })();
 
     return (
-      <Container style={{paddingTop:'0'}}>
+      <ContainerExt>
         <NavContainer>
           <Header.extraLarge thin noUpcase style={{color:'white',height:'25px',paddingTop:'30px'}}>
             About Wordcraft
@@ -107,7 +107,7 @@ class About extends Component {
           {data[this.state.type].heading}
         </Header.extraLarge>
         {primaryContent}
-      </Container>
+      </ContainerExt>
     );
   }
 }

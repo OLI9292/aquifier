@@ -184,20 +184,21 @@ class Home extends Component {
         <BottomContainer>             
           <BottomImage image={bgYellowFooter}>        
             <BottomNav>
-              <p style={{cursor:'pointer',display:'none'}}>
-                ABOUT              
-              </p>
-              <p style={{cursor:'pointer',display:'none'}}>
-                METHODOLOGY
-              </p>
-              <p style={{cursor:'pointer',display:'none'}}>
-                PARTNERS
-              </p>      
-              <a style={{color:'black',textDecoration:'none'}} href={'mailto:support@playwordcraft.com'}>
-                <p style={{textTransform:'uppercase'}}>
-                  contact
-                </p>   
-              </a>   
+              <Link
+                to={'/team'}
+                style={{textTransform:'uppercase',textDecoration:'none',color:'black',fontSize:'0.9em'}}>
+                about
+              </Link>
+                 <Link
+                to={'/research'}
+                style={{textTransform:'uppercase',textDecoration:'none',color:'black',fontSize:'0.9em'}}>
+                research
+              </Link>
+              <Link
+                to={'/contact'}
+                style={{textTransform:'uppercase',textDecoration:'none',color:'black',fontSize:'0.9em'}}>
+                contact
+              </Link>              
             </BottomNav>
           </BottomImage>        
         </BottomContainer>             

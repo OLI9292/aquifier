@@ -1,5 +1,15 @@
 import styled from 'styled-components';
 import { color, media } from '../../Library/Styles/index';
+import { Container } from '../Common/container';
+
+
+export const ContainerExt = Container.extend`
+  padding-top: 0;
+  ${media.phone`
+    padding-bottom: 0px;
+    min-height: 100vh;
+  `};   
+`
 
 export const NavContainer = styled.div`
   width: 100%;
@@ -9,6 +19,10 @@ export const NavContainer = styled.div`
   box-sizing: border-box;
   text-align: left;
   padding-left: 5%;
+  ${media.phone`
+    border-radius: 0;
+    margin-top: 90px;
+  `};  
 `
 
 export const Nav = styled.div`
@@ -57,4 +71,3 @@ export const LinksContainer = styled.div`
   font-size: 1.2em;
   text-align: left;
 `
-

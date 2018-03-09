@@ -8,7 +8,7 @@ class Footer extends Component {
     const link = (text, path) => {
       return <Link
         to={path}
-        style={{textTransform:'uppercase',textDecoration:'none',color:'black',fontFamily:'BrandonGrotesque',fontSize:'0.9em'}}>
+        style={{textTransform:'uppercase',textDecoration:'none',color:'black',fontSize:'0.9em'}}>
         {text}
       </Link>
     }

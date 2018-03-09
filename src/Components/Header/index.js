@@ -56,10 +56,12 @@ class Header extends Component {
       </div>
     })()    
 
+    const showMobileNav = loggedIn && !_.contains(['/team','/research','/contact'], path);
+
     return (
       <div>
         {loginModal}
-        <NonMobileContainer show={!loggedIn}>
+        <NonMobileContainer show={!showMobileNav}>
           <Nav
             isTeacher={isTeacher}
             loggedIn={loggedIn}
@@ -69,7 +71,7 @@ class Header extends Component {
             logout={this.logout.bind(this)}
             redirect={this.redirect.bind(this)} />
         </NonMobileContainer>        
-        <MobileContainer show={loggedIn}>
+        <MobileContainer show={showMobileNav}>
           <MobileNav
             isTeacher={isTeacher}
             loggedIn={loggedIn}
