@@ -71,7 +71,6 @@ class GameManager extends Component {
       questions,
       settings
     } = this.state;
-    console.log(nextProps)
 
     if (nextProps.user && !loading) {
       this.setState({ loading: true }, () => this.setupGame(nextProps.user));  
