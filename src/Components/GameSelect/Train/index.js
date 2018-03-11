@@ -50,7 +50,7 @@ class Train extends Component {
       return uLvl && (level.type === 'speed' || (uLvl.progress.length >= level.progressBars));
     });
     
-    const completed = _.uniq(_.pluck(completedLevels, 'ladder')).sort();
+    const completed = _.uniq(_.pluck(completedLevels, 'ladder')).sort((a, b) => a > b);
     const open = completed.length ? completed.concat(_.last(completed) + 1) : [1];
     
     const furthest = _.last(open);

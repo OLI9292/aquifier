@@ -74,7 +74,10 @@ class Game extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (!nextProps.questions || this.state.questions) { return; }
-    this.setState({ questions: nextProps.questions, gameStartTime: moment() }, this.setQuestion);
+    this.setState({
+      questions: nextProps.questions,
+      gameStartTime: moment()
+    }, this.setQuestion);
   }
 
   setQuestion() {
