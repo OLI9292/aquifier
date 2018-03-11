@@ -33,7 +33,6 @@ class Nav extends Component {
       : ['/home','/profile','/leaderboards'];
 
     const links = (() => {
-      console.log(loggedIn)
       return <LinksContainer loggedIn={loggedIn}>
         {
           loggedIn

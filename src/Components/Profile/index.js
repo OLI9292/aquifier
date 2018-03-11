@@ -1,3 +1,4 @@
+import { Redirect } from 'react-router';
 import { connect } from 'react-redux'
 import React, { Component } from 'react';
 import _ from 'underscore';
@@ -13,6 +14,7 @@ import iconEarth from '../../Library/Images/icon-earth.png';
 import archer from '../../Library/Images/icon-archer-purple.png';
 import grayStar from '../../Library/Images/icon-star-gray.png';
 
+import { shouldRedirect } from '../../Library/helpers';
 import { color, } from '../../Library/Styles/index';
 import { Container } from '../Common/container';
 import Header from '../Common/header';
@@ -33,7 +35,17 @@ import {
 class Profile extends Component {
   constructor(props) {
     super(props);
-    this.state = {}
+
+    const path = window.location.pathname;
+    const studentId = path.includes('profile/') && path.replace('/profile/','');
+    const student = studentId && _.find(this.props.students, s => s._id === studentId);
+    const user = student || this.props.user;
+    const redirect = studentId && !student && '/my-class';
+
+    this.state = {
+      redirect: redirect,
+      user: user
+    };
 
     this.checkScroll = this.checkScroll.bind(this);
   }
@@ -53,8 +65,8 @@ class Profile extends Component {
 
   componentDidMount() {
     window.addEventListener('scroll', this.checkScroll);
-
     if (_.isEmpty(this.props.words)) { this.props.dispatch(fetchWordsAction()); }
+
     this.loadSchool();
     this.loadLeaderboards();
   }
@@ -69,7 +81,7 @@ class Profile extends Component {
   }
 
   loadSchool() {
-    const id = get(this.props.user, 'school')
+    const id = get(this.state.user, 'school')
     if (id) {
       this.setState({ loadingSchool: true });
       this.props.dispatch(fetchSchoolAction(id));
@@ -77,7 +89,7 @@ class Profile extends Component {
   }
 
   loadLeaderboards() {
-    const id = get(this.props.user, '_id');
+    const id = get(this.state.user, '_id');
     const session = this.props.session;
     if (id && session) {
       const query = queryString.stringify({ user: id });
@@ -87,7 +99,7 @@ class Profile extends Component {
   }  
 
   stat(type) {
-    const words = get(this.props.user, 'words');
+    const words = get(this.state.user, 'words');
     if (!words) { return; }
 
     switch (type) {
@@ -118,11 +130,11 @@ class Profile extends Component {
   }  
 
   render() {
+    if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }
+
     const {
       ranks,
       school,
-      session,
-      user,
       words
     } = this.props;
 
@@ -141,7 +153,7 @@ class Profile extends Component {
           {get(school, 'name')}
         </Header.small>
         <Header.large style={{color:color.green,margin:'5px 0px'}}>
-          {this.headerText(user)}
+          {this.headerText(this.state.user)}
         </Header.large>
       </div>
     };
@@ -203,14 +215,14 @@ class Profile extends Component {
         </BookContainer>
         <table style={{borderCollapse:'collapse'}}>
           <tbody>
-            {_.map(_.sortBy(user.words, 'name'), (word, idx) => tableRow(word, idx))}
+            {_.map(_.sortBy(this.state.user.words, 'name'), (word, idx) => tableRow(word, idx))}
           </tbody>
         </table>
       </div>
     };
 
     const sidebarStats = () => {
-      const [worldRank, schoolRank] = this.ranks(ranks, session.user);
+      const [worldRank, schoolRank] = this.ranks(ranks, this.state.user._id);
       
       const [outerStyles, innerStyles] = this.state.fixedStats
         ? [ { position:'absolute', right:'225px' }, { position:'fixed', top:'15%', width:'225px' } ]
@@ -269,7 +281,7 @@ class Profile extends Component {
     return (
       <Container>
         {
-          user && 
+          this.state.user && 
           <div>
             {header()}
             {headerStats()}
@@ -282,11 +294,12 @@ class Profile extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => ({
-  words: _.values(state.entities.words),
-  session: state.entities.session,
-  user: _.first(_.values(state.entities.user)),
+  ranks: _.values(state.entities.ranks),
   school: _.first(_.values(state.entities.school)),
-  ranks: _.values(state.entities.ranks)  
+  session: state.entities.session,
+  students: _.values(state.entities.students),
+  user: _.first(_.values(state.entities.user)),
+  words: _.values(state.entities.words)
 })
 
 export default connect(mapStateToProps)(Profile)

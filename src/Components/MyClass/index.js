@@ -61,6 +61,11 @@ class MyClass extends Component {
     this.setState({ students })
   }
 
+  handleStudentClick(student) {
+    const redirect = '/profile/' + student.id;
+    this.setState({ redirect });
+  }
+
   render() {
     if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }
 
@@ -86,7 +91,7 @@ class MyClass extends Component {
               </Row>
               
               {this.state.students.map((s, i) => {
-                return <Row dark={i % 2 === 0} key={i}>
+                return <Row dark={i % 2 === 0} key={i} onClick={() => this.handleStudentClick(s)}>
                   <TableCell left>{s.name}</TableCell>
                   <TableCell>{s.wordsLearned}</TableCell>
                   <TableCell right>{`${s.timePlayed}m`}</TableCell>
