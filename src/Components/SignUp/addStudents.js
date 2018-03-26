@@ -5,9 +5,17 @@ import _ from 'underscore';
 import Button from '../Common/button';
 import { color } from '../../Library/Styles/index';
 import Textarea from '../Common/textarea';
+import InputStyles from '../Common/inputStyles';
+import Header from '../Common/header';
 
 import {
-
+  BackArrow,
+  ImportInformationContainer,
+  ImportStudentListContainer,
+  StudentCountCell,
+  StudentCell,
+  StudentsTable,
+  TableContainer
 } from './components';
 
 const PLACEHOLDER = 'Copy/Paste your student names here. Put each name on a new line.' +
@@ -21,14 +29,15 @@ class AddStudents extends Component {
     super(props);
     this.state = {
       name: '',
+      studentText: PLACEHOLDER,
       students: []
     };
   }
 
-  handleKeyPress(e) {
+  addStudent(key = 'Enter') {
     const { name, students } = this.state;
     const invalid = (name.split(' ').length < 2) || _.contains(students, name);
-    if (e.key !== 'Enter' || invalid) { return; }
+    if (key !== 'Enter' || invalid) { return; }
     this.setState({ name: '', students: students.concat(name) })
   }  
 
@@ -41,81 +50,116 @@ class AddStudents extends Component {
   render() {
     const {
       name,
-      students
+      students,
+      studentText,
+      focus
     } = this.state;
 
-    const studentRow = student => <tr key={student}>
-      <td>
+    const studentCountRow = <tr>
+      <StudentCountCell>
+        {students.length === 1 ? '1 student' : `${students.length} students`}
+      </StudentCountCell>
+    </tr>;
+
+    const studentRow = (student, last) => <tr
+      key={student}
+      style={{borderBottom:`${last ? 0 : 2}px solid ${color.lightGray}`}}>
+      <StudentCell>
         {student}
-      </td>
-      <td>
         <img
           onClick={() => this.setState({ students: _.without(students, student) })}
-          style={{width:'20px',height:'20px',cursor:'pointer'}}
-          src={require('../../Library/Images/exit-gray.png')} />
-      </td>
+          style={{width:'15px',height:'15px',cursor:'pointer'}}
+          src={require('../../Library/Images/icon-exit-dark.png')} />        
+      </StudentCell>
     </tr>;
 
     const manualComponents = (() => {
+      const inputStyles = _.extend({},
+        InputStyles.default,
+        { width: '100%', color: color.mainBlue, borderColor: focus === 'add' ? color.mainBlue : color.lightGray });
+
       return <div>
-        <div style={{display:'flex'}}>
-          <span style={{flex:1}} />
+        <Header.medium style={{margin:'40px 0px'}}>
+          add students
+        </Header.medium>
 
-          <p style={{fontSize:'1.5em',fontFamily:'BrandonGrotesqueBold',flex:2}}>
-            Add Students
-          </p>
-
-          <p
-            onClick={() => this.props.setIsImporting(true)}
-            style={{fontSize:'1.5em',fontFamily:'BrandonGrotesqueBold',flex:1,color:color.blue,cursor:'pointer'}}>
-            Import
-          </p>          
+        <div style={{display:'flex',justifyContent:'space-between',width:'90%',margin:'0 auto'}}>
+          <input
+            onChange={e => this.setState({ name: e.target.value })}
+            style={inputStyles}
+            value={name}
+            onKeyPress={e => this.addStudent(e.key)}
+            onFocus={() => this.setState({ focus: 'add' })}
+            onBlur={() => this.setState({ focus: null })}
+            placeholder={'First name last name'} />
+          <Button.small
+            onClick={() => this.addStudent('Enter')}
+            style={{height:'65px',borderRadius:'10px',marginLeft:'20px'}}>
+            add
+          </Button.small>
         </div>
 
-        <p style={{fontSize:'1.25em',margin:'20px 0px'}}>
-          Start typing to add students!
-        </p>
+        <TableContainer>
+          <StudentsTable>
+            {
+              students.length > 0
+              ?
+              <tbody>
+                {studentCountRow}
+                {_.map(students, (student, idx) => studentRow(student, (idx === students.length - 1)))}
+              </tbody>
+              :
+              <tbody><tr><td style={{height:'250px',color:color.gray2}}>
+                No Students Added Yet
+              </td></tr></tbody>
+            }
+          </StudentsTable>
+        </TableContainer>
 
-        <input
-          onChange={e => this.setState({ name: e.target.value })}
-          value={name}
-          onKeyPress={this.handleKeyPress.bind(this)}
-          placeholder={'First name last name'} />
-
-        <table>
-          <tbody>
-            {_.map(students, studentRow)}
-          </tbody>
-        </table>   
+        <ImportStudentListContainer
+          onClick={() => this.props.setIsImporting(true)}>
+          <img
+            style={{width:'25px',height:'25px'}}
+            src={require('../../Library/Images/icon-download.png')} />
+          <Header.small
+            style={{color:color.green}}>
+            or import student list
+          </Header.small>              
+        </ImportStudentListContainer>
       </div>
     })();
 
     const importComponents = (() => {
       return <div>
-        <div style={{display:'flex',justifyContent:'space-between'}}>
-          <p>
-            Copy/Paste student list
-          </p>
-          <img
-            onClick={() => this.props.setIsImporting(false)}
-            style={{width:'20px',height:'20px',cursor:'pointer'}}
-            src={require('../../Library/Images/exit-gray.png')} />
+        <BackArrow
+          onClick={() => this.props.setIsImporting(false)}
+          src={require('../../Library/Images/icon-back-arrow.png')} />        
+
+        <Header.medium style={{margin:'40px 0px'}}>
+          copy/paste student list
+        </Header.medium>
+
+        <div style={{width:'90%',margin:'0 auto'}}>
+          <ImportInformationContainer>
+            <img
+              style={{width:'20px',height:'20px',marginRight:'10px'}}
+              src={require('../../Library/Images/icon-information.png')} />
+            Copy/Paste your students names here. Put each name on a new line.
+          </ImportInformationContainer>
+
+          <Textarea.medium
+            onChange={e => this.setState({ studentText: e.target.value })}
+            onBlur={e => { if (!studentText.length) { this.setState({ studentText: PLACEHOLDER }); } }}
+            onFocus={e => { if (studentText === PLACEHOLDER) { this.setState({ studentText: '' }); } }}
+            value={studentText}
+            style={{backgroundColor:color.lightestGray,border:'0',borderRadius:'0px 0px 10px 10px',height:'300px'}} />
         </div>
 
-        <p style={{fontSize:'1.25em',fontFamily:'BrandonGrotesqueBold'}}>
-          Paste your student list
-        </p>      
-
-        <Textarea.default
-          onChange={e => this.setState({ studentText: e.target.value })}
-          placeholder={PLACEHOLDER}
-          style={{width:'80%',margin:'0 auto',height:'300px'}} />
-
         <Button.medium
-          style={{}} 
+          style={{margin:'40px 0px'}} 
           onClick={this.import.bind(this)}>
           import list
-        </Button.medium>          
+        </Button.medium>     
       </div>;
     })();
 
@@ -124,13 +168,3 @@ class AddStudents extends Component {
 }
 
 export default AddStudents
-/*
-<div style={{display:'flex',color:color.blue,width:'50%',margin:'0 auto',justifyContent:'space-between'}}>
-          <p style={{cursor:'pointer'}}>
-            Import from Word
-          </p>
-          <p style={{cursor:'pointer'}}>
-            Import from Excel
-          </p>          
-        </div>
-        */

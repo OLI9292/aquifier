@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { color, media } from '../../Library/Styles/index';
 
-class Leaderboards extends Component {
+class NotFound extends Component {
   render() {
     return (
       <Container>
@@ -60,4 +60,4 @@ const Container = styled.div`
   `};    
 `
 
-export default Leaderboards
+export default NotFound

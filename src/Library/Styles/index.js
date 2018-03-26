@@ -42,6 +42,7 @@ export const color = {
   white: '#ffffff',
   paleBlue: '#D3EFFB',
   babyBlue: '#A6EAFF',
+  darkBabyBlue: '#6ECAF0',
   honey: '#BF430C',
   limeGreen: '#43DE80',
   darkLimeGreen: '#29A85C'

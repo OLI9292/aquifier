@@ -19,6 +19,7 @@ import Leaderboards from '../Leaderboards/index';
 import MyClass from '../MyClass/index';
 import Profile from '../Profile/index';
 import NotFound from '../NotFound/index';
+import Welcome from '../Welcome/index';
 
 // MODELS
 import LocalStorage from '../../Models/LocalStorage'
@@ -64,6 +65,7 @@ class App extends Component {
             <Route exact path='/research'         component={contained('about')} />
             <Route exact path='/setup-game'       component={contained('gameSetup')} />
             <Route exact path='/start-free-trial' component={contained('infoForm')} />
+            <Route exact path='/welcome'          component={contained('welcome')} />
             <Route                                component={contained('notFound')} />
           </Switch>
         </BrowserRouter>
@@ -88,6 +90,7 @@ class Container extends Component {
         case 'myClass':      return <MyClass />
         case 'profile':      return <Profile />
         case 'notFound':     return <NotFound />
+        case 'welcome':      return <Welcome />
         default:             return <Home />
       }
     }

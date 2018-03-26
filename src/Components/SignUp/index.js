@@ -7,6 +7,7 @@ import { DarkBackground } from '../Common/darkBackground';
 import Button from '../Common/button';
 import Form from './form';
 import AddStudents from './addStudents';
+import { shouldRedirect } from '../../Library/helpers';
 
 import {
   BackArrow,
@@ -19,7 +20,7 @@ class SignUp extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentStep: 1,
+      currentStep: 4,
       isImporting: false,
       data: {
         email: '',
@@ -44,10 +45,18 @@ class SignUp extends Component {
   }
 
   next() {
-    this.setState({ currentStep: this.state.currentStep + 1 });
+    let { currentStep } = this.state;
+    if (currentStep === 4) {
+      this.setState({ redirect: '/welcome' });
+    } else {
+      currentStep += 1;
+      this.setState({ currentStep });      
+    }
   }
 
   render() {
+    if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }
+    
     const {
       currentStep,
       data,
@@ -84,7 +93,6 @@ class SignUp extends Component {
         <DarkBackground onClick={() => this.props.displaySignUp(false)} />
 
         <Container style={{textAlign:'center'}}>
-
           <BackArrow
             hide={isImporting || currentStep === 1}
             onClick={this.back.bind(this)}
@@ -97,7 +105,7 @@ class SignUp extends Component {
           {content}
 
           <Button.medium
-            style={{display:isImporting ? 'none' : 'inline-block'}} 
+            style={{display:isImporting ? 'none' : 'inline-block',margin:'20px 0px 40px 0px'}} 
             onClick={this.next.bind(this)}>
             {currentStep === 4 ? 'finish' : 'next'}
           </Button.medium>

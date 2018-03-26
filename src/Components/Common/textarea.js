@@ -4,7 +4,7 @@ import { color } from '../../Library/Styles/index';
 const Default = styled.textarea`
   background-color: white;
   border: 2px solid ${color.lightGray};
-  border-radius: 5px;
+  border-radius: 10px;
   font-family: BrandonGrotesque;
   &:focus {
     outline: 0;
@@ -12,27 +12,13 @@ const Default = styled.textarea`
   resize: none;
   transition: 0.2s;
   box-sizing: border-box;
-  padding-left: 10px;
-`
-
-const Medium = Default.extend`
-  width: 250px
-  height: 50px;
-  line-height: 45px;
-  font-size: 1.2em;
-`
-
-const Small = Default.extend`
-  width: 120px;
-  height: 35px;
-  line-height: 30px;
-  font-size: 0.75em;
+  padding: 20px;
+  font-size: 1.05em;
+  width: 100%;
 `
 
 const TextArea = {
-  default: Default,
-  medium: Medium,
-  small: Small
+  medium: Default
 }
 
 export default TextArea;

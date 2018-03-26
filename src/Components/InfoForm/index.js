@@ -151,8 +151,8 @@ class InfoForm extends Component {
 
           {inputs}
 
-          <Textarea.default
-            style={{width:'100%',height:'200px',padding:'10px','fontSize':'1.25em'}}
+          <Textarea.medium
+            style={{height:'200px',fontSize:'1.25em',lineHeight:'35px',padding:'10px'}}
             name='comments'
             placeholder='comments'
             onChange={(e) => this.setState({ comments: e.target.value })} />
