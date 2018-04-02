@@ -1,13 +1,18 @@
+import { connect } from 'react-redux'
 import { Redirect } from 'react-router';
 import React, { Component } from 'react';
 import _ from 'underscore';
 import get from 'lodash/get';
 
 import { DarkBackground } from '../Common/darkBackground';
+import LocalStorage from '../../Models/LocalStorage'
 import Button from '../Common/button';
 import Form from './form';
 import AddStudents from './addStudents';
 import { shouldRedirect } from '../../Library/helpers';
+import { color } from '../../Library/Styles/index';
+
+import { createClassAction } from '../../Actions/index';
 
 import {
   BackArrow,
@@ -20,7 +25,7 @@ class SignUp extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentStep: 4,
+      currentStep: 1,
       isImporting: false,
       data: {
         email: '',
@@ -28,8 +33,10 @@ class SignUp extends Component {
         lastName: '',
         password: '',
         role: '',
+        isTeacher: true,
         schoolZip: '',
-        schoolName: ''
+        schoolName: '',
+        students: []
       }
     };
   }
@@ -40,17 +47,68 @@ class SignUp extends Component {
     this.setState({ data });
   }
 
+  updateStudents(students, operation) {
+    const data = this.state.data;
+    if (operation === 'add')     { data.students = data.students.concat(students); }
+    if (operation === 'remove')  { data.students = _.without(data.students, students); }
+    if (operation === 'replace') { data.students = students; }
+    this.setState({ data });
+  }
+
   back() {
     this.setState({ currentStep: this.state.currentStep - 1 });
   }
 
+  createClassParams(data) {
+    const nameObj = str => ({ firstName: str.split(' ')[0], lastName: _.rest(str.split(' ')).join(' ') });
+    const students = _.map(data.students, nameObj);
+    const teacher = _.omit(data, 'role', 'schoolZip', 'schoolName', 'students');
+    return students.concat(teacher);    
+  }
+
+  createClass = async data => {
+    const error = this.validate(4, data);
+    if (error) { this.setState({ error }); return; }
+
+    this.setState({ isNetworking: true });
+
+    sessionStorage.setItem('justSignedUp', 'true');
+    const result = await this.props.dispatch(createClassAction(this.createClassParams(data)));
+    this.setState({ isNetworking: false });
+
+    if (result.error) {
+      this.setState({ error: result.error }); 
+    } else if (result.response.entities) {
+      LocalStorage.setSession(result.response.entities.session);
+    }
+  }
+
   next() {
-    let { currentStep } = this.state;
-    if (currentStep === 4) {
-      this.setState({ redirect: '/welcome' });
+    const { currentStep, data, isNetworking } = this.state;
+    if (currentStep === 4 && !isNetworking) {
+      this.createClass(data);
     } else {
-      currentStep += 1;
-      this.setState({ currentStep });      
+      const error = this.validate(currentStep, data);
+      const state = error ? { error: error } : { currentStep: currentStep + 1, error: undefined };
+      this.setState(state);      
+    }
+  }
+
+  validate(step, data) {
+    const { email, firstName, lastName, password, students } = data;
+    
+    if (step === 1 && (/\S+@\S+\.\S+/.test(email) === false)) {
+      return 'Please enter a valid email.';
+    }
+
+    if (step === 2) {
+      if (!firstName)                                  { return 'Please enter a first name.'; }
+      if (!lastName)                                   { return 'Please enter a last name.'; }
+      if (password.length < 8 || password.length > 20) { return 'Password must be between 8 and 20 characters.'; }
+    }
+
+    if (step === 4) {
+      if (students.length < 2) { return 'At least 2 students are required to create a class.'; }
     }
   }
 
@@ -60,6 +118,7 @@ class SignUp extends Component {
     const {
       currentStep,
       data,
+      error,
       isImporting
     } = this.state;
 
@@ -70,7 +129,9 @@ class SignUp extends Component {
     </Step>;
 
     const addStudentsComponent = <AddStudents
+      updateStudents={this.updateStudents.bind(this)}
       isImporting={isImporting}
+      students={this.state.data.students}
       setIsImporting={bool => this.setState({ isImporting: bool })} />;
 
     const content = (() => {
@@ -83,6 +144,7 @@ class SignUp extends Component {
       }[currentStep];
 
       return <Form
+        submit={this.next.bind(this)}
         data={data}
         updated={this.updated.bind(this)}
         type={formType} />
@@ -105,14 +167,18 @@ class SignUp extends Component {
           {content}
 
           <Button.medium
-            style={{display:isImporting ? 'none' : 'inline-block',margin:'20px 0px 40px 0px'}} 
+            style={{display:isImporting ? 'none' : 'inline-block',margin:'20px 0px 20px 0px'}} 
             onClick={this.next.bind(this)}>
             {currentStep === 4 ? 'finish' : 'next'}
           </Button.medium>
+
+          <p style={{margin:'0px 0px 20px 0px',color:color.red}}>
+            {error}
+          </p>
         </Container>
       </div>
     )
   }
 }
 
-export default SignUp
+export default connect()(SignUp)

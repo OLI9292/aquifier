@@ -29,31 +29,31 @@ class AddStudents extends Component {
     super(props);
     this.state = {
       name: '',
-      studentText: PLACEHOLDER,
-      students: []
+      studentText: PLACEHOLDER
     };
   }
 
   addStudent(key = 'Enter') {
-    const { name, students } = this.state;
-    const invalid = (name.split(' ').length < 2) || _.contains(students, name);
+    const name = this.state.name;
+    const invalid = (name.split(' ').length < 2) || _.contains(this.props.students, name);
     if (key !== 'Enter' || invalid) { return; }
-    this.setState({ name: '', students: students.concat(name) })
+    this.setState({ name: '' }, () => this.props.updateStudents(name, 'add'));
   }  
 
   import() {
     const students = this.state.studentText.split('\n');
     this.props.setIsImporting(false);
-    this.setState({ students: students });
+    this.props.updateStudents(students, 'replace');
   }
 
   render() {
     const {
       name,
-      students,
       studentText,
       focus
     } = this.state;
+
+    const students = this.props.students;
 
     const studentCountRow = <tr>
       <StudentCountCell>
@@ -67,7 +67,7 @@ class AddStudents extends Component {
       <StudentCell>
         {student}
         <img
-          onClick={() => this.setState({ students: _.without(students, student) })}
+          onClick={() => this.props.updateStudents(student, 'remove')}
           style={{width:'15px',height:'15px',cursor:'pointer'}}
           src={require('../../Library/Images/icon-exit-dark.png')} />        
       </StudentCell>

@@ -35,6 +35,7 @@
     "fs-extra": "3.0.1",
     "heroku-ssl-redirect": "0.0.4",
     "html-webpack-plugin": "2.29.0",
+    "jspdf": "^1.3.5",
     "lodash": "^4.17.4",
     "moment": "^2.19.1",
     "node-slack": "0.0.7",
@@ -63,7 +64,7 @@
     "sw-precache-webpack-plugin": "0.11.4",
     "underscore": "^1.8.3",
     "url-loader": "0.5.9",
-    "webpack": "3.5.1",
+    "webpack": "^3.5.1",
     "webpack-dev-server": "2.7.1",
     "webpack-manifest-plugin": "1.2.1",
     "whatwg-fetch": "2.0.3"
@@ -77,6 +78,7 @@
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test.js --env=jsdom",
+    "analyzeBundle": "webpack --env production --profile --json --config=config/webpack.config.prod > stats.json",
     "bringToYourSchoolFormCheck": "node bin/bringToYourSchoolFormCheck"
   },
   "engines": {

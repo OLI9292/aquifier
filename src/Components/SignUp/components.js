@@ -1,7 +1,6 @@
 import styled from 'styled-components';
 import { color, media } from '../../Library/Styles/index';
 
-
 export const InputTitle = styled.p`
   position: absolute;
   top: -16px;

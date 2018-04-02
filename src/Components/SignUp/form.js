@@ -26,6 +26,19 @@ class Form extends Component {
   constructor(props) {
     super(props);
     this.state = {};
+    this.handleKeydown = this.handleKeydown.bind(this);
+  }
+  
+  componentDidMount() {
+    document.body.addEventListener('keydown', this.handleKeydown);
+  }
+
+  componentWillUnmount() {
+    document.body.removeEventListener('keydown', this.handleKeydown);
+  }    
+
+  handleKeydown(event) {
+    if (event.key === 'Enter') { this.props.submit(); }
   }
 
   render() {
@@ -110,7 +123,7 @@ class Form extends Component {
     }[type];
 
     return (
-      <form>
+      <form onSubmit={e => e.preventDefault()}>
         <Header.medium style={{margin:'40px 0px'}}>
           {headerText}
         </Header.medium>

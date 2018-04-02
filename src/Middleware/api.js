@@ -2,7 +2,8 @@ import { normalize, schema } from 'normalizr'
 import _ from 'underscore';
 
 const API_ROOT = {
-  'main': 'https://dry-ocean-39738.herokuapp.com/api/v2/'
+  // 'main': 'https://dry-ocean-39738.herokuapp.com/api/v2/'
+  'main': 'https://desolate-plains-35942.herokuapp.com/api/v2/'
 }
 
 const formatSession = session => session ? {
@@ -47,6 +48,7 @@ const sessionSchema = new schema.Entity('session', { user: userSchema })
 const studentsSchema = new schema.Entity('students', { students: [userSchema] })
 const successSchema = new schema.Entity('Success')
 const wordSchema = new schema.Entity('words', {}, { idAttribute: '_id' })
+const testSchema = new schema.Entity('test', {})
 
 // Schemas for API responses.
 export const Schemas = {
@@ -60,7 +62,8 @@ export const Schemas = {
   STUDENT_ARRAY: studentsSchema,
   SUCCESS: successSchema,
   USER: userSchema,
-  WORD_ARRAY: [wordSchema]
+  WORD_ARRAY: [wordSchema],
+  TEST: testSchema
 }
 
 // Action key that carries API call info interpreted by this Redux middleware.

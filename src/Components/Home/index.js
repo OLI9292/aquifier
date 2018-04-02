@@ -46,7 +46,9 @@ class Home extends Component {
 
   redirectIfLoggedIn(props) {
     if (props.session) { 
-      const redirect = props.session.isTeacher ? '/setup-game' : '/home'
+      const [justSignedUp, isTeacher] = [sessionStorage.getItem('justSignedUp'), props.session.isTeacher];
+      sessionStorage.removeItem('justSignedUp');
+      const redirect = justSignedUp ? '/welcome' : isTeacher ? '/setup-game' : '/home';
       this.setState({ redirect });
     };     
   }
