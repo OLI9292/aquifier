@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 
 import { media } from '../../Library/Styles/index';
 import background from '../../Library/Images/header-bg.png';
+import SignUp from '../SignUp/index';
 
 class Nav extends Component {
   constructor(props) {
@@ -48,9 +49,16 @@ class Nav extends Component {
             logout
           </LinkText>  
           :
-          <LinkText style={{display:'block',textAlign:'right'}} onClick={() => this.props.displayLogin()}>
-            login
-          </LinkText>
+          <div style={{display:'flex'}}>
+            <LinkText
+              onClick={() => this.props.displaySignUp(true)}
+              style={{marginRight:'20px'}}>
+              sign up
+            </LinkText>            
+            <LinkText onClick={() => this.props.displayLogin()}>
+              login
+            </LinkText>
+          </div>
         }
       </LinksContainer>
     })();

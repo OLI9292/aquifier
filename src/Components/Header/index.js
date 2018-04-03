@@ -6,17 +6,24 @@ import { Redirect } from 'react-router';
 
 import Nav from './nav';
 import MobileNav from './mobileNav';
+import SignUp from '../SignUp/index';
 import Login from './login';
 import { shouldRedirect } from '../../Library/helpers';
 import LocalStorage from '../../Models/LocalStorage'
 import { logoutUserAction } from '../../Actions/index';
-
+import { DarkBackground } from '../Common/darkBackground';
 import { media } from '../../Library/Styles/index';
 
 class Header extends Component {
   constructor(props) {
     super(props);
     this.state = {};
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.displaySignUp) {
+      this.setState({ displaySignUp: true });
+    }
   }
 
   displayLogin() {
@@ -44,28 +51,29 @@ class Header extends Component {
     const { 
       loggedIn,
       path,
-      isTeacher
+      isTeacher,
+      displaySignUp
     } = this.props;
 
-    const loginModal = (() => {
-      return this.state.displayLoginModal && <div>
-        <Login
-          exitLogin={this.exitLogin.bind(this)} />
-        <DarkBackground
-          onClick={() => this.exitLogin()} />
-      </div>
-    })()    
+    const loginModal = <div>
+      <Login
+        exitLogin={this.exitLogin.bind(this)} />
+      <DarkBackground
+        onClick={() => this.exitLogin()} />
+    </div>;
 
     const showMobileNav = loggedIn && !_.contains(['/team','/research','/contact'], path);
 
     return (
       <div>
-        {loginModal}
+        {this.state.displaySignUp && <SignUp displaySignUp={bool => this.setState({ displaySignUp: bool })} />}
+        {this.state.displayLoginModal && loginModal}
         <NonMobileContainer show={!showMobileNav}>
           <Nav
             isTeacher={isTeacher}
             loggedIn={loggedIn}
             path={path}
+            displaySignUp={bool => this.setState({ displaySignUp: bool })}
             displayLogin={this.displayLogin.bind(this)}
             exitLogin={this.exitLogin.bind(this)}
             logout={this.logout.bind(this)}
@@ -97,20 +105,6 @@ const MobileContainer = styled.div`
   ${media.phone`
     display: ${props => props.show ? 'inline-block' : 'none'};
   `}
-`
-
-const DarkBackground = styled.div`
-  background-color: rgb(0, 0, 0);
-  background-repeat: repeat;
-  filter: alpha(opacity=70);
-  height: 100%;
-  left: 0px;
-  -moz-opacity: 0.7;
-  opacity: 0.7;
-  position: fixed;
-  top: 0px;
-  width: 100%;
-  z-index: 5;
 `
 
 const mapStateToProps = (state, ownProps) => {

@@ -30,7 +30,7 @@ class CTA extends Component {
 
           <SignUpCardContainer>
             <SignUpCard
-              onClick={() => this.setState({ redirect: '/start-free-trial' })}
+              onClick={() => this.props.displaySignUp()}
               color={'white'} marginBottom={'100px'}>
               <h2 style={{fontSize:'2em',paddingTop:'10px'}}>
                 Individual
@@ -57,7 +57,7 @@ class CTA extends Component {
             </SignUpCard>
 
             <SignUpCard
-              onClick={() => this.setState({ redirect: '/start-free-trial' })}
+              onClick={() => this.props.displaySignUp()}
               color={color.warmYellow} marginBottom={'50px'}>
               <div style={{position:'absolute',height:'20px',width:'100%',backgroundColor:color.warmYellow,top:'0',zIndex:'100'}} />
 

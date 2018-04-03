@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { Redirect } from 'react-router';
 import styled from 'styled-components';
 import _ from 'underscore';
+import get from 'lodash/get';
 
 import Textarea from '../Common/textarea';
 import { shouldRedirect } from '../../Library/helpers';
@@ -64,6 +65,9 @@ class InfoForm extends Component {
     this.state.inputs.forEach((i) => obj[i.name] = i.value );
     obj.comments = this.state.comments;
     obj.date = Date.now();
+    obj.message = get(obj, 'firstName') + ' ' + get(obj, 'lastName') +
+    ' (Email: ' + get(obj, 'email') + ', School: ' + get(obj, 'school') + ') submitted a form.';
+    if (obj.comments.length) { obj.message += ` - ${obj.comments}`; }
     return obj;
   }
 
@@ -151,8 +155,8 @@ class InfoForm extends Component {
 
           {inputs}
 
-          <Textarea.default
-            style={{width:'100%',height:'200px',padding:'10px','fontSize':'1.25em'}}
+          <Textarea.medium
+            style={{height:'200px',fontSize:'1.25em',lineHeight:'35px',padding:'10px'}}
             name='comments'
             placeholder='comments'
             onChange={(e) => this.setState({ comments: e.target.value })} />

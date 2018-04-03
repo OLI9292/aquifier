@@ -20,6 +20,24 @@ export const fetchStudents = classId => ({
   }
 })
 
+export const createClassAction = users => (dispatch, getState) => dispatch(createClass(users))
+
+export const CLASS_REQUEST = 'CLASS_REQUEST'
+export const CLASS_SUCCESS = 'CLASS_SUCCESS'
+export const CLASS_FAILURE = 'CLASS_FAILURE'
+
+export const createClass = users => ({
+  [CALL_API]: {
+    api: 'main',
+    data: users,
+    endpoint: 'auth/class?login=true',
+    method: 'POST',
+    types: [ CLASS_REQUEST, CLASS_SUCCESS, CLASS_FAILURE ],
+    schema: Schemas.SESSION
+  }
+})
+
+
 //
 // QUESTION
 //
