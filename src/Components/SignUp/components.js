@@ -30,11 +30,10 @@ export const Container = styled.div`
   position: absolute;
   background-color: white;
   left: 50%;
-  top: 50%;
   width: 500px;
   min-height: 350px;
   margin-left: -250px;
-  margin-top: -250px;
+  top: 50px;
   border-radius: 10px;
   z-index: 100;
   ${media.phone`

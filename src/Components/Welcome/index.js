@@ -2,56 +2,11 @@ import { connect } from 'react-redux'
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import jsPDF from 'jspdf';
 import _ from 'underscore';
 
 import { color, media } from '../../Library/Styles/index';
-import zipIcon from '../../Library/Images/blue-zip.png';
-import accountCard from '../../Library/Images/account-card.jpg';
-
-const TEACHER = ['a.jacobs','super-lame-password']
-const STUDENTS = [['ben.b', 'super-lame-password'], ['oliver.p', 'super-cool-password']]
 
 class Welcome extends Component {
-  componentDidMount() {
-    console.log(this.props)
-    // this.createPdf()
-  }
-
-  componentWillReceiveProps(nextProps) {
-    console.log(nextProps)
-  }
-
-  createPdf() {
-    const doc = new jsPDF()
-
-    doc.setTextColor(243,190,91)
-    doc.text(10, 10, 'WORDCRAFT')
-
-    doc.setTextColor(0,0,0)
-    doc.text(10, 30, 'Teacher Account')
-    doc.text(10, 40, TEACHER.join(' '))
-
-    let height = 60
-    doc.text(10, height, 'Student Accounts')
-
-    _.forEach(STUDENTS, student => {
-      height += 10
-      doc.text(10, height, student.join(' '))      
-    })
-
-    _.forEach(STUDENTS, student => this.addPage(doc, student))    
-
-    doc.save('accounts.pdf')
-    doc.output('datauri')
-  }
-
-  addPage(doc, student) {
-    doc.addPage()
-    doc.setTextColor(243,190,91)
-    doc.setTextColor(0,0,0)
-    doc.text(10, 10, student.join(' '))    
-  }
 
   render() {
     return (
@@ -60,24 +15,21 @@ class Welcome extends Component {
           WORDCRAFT
         </p>
 
-        <p style={{fontSize:'1.75em',marginTop:'-20px'}}>
+        <p style={{fontSize:'1.75em',margin:'0'}}>
           Your free Wordcraft membership has begun!
         </p>
 
         <br />
 
-        <p style={{fontSize:'1.25em',width:'60%',margin:'0 auto'}}>
-          Print and keep the attached materials.
-          <br />
-          <br />
-          Email us if you have any questions or need help. Have fun!
-        </p>        
+        <p style={{fontSize:'1.75em',margin:'0'}}>
+          Check your email for account information.
+        </p>  
+        
+        <br />      
 
-        <a href="my-program.zip" download>
-          <img
-            style={{height:'45px',width:'45px',cursor:'pointer',margin:'0 auto'}}
-            src={zipIcon} />
-        </a>
+        <p style={{fontSize:'1.75em',margin:'0'}}>
+          Contact <b>support@playwordcraft.com</b> if you have any questions.
+        </p>        
       </Container>
     );
   }

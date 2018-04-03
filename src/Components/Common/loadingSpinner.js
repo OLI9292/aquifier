@@ -23,6 +23,8 @@ const Container = styled.div`
   height: 100vh;
   width: 100vw;
   display: flex;
+  background-color: white;
+  z-index: 9999999;
   align-items: center;
   justify-content: center;
   position: absolute;

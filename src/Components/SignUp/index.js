@@ -6,6 +6,7 @@ import get from 'lodash/get';
 
 import Firebase from '../../Networking/Firebase';
 import { DarkBackground } from '../Common/darkBackground';
+import LoadingSpinner from '../Common/loadingSpinner';
 import LocalStorage from '../../Models/LocalStorage'
 import Button from '../Common/button';
 import Form from './form';
@@ -34,7 +35,7 @@ class SignUp extends Component {
         firstName: '',
         lastName: '',
         password: '',
-        role: 'teacher',
+        role: '',
         isTeacher: true,
         schoolZip: '',
         schoolName: '',
@@ -58,7 +59,7 @@ class SignUp extends Component {
   }
 
   back() {
-    this.setState({ currentStep: this.state.currentStep - 1 });
+    this.setState({ currentStep: this.state.currentStep - 1, error: null });
   }
 
   createClassParams(data) {
@@ -78,16 +79,21 @@ class SignUp extends Component {
     const error = this.validate(4, data);
     if (error) { this.setState({ error }); return; }
 
+    // Send sign up info to Firebase for Slack to pick up
     Firebase.sendForm(_.extend({}, data, { message: this.slackMessage(data), date: Date.now() }));
 
+    // Set isNetworking so spinner runs
     this.setState({ isNetworking: true });
 
+    // Set key in sessionStorage so success redirect goes to /welcome
     sessionStorage.setItem('justSignedUp', 'true');
     const result = await this.props.dispatch(createClassAction(this.createClassParams(data)));
     this.setState({ isNetworking: false });
 
     if (result.error) {
-      this.setState({ error: result.error }); 
+      this.setState({ error: result.error.includes('email_1 dup key')
+        ? 'Email already exists.'
+        : 'Error creating class.' }); 
     } else if (result.response.entities) {
       LocalStorage.setSession(result.response.entities.session);
     }
@@ -129,7 +135,8 @@ class SignUp extends Component {
       currentStep,
       data,
       error,
-      isImporting
+      isImporting,
+      isNetworking
     } = this.state;
 
     const step = num => <Step
@@ -160,39 +167,40 @@ class SignUp extends Component {
         type={formType} />
     })();
 
-    return (
-      <div>
-        <DarkBackground onClick={() => this.props.displaySignUp(false)} />
+    return isNetworking
+    ?
+    <LoadingSpinner />
+    :
+    <div>
+      <DarkBackground onClick={() => this.props.displaySignUp(false)} />
+      <Container style={{textAlign:'center'}}>
+        <BackArrow
+          hide={isImporting || currentStep === 1}
+          onClick={this.back.bind(this)}
+          src={require('../../Library/Images/icon-back-arrow.png')} />        
 
-        <Container style={{textAlign:'center'}}>
-          <BackArrow
-            hide={isImporting || currentStep === 1}
-            onClick={this.back.bind(this)}
-            src={require('../../Library/Images/icon-back-arrow.png')} />        
+        <MobileExit
+          onClick={() => {}}
+          src={require('../../Library/Images/exit-gray.png')}
+          onClick={() => this.props.displaySignUp(false)}/>            
 
-          <MobileExit
-            onClick={() => {}}
-            src={require('../../Library/Images/exit-gray.png')}
-            onClick={() => this.props.displaySignUp(false)}/>            
+        <StepsContainer hide={isImporting}>
+          {_.map([1,2,3,4], step)}
+        </StepsContainer>
 
-          <StepsContainer hide={isImporting}>
-            {_.map([1,2,3,4], step)}
-          </StepsContainer>
+        {content}
 
-          {content}
+        <Button.medium
+          style={{display:isImporting ? 'none' : 'inline-block',margin:'20px 0px 20px 0px'}} 
+          onClick={this.next.bind(this)}>
+          {currentStep === 4 ? 'finish' : 'next'}
+        </Button.medium>
 
-          <Button.medium
-            style={{display:isImporting ? 'none' : 'inline-block',margin:'20px 0px 20px 0px'}} 
-            onClick={this.next.bind(this)}>
-            {currentStep === 4 ? 'finish' : 'next'}
-          </Button.medium>
-
-          <p style={{margin:'0px 0px 20px 0px',color:color.red}}>
-            {error}
-          </p>
-        </Container>
-      </div>
-    )
+        <p style={{margin:'0px 0px 20px 0px',color:color.red}}>
+          {error}
+        </p>
+      </Container>
+    </div>;
   }
 }
 

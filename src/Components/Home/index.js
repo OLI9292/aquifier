@@ -58,6 +58,11 @@ class Home extends Component {
     this.setState({ smallScreen });
   }
 
+  displaySignUp() {
+    window.scrollTo(0,0);
+    this.setState({ displaySignUp: false }, () => this.setState({ displaySignUp: true }));
+  }
+
   render() {
     if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }
 
@@ -68,7 +73,9 @@ class Home extends Component {
         </TopContainer>
 
         <div style={{position:'relative'}}>
-          <Header path={'/'} />
+          <Header
+            displaySignUp={this.state.displaySignUp}
+            path={'/'} />
 
           <TopContentContainer>
             <h1 style={{fontFamily:'BrandonGrotesqueBold',fontSize:'2.5em'}}>
@@ -93,9 +100,11 @@ class Home extends Component {
           </ButtonExt>
           {this.state.smallScreen && <br />}
           <ButtonExt smallScreen={this.state.smallScreen} color={color.green}>
-            <Link style={{textDecoration:'none',color:'white'}} to={'/start-free-trial'}>
+            <p
+              onClick={this.displaySignUp.bind(this)}
+              style={{textDecoration:'none',color:'white',margin:'0'}}>
               sign up
-            </Link>
+            </p>
           </ButtonExt>
         </ButtonContainer>
 
@@ -166,7 +175,9 @@ class Home extends Component {
           type={'readingComprehension'}
           inverted={true} />
 
-        <CTA smallScreen={this.state.smallScreen} /> 
+        <CTA
+          displaySignUp={this.displaySignUp.bind(this)}
+          smallScreen={this.state.smallScreen} /> 
 
         <AppleContainer>
           <p style={{fontFamily:'BrandonGrotesqueBold',textAlign:'right',fontSize:'1.5em',width:'45%'}}>

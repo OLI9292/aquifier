@@ -19,10 +19,8 @@ import {
 } from './components';
 
 const PLACEHOLDER = 'Copy/Paste your student names here. Put each name on a new line.' +
-  '\n\nExamples:\n' +
-  '\nFirst name Last Name'.repeat(3) +
-  '\n\n-or-\n' +
-  '\nLast Name, First name'.repeat(3);
+  '\n\nExample:\n' +
+  '\nFirst name Last Name'.repeat(3);
 
 class AddStudents extends Component {
   constructor(props) {
@@ -41,7 +39,7 @@ class AddStudents extends Component {
   }  
 
   import() {
-    const students = this.state.studentText.split('\n');
+    let students = this.state.studentText.split('\n');
     this.props.setIsImporting(false);
     this.props.updateStudents(students, 'replace');
   }

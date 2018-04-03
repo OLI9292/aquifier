@@ -20,6 +20,12 @@ class Header extends Component {
     this.state = {};
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.displaySignUp) {
+      this.setState({ displaySignUp: true });
+    }
+  }
+
   displayLogin() {
     this.setState({ displayLoginModal: true });
   }
@@ -45,7 +51,8 @@ class Header extends Component {
     const { 
       loggedIn,
       path,
-      isTeacher
+      isTeacher,
+      displaySignUp
     } = this.props;
 
     const loginModal = <div>
