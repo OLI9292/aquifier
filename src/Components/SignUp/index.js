@@ -4,6 +4,7 @@ import React, { Component } from 'react';
 import _ from 'underscore';
 import get from 'lodash/get';
 
+import Firebase from '../../Networking/Firebase';
 import { DarkBackground } from '../Common/darkBackground';
 import LocalStorage from '../../Models/LocalStorage'
 import Button from '../Common/button';
@@ -17,6 +18,7 @@ import { createClassAction } from '../../Actions/index';
 import {
   BackArrow,
   Container,
+  MobileExit,
   Step,
   StepsContainer  
 } from './components';
@@ -32,7 +34,7 @@ class SignUp extends Component {
         firstName: '',
         lastName: '',
         password: '',
-        role: '',
+        role: 'teacher',
         isTeacher: true,
         schoolZip: '',
         schoolName: '',
@@ -66,9 +68,17 @@ class SignUp extends Component {
     return students.concat(teacher);    
   }
 
+  slackMessage(data) {
+    return `${data.firstName} ${data.lastName} ` +
+    `(Role: ${get(data, 'role')}, School: ${get(data, 'schoolName')}) ` +
+    `signed up a class of ${data.students.length}.`;
+  }
+
   createClass = async data => {
     const error = this.validate(4, data);
     if (error) { this.setState({ error }); return; }
+
+    Firebase.sendForm(_.extend({}, data, { message: this.slackMessage(data), date: Date.now() }));
 
     this.setState({ isNetworking: true });
 
@@ -159,6 +169,11 @@ class SignUp extends Component {
             hide={isImporting || currentStep === 1}
             onClick={this.back.bind(this)}
             src={require('../../Library/Images/icon-back-arrow.png')} />        
+
+          <MobileExit
+            onClick={() => {}}
+            src={require('../../Library/Images/exit-gray.png')}
+            onClick={() => this.props.displaySignUp(false)}/>            
 
           <StepsContainer hide={isImporting}>
             {_.map([1,2,3,4], step)}

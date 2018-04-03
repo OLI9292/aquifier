@@ -1,6 +1,19 @@
 import styled from 'styled-components';
 import { color, media } from '../../Library/Styles/index';
 
+export const MobileExit = styled.img`
+  height: 25px;
+  width: auto;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  cursor: pointer;
+  display: none;
+  ${media.phone`
+    display: fixed;
+  `};   
+`
+
 export const InputTitle = styled.p`
   position: absolute;
   top: -16px;
@@ -24,6 +37,14 @@ export const Container = styled.div`
   margin-top: -250px;
   border-radius: 10px;
   z-index: 100;
+  ${media.phone`
+    border-radius: 0;
+    margin: 0;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: 100%;
+  `};   
 `
 
 export const StepsContainer = styled.div`
