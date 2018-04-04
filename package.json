@@ -4,7 +4,6 @@
   "private": true,
   "dependencies": {
     "autoprefixer": "7.1.2",
-    "aws-sdk": "^2.94.0",
     "axios": "^0.16.2",
     "babel-cli": "^6.26.0",
     "babel-core": "6.25.0",

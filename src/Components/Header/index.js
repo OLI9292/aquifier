@@ -52,7 +52,6 @@ class Header extends Component {
       loggedIn,
       path,
       isTeacher,
-      displaySignUp
     } = this.props;
 
     const loginModal = <div>

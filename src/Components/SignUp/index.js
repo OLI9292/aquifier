@@ -180,7 +180,6 @@ class SignUp extends Component {
           src={require('../../Library/Images/icon-back-arrow.png')} />        
 
         <MobileExit
-          onClick={() => {}}
           src={require('../../Library/Images/exit-gray.png')}
           onClick={() => this.props.displaySignUp(false)}/>            
 

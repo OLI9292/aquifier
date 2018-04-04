@@ -1,4 +1,3 @@
-import { Redirect } from 'react-router';
 import React, { Component } from 'react';
 import _ from 'underscore';
 
@@ -65,6 +64,7 @@ class AddStudents extends Component {
       <StudentCell>
         {student}
         <img
+          alt={"delete-student"}
           onClick={() => this.props.updateStudents(student, 'remove')}
           style={{width:'15px',height:'15px',cursor:'pointer'}}
           src={require('../../Library/Images/icon-exit-dark.png')} />        
@@ -117,6 +117,7 @@ class AddStudents extends Component {
         <ImportStudentListContainer
           onClick={() => this.props.setIsImporting(true)}>
           <img
+            alt={"download-icon"}
             style={{width:'25px',height:'25px'}}
             src={require('../../Library/Images/icon-download.png')} />
           <Header.small
@@ -130,6 +131,7 @@ class AddStudents extends Component {
     const importComponents = (() => {
       return <div>
         <BackArrow
+          alt={"back-arrow"}
           onClick={() => this.props.setIsImporting(false)}
           src={require('../../Library/Images/icon-back-arrow.png')} />        
 
@@ -140,6 +142,7 @@ class AddStudents extends Component {
         <div style={{width:'90%',margin:'0 auto'}}>
           <ImportInformationContainer>
             <img
+              alt={"information-icon"}
               style={{width:'20px',height:'20px',marginRight:'10px'}}
               src={require('../../Library/Images/icon-information.png')} />
             Copy/Paste your students names here. Put each name on a new line.

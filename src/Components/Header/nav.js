@@ -5,7 +5,6 @@ import { Link } from 'react-router-dom';
 
 import { media } from '../../Library/Styles/index';
 import background from '../../Library/Images/header-bg.png';
-import SignUp from '../SignUp/index';
 
 class Nav extends Component {
   constructor(props) {

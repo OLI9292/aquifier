@@ -4,6 +4,26 @@ import { CALL_API, Schemas } from '../Middleware/api'
 // CLASS
 //
 
+export const fetchImageAction = query => (dispatch, getState) => dispatch(fetchImage(query))
+
+export const IMAGE_REQUEST = 'IMAGE_REQUEST'
+export const IMAGE_SUCCESS = 'IMAGE_SUCCESS'
+export const IMAGE_FAILURE = 'IMAGE_FAILURE'
+
+export const fetchImage = query => ({
+  [CALL_API]: {
+    api: 'main',
+    endpoint: `auth/image?${query}`,
+    method: 'GET',
+    types: [ IMAGE_REQUEST, IMAGE_SUCCESS, IMAGE_FAILURE ],
+    schema: Schemas.IMAGE
+  }
+})
+
+//
+// CLASS
+//
+
 export const fetchStudentsAction = classId => (dispatch, getState) => dispatch(fetchStudents(classId))
 
 export const STUDENTS_REQUEST = 'STUDENTS_REQUEST'

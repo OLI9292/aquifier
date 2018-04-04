@@ -1,8 +1,11 @@
+import { connect } from 'react-redux'
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import _ from 'underscore';
+import get from 'lodash/get';
 
-import AWSs3 from '../../Networking/AWSs3.js';
+import {
+  fetchImageAction
+} from '../../Actions/index';
 
 class OnCorrectImage extends Component {
   constructor(props) {
@@ -10,46 +13,27 @@ class OnCorrectImage extends Component {
     this.state = {}
   }
 
-  componentDidMount() {
-    const request = AWSs3.imageObjects();
-    request.on('success', (response) => {
-      this.setState({ data: response.data.Contents });
-    });
-  }
+  async componentWillReceiveProps(nextProps) {
+    const word = nextProps.word;
+    if (word === this.state.word) { return; }
+    this.setState({ word });
 
-  componentWillReceiveProps(nextProps) {
-    if (!nextProps.word || _.isEqual(nextProps.word, this.state.word)) { return };
-    this.setState({ source: null });
+    const query = "word=" + word;
+    const result = await this.props.dispatch(fetchImageAction(query));
+    if (result.error || !get(result.response.entities, 'image')) { return; }
 
-    const image = _.find(this.state.data, (obj) => {
-      let words = obj.Key.split('.')[0].split('-');
-      return _.contains(words, nextProps.word);
-    });
-
-    if (image) {
-      const params = {
-        Bucket: 'wordcraft-images',
-        Key: image.Key
-      };
-
-      const request = AWSs3.object(params);
-
-      request.on('success', (response) => {
-        const imageSource = 'data:image/jpeg;base64,' + this.encode(response.data.Body);
-        this.setState({ source: imageSource, word: nextProps.word });
-      });
-    }
-  }
-
-  encode(data) {
-    const str = data.reduce(function(a,b){ return a+String.fromCharCode(b) },'');
-    return btoa(str).replace(/.{76}(?=.)/g,'$&\n');
+    const source = result.response.entities.image.source;
+    this.setState({ source });
   }
 
   render() {
+    const {
+      source
+    } = this.state;
+
     return (
       <Container>
-        {this.state.source && <Image src={this.state.source} /> }
+        {source && <Image src={source} />}
       </Container>
     );
   }
@@ -68,4 +52,4 @@ const Image = styled.img`
   width: auto;
 `
 
-export default OnCorrectImage;
+export default connect()(OnCorrectImage);
