@@ -20,7 +20,7 @@ const callApi = (api, endpoint, schema, method, data, session) => {
   const body = { method: method, body: JSON.stringify(data), headers: headers };
 
   console.log(`method: ${method}\napi: ${api}\nendpoint: ${endpoint}\nheaders: ${JSON.stringify(headers)}`)
-  
+
   return fetch(fullUrl, body)
     .then(response =>
       response.json().then(json => {
@@ -49,6 +49,7 @@ const studentsSchema = new schema.Entity('students', { students: [userSchema] })
 const successSchema = new schema.Entity('Success')
 const wordSchema = new schema.Entity('words', {}, { idAttribute: '_id' })
 const testSchema = new schema.Entity('test', {})
+const imageScheme = new schema.Entity('image')
 
 // Schemas for API responses.
 export const Schemas = {
@@ -63,7 +64,8 @@ export const Schemas = {
   SUCCESS: successSchema,
   USER: userSchema,
   WORD_ARRAY: [wordSchema],
-  TEST: testSchema
+  TEST: testSchema,
+  IMAGE: imageScheme
 }
 
 // Action key that carries API call info interpreted by this Redux middleware.

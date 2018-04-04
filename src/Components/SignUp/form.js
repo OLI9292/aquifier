@@ -1,7 +1,5 @@
-import { Redirect } from 'react-router';
 import React, { Component } from 'react';
 import _ from 'underscore';
-import get from 'lodash/get';
 
 import { color } from '../../Library/Styles/index';
 import InputStyles from '../Common/inputStyles';
