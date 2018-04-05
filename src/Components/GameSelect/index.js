@@ -23,7 +23,7 @@ import {
   Sidebar
 } from './components';
 
-const GAME_TYPES = ['train', 'explore', 'join game'];
+const GAME_TYPES = ['train', 'join game'];
 
 class GameSelect extends Component {
   constructor(props) {
@@ -76,7 +76,7 @@ class GameSelect extends Component {
     const tabs = (() => {
       return <TabContainer>
         {_.map(GAME_TYPES, (gameType, i) => {
-          const margin = i === 1 ? '0px 20px 0px 20px' : '0';
+          const margin = i === 0 ? '0px 10px 0px 0px' : '0px 0px 0px 10px';
           return <Tab
             key={i}
             onClick={() => this.setState({ gameType })}
