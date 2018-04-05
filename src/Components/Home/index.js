@@ -202,7 +202,7 @@ class Home extends Component {
                 style={{textTransform:'uppercase',textDecoration:'none',color:'black',fontSize:'0.75em',letterSpacing:'1px'}}>
                 about
               </Link>
-                 <Link
+              <Link
                 to={'/research'}
                 style={{textTransform:'uppercase',textDecoration:'none',color:'black',fontSize:'0.75em',letterSpacing:'1px'}}>
                 research
