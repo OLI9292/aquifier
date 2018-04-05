@@ -19,13 +19,13 @@ const callApi = (api, endpoint, schema, method, data, session) => {
   const headers = _.extend({}, { 'Content-Type': 'application/json' }, formatSession(session));
   const body = { method: method, body: JSON.stringify(data), headers: headers };
 
-  console.log(`method: ${method}\napi: ${api}\nendpoint: ${endpoint}\nheaders: ${JSON.stringify(headers)}`)
-  console.log(fullUrl)
-  console.log(body)
+  if (process.env.NODE_ENV !== "production") {
+    console.log(`method: ${method}\napi: ${api}\nendpoint: ${endpoint}\nheaders: ${JSON.stringify(headers)}`)    
+  }
+
   return fetch(fullUrl, body)
     .then(response =>
       response.json().then(json => {
-        console.log(json)
         if (!response.ok) { return Promise.reject(json) }
         const normalized = Object.assign({},normalize(json, schema))
         // Removes undefined keys
