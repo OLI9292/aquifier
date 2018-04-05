@@ -7,6 +7,7 @@ import get from 'lodash/get';
 import Firebase from '../../Networking/Firebase';
 import { DarkBackground } from '../Common/darkBackground';
 import LoadingSpinner from '../Common/loadingSpinner';
+import { ModalContainer } from '../Common/modalContainer';
 import LocalStorage from '../../Models/LocalStorage'
 import Button from '../Common/button';
 import Form from './form';
@@ -18,7 +19,6 @@ import { createClassAction } from '../../Actions/index';
 
 import {
   BackArrow,
-  Container,
   MobileExit,
   Step,
   StepsContainer  
@@ -172,8 +172,10 @@ class SignUp extends Component {
     <LoadingSpinner />
     :
     <div>
-      <DarkBackground onClick={() => this.props.displaySignUp(false)} />
-      <Container style={{textAlign:'center'}}>
+      <DarkBackground
+        onClick={() => this.props.displaySignUp(false)} />
+        
+      <ModalContainer style={{textAlign:'center'}}>
         <BackArrow
           hide={isImporting || currentStep === 1}
           onClick={this.back.bind(this)}
@@ -198,7 +200,7 @@ class SignUp extends Component {
         <p style={{margin:'0px 0px 20px 0px',color:color.red}}>
           {error}
         </p>
-      </Container>
+      </ModalContainer>
     </div>;
   }
 }
