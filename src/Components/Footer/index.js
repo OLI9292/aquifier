@@ -18,6 +18,8 @@ class Footer extends Component {
         {link('about', '/team')}
         {link('research', '/research')}
         {link('contact', '/contact')}
+        {link('privacy policy', '/privacy')}
+        {link('terms of service', '/terms')}
       </Container>
     );
   }
