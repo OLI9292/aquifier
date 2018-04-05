@@ -26,26 +26,6 @@ export const InputTitle = styled.p`
   left: 5px;
 `
 
-export const Container = styled.div`
-  position: absolute;
-  background-color: white;
-  left: 50%;
-  width: 500px;
-  min-height: 350px;
-  margin-left: -250px;
-  top: 50px;
-  border-radius: 10px;
-  z-index: 100;
-  ${media.phone`
-    border-radius: 0;
-    margin: 0;
-    left: 0;
-    top: 0;
-    height: 100vh;
-    width: 100%;
-  `};   
-`
-
 export const StepsContainer = styled.div`
   width: 250px;
   margin: 0 auto;

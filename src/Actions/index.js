@@ -1,7 +1,7 @@
 import { CALL_API, Schemas } from '../Middleware/api'
 
 //
-// CLASS
+// IMAGE
 //
 
 export const fetchImageAction = query => (dispatch, getState) => dispatch(fetchImage(query))
@@ -57,6 +57,19 @@ export const createClass = users => ({
   }
 })
 
+export const updateClassAction = (id, data, session) => (dispatch, getState) => dispatch(updateClass(id, data, session))
+
+export const updateClass = (id, data, session) => ({
+  [CALL_API]: {
+    api: 'main',
+    data: data,
+    endpoint: `auth/class/${id}`,
+    method: 'PATCH',
+    types: [ CLASS_REQUEST, CLASS_SUCCESS, CLASS_FAILURE ],
+    schema: Schemas.TEST,
+    session: session
+  }
+})
 
 //
 // QUESTION
