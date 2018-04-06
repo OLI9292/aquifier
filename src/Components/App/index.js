@@ -19,6 +19,7 @@ import Leaderboards from '../Leaderboards/index';
 import MyClass from '../MyClass/index';
 import Profile from '../Profile/index';
 import NotFound from '../NotFound/index';
+import Text from '../Text/index';
 import Welcome from '../Welcome/index';
 
 // MODELS
@@ -52,12 +53,14 @@ class App extends Component {
             <Route exact path='/'                 component={Home} />
             <Route exact path='/admin'            component={contained('admin')} />
             <Route exact path='/team'             component={contained('about')} />            
+            <Route exact path='/terms'            component={contained('terms')} />
             <Route exact path='/contact'          component={contained('about')} />            
             <Route exact path='/leaderboard/:id'  component={contained('leaderboard')} />
             <Route exact path='/leaderboards'     component={contained('leaderboards')} />
             <Route exact path='/home'             component={contained('gameSelect')} />
             <Route exact path='/my-class'         component={contained('myClass')} />
             <Route exact path='/my-district'      component={contained('myClass')} />            
+            <Route exact path='/privacy'          component={contained('privacy')} />            
             <Route exact path='/profile'          component={contained('profile')} />
             <Route exact path='/profile/:id'      component={contained('profile')} />            
             <Route exact path='/play/:settings'   component={({ match }) => {
@@ -89,7 +92,9 @@ class Container extends Component {
         case 'leaderboard':  return <Leaderboard />
         case 'leaderboards': return <Leaderboards />
         case 'myClass':      return <MyClass />
+        case 'privacy':      return <Text />
         case 'profile':      return <Profile />
+        case 'terms':        return <Text />
         case 'notFound':     return <NotFound />
         case 'welcome':      return <Welcome />
         default:             return <Home />

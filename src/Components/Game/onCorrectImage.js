@@ -20,7 +20,7 @@ class OnCorrectImage extends Component {
 
     const query = "word=" + word;
     const result = await this.props.dispatch(fetchImageAction(query));
-    if (result.error || !get(result.response.entities, 'image')) { return; }
+    if (result.error || !get(result.response.entities, 'image')) { this.setState({ source: null }); return; }
 
     const source = result.response.entities.image.source;
     this.setState({ source });
