@@ -211,7 +211,17 @@ class Home extends Component {
                 to={'/contact'}
                 style={{textTransform:'uppercase',textDecoration:'none',color:'black',fontSize:'0.75em',letterSpacing:'1px'}}>
                 contact
-              </Link>              
+              </Link>  
+              <Link
+                to={'/privacy'}
+                style={{textTransform:'uppercase',textDecoration:'none',color:'black',fontSize:'0.75em',letterSpacing:'1px'}}>
+                privacy policy
+              </Link>  
+              <Link
+                to={'/terms'}
+                style={{textTransform:'uppercase',textDecoration:'none',color:'black',fontSize:'0.75em',letterSpacing:'1px'}}>
+                terms of service
+              </Link>                
             </BottomNav>
           </BottomImage>        
         </BottomContainer>             

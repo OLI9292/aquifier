@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { connect } from 'react-redux'
 import { Redirect } from 'react-router';
 import React, { Component } from 'react';
@@ -196,6 +197,13 @@ class SignUp extends Component {
           onClick={this.next.bind(this)}>
           {currentStep === 4 ? 'finish' : 'next'}
         </Button.medium>
+
+        {
+          currentStep === 1 &&
+          <p>
+            By signing up, you agree to our <Link to={'/terms'}>Terms of Service</Link> and <Link to={'/privacy'}>Privacy Policy</Link>
+          </p>
+        }        
 
         <p style={{margin:'0px 0px 20px 0px',color:color.red}}>
           {error}
