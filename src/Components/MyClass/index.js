@@ -11,7 +11,6 @@ import { Container } from '../Common/container';
 import Header from '../Common/header';
 import AddStudents from '../SignUp/addStudents';
 import StudentsTable from './studentsTable';
-import SEED_STUDENTS from './seedStudents';
 
 import {
   fetchStudentsAction,
@@ -93,11 +92,28 @@ class MyClass extends Component {
       showSuccess
     } = this.state;
 
-    const showDistrictAdminView = get(this.props.user, "email") === "oliver@playwordcraft.com";
+    const showDistrictAdminView = get(this.props.user, "email") === "testadmin@gmail.com";
+    const showTestTeacherView = get(this.props.user, "email") === "test@gmail.com";
+
+    const addGradeAndSchool = student => {
+      const obj = {
+        Mary: { grade: "10th", school: "Test High School " },
+        Bertie: { grade: "10th", school: "Test High School " },
+        Jack: { grade: "10th", school: "Test High School " },
+        Nathan: { grade: "6th", school: "Test Middle School " },
+        Sally: { grade: "4th", school: "Test Elementary School " },
+        Ricardo: { grade: "2nd", school: "Test Elementary School " },
+        John: { grade: "5th", school: "Test Elementary School " }
+      }[student.firstName] || { grade: "10th", school: "Test High School " };
+
+      return _.extend({}, student, obj);
+    }
     
     const students = showDistrictAdminView
-      ? this.props.students.concat(SEED_STUDENTS)
-      : this.props.students;
+      ? _.map(this.props.students, addGradeAndSchool)
+      : showTestTeacherView
+        ? _.filter(this.props.students, student => ["Mary", "Jack", "Bertie", "Amelia"].includes(student.firstName))
+        : this.props.students;
 
     return (
       <Container>

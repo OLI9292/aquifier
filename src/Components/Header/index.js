@@ -52,6 +52,7 @@ class Header extends Component {
       loggedIn,
       path,
       isTeacher,
+      isSchoolAdmin
     } = this.props;
 
     const loginModal = <div>
@@ -70,6 +71,7 @@ class Header extends Component {
         <NonMobileContainer show={!showMobileNav}>
           <Nav
             isTeacher={isTeacher}
+            isSchoolAdmin={isSchoolAdmin}
             loggedIn={loggedIn}
             path={path}
             displaySignUp={bool => this.setState({ displaySignUp: bool })}
@@ -110,9 +112,11 @@ const mapStateToProps = (state, ownProps) => {
   const user = _.first(_.values(state.entities.user));
   const loggedIn = user !== undefined;
   const isTeacher = loggedIn && user.isTeacher;
+  const isSchoolAdmin = loggedIn && user.email === "testadmin@gmail.com";
 
   return {
     user: user,
+    isSchoolAdmin: isSchoolAdmin,
     loggedIn: loggedIn,
     isTeacher: isTeacher
   };

@@ -16,7 +16,8 @@ class Nav extends Component {
     const { 
       path,
       loggedIn,
-      isTeacher
+      isTeacher,
+      isSchoolAdmin
     } = this.props;
 
     const link = _path => {
@@ -28,9 +29,11 @@ class Nav extends Component {
       </Link>
     }
 
-    const paths = isTeacher
-      ? ['/setup-game','/my-class','/leaderboards']
-      : ['/home','/profile','/leaderboards'];
+    const paths = isSchoolAdmin
+      ? ['/my-district','/leaderboards']
+        : isTeacher
+          ? ['/setup-game','/my-class','/leaderboards']
+          : ['/home','/profile','/leaderboards'];
 
     const links = (() => {
       return <LinksContainer loggedIn={loggedIn}>
