@@ -59,6 +59,7 @@ class App extends Component {
             <Route exact path='/leaderboards'     component={contained('leaderboards')} />
             <Route exact path='/home'             component={contained('gameSelect')} />
             <Route exact path='/my-class'         component={contained('myClass')} />
+            <Route exact path='/my-district'      component={contained('myClass')} />            
             <Route exact path='/privacy'          component={contained('privacy')} />            
             <Route exact path='/profile'          component={contained('profile')} />
             <Route exact path='/profile/:id'      component={contained('profile')} />            

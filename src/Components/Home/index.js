@@ -48,7 +48,7 @@ class Home extends Component {
     if (props.session) { 
       const [justSignedUp, isTeacher] = [sessionStorage.getItem('justSignedUp'), props.session.isTeacher];
       sessionStorage.removeItem('justSignedUp');
-      const redirect = justSignedUp ? '/welcome' : isTeacher ? '/setup-game' : '/home';
+      const redirect = justSignedUp ? '/welcome' : isTeacher ? '/my-class' : '/home';
       this.setState({ redirect });
     };     
   }
