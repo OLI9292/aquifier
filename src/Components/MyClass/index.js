@@ -1,13 +1,10 @@
 import { connect } from 'react-redux'
 import React, { Component } from 'react';
-import { Redirect } from 'react-router';
-import styled from 'styled-components';
 import _ from 'underscore';
 import get from 'lodash/get';
 
 import Button from '../Common/button';
 import { color } from '../../Library/Styles/index';
-import { shouldRedirect, sum } from '../../Library/helpers';
 import { ModalContainer } from '../Common/modalContainer';
 import { DarkBackground } from '../Common/darkBackground';
 import { Container } from '../Common/container';
