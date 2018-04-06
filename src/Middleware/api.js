@@ -23,6 +23,8 @@ const callApi = (api, endpoint, schema, method, data, session) => {
     console.log(`method: ${method}\napi: ${api}\nendpoint: ${endpoint}\nheaders: ${JSON.stringify(headers)}`)    
   }
 
+  console.log(fullUrl)
+
   return fetch(fullUrl, body)
     .then(response =>
       response.json().then(json => {

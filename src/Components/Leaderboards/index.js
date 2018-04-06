@@ -51,7 +51,7 @@ class Leaderboards extends Component {
       }      
     } else if (props.user && !this.state.loading) {
       const params = props.user.isTeacher ? { school: props.user.school } : { user: props.user._id };
-      const query = queryString.stringify(params);      
+      const query = queryString.stringify(params);     
       this.setState({ loading: true }, () => this.props.dispatch(fetchLeaderboardsAction(query, this.props.session)));
     }
   }

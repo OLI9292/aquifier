@@ -45,7 +45,8 @@ export const color = {
   darkBabyBlue: '#6ECAF0',
   honey: '#BF430C',
   limeGreen: '#43DE80',
-  darkLimeGreen: '#29A85C'
+  darkLimeGreen: '#29A85C',
+  extraDarkLimeGreen: '#075A33'
 };
 
 export const PHONE_MAX_WIDTH = 600
