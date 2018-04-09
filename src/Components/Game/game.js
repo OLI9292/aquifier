@@ -13,7 +13,7 @@ import hintChecker from './hintChecker';
 import SpeedRound from './speedRound';
 import ProgressBar from './progressBar';
 import { alerts } from './alerts';
-import OnCorrectImage from './onCorrectImage';
+import Interlude from './interlude';
 
 import {
   Alert, AlertImage, AlertText,
@@ -179,6 +179,7 @@ class Game extends Component {
     this.setState({ gameOpaqueness: 0 }, () => {
       setTimeout(() => {
         this.setState({
+          displayingFactoid: false,
           questionComplete: false,
           hintCount: 0,
           highlightPrompt: false,
@@ -237,6 +238,7 @@ class Game extends Component {
 
     const {
       correctCounter,
+      displayingFactoid,
       gameOver,
       guessed,
       highlightPrompt,
@@ -252,7 +254,7 @@ class Game extends Component {
 
     const progressComponent = type => {
       switch (type) {
-        case 'train': case 'explore': case 'demo':
+        case 'train': case 'explore': case 'factoidDemo':
           return <ProgressBar
             progress={Math.max(questionIndex) / get(questions, 'length', 1)} />;
         case 'speed': case 'multiplayer':
@@ -367,23 +369,21 @@ class Game extends Component {
       </Choices>
     };
 
-    const interlude = (() => {
-      return <div style={{height:'50%',width:'80%',margin:'0 auto',display:!questionComplete ? 'none' : ''}}>
-        <OnCorrectImage
-          display={questionComplete}
-          word={get(question, 'word')} />
-      </div>
-    })();   
+    const interlude = <Interlude
+      displayingFactoid={() => this.setState({ displayingFactoid: true })}
+      display={questionComplete}
+      word={get(question, 'word')}
+      factoids={this.props.factoids} 
+      imageKeys={this.props.imageKeys} />;
 
     const questionComponents = (() => {
-      if (question) {
-        return <div style={{height:'80%',width:'100%'}}>
-          {prompt()}
-          {answer()}
-          {!questionComplete && choices()}
-          {interlude}
-        </div>
-      }
+      const hideTop = questionComplete && displayingFactoid;
+      return question && <div style={{height:'80%',width:'100%'}}>
+        {!hideTop && prompt()}
+        {!hideTop && answer()}
+        {!questionComplete && choices()}
+        {interlude}
+      </div>;     
     })();
 
     const levelInfo = (() => {

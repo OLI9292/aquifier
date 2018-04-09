@@ -10,7 +10,6 @@ import get from 'lodash/get';
 import { shouldRedirect, mobileCheck } from '../../Library/helpers';
 
 import {
-  fetchFactoidsAction,
   fetchQuestionsAction,
   fetchLevelsAction,
   removeEntityAction,
@@ -30,19 +29,18 @@ class GameManager extends Component {
   componentDidMount() {
     this.props.dispatch(removeEntityAction('questions'));    
 
-    const { user, factoids, levels } = this.props;
+    const { user, levels } = this.props;
     const settings = queryString.parse(this.props.settings);
     const pauseMatch = settings.type === 'multiplayer';
 
     if (!levels.length) { this.props.dispatch(fetchLevelsAction()); }
-    if (!factoids.length) { this.props.dispatch(fetchFactoidsAction()); }
 
     this.setState({
       settings: settings,
       type: settings.type,
       pauseMatch: pauseMatch 
     }, () => {
-      if (settings.type === 'demo') { this.setState({ loading: true }, () => { this.setupGame(); }); }
+      if (settings.type === 'factoidDemo') { this.setState({ loading: true }, () => { this.setupGame(); }); }
       else if (user)                { this.setState({ loading: true }, () => { this.setupGame(user); }); }        
     })
   } 
@@ -55,7 +53,7 @@ class GameManager extends Component {
       this.exitMultiplayerGame(settings.id, user);
     }
 
-    if (settings.type !== 'demo') {
+    if (settings.type !== 'factoidDemo') {
       this.saveStats(session, stats);
     }
   }  
@@ -84,7 +82,7 @@ class GameManager extends Component {
   }
 
   recordQuestion(question, correct, timeSpent, gameState) {
-    if (this.state.type === 'demo') { return; }
+    if (this.state.type === 'factoidDemo') { return; }
     
     const answeredAt = moment().format();
     const mobile = mobileCheck();
@@ -129,7 +127,7 @@ class GameManager extends Component {
     const { settings, type } = this.state;
 
     // Return to home screen if demo
-    if (type === 'demo') {
+    if (type === 'factoidDemo') {
       this.setState({ redirect: '/' });
       return;
     }
@@ -168,7 +166,7 @@ class GameManager extends Component {
 
     if (settings.type === 'multiplayer') {
       this.joinGame(settings, user);
-    } else if (settings.type === 'demo') {
+    } else if (settings.type === 'factoidDemo') {
       this.loadQuestions({ type: settings.type });
     } else {
       const params = _.extend({}, settings, { user_id: user._id });
@@ -180,6 +178,7 @@ class GameManager extends Component {
     if (params && !this.state.loadingQuestions) {
       this.setState({ loadingQuestions: true }, () => {
         const query = queryString.stringify(params);
+        console.log(query)
         this.props.dispatch(fetchQuestionsAction(query));      
       });
     }
@@ -214,26 +213,24 @@ class GameManager extends Component {
   render() {
     if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }  
 
-    return (
-      <div>
-        <Game
-          factoids={this.props.factoids}
-          gameOver={this.gameOver.bind(this)}
-          level={this.state.level}
-          end={this.state.end}
-          time={this.state.time}
-          type={this.state.type}
-          pauseMatch={this.state.pauseMatch}
-          questions={this.state.questions}
-          recordQuestion={this.recordQuestion.bind(this)}
-          originalQuestions={this.state.questions} />
-      </div>
-    );
+    return <Game
+      end={this.state.end}
+      factoids={this.props.factoids}
+      imageKeys={this.props.imageKeys}
+      gameOver={this.gameOver.bind(this)}
+      level={this.state.level}
+      originalQuestions={this.state.questions}
+      time={this.state.time}
+      type={this.state.type}
+      pauseMatch={this.state.pauseMatch}
+      questions={this.state.questions}
+      recordQuestion={this.recordQuestion.bind(this)} />
   }
 }
 
 const mapStateToProps = (state, ownProps) => ({
   session: state.entities.session,
+  imageKeys: _.values(state.entities.imageKey),
   user: _.first(_.values(state.entities.user)),
   questions: _.values(state.entities.questions),
   factoids: _.values(state.entities.factoids),

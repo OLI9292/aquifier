@@ -2,8 +2,8 @@ import { normalize, schema } from 'normalizr'
 import _ from 'underscore';
 
 const API_ROOT = {
-  // 'main': 'https://dry-ocean-39738.herokuapp.com/api/v2/'
-  'main': 'https://desolate-plains-35942.herokuapp.com/api/v2/'
+  'main': 'https://dry-ocean-39738.herokuapp.com/api/v2/'
+  //'main': 'https://desolate-plains-35942.herokuapp.com/api/v2/'
 }
 
 const formatSession = session => session ? {
@@ -22,8 +22,6 @@ const callApi = (api, endpoint, schema, method, data, session) => {
   if (process.env.NODE_ENV !== "production") {
     console.log(`method: ${method}\napi: ${api}\nendpoint: ${endpoint}\nheaders: ${JSON.stringify(headers)}`)    
   }
-
-  console.log(fullUrl)
 
   return fetch(fullUrl, body)
     .then(response =>
@@ -53,7 +51,8 @@ const studentsSchema = new schema.Entity('students', { students: [userSchema] })
 const successSchema = new schema.Entity('Success')
 const wordSchema = new schema.Entity('words', {}, { idAttribute: '_id' })
 const testSchema = new schema.Entity('test', {})
-const imageScheme = new schema.Entity('image')
+const imageSchema = new schema.Entity('image')
+const imageKeySchema = new schema.Entity('imageKey')
 
 // Schemas for API responses.
 export const Schemas = {
@@ -69,7 +68,8 @@ export const Schemas = {
   USER: userSchema,
   WORD_ARRAY: [wordSchema],
   TEST: testSchema,
-  IMAGE: imageScheme
+  IMAGE: imageSchema,
+  IMAGE_ARRAY: [imageKeySchema]
 }
 
 // Action key that carries API call info interpreted by this Redux middleware.

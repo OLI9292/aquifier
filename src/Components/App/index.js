@@ -30,7 +30,13 @@ import { color, media } from '../../Library/Styles/index';
 import './index.css';
 
 // STORE
-import { activateSessionAction, fetchUserAction } from '../../Actions/index';
+import {
+  activateSessionAction,
+  fetchUserAction,
+  fetchImageKeysAction,
+  fetchFactoidsAction
+} from '../../Actions/index';
+
 import configureStore from '../../Store/configureStore';
 const store = configureStore();
 // store.subscribe(() => console.log(store.getState()))
@@ -38,6 +44,8 @@ const store = configureStore();
 class App extends Component {
   componentDidMount() {
     const session = LocalStorage.getSession();
+    store.dispatch(fetchImageKeysAction());
+    store.dispatch(fetchFactoidsAction());
     
     if (session) { 
       store.dispatch(activateSessionAction(session));
