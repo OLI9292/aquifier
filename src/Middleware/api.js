@@ -1,9 +1,11 @@
 import { normalize, schema } from 'normalizr'
 import _ from 'underscore';
+import CONFIG from '../Config/main';
 
 const API_ROOT = {
-  // 'main': 'https://dry-ocean-39738.herokuapp.com/api/v2/'
-  'main': 'https://desolate-plains-35942.herokuapp.com/api/v2/'
+  main: process.env.NODE_ENV === 'production'
+    ? CONFIG.PRODUCTION_API_ROOT
+    : CONFIG.STAGING_API_ROOT
 }
 
 const formatSession = session => session ? {
@@ -22,8 +24,6 @@ const callApi = (api, endpoint, schema, method, data, session) => {
   if (process.env.NODE_ENV !== "production") {
     console.log(`method: ${method}\napi: ${api}\nendpoint: ${endpoint}\nheaders: ${JSON.stringify(headers)}`)    
   }
-
-  console.log(fullUrl)
 
   return fetch(fullUrl, body)
     .then(response =>

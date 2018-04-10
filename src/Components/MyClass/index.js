@@ -65,13 +65,16 @@ class MyClass extends Component {
   createStudents = async () => {
     const {
       user,
+      students,
       newStudents,
       session
     } = this.props;
 
     const id = get(_.find(user.classes, c => c.role === 'teacher'), "id");
     const data = { students: _.map(newStudents, this.nameObj), email: user.email };
-    if (!id || !session || _.isEmpty(data.students) || !data.email) { return; }    
+
+    if ((data.students + students.length) > 35) { this.setState({ error: "Max class size is 35." }); return; }
+    if (!id || !session || _.isEmpty(data.students) || !data.email) { return; } 
 
     const result = await this.props.dispatch(updateClassAction(id, data, session));
 
