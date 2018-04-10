@@ -32,7 +32,13 @@ class AddStudents extends Component {
 
   addStudent(key = 'Enter') {
     const name = this.state.name;
-    const invalid = (name.split(' ').length < 2) || _.contains(this.props.students, name);
+    const split = name.split(' ');
+    
+    const invalid = (split.length < 2) || 
+      split[0].length === 0 || 
+      split[1].length === 0 || 
+      _.contains(this.props.students, name);
+
     if (key !== 'Enter' || invalid) { return; }
     this.setState({ name: '' }, () => this.props.updateStudents(name, 'add'));
   }  
