@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { connect } from 'react-redux'
 import { Redirect } from 'react-router';
 import React, { Component } from 'react';
@@ -64,9 +65,9 @@ class SignUp extends Component {
 
   createClassParams(data) {
     const nameObj = str => ({ firstName: str.split(' ')[0], lastName: _.rest(str.split(' ')).join(' ') });
-    const students = _.map(data.students, nameObj);
+    const students = _.filter(_.map(data.students, nameObj), obj => obj.firstName.length && obj.lastName.length);
     const teacher = _.omit(data, 'role', 'schoolZip', 'schoolName', 'students');
-    return students.concat(teacher);    
+    return students.concat(teacher);
   }
 
   slackMessage(data) {
@@ -118,13 +119,15 @@ class SignUp extends Component {
     }
 
     if (step === 2) {
-      if (!firstName)                                  { return 'Please enter a first name.'; }
-      if (!lastName)                                   { return 'Please enter a last name.'; }
-      if (password.length < 8 || password.length > 20) { return 'Password must be between 8 and 20 characters.'; }
+      if (!firstName)             { return 'Please enter a first name.'; }
+      if (!lastName)              { return 'Please enter a last name.'; }
+      if (password.length < 8 ||
+          password.length > 20)   { return 'Password must be between 8 and 20 characters.'; }
     }
 
     if (step === 4) {
-      if (students.length < 2) { return 'At least 2 students are required to create a class.'; }
+      if (students.length < 2)    { return 'At least 2 students are required to create a class.'; }
+      if (students.length > 35)   { return 'Max class size is 35.'; }
     }
   }
 
@@ -196,6 +199,13 @@ class SignUp extends Component {
           onClick={this.next.bind(this)}>
           {currentStep === 4 ? 'finish' : 'next'}
         </Button.medium>
+
+        {
+          currentStep === 1 &&
+          <p>
+            By signing up, you agree to our <Link to={'/terms'}>Terms of Service</Link> and <Link to={'/privacy'}>Privacy Policy</Link>
+          </p>
+        }        
 
         <p style={{margin:'0px 0px 20px 0px',color:color.red}}>
           {error}
