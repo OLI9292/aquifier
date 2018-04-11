@@ -34,9 +34,8 @@ class AddStudents extends Component {
     const name = this.state.name;
     const split = name.split(' ');
     
-    const invalid = (split.length < 2) || 
+    const invalid = split.length === 0
       split[0].length === 0 || 
-      split[1].length === 0 || 
       _.contains(this.props.students, name);
 
     if (key !== 'Enter' || invalid) { return; }
