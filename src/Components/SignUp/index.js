@@ -65,7 +65,7 @@ class SignUp extends Component {
 
   createClassParams(data) {
     const nameObj = str => ({ firstName: str.split(' ')[0], lastName: _.rest(str.split(' ')).join(' ') });
-    const students = _.filter(_.map(data.students, nameObj), obj => obj.firstName.length && obj.lastName.length);
+    const students = _.filter(_.map(data.students, nameObj), obj => obj.firstName.length);
     const teacher = _.omit(data, 'role', 'schoolZip', 'schoolName', 'students');
     return students.concat(teacher);
   }
