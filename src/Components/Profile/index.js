@@ -14,12 +14,16 @@ import iconEarth from '../../Library/Images/icon-earth.png';
 import archer from '../../Library/Images/icon-archer-purple.png';
 import grayStar from '../../Library/Images/icon-star-gray.png';
 
-import { shouldRedirect } from '../../Library/helpers';
+import { shouldRedirect, getOrdinalPosition } from '../../Library/helpers';
 import { color, } from '../../Library/Styles/index';
 import { Container } from '../Common/container';
 import Header from '../Common/header';
 
-import { fetchSchoolAction, fetchWordsAction, fetchLeaderboardsAction } from '../../Actions/index';
+import {
+  fetchSchoolAction,
+  fetchWordsAction,
+  fetchLeaderboardsAction
+} from '../../Actions/index';
 
 import {
   BlankRow,
@@ -68,12 +72,12 @@ class Profile extends Component {
     if (_.isEmpty(this.props.words)) { this.props.dispatch(fetchWordsAction()); }
 
     this.loadSchool();
-    this.loadLeaderboards();
+    this.loadLeaderboard(this.props);
   }
 
   componentWillReceiveProps(nextProps) {
     if (!this.state.loadingSchool) { this.loadSchool(); }
-    if (!this.state.loadingLeaderboards) { this.loadLeaderboards(); }
+    this.loadLeaderboard(nextProps);
   }
 
   componentWillUnmount() {
@@ -88,14 +92,24 @@ class Profile extends Component {
     }
   }
 
-  loadLeaderboards() {
-    const id = get(this.state.user, '_id');
-    const session = this.props.session;
-    if (id && session) {
-      const query = queryString.stringify({ user: id });
-      this.setState({ loadingLeaderboards: true });
-      this.props.dispatch(fetchLeaderboardsAction(query, session));
-    }
+  loadLeaderboard = async props => {
+    const userId = get(props.user, "_id");
+    const classId = get(_.last(get(props.user, "classes")), "id");
+    if (!userId || !classId || !props.session || this.state.loadedLeaderboard) { return; }
+    this.setState({ loadedLeaderboard: true });
+    const query = `userId=${userId}&classId=${classId}`;
+    const result = await this.props.dispatch(fetchLeaderboardsAction(query, props.session));    
+    if (result.error) { return; }
+    const ranks = result.response.entities;
+    this.setState({
+      earthAllTime: this.getPosition(ranks, false, false),
+      classAllTime: this.getPosition(ranks, true, false)
+    })
+  }
+
+  getPosition(ranks, isClass, isWeekly) {
+    const position = get(_.find(ranks, rank => rank.isWeekly === isWeekly && rank.isClass === isClass), "position");
+    return getOrdinalPosition(position);
   }  
 
   stat(type) {
@@ -123,17 +137,10 @@ class Profile extends Component {
     return text.toUpperCase();
   }
 
-  ranks(ranks, userId) {
-    if (_.isEmpty(ranks) || !userId) { return ['-','-']; }
-    const myAllTimeRanks = _.filter(ranks, r => r.id.includes(userId) && r.period === 'all');
-    return _.map(_.partition(myAllTimeRanks, r => r.group === 'Earth'), ranks => get(_.first(ranks), 'position'));
-  }  
-
   render() {
     if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }
 
     const {
-      ranks,
       school,
       words
     } = this.props;
@@ -221,9 +228,7 @@ class Profile extends Component {
       </div>
     };
 
-    const sidebarStats = () => {
-      const [worldRank, schoolRank] = this.ranks(ranks, this.state.user._id);
-      
+    const sidebarStats = () => {      
       const [outerStyles, innerStyles] = this.state.fixedStats
         ? [ { position:'absolute', right:'225px' }, { position:'fixed', top:'15%', width:'225px' } ]
         : [ {}, { position:'absolute', width:'225px', right:'0' } ];
@@ -244,7 +249,7 @@ class Profile extends Component {
                 SCHOOL RANK
               </h3>                    
               <h1 style={{fontFamily:'EBGaramondSemiBold',color:color.red,fontSize:'2.25em',lineHeight:'10px'}}>
-                {schoolRank}
+                {this.state.classAllTime || 'N/A'}
               </h1>            
             </div>
 
@@ -257,7 +262,7 @@ class Profile extends Component {
                 WORLD RANK
               </h3>                    
               <h1 style={{fontFamily:'EBGaramondSemiBold',color:color.mainBlue,fontSize:'2.25em',lineHeight:'10px'}}>
-                {worldRank}
+                {this.state.earthAllTime || 'N/A'}
               </h1>
             </div>
 
@@ -294,7 +299,6 @@ class Profile extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => ({
-  ranks: _.values(state.entities.ranks),
   school: _.first(_.values(state.entities.school)),
   session: state.entities.session,
   students: _.values(state.entities.students),

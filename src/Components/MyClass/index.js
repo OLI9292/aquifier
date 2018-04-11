@@ -27,16 +27,18 @@ class MyClass extends Component {
   }
 
   componentDidMount() {
-    if (_.isEmpty(this.props.students)) { this.loadClass(this.props); }
+    this.loadClass(this.props);
   }  
 
   componentWillReceiveProps(nextProps) {
-    if (_.isEmpty(nextProps.students)) { this.loadClass(nextProps); }
+    this.loadClass(nextProps);
   }
 
   loadClass(props) {
     const id = props.user && get(_.find(props.user.classes, (c) => c.role === 'teacher'), "id");
-    if (id) { this.props.dispatch(fetchStudentsAction(id)); }
+    if (!id || this.state.loadingClass) { return; }
+    this.setState({ loadingClass: true });
+    this.props.dispatch(fetchStudentsAction(id));
   }
 
   updateStudents(students, operation) {
@@ -110,7 +112,7 @@ class MyClass extends Component {
 
       return _.extend({}, student, obj);
     }
-    
+        
     const students = showDistrictAdminView
       ? _.map(this.props.students, addGradeAndSchool)
       : showTestTeacherView
@@ -171,7 +173,7 @@ class MyClass extends Component {
 
 const mapStateToProps = (state, ownProps) => ({
   session: state.entities.session,
-  students: _.values(state.entities.students),
+  students: state.entities.students,
   user: _.first(_.values(state.entities.user))
 })
 
