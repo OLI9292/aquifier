@@ -16,7 +16,7 @@ const formatSession = session => session ? {
 
 // Fetches an API response and normalizes the result JSON according to schema.
 // This makes every API response have the same shape, regardless of how nested it was.
-const callApi = (api, endpoint, schema, method, data, session) => {
+const callApi = (api, endpoint, schema, method, data, session, unnormalized) => {
   const fullUrl = API_ROOT[api] + endpoint
   const headers = _.extend({}, { 'Content-Type': 'application/json' }, formatSession(session));
   const body = { method: method, body: JSON.stringify(data), headers: headers };
@@ -31,7 +31,9 @@ const callApi = (api, endpoint, schema, method, data, session) => {
         if (!response.ok) { return Promise.reject(json) }
         const normalized = Object.assign({},normalize(json, schema))
         // Removes undefined keys
-        normalized.entities = _.mapObject(normalized.entities, (v, k) => v.undefined ? v.undefined : v)
+        normalized.entities = unnormalized
+          ? json
+          : _.mapObject(normalized.entities, (v, k) => v.undefined ? v.undefined : v);
         return normalized
       })
     )
@@ -44,7 +46,7 @@ const callApi = (api, endpoint, schema, method, data, session) => {
 const factoidSchema = new schema.Entity('factoids', {}, { idAttribute: '_id' })
 const levelSchema = new schema.Entity('levels', {}, { idAttribute: '_id' })
 const questionSchema = new schema.Entity('questions')
-const rankSchema = new schema.Entity('ranks')
+const rankSchema = new schema.Entity('ranks', {})
 const rootSchema = new schema.Entity('roots', {}, { idAttribute: '_id' })
 const schoolSchema = new schema.Entity('school', {}, { idAttribute: '_id' })
 const userSchema = new schema.Entity('user', {}, { idAttribute: '_id' })
@@ -85,7 +87,7 @@ export default store => next => action => {
   }
 
   let { endpoint } = callAPI
-  const { api, schema, types, method, data, session } = callAPI
+  const { api, schema, types, method, data, session, unnormalized } = callAPI
 
   if (typeof endpoint === 'function')                 { endpoint = endpoint(store.getState()) }
   if (typeof endpoint !== 'string')                   { throw new Error('Specify a string endpoint URL.') }
@@ -102,7 +104,7 @@ export default store => next => action => {
   const [ requestType, successType, failureType ] = types
   next(actionWith({ type: requestType }))
 
-  return callApi(api, endpoint, schema, method, data, session).then(
+  return callApi(api, endpoint, schema, method, data, session, unnormalized).then(
     response => next(actionWith({
       response,
       type: successType

@@ -18,7 +18,7 @@ const ExtraLarge = Default.extend`
 `
 
 const Small = Default.extend`
-  font-size: 1em;
+  font-size: 1.2em;
   letter-spacing: 1px;
 `
 
