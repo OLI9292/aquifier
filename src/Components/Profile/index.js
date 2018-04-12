@@ -72,12 +72,12 @@ class Profile extends Component {
     if (_.isEmpty(this.props.words)) { this.props.dispatch(fetchWordsAction()); }
 
     this.loadSchool();
-    this.loadLeaderboard(this.props);
+    //this.loadLeaderboard(this.props);
   }
 
   componentWillReceiveProps(nextProps) {
     if (!this.state.loadingSchool) { this.loadSchool(); }
-    this.loadLeaderboard(nextProps);
+    //this.loadLeaderboard(nextProps);
   }
 
   componentWillUnmount() {

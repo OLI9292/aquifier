@@ -37,11 +37,11 @@ class MiniLeaderboard extends Component {
   }
 
   componentDidMount() {
-    this.loadLeaderboard(this.props);
+    //this.loadLeaderboard(this.props);
   }
 
   componentWillReceiveProps(nextProps) {
-    this.loadLeaderboard(nextProps);
+    //this.loadLeaderboard(nextProps);
   }
 
   loadLeaderboard = async props => {
