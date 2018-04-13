@@ -19,12 +19,12 @@ import {
 
 const STATS = [
   {
-    slug: 'classAllTime',
+    slug: 'allTimeClass',
     image: require('../../Library/Images/icon-house.png'),
     color: color.red
   },
   {
-    slug: 'earthAllTime',
+    slug: 'allTimeEarth',
     image: require('../../Library/Images/icon-earth.png'),
     color: color.mainBlue
   }
@@ -37,51 +37,51 @@ class MiniLeaderboard extends Component {
   }
 
   componentDidMount() {
-    //this.loadLeaderboard(this.props);
+    this.loadLeaderboard(this.props);
   }
 
   componentWillReceiveProps(nextProps) {
-    //this.loadLeaderboard(nextProps);
+    this.loadLeaderboard(nextProps);
   }
 
-  loadLeaderboard = async props => {
+  loadLeaderboard(props) {
     const userId = get(props.user, "_id");
-    const classId = get(_.last(get(props.user, "classes")), "id");
+    const classId = get(_.first(get(props.user, "classes")), "id");
     if (!userId || !classId || !props.session || this.state.loadedLeaderboard) { return; }
     this.setState({ loadedLeaderboard: true });
-    const query = `userId=${userId}&classId=${classId}`;
-    const result = await this.props.dispatch(fetchLeaderboardsAction(query, props.session));    
-    if (result.error) { return; }
-    const ranks = result.response.entities;
-    this.setState({
-      earthAllTime: this.getPosition(ranks, false, false),
-      classAllTime: this.getPosition(ranks, true, false)
-    })
+    const query = `userId=${userId}&classId=${classId}&onlyUser=true`;
+    this.props.dispatch(fetchLeaderboardsAction(query, props.session));    
   }
 
-  getPosition(ranks, isClass, isWeekly) {
-    const position = get(_.find(ranks, rank => rank.isWeekly === isWeekly && rank.isClass === isClass), "position");
-    return getOrdinalPosition(position);
+  getPosition(ranks, attr) {
+    const rank = get(ranks, attr);
+    return rank ? getOrdinalPosition(rank) : 'N/A';
   }
 
   render() {
+    const { 
+      ranks
+    } = this.props;
+
+    const stat = data => <LeaderboardListItem key={data.slug}>
+      <Icon src={data.image} />
+      <StatName>
+        {data.name}
+      </StatName>
+      <Stat 
+        color={data.color}
+        forLeaderboards={true}>
+        {this.getPosition(ranks, data.slug)}
+      </Stat>
+    </LeaderboardListItem>;
+
     return (
       <SidebarContainer>
         <Header>
           Leaderboards
         </Header>
         <ul style={{listStyle:'none',margin:'0 auto',width:'50%',padding:'0px 0px 10px 0px'}}>
-          {_.map(STATS,  data => {
-            return <LeaderboardListItem key={data.slug}>
-              <Icon src={data.image} />
-              <StatName>
-                {data.name}
-              </StatName>
-              <Stat color={data.color} forLeaderboards={true}>
-                {this.state[data.slug] || 'N/A'}
-              </Stat>
-            </LeaderboardListItem>
-          })}
+          {_.map(STATS, stat)}
         </ul>
       </SidebarContainer>
     );
@@ -89,7 +89,7 @@ class MiniLeaderboard extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => ({
-  ranks: _.values(state.entities.ranks),
+  ranks: state.entities.ranks,
   user: _.first(_.values(state.entities.user))
 })
 
