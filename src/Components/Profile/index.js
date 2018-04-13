@@ -92,25 +92,19 @@ class Profile extends Component {
     }
   }
 
-  loadLeaderboard = async props => {
+  loadLeaderboard(props) {
     const userId = get(props.user, "_id");
-    const classId = get(_.last(get(props.user, "classes")), "id");
+    const classId = get(_.first(get(props.user, "classes")), "id");
     if (!userId || !classId || !props.session || this.state.loadedLeaderboard) { return; }
     this.setState({ loadedLeaderboard: true });
-    const query = `userId=${userId}&classId=${classId}`;
-    const result = await this.props.dispatch(fetchLeaderboardsAction(query, props.session));    
-    if (result.error) { return; }
-    const ranks = result.response.entities;
-    this.setState({
-      earthAllTime: this.getPosition(ranks, false, false),
-      classAllTime: this.getPosition(ranks, true, false)
-    })
+    const query = `userId=${userId}&classId=${classId}&onlyUser=true`;
+    this.props.dispatch(fetchLeaderboardsAction(query, props.session));  
   }
 
-  getPosition(ranks, isClass, isWeekly) {
-    const position = get(_.find(ranks, rank => rank.isWeekly === isWeekly && rank.isClass === isClass), "position");
-    return getOrdinalPosition(position);
-  }  
+  getPosition(ranks, attr) {
+    const rank = get(ranks, attr);
+    return rank ? getOrdinalPosition(rank) : 'N/A';
+  }
 
   stat(type) {
     const words = get(this.state.user, 'words');
@@ -142,7 +136,8 @@ class Profile extends Component {
 
     const {
       school,
-      words
+      words,
+      ranks
     } = this.props;
 
     const definition = value => {
@@ -249,7 +244,7 @@ class Profile extends Component {
                 SCHOOL RANK
               </h3>                    
               <h1 style={{fontFamily:'EBGaramondSemiBold',color:color.red,fontSize:'2.25em',lineHeight:'10px'}}>
-                {this.state.classAllTime || 'N/A'}
+                {this.getPosition(ranks, "allTimeClass")}
               </h1>            
             </div>
 
@@ -262,7 +257,7 @@ class Profile extends Component {
                 WORLD RANK
               </h3>                    
               <h1 style={{fontFamily:'EBGaramondSemiBold',color:color.mainBlue,fontSize:'2.25em',lineHeight:'10px'}}>
-                {this.state.earthAllTime || 'N/A'}
+                {this.getPosition(ranks, "allTimeEarth")}
               </h1>
             </div>
 
@@ -299,6 +294,7 @@ class Profile extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => ({
+  ranks: state.entities.ranks,
   school: _.first(_.values(state.entities.school)),
   session: state.entities.session,
   students: _.values(state.entities.students),

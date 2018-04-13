@@ -34,11 +34,11 @@ class Leaderboards extends Component {
   }
 
   componentDidMount() {
-    this.loadClassLeaderboard(this.props);
+    //this.loadClassLeaderboard(this.props);
   }
 
   componentWillReceiveProps(nextProps) {
-    this.loadClassLeaderboard(nextProps);
+    //this.loadClassLeaderboard(nextProps);
   }
 
   loadClassLeaderboard = async props => {
