@@ -205,8 +205,7 @@ export const fetchLeaderboards = (query, session) => ({
     method: 'GET',    
     types: [ LEADERBOARDS_REQUEST, LEADERBOARDS_SUCCESS, LEADERBOARDS_FAILURE ],
     schema: Schemas.LEADERBOARDS,
-    session: session,
-    unnormalized: true
+    session: session
   }
 })
 
