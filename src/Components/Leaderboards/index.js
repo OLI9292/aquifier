@@ -26,82 +26,83 @@ class Leaderboards extends Component {
     super(props);
 
     this.state = {
-      classRanks: [],
-      worldRanks: [],
       isWeekly: true,
       isClass: true
     }
   }
 
   componentDidMount() {
-    //this.loadClassLeaderboard(this.props);
+    this.loadInitialLeaderboard(this.props.user);
   }
 
   componentWillReceiveProps(nextProps) {
-    //this.loadClassLeaderboard(nextProps);
+    this.loadInitialLeaderboard(nextProps.user);
   }
 
-  loadClassLeaderboard = async props => {
-    const classId = get(_.first(get(props.user, "classes")), "id");
-    if (!classId || !props.session || this.state.loadingClassLeadeboards) { return; }
-    this.setState({ loadingClassLeadeboards: true });
-    const query = `classId=${classId}`;
-    const result = await this.props.dispatch(fetchLeaderboardsAction(query, props.session));
-    if (result.error) { return; }
-    this.setState({ classRanks: result.response.entities || [] });
-    this.loadWorldLeaderboard();
+  loadInitialLeaderboard(user) {
+    const userId = get(user, "_id");
+    const classId = get(_.first(get(user, "classes")), "id");
+    if (!userId || !classId || this.state.loadedLeaderboard) { return; }
+    const isTeacher = user.isTeacher === true;
+    this.setState({ loadedLeaderboard: true });
+    const query = isTeacher ? `classId=${classId}` : `userId=${userId}&classId=${classId}`;
+    this.loadLeaderboard(query);
   }
 
-  loadWorldLeaderboard = async (ranks, isWeekly, direction) => {
-    const { session } = this.props;
-    let query;
+  loadLeaderboard(query) {
+    this.props.dispatch(fetchLeaderboardsAction(query, this.props.session));
+  }
 
-    if (ranks === undefined) {
-      const userId = session.isTeacher
-        ? get(_.find(this.state.classRanks, rank => !rank.isWeekly && rank.position === 1), "userId")
-        : session.user;
-      query = `userId=${userId}`;
-    } else {
-      const position = direction === "prev"
-        ? Math.max(get(ranks[0], "position") - 20, 1)
-        : get(_.last(ranks), "position");
-      query = `position=${position}`;
-      if (isWeekly) { query += "&isWeekly=true"; }
-    }
-    
-    this.setState({ loadingMore: true });
-    const result = await this.props.dispatch(fetchLeaderboardsAction(query, session));
-    this.setState({ loadingMore: false });
-    if (result.error) { return; }
-    this.setState({ worldRanks: result.response.entities || [] });
+  loadMore(ranks, isWeekly, direction) {
+    const position = direction === "prev"
+      ? Math.max((get(_.first(ranks), "rank") || 20) - 20, 1)
+      : get(_.last(ranks), "rank");
+    const query = isWeekly ? `position=${position}&isWeekly=true` : `position=${position}`;
+    this.loadLeaderboard(query);
+  }
+
+  highlight(userId) {
+    const studentIds = this.props.isTeacher && _.pluck(get(this.props.ranks, "weeklyClass"), "userId");
+    return this.props.isTeacher
+      ? !this.state.isClass && studentIds.includes(userId)
+      : (get(this.props.session, "user") === userId);
+  }
+
+  initials(f, l) {
+    return (l ? `${f.charAt(0)}${l.charAt(0)}` : f.charAt(0)).toUpperCase();
   }
 
   render() {
     const {
-      classRanks,
-      worldRanks,
       isWeekly,
       isClass,
       loadingMore
     } = this.state;
 
-    const ranks = _.filter((isClass ? classRanks : worldRanks), r => isWeekly ? r.isWeekly : !r.isWeekly);
+    const {
+      ranks,
+      session,
+      isTeacher
+    } = this.props;
 
-    const initials = name => name.split(" ")[0].charAt(0) + (name.split(" ")[1] ? name.split(" ")[1].charAt(0) : "");
-
-    const highlight = userId => get(this.props.session, "isTeacher")
-      ? !isClass && _.pluck(classRanks, "userId").includes(userId)
-      : (get(this.props.session, "user") === userId);
+    const selectedRanks = (() => {
+      switch(`${isWeekly}-${isClass}`) {
+        case 'true-true':  return get(ranks, "weeklyClass")
+        case 'true-false': return get(ranks, "weeklyEarth")
+        case 'false-true': return get(ranks, "allTimeClass")
+        default:           return get(ranks, "allTimeEarth")
+      }  
+    })();
 
     const row = (rank, idx) => <Row key={idx} even={idx % 2 === 0}>
       <td style={{width:'25%'}}>
-        <Rank isUser={highlight(rank.userId)}>
-          {rank.position}
+        <Rank isUser={this.highlight(rank.userId)}>
+          {rank.rank}
         </Rank>
       </td>
       <td style={{textAlign:'left',fontFamily:'BrandonGrotesque',color:color.gray2}}>
         <h3>
-          {isClass ? rank.name : initials(rank.name)}
+          {isClass ? `${rank.firstName} ${rank.lastName}` : this.initials(rank.firstName, rank.lastName)}
         </h3>
       </td>
       <td style={{textAlign:'left',fontFamily:'BrandonGrotesque',color:color.gray2}}>
@@ -120,26 +121,25 @@ class Leaderboards extends Component {
       </td>
     </Row>;
 
-    const rows = _.map(ranks, (rank, idx) => row(rank, idx));
+    const loadMore = direction => {
+      const hide = isClass || (direction === "prev"
+        ? _.contains(_.pluck(selectedRanks, 'rank'), 1)
+        : selectedRanks.length < 20);
 
-    const loadMore = (direction) => {
-      const hide = direction === 'prev'
-        ? _.contains(_.pluck(ranks, 'position'), 1)
-        : _.contains(_.pluck(ranks, 'isLast'), true);
-      return !_.isEmpty(ranks) && <LoadMoreButton 
-        onClick={() => this.loadWorldLeaderboard(ranks, isWeekly, direction)}
+      return !_.isEmpty(selectedRanks) && <LoadMoreButton 
+        onClick={() => this.loadMore(selectedRanks, isWeekly, direction)}
         loadingMore={loadingMore}
         hide={hide}>
         load more
-      </LoadMoreButton>;      
-    };
+      </LoadMoreButton>;   
+    }   
 
     const disclaimer = <p style={{margin:"40px 0px"}}>
       {`Score points to appear on the ${isWeekly ? "weekly " : ""}leaderboard.`}
     </p>;
 
     return (
-      <Container loading={this.state.loading}>
+      <Container>
         <Header.medium>
           leaderboards
         </Header.medium>
@@ -147,11 +147,11 @@ class Leaderboards extends Component {
         <DropdownContainer>
           <Dropdown 
             choices={["My Class","Earth"]} 
-            handleSelect={group => this.setState({ isClass: group === "My Class" }, this.loadWorldLeaderboard)}
+            handleSelect={group => this.setState({ isClass: group === "My Class" })}
             selected={isClass ? "My Class" : "Earth"} />
           <Dropdown
             choices={["Weekly","All Time"]} 
-            handleSelect={period => this.setState({ isWeekly: period === "Weekly" }, this.loadWorldLeaderboard)}
+            handleSelect={period => this.setState({ isWeekly: period === "Weekly" })}
             selected={isWeekly ? "Weekly" : "All Time"} />
         </DropdownContainer>
 
@@ -172,7 +172,7 @@ class Leaderboards extends Component {
           
           <Table>  
             <tbody>
-              {rows.length ? rows : disclaimer}
+              {!_.isEmpty(selectedRanks) ? _.map(selectedRanks, (rank, idx) => row(rank, idx)) : disclaimer}
             </tbody>
           </Table>        
 
@@ -186,7 +186,8 @@ class Leaderboards extends Component {
 const mapStateToProps = (state, ownProps) => ({
   session: state.entities.session,
   user: _.first(_.values(state.entities.user)),
-  ranks: _.values(state.entities.ranks)
-})
+  ranks: state.entities.ranks,
+  isTeacher: get(state.entities.session, "isTeacher") === true
+});
 
-export default connect(mapStateToProps)(Leaderboards)
+export default connect(mapStateToProps)(Leaderboards);

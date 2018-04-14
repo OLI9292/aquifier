@@ -16,7 +16,7 @@ const formatSession = session => session ? {
 
 // Fetches an API response and normalizes the result JSON according to schema.
 // This makes every API response have the same shape, regardless of how nested it was.
-const callApi = (api, endpoint, schema, method, data, session, unnormalized) => {
+const callApi = (api, endpoint, schema, method, data, session) => {
   const fullUrl = API_ROOT[api] + endpoint
   const headers = _.extend({}, { 'Content-Type': 'application/json' }, formatSession(session));
   const body = { method: method, body: JSON.stringify(data), headers: headers };
@@ -28,12 +28,11 @@ const callApi = (api, endpoint, schema, method, data, session, unnormalized) => 
   return fetch(fullUrl, body)
     .then(response =>
       response.json().then(json => {
+        console.log(json)
         if (!response.ok) { return Promise.reject(json) }
         const normalized = Object.assign({},normalize(json, schema))
         // Removes undefined keys
-        normalized.entities = unnormalized
-          ? json
-          : _.mapObject(normalized.entities, (v, k) => v.undefined ? v.undefined : v);
+        normalized.entities = _.mapObject(normalized.entities, (v, k) => v.undefined ? v.undefined : v);
         return normalized
       })
     )
@@ -87,7 +86,7 @@ export default store => next => action => {
   }
 
   let { endpoint } = callAPI
-  const { api, schema, types, method, data, session, unnormalized } = callAPI
+  const { api, schema, types, method, data, session } = callAPI
 
   if (typeof endpoint === 'function')                 { endpoint = endpoint(store.getState()) }
   if (typeof endpoint !== 'string')                   { throw new Error('Specify a string endpoint URL.') }
@@ -104,7 +103,7 @@ export default store => next => action => {
   const [ requestType, successType, failureType ] = types
   next(actionWith({ type: requestType }))
 
-  return callApi(api, endpoint, schema, method, data, session, unnormalized).then(
+  return callApi(api, endpoint, schema, method, data, session).then(
     response => next(actionWith({
       response,
       type: successType
