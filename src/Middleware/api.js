@@ -25,10 +25,10 @@ const callApi = (api, endpoint, schema, method, data, session) => {
     console.log(`method: ${method}\napi: ${api}\nendpoint: ${endpoint}\nheaders: ${JSON.stringify(headers)}`)    
   }
 
+
   return fetch(fullUrl, body)
     .then(response =>
       response.json().then(json => {
-        console.log(json)
         if (!response.ok) { return Promise.reject(json) }
         const normalized = Object.assign({},normalize(json, schema))
         // Removes undefined keys

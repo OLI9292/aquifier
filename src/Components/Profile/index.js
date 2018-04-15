@@ -2,8 +2,7 @@ import { Redirect } from 'react-router';
 import { connect } from 'react-redux'
 import React, { Component } from 'react';
 import _ from 'underscore';
-import queryString from 'query-string';
-import get from 'lodash/get';
+import { get, throttle } from 'lodash';
 
 import starIcon from '../../Library/Images/icon-stars.png';
 import bookIcon from '../../Library/Images/icon-book-green.png';
@@ -68,9 +67,8 @@ class Profile extends Component {
   }
 
   componentDidMount() {
-    window.addEventListener('scroll', this.checkScroll);
+    window.addEventListener('scroll', throttle(this.checkScroll, 1000));
     if (_.isEmpty(this.props.words)) { this.props.dispatch(fetchWordsAction()); }
-
     this.loadSchool();
     this.loadLeaderboard(this.props);
   }
@@ -81,7 +79,7 @@ class Profile extends Component {
   }
 
   componentWillUnmount() {
-    window.removeEventListener('scroll', this.checkScroll);
+    window.removeEventListener('scroll', throttle(this.checkScroll, 1000));
   }
 
   loadSchool() {
