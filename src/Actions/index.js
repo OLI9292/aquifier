@@ -20,6 +20,18 @@ export const fetchImage = query => ({
   }
 })
 
+export const fetchImageKeysAction = () => (dispatch, getState) => dispatch(fetchImageKeys())
+
+export const fetchImageKeys = query => ({
+  [CALL_API]: {
+    api: 'main',
+    endpoint: 'auth/image',
+    method: 'GET',
+    types: [ IMAGE_REQUEST, IMAGE_SUCCESS, IMAGE_FAILURE ],
+    schema: Schemas.IMAGE_ARRAY
+  }
+})
+
 //
 // CLASS
 //

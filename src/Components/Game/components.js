@@ -76,7 +76,8 @@ export const Underline = styled.div`
 export const Bottom = styled.div`
   height: 10%;
   width: 90%;
-  margin: 0 auto;
+  left: 5%;
+  position: fixed;
   display: flex;
   align-items: center;
   justify-content: space-between;

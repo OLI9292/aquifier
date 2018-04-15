@@ -55,6 +55,7 @@ const successSchema = new schema.Entity('Success')
 const wordSchema = new schema.Entity('words', {}, { idAttribute: '_id' })
 const testSchema = new schema.Entity('test', {})
 const imageScheme = new schema.Entity('image')
+const imageKeySchema = new schema.Entity('imageKey')
 
 // Schemas for API responses.
 export const Schemas = {
@@ -70,7 +71,8 @@ export const Schemas = {
   USER: userSchema,
   WORD_ARRAY: [wordSchema],
   TEST: testSchema,
-  IMAGE: imageScheme
+  IMAGE: imageScheme,
+  IMAGE_ARRAY: [imageKeySchema]
 }
 
 // Action key that carries API call info interpreted by this Redux middleware.

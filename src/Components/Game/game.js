@@ -13,7 +13,7 @@ import hintChecker from './hintChecker';
 import SpeedRound from './speedRound';
 import ProgressBar from './progressBar';
 import { alerts } from './alerts';
-import OnCorrectImage from './onCorrectImage';
+import Interlude from './interlude';
 
 import {
   Alert, AlertImage, AlertText,
@@ -179,6 +179,7 @@ class Game extends Component {
     this.setState({ gameOpaqueness: 0 }, () => {
       setTimeout(() => {
         this.setState({
+          displayingFactoid: false,
           questionComplete: false,
           hintCount: 0,
           highlightPrompt: false,
@@ -237,6 +238,7 @@ class Game extends Component {
 
     const {
       correctCounter,
+      displayingFactoid,
       gameOver,
       guessed,
       highlightPrompt,
@@ -252,7 +254,7 @@ class Game extends Component {
 
     const progressComponent = type => {
       switch (type) {
-        case 'train': case 'explore': case 'demo':
+        case 'train': case 'explore': case 'factoidDemo':
           return <ProgressBar
             progress={Math.max(questionIndex) / get(questions, 'length', 1)} />;
         case 'speed': case 'multiplayer':
@@ -266,25 +268,21 @@ class Game extends Component {
       }
     }
 
-    const alert = type => {
-      return  <Alert hide={_.isUndefined(type)} display={this.state.questionComplete ? '' : 'none'}>
-        <AlertImage src={type && alerts[type].image} />              
-        <AlertText color={type && alerts[type].color}>
-          {type && alerts[type].name.toUpperCase()}
-        </AlertText>
-      </Alert>      
-    }
+    const alert = type => <Alert hide={_.isUndefined(type)} display={this.state.questionComplete ? '' : 'none'}>
+      <AlertImage src={type && alerts[type].image} />              
+      <AlertText color={type && alerts[type].color}>
+        {type && alerts[type].name.toUpperCase()}
+      </AlertText>
+    </Alert>;      
 
-    const topInfo = (() => {
-      return <div style={{height:'10%',width:'100%',display:'flex',alignItems:'center'}}>
-        <Link to={'/home'}>
-          <ExitOut
-            src={require('../../Library/Images/exit-gray.png')} />
-        </Link>
-        {progressComponent(this.props.type)}
-        {alert(this.state.alert)}
-      </div>
-    })();
+    const topInfo = <div style={{height:'10%',width:'100%',display:'flex',alignItems:'center'}}>
+      <Link to={'/home'}>
+        <ExitOut
+          src={require('../../Library/Images/exit-gray.png')} />
+      </Link>
+      {progressComponent(this.props.type)}
+      {alert(this.state.alert)}
+    </div>;
 
     const promptText = () => {
       const prompt = question.prompt[this.state.prompt] || question.prompt['normal']
@@ -296,17 +294,17 @@ class Game extends Component {
       });
     }
 
-    const prompt = () => {
-      return <PromptContainer>
-        <Prompt>
-          <PromptValue>
-            {promptText()}
-          </PromptValue>
-        </Prompt>
-      </PromptContainer>
-    };
+    const prompt = <PromptContainer>
+      <Prompt>
+        <PromptValue>
+          {promptText()}
+        </PromptValue>
+      </Prompt>
+    </PromptContainer>;
 
-    const answer = () => <Answer>{_.map(question.answer, (a, idx) => answerSpace(a.value, a.missing, idx))}</Answer>
+    const answer = <Answer>
+      {_.map(question.answer, (a, idx) => answerSpace(a.value, a.missing, idx))}
+    </Answer>;
 
     const answerSpace = (value, missing, idx) => {
       const margin = questionComplete
@@ -367,63 +365,55 @@ class Game extends Component {
       </Choices>
     };
 
-    const interlude = (() => {
-      return <div style={{height:'50%',width:'80%',margin:'0 auto',display:!questionComplete ? 'none' : ''}}>
-        <OnCorrectImage
-          display={questionComplete}
-          word={get(question, 'word')} />
-      </div>
-    })();   
+    const interlude = <Interlude
+      displayingFactoid={() => this.setState({ displayingFactoid: true })}
+      display={questionComplete}
+      word={get(question, 'word')}
+      factoids={this.props.factoids} 
+      imageKeys={this.props.imageKeys} />;
 
     const questionComponents = (() => {
-      if (question) {
-        return <div style={{height:'80%',width:'100%'}}>
-          {prompt()}
-          {answer()}
-          {!questionComplete && choices()}
-          {interlude}
-        </div>
-      }
+      const hideTop = questionComplete && displayingFactoid;
+      return question && <div style={{height:'80%',width:'100%'}}>
+        {!hideTop && prompt()}
+        {!hideTop && answer()}
+        {!questionComplete && choices()}
+        {interlude}
+      </div>;     
     })();
 
-    const levelInfo = (() => {
-      return <div style={{display:'flex',flexDirection:'column'}}>
-        <p style={{fontFamily:'BrandonGrotesqueBold',fontSize:'1.25em',margin:'0px 0px -5px 0px'}}>
-          {get(this.props.level, 'fullname')}
-        </p>
-        <div>
-          {_.has(this.props.level, 'progress') && _.map(_.range(1, this.props.level.progress[1] + 1), n => {
-            return <StageDot key={n} green={n <= this.props.level.progress[0]} />
-          })}
-        </div>
-      </div>      
-    })();
+    const levelInfo = <div style={{display:'flex',flexDirection:'column'}}>
+      <p style={{fontFamily:'BrandonGrotesqueBold',fontSize:'1.25em',margin:'0px 0px -5px 0px'}}>
+        {get(this.props.level, 'fullname')}
+      </p>
+      <div>
+        {_.has(this.props.level, 'progress') && _.map(_.range(1, this.props.level.progress[1] + 1), n => {
+          return <StageDot key={n} green={n <= this.props.level.progress[0]} />
+        })}
+      </div>
+    </div>;
 
-    const helpButton = (() => {
-      return <HelpButton color={questionComplete ? color.green : color.red}
-          onClick={() => {
-            if (questionComplete) {
-              clearTimeout(this.continue);
-              this.reset(() => this.setQuestion());
-            } else {
-              this.setState({ hintCount: hintCount + 1 }, this.checkHint);
-            }
-          }}>
-          <p>
-            {questionComplete ? 'Continue' : 'Hint'}
-            <HelpSpan hide={questionComplete}>
-              (enter)
-            </HelpSpan>            
-          </p>
-      </HelpButton>
-    })();
+    const helpButton = <HelpButton color={questionComplete ? color.green : color.red}
+      onClick={() => {
+        if (questionComplete) {
+          clearTimeout(this.continue);
+          this.reset(() => this.setQuestion());
+        } else {
+          this.setState({ hintCount: hintCount + 1 }, this.checkHint);
+        }
+      }}>
+      <p>
+        {questionComplete ? 'Continue' : 'Hint'}
+        <HelpSpan hide={questionComplete}>
+          (enter)
+        </HelpSpan>            
+      </p>
+    </HelpButton>;
 
-    const bottomInfo = (() => {
-      return <Bottom>
-        {levelInfo}
-        {helpButton}
-      </Bottom>
-    })();      
+    const bottomInfo = <Bottom>
+      {levelInfo}
+      {helpButton}
+    </Bottom>;
 
     return (
       <div>

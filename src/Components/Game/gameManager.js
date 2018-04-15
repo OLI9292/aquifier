@@ -30,19 +30,18 @@ class GameManager extends Component {
   componentDidMount() {
     this.props.dispatch(removeEntityAction('questions'));    
 
-    const { user, factoids, levels } = this.props;
+    const { user, levels } = this.props;
     const settings = queryString.parse(this.props.settings);
     const pauseMatch = settings.type === 'multiplayer';
 
     if (!levels.length) { this.props.dispatch(fetchLevelsAction()); }
-    if (!factoids.length) { this.props.dispatch(fetchFactoidsAction()); }
 
     this.setState({
       settings: settings,
       type: settings.type,
       pauseMatch: pauseMatch 
     }, () => {
-      if (settings.type === 'demo') { this.setState({ loading: true }, () => { this.setupGame(); }); }
+      if (settings.type === 'factoidDemo') { this.setState({ loading: true }, () => { this.setupGame(); }); }
       else if (user)                { this.setState({ loading: true }, () => { this.setupGame(user); }); }        
     })
   } 
@@ -55,7 +54,7 @@ class GameManager extends Component {
       this.exitMultiplayerGame(settings.id, user);
     }
 
-    if (settings.type !== 'demo') {
+    if (settings.type !== 'factoidDemo') {
       this.saveStats(session, stats);
     }
   }  
@@ -129,7 +128,7 @@ class GameManager extends Component {
     const { settings, type } = this.state;
 
     // Return to home screen if demo
-    if (type === 'demo') {
+    if (type === 'factoidDemo') {
       this.setState({ redirect: '/' });
       return;
     }
@@ -215,25 +214,24 @@ class GameManager extends Component {
     if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }  
 
     return (
-      <div>
-        <Game
-          factoids={this.props.factoids}
-          gameOver={this.gameOver.bind(this)}
-          level={this.state.level}
-          end={this.state.end}
-          time={this.state.time}
-          type={this.state.type}
-          pauseMatch={this.state.pauseMatch}
-          questions={this.state.questions}
-          recordQuestion={this.recordQuestion.bind(this)}
-          originalQuestions={this.state.questions} />
-      </div>
+      <Game
+        factoids={this.props.factoids}
+        gameOver={this.gameOver.bind(this)}
+        level={this.state.level}
+        end={this.state.end}
+        time={this.state.time}
+        type={this.state.type}
+        pauseMatch={this.state.pauseMatch}
+        questions={this.state.questions}
+        recordQuestion={this.recordQuestion.bind(this)}
+        originalQuestions={this.state.questions} />
     );
   }
 }
 
 const mapStateToProps = (state, ownProps) => ({
   session: state.entities.session,
+  imageKeys: _.values(state.entities.imageKey),
   user: _.first(_.values(state.entities.user)),
   questions: _.values(state.entities.questions),
   factoids: _.values(state.entities.factoids),
