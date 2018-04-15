@@ -73,7 +73,7 @@ export const caseInsEq = (strA, strB) => _.isString(strA) && _.isString(strB) &&
 
 // from https://ecommerce.shopify.com/c/ecommerce-design/t/ordinal-number-in-javascript-1st-2nd-3rd-4th-29259
 export const getOrdinalPosition = int => {
-  if (!int) { return 'N/A'; }
+  if (!_.isNumber(int)) { return 'N/A'; }
   const s = ["th","st","nd","rd"]
   const v = int % 100;
   return int+(s[(v-20)%10]||s[v]||s[0]);

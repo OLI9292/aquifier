@@ -36,31 +36,27 @@ class About extends Component {
       </NavLink>
     }
 
-    const profile = data => {
-      return <div key={data.name} style={{marginBottom:'30px'}}>
-        <ProfileImage
-          src={require('../../Library/Images/Headshots/' + data.imageSrc + '.png')} />
-        <p style={{marginTop:'0px'}}>
-          {data.name}
-        </p>
-        <p style={{fontFamily:'BrandonGrotesque',color:color.gray2,marginTop:'-10px'}}>
-          {data.title}
-        </p>        
-      </div>
-    }
+    const profile = data => <div key={data.name} style={{marginBottom:'30px'}}>
+      <ProfileImage
+        src={require('../../Library/Images/Headshots/' + data.imageSrc + '.png')} />
+      <p style={{marginTop:'0px'}}>
+        {data.name}
+      </p>
+      <p style={{fontFamily:'BrandonGrotesque',color:color.gray2,marginTop:'-10px'}}>
+        {data.title}
+      </p>        
+    </div>;
 
-    const study = data => {
-      return <div style={{marginBottom:'60px'}}>
-        <p>
-          <Link key={data.url} target={'_blank'} to={data.url} style={{color:color.blue,textDecoration:'none'}}>
-            {data.name}
-          </Link>
-        </p>
-        <p style={{fontFamily:'BrandonGrotesque',marginTop:'-10px'}}>
-          {data.by}
-        </p>        
-      </div>      
-    }
+    const study = data => <div key={data.name} style={{marginBottom:'60px'}}>
+      <p>
+        <Link key={data.url} target={'_blank'} to={data.url} style={{color:color.blue,textDecoration:'none'}}>
+          {data.name}
+        </Link>
+      </p>
+      <p style={{fontFamily:'BrandonGrotesque',marginTop:'-10px'}}>
+        {data.by}
+      </p>        
+    </div>;      
 
     const primaryContent = (() => {
       if (this.state.type === 'team') {

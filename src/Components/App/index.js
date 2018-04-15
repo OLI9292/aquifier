@@ -43,7 +43,7 @@ class App extends Component {
       store.dispatch(activateSessionAction(session));
       store.dispatch(fetchUserAction(session.user));
     };
-  }  
+  }    
 
   render() {
     return (
@@ -81,6 +81,10 @@ class App extends Component {
 const contained = component => () => <Container component={component} />
 
 class Container extends Component {
+  componentWillMount() {
+    window.scrollTo(0, 0);
+  }
+
   render() {
     const Component = () => {
       switch (this.props.component) {

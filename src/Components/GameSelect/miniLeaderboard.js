@@ -1,6 +1,5 @@
 import _ from 'underscore';
 import { connect } from 'react-redux'
-import queryString from 'query-string';
 import React, { Component } from 'react';
 import get from 'lodash/get';
 

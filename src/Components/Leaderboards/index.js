@@ -2,7 +2,6 @@ import { connect } from 'react-redux'
 import moment from 'moment';
 import React, { Component } from 'react';
 import _ from 'underscore';
-import queryString from 'query-string';
 import { color } from '../../Library/Styles/index';
 import get from "lodash/get";
 
@@ -80,9 +79,7 @@ class Leaderboards extends Component {
     } = this.state;
 
     const {
-      ranks,
-      session,
-      isTeacher
+      ranks
     } = this.props;
 
     const selectedRanks = (() => {
@@ -134,9 +131,11 @@ class Leaderboards extends Component {
       </LoadMoreButton>;   
     }   
 
-    const disclaimer = <p style={{margin:"40px 0px"}}>
-      {`Score points to appear on the ${isWeekly ? "weekly " : ""}leaderboard.`}
-    </p>;
+    const disclaimer = <tr style={{margin:"40px 0px"}}>
+      <td>
+        {`Score points to appear on the ${isWeekly ? "weekly " : ""}leaderboard.`}
+      </td>
+    </tr>;
 
     return (
       <Container>

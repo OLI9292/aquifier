@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
 import styled from 'styled-components';
+import throttle from 'lodash/throttle';
 
 import { color } from '../../Library/Styles/index';
 import TESTIMONIALS from './testimonials';
@@ -32,12 +33,12 @@ class Home extends Component {
 
   componentDidMount() {
     this.redirectIfLoggedIn(this.props);
-    window.addEventListener('resize', this.checkWindowSize);
+    window.addEventListener('resize', throttle(this.checkWindowSize, 1000));
     this.checkWindowSize();
   }
 
   componentWillUnmount() {
-    window.removeEventListener('resize', this.checkWindowSize);
+    window.removeEventListener('resize', throttle(this.checkWindowSize, 1000));
   }
 
   componentWillReceiveProps(nextProps) {

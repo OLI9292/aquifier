@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { color, media } from '../../Library/Styles/index';
 import marked from "marked";
 
 class Text extends Component {
