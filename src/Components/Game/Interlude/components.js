@@ -53,6 +53,6 @@ export const FactoidTextContainer = styled.div`
 export const FactoidText = styled.p`
   font-size: 1.5em;
   text-align: left;
-  padding-left: ${props => !props.mobile && "5%"};
+  padding: 0 ${props => !props.mobile && "5%"};
   margin: ${props => props.mobile && `${props.hasImage ? 0 : "15px"} 5% 75px 5%`};
 `

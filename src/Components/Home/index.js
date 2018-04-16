@@ -95,7 +95,7 @@ class Home extends Component {
       
         <ButtonContainer smallScreen={this.state.smallScreen}>
           <ButtonExt smallScreen={this.state.smallScreen} color={color.mainBlue}>
-            <Link style={{textDecoration:'none',color:'white'}} to={'/play/type=demo'}>
+            <Link style={{textDecoration:'none',color:'white'}} to={'/play/type=factoidDemo'}>
               play demo
             </Link>
           </ButtonExt>
