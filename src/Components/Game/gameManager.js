@@ -32,14 +32,14 @@ class GameManager extends Component {
 
     const { user, levels } = this.props;
     const settings = queryString.parse(this.props.settings);
-    const pauseMatch = settings.type === 'multiplayer';
+    const notYetStarted = settings.type === 'multiplayer';
 
     if (!levels.length) { this.props.dispatch(fetchLevelsAction()); }
 
     this.setState({
       settings: settings,
       type: settings.type,
-      pauseMatch: pauseMatch 
+      notYetStarted: notYetStarted 
     }, () => {
       if (settings.type === 'factoidDemo') { this.setState({ loading: true }, () => { this.setupGame(); }); }
       else if (user)                { this.setState({ loading: true }, () => { this.setupGame(user); }); }        
@@ -71,6 +71,8 @@ class GameManager extends Component {
       settings
     } = this.state;
 
+    console.log(nextProps)
+
     if (nextProps.user && !loading) {
       this.setState({ loading: true }, () => this.setupGame(nextProps.user));  
     }
@@ -96,7 +98,8 @@ class GameManager extends Component {
       mobile: mobile, hints_used: hintCount, incorrect_guesses: incorrectGuesses,
       session_id: sessionId, time_spent: timeSpent, type: type, user_id: userId, word: word };
 
-    this.props.dispatch(saveQuestionAction(data));
+    // TODO: - remove
+    // this.props.dispatch(saveQuestionAction(data));
 
     const stat = { word: word, correct: correct, difficulty: type, time: timeSpent };
     const stats = (this.state.stats || []).concat(stat);
@@ -167,7 +170,7 @@ class GameManager extends Component {
 
     if (settings.type === 'multiplayer') {
       this.joinGame(settings, user);
-    } else if (settings.type === 'demo') {
+    } else if (settings.type === 'factoidDemo') {
       this.loadQuestions({ type: settings.type });
     } else {
       const params = _.extend({}, settings, { user_id: user._id });
@@ -205,7 +208,7 @@ class GameManager extends Component {
       if (kicked) {
         this.setState({ redirect: '/home' }); 
       } else if (gameStarted) {
-        this.setState({ pauseMatch: false, end: end });
+        this.setState({ notYetStarted: false, end: end });
       }
     });    
   }
@@ -217,11 +220,12 @@ class GameManager extends Component {
       <Game
         factoids={this.props.factoids}
         gameOver={this.gameOver.bind(this)}
+        imageKeys={this.props.imageKeys}
         level={this.state.level}
         end={this.state.end}
         time={this.state.time}
         type={this.state.type}
-        pauseMatch={this.state.pauseMatch}
+        notYetStarted={this.state.notYetStarted}
         questions={this.state.questions}
         recordQuestion={this.recordQuestion.bind(this)}
         originalQuestions={this.state.questions} />
