@@ -14,6 +14,27 @@ export const MobileExit = styled.img`
   `};   
 `
 
+export const UserTypeButton = styled.div`
+  width: 140px;
+  height: 200px;
+  background-color: ${props => props.color};
+  border-radius: 20px;
+  position: relative;
+  cursor: pointer;
+`
+
+export const UserTypeText = styled.p`
+  color: white;
+  position: absolute;
+  font-size: 1.2em;
+  width: 100%;
+  bottom: 0;
+  background-color: ${props => props.color};
+  margin: 0;
+  border-radius: 0px 0px 20px 20px;
+  padding: 10px 0px;
+`
+
 export const InputTitle = styled.p`
   position: absolute;
   top: -16px;

@@ -11,6 +11,7 @@ import LoadingSpinner from '../Common/loadingSpinner';
 import { ModalContainer } from '../Common/modalContainer';
 import LocalStorage from '../../Models/LocalStorage'
 import Button from '../Common/button';
+import Header from '../Common/header';
 import Form from './form';
 import AddStudents from './addStudents';
 import { shouldRedirect } from '../../Library/helpers';
@@ -22,14 +23,16 @@ import {
   BackArrow,
   MobileExit,
   Step,
-  StepsContainer  
+  StepsContainer,
+  UserTypeButton,
+  UserTypeText
 } from './components';
 
 class SignUp extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentStep: 1,
+      currentStep: 0,
       isImporting: false,
       data: {
         email: '',
@@ -111,6 +114,16 @@ class SignUp extends Component {
     }
   }
 
+  signUpAs(role) {
+    if (role === "Teacher") {
+      this.setState({ currentStep: 1 });
+    } else if (role === "Individual") {
+
+    } else if (role === "Administator") {
+      this.setState({ redirect: "/start-free-trial"});
+    }
+  }
+
   validate(step, data) {
     const { email, firstName, lastName, password, students } = data;
     
@@ -148,6 +161,38 @@ class SignUp extends Component {
       {num}
     </Step>;
 
+    const userTypeButton = (name, color, darkColor, image) => <UserTypeButton
+      color={color}
+      key={name}
+      onClick={() => this.signUpAs(name)}>
+      <img
+        style={{width:"65%",height:"auto",marginTop:"40px"}}
+        src={require(`../../Library/Images/${image}`)} />
+      <UserTypeText color={darkColor}>
+        {name}
+      </UserTypeText>
+    </UserTypeButton>;
+
+    const userTypes = [
+      { name: "Teacher", color: color.warmYellow, darkColor: "#c18602", image: "teacher-icon.png" },
+      { name: "Individual", color: color.red, darkColor: "#dd3737", image: "individual-icon.png" },
+      { name: "Administator", color: color.babyBlue, darkColor: "#3f81e6", image: "administrator-icon.png" }
+    ];
+
+    const userTypeComponent = <div>
+      <Header.small>
+        wordcraft
+      </Header.small>
+
+      <p style={{fontSize:"1.2em"}}>
+        Sign up for Wordcraft as a...
+      </p>
+
+      <div style={{display:"flex",justifyContent:"space-around",width:"95%",margin:"0 auto"}}>
+        {_.map(userTypes, data => userTypeButton(..._.values(data)))}
+      </div>
+    </div>;
+
     const addStudentsComponent = <AddStudents
       updateStudents={this.updateStudents.bind(this)}
       isImporting={isImporting}
@@ -155,9 +200,11 @@ class SignUp extends Component {
       setIsImporting={bool => this.setState({ isImporting: bool })} />;
 
     const content = (() => {
+      if (currentStep === 0) { return userTypeComponent; }
       if (currentStep === 4) { return addStudentsComponent; }
 
       const formType = {
+        0: 'userType',
         1: 'email',
         2: 'account',
         3: 'other'
@@ -180,7 +227,7 @@ class SignUp extends Component {
         
       <ModalContainer style={{textAlign:'center'}}>
         <BackArrow
-          hide={isImporting || currentStep === 1}
+          hide={isImporting || currentStep === 0}
           onClick={this.back.bind(this)}
           src={require('../../Library/Images/icon-back-arrow.png')} />        
 
@@ -188,14 +235,14 @@ class SignUp extends Component {
           src={require('../../Library/Images/exit-gray.png')}
           onClick={() => this.props.displaySignUp(false)}/>            
 
-        <StepsContainer hide={isImporting}>
+        <StepsContainer hide={isImporting || currentStep === 0}>
           {_.map([1,2,3,4], step)}
         </StepsContainer>
 
         {content}
 
         <Button.medium
-          style={{display:isImporting ? 'none' : 'inline-block',margin:'20px 0px 20px 0px'}} 
+          style={{display:(isImporting || currentStep === 0) ? 'none' : 'inline-block',margin:'20px 0px 20px 0px'}} 
           onClick={this.next.bind(this)}>
           {currentStep === 4 ? 'finish' : 'next'}
         </Button.medium>
