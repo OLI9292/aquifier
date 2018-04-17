@@ -25,7 +25,6 @@ import {
   Choices, ChoiceButton,
   ExitOut,
   HelpButton, HelpSpan,
-  OnCorrectFactoid,
   Pause,
   Prompt, PromptContainer, PromptValue,
   StageDot,
@@ -37,7 +36,7 @@ class Game extends Component {
     super(props);
 
     this.state = {
-      questionIndex: 1,
+      questionIndex: 0,
       hintCount: 0,
       guessed: {},
       prompt: 'normal',
@@ -253,7 +252,7 @@ class Game extends Component {
 
     const progressComponent = type => {
       switch (type) {
-        case 'train': case 'explore': case 'factoidDemo':
+        case 'train': case 'explore': case 'demo':
           return <ProgressBar
             progress={Math.max(questionIndex) / get(questions, 'length', 1)} />;
         case 'speed': case 'multiplayer':

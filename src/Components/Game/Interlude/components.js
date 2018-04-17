@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { color, media } from '../../../Library/Styles/index';
+import { color } from '../../../Library/Styles/index';
 
 export const ImageContainer = styled.div`
   height: 50%;

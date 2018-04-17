@@ -253,14 +253,6 @@ export const HelpSpan = styled.span`
 `
 
 //
-// FACTOID
-// 
-
-export const OnCorrectFactoid = styled.p`
-  display: ${props => props.show ? 'inline-block' : 'none'};
-`
-
-//
 // PROMPT
 //
 

@@ -1,11 +1,10 @@
 import _ from 'underscore';
 import { connect } from 'react-redux'
 import React, { Component } from 'react';
-import styled from 'styled-components';
 import get from 'lodash/get';
 import chunk from 'lodash/chunk';
 
-import { color, media } from '../../../Library/Styles/index';
+import { color } from '../../../Library/Styles/index';
 import arrow from '../../../Library/Images/arrow-in-circle.png';
 import greenArrow from '../../../Library/Images/arrow-in-circle-green.png';
 
@@ -17,7 +16,6 @@ import {
   ImageContainer,
   Citation,
   Arrow,
-  Container,
   FactoidContainer,
   FactoidTextContainer,
   FactoidText
@@ -58,7 +56,7 @@ class Interlude extends Component {
     const factoid = _.find(_.shuffle(factoids), f => f.words.includes(word));
     const imageKey = _.find(imageKeys, key => key.replace(".jpg","") === word);
 
-    if (factoid/*&& factoid.level === questionDifficulty*/) {
+    if (factoid && factoid.level === questionDifficulty) {
       this.setFactoid(factoid);
     } else if (imageKey) {
       this.setImage(imageKey);
@@ -156,6 +154,7 @@ class Interlude extends Component {
           {
             hasImage && 
             <img
+              alt={"word"}
               style={imgStyle}
               src={factoidImageSource} />
           }
@@ -176,6 +175,7 @@ class Interlude extends Component {
 
     const imageContent = <ImageContainer>
       <img
+        alt={"word"}
         mobile={this.props.mobile}
         style={{height:"auto",width:"auto",maxWidth:"100%",maxHeight:"100%"}}
         src={imageSource} />

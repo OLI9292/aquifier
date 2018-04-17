@@ -10,7 +10,6 @@ import get from 'lodash/get';
 import { shouldRedirect, mobileCheck } from '../../Library/helpers';
 
 import {
-  fetchFactoidsAction,
   fetchQuestionsAction,
   fetchLevelsAction,
   removeEntityAction,
@@ -41,7 +40,7 @@ class GameManager extends Component {
       type: settings.type,
       notYetStarted: notYetStarted 
     }, () => {
-      if (settings.type === 'factoidDemo') { this.setState({ loading: true }, () => { this.setupGame(); }); }
+      if (settings.type === 'demo') { this.setState({ loading: true }, () => { this.setupGame(); }); }
       else if (user)                { this.setState({ loading: true }, () => { this.setupGame(user); }); }        
     })
   } 
@@ -54,7 +53,7 @@ class GameManager extends Component {
       this.exitMultiplayerGame(settings.id, user);
     }
 
-    if (settings.type !== 'factoidDemo') {
+    if (settings.type !== 'demo') {
       this.saveStats(session, stats);
     }
   }  
@@ -70,8 +69,6 @@ class GameManager extends Component {
       questions,
       settings
     } = this.state;
-
-    console.log(nextProps)
 
     if (nextProps.user && !loading) {
       this.setState({ loading: true }, () => this.setupGame(nextProps.user));  
@@ -98,8 +95,7 @@ class GameManager extends Component {
       mobile: mobile, hints_used: hintCount, incorrect_guesses: incorrectGuesses,
       session_id: sessionId, time_spent: timeSpent, type: type, user_id: userId, word: word };
 
-    // TODO: - remove
-    // this.props.dispatch(saveQuestionAction(data));
+    this.props.dispatch(saveQuestionAction(data));
 
     const stat = { word: word, correct: correct, difficulty: type, time: timeSpent };
     const stats = (this.state.stats || []).concat(stat);
@@ -131,7 +127,7 @@ class GameManager extends Component {
     const { settings, type } = this.state;
 
     // Return to home screen if demo
-    if (type === 'factoidDemo') {
+    if (type === 'demo') {
       this.setState({ redirect: '/' });
       return;
     }
@@ -170,7 +166,7 @@ class GameManager extends Component {
 
     if (settings.type === 'multiplayer') {
       this.joinGame(settings, user);
-    } else if (settings.type === 'factoidDemo') {
+    } else if (settings.type === 'demo') {
       this.loadQuestions({ type: settings.type });
     } else {
       const params = _.extend({}, settings, { user_id: user._id });
