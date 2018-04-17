@@ -5,7 +5,7 @@ import { color, media } from '../../Library/Styles/index';
 // ALERT
 //
 
-export const Alert = styled.div`
+export const AlertContainer = styled.div`
   right: 0;
   height: 25px;
   display: flex;
@@ -26,6 +26,7 @@ export const AlertImage = styled.img`
 
 export const AlertText = styled.p`    
   color: ${props => props.color};
+  text-transform: uppercase;
   ${media.phone`
     display: none;
   `}   
@@ -70,15 +71,29 @@ export const Underline = styled.div`
 `
 
 //
+// Top
+//
+
+export const Top = styled.div`
+  height: 10%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+`
+
+//
 // BOTTOM
 //
 
 export const Bottom = styled.div`
   height: 10%;
-  width: 90%;
-  margin: 0 auto;
+  bottom: 0;
+  left: 25px;
+  right: 25px;
   display: flex;
+  position: fixed;
   align-items: center;
+  max-width: 1100px;
   justify-content: space-between;
   ${media.phone`
     font-size: 1.25em;
@@ -120,9 +135,9 @@ export const ButtonValue = styled.span`
 export const Content = styled.div`
   height: 100vh;
   width: 100%;
-  padding: 25px 0px;
+  padding: 25px;
   box-sizing: border-box;
-  max-width: 900px;
+  max-width: 1100px;
   margin: 0 auto;
   position: relative;
   opacity: ${props => props.opacity};
@@ -132,7 +147,7 @@ export const Content = styled.div`
   `}    
   ${media.phone`
     font-size: 0.7em;
-    padding: 10px 0px;
+    padding: 10px;
   `}  
   ${media.smallComp`
     font-size: 0.85em;
@@ -198,13 +213,9 @@ export const ChoiceButton = styled.div`
 //
 
 export const ExitOut = styled.img`
-  height: 40px;
-  width: auto;
+  height: 100%;
+  width: 100%;
   cursor: pointer;
-  ${media.phone`
-    height: 25px;
-    margin-left: 10px;
-  `}  
 `
 
 //
@@ -221,10 +232,12 @@ export const HelpButton = styled.div`
   z-index: 9999;
   cursor: pointer;
   display: flex;
+  opacity: ${props => props.hide ? "0" : "1"};
   align-items: center;
   text-align: center;
   font-size: 1.15em;
   justify-content: center;  
+  transition: opacity ${props => props.hide ? "0s" : "0.5s"};
   ${media.phone`
     width: 100px;
     height: 40px;
@@ -237,14 +250,6 @@ export const HelpSpan = styled.span`
   ${media.phone`
     display: none;
   `}
-`
-
-//
-// FACTOID
-// 
-
-export const OnCorrectFactoid = styled.p`
-  display: ${props => props.show ? 'inline-block' : 'none'};
 `
 
 //

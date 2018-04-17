@@ -6,17 +6,18 @@ import get from 'lodash/get'
 import { Link } from 'react-router-dom';
 
 import { color } from '../../Library/Styles/index';
-import { caseInsEq, shouldRedirect } from '../../Library/helpers';
+import { caseInsEq, shouldRedirect, mobileCheck } from '../../Library/helpers';
 import LoadingSpinner from '../Common/loadingSpinner';
+
+import exitPng from '../../Library/Images/exit-gray.png';
 
 import hintChecker from './hintChecker';
 import SpeedRound from './speedRound';
 import ProgressBar from './progressBar';
-import { alerts } from './alerts';
-import OnCorrectImage from './onCorrectImage';
+import Alert from './alert';
+import Interlude from './Interlude/index';
 
 import {
-  Alert, AlertImage, AlertText,
   Answer, AnswerSpace, AnswerValue, Underline,
   Bottom,
   ButtonContent, ButtonHint, ButtonValue,
@@ -24,11 +25,11 @@ import {
   Choices, ChoiceButton,
   ExitOut,
   HelpButton, HelpSpan,
-  OnCorrectFactoid,
   Pause,
   Prompt, PromptContainer, PromptValue,
-  StageDot
-} from './components'
+  StageDot,
+  Top
+} from './components';
 
 class Game extends Component {
   constructor(props) {
@@ -42,12 +43,13 @@ class Game extends Component {
       incorrectGuesses: 0,
       correctCounter: [0,0],
       questionStartTime: moment()
-    }
+    };
 
     this.handleKeydown = this.handleKeydown.bind(this);
   }
 
   componentDidMount() {
+    this.setState({ mobile: mobileCheck() });    
     document.body.addEventListener('keydown', this.handleKeydown);
   }
 
@@ -59,7 +61,6 @@ class Game extends Component {
     if (!this.state.question) { return; }
 
     if (e.key === 'Enter' && this.state.questionComplete) {
-      clearTimeout(this.continue);
       this.reset(() => this.setQuestion());
     } else {
       const choices = this.state.question.choices;
@@ -132,23 +133,10 @@ class Game extends Component {
     })
   }
 
-  animateAlerts(correct, speedy) {
-    if (speedy) {
-      this.setState({ alert: 'speedy' });
-      setTimeout(() => { this.setState({ alert: undefined }); }, 1100);
-    };
-    const correctAlert = correct ? 'correct' : 'passed';
-    setTimeout(() => { this.setState({ alert: correctAlert }); }, speedy ? 1200 : 0);
-    setTimeout(() => { this.setState({ alert: undefined }); }, speedy ? 2300 : 1100);    
-  }
-
-  currentlyCorrect() {
-    return this.state.incorrectGuesses === 0 && this.state.hintCount === 0;
-  }
-
   checkComplete() {
     const {
       correctCounter,
+      factoidReady,
       question,
       questionIndex,
       questionStartTime,
@@ -158,7 +146,7 @@ class Game extends Component {
     const isComplete = _.every(question.answer, a => !a.missing);
     if (!isComplete) { return; }
 
-    const correct = this.currentlyCorrect();
+    const correct = this.state.incorrectGuesses === 0 && this.state.hintCount === 0;
     const seconds = Math.ceil(moment.duration(moment().diff(questionStartTime)).asSeconds());
     const isSpeedy = seconds < 4;
     const nextQuestionIndex = questionIndex + (isSpeedy && _.contains(['train','explore'], type) ? 2 : 1);
@@ -167,11 +155,11 @@ class Game extends Component {
       questionComplete: true,
       isSpeedy: isSpeedy,
       correctCounter: [correctCounter[0] + (correct ? 1 : 0), correctCounter[1] + 1],
-      questionIndex: nextQuestionIndex
+      questionIndex: nextQuestionIndex,
+      alertTypes: { correct: correct, speedy: isSpeedy }
      }, () => {
+      if (factoidReady) { this.hideContinue(); }
       this.props.recordQuestion(question, correct, seconds, this.state);        
-      this.animateAlerts(correct, isSpeedy);
-      this.continue = setTimeout(() => { this.reset(() => this.setQuestion()) }, 100000);
     });
   }
 
@@ -179,6 +167,8 @@ class Game extends Component {
     this.setState({ gameOpaqueness: 0 }, () => {
       setTimeout(() => {
         this.setState({
+          alertTypes: {},
+          factoidReady: false,
           questionComplete: false,
           hintCount: 0,
           highlightPrompt: false,
@@ -232,13 +222,22 @@ class Game extends Component {
     }
   }
 
+  hideContinue() {
+    this.setState({ hideContinue: true });
+    setTimeout(() => this.setState({ hideContinue: false }), 2500);
+  }
+
   render() {
     if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }  
 
     const {
+      alertTypes,
       correctCounter,
+      factoidReady,
       gameOver,
+      gameOpaqueness,
       guessed,
+      hideContinue,
       highlightPrompt,
       hintButtonsOn,
       hintCount,
@@ -247,7 +246,8 @@ class Game extends Component {
       questionIndex,
       question,
       questions,
-      glowIdx
+      glowIdx,
+      mobile
     } = this.state;
 
     const progressComponent = type => {
@@ -266,28 +266,8 @@ class Game extends Component {
       }
     }
 
-    const alert = type => {
-      return  <Alert hide={_.isUndefined(type)} display={this.state.questionComplete ? '' : 'none'}>
-        <AlertImage src={type && alerts[type].image} />              
-        <AlertText color={type && alerts[type].color}>
-          {type && alerts[type].name.toUpperCase()}
-        </AlertText>
-      </Alert>      
-    }
-
-    const topInfo = (() => {
-      return <div style={{height:'10%',width:'100%',display:'flex',alignItems:'center'}}>
-        <Link to={'/home'}>
-          <ExitOut
-            src={require('../../Library/Images/exit-gray.png')} />
-        </Link>
-        {progressComponent(this.props.type)}
-        {alert(this.state.alert)}
-      </div>
-    })();
-
     const promptText = () => {
-      const prompt = question.prompt[this.state.prompt] || question.prompt['normal']
+      const prompt = get(question.prompt, this.state.prompt || 'normal');
       return _.map(prompt, (section, i) => {
         if (section.value === '<br />') { return <br />; }
         const highlight = highlightPrompt && section.highlight;
@@ -295,18 +275,6 @@ class Game extends Component {
         return <span key={i} style={style}>{section.value}</span>;
       });
     }
-
-    const prompt = () => {
-      return <PromptContainer>
-        <Prompt>
-          <PromptValue>
-            {promptText()}
-          </PromptValue>
-        </Prompt>
-      </PromptContainer>
-    };
-
-    const answer = () => <Answer>{_.map(question.answer, (a, idx) => answerSpace(a.value, a.missing, idx))}</Answer>
 
     const answerSpace = (value, missing, idx) => {
       const margin = questionComplete
@@ -360,91 +328,107 @@ class Game extends Component {
         : { mobile: { column: twoByX.row, row: twoByX.column }, regular: twoByX };
     }
 
-    const choices = () => {
-      const grids = gridTemplates(question.choices.length, isSpellQuestion)
-      return <Choices grid={grids.regular} mobileGrid={grids.mobile}>
-        {_.map(question.choices, (c, idx) => choiceButton(c, idx, question.choices.length))}
-      </Choices>
-    };
-
-    const interlude = (() => {
-      return <div style={{height:'50%',width:'80%',margin:'0 auto',display:!questionComplete ? 'none' : ''}}>
-        <OnCorrectImage
-          display={questionComplete}
-          word={get(question, 'word')} />
-      </div>
-    })();   
-
     const questionComponents = (() => {
-      if (question) {
-        return <div style={{height:'80%',width:'100%'}}>
-          {prompt()}
-          {answer()}
-          {!questionComplete && choices()}
-          {interlude}
-        </div>
-      }
+      if (!question) { return; }
+
+      const prompt = <PromptContainer>
+        <Prompt>
+          <PromptValue>
+            {promptText()}
+          </PromptValue>
+        </Prompt>
+      </PromptContainer>;
+
+      const answer = <Answer>
+        {_.map(question.answer, (a, idx) => answerSpace(a.value, a.missing, idx))}
+      </Answer>;    
+
+      const buttonGrids = gridTemplates(question.choices.length, isSpellQuestion);
+
+      const choices = <Choices
+        grid={buttonGrids.regular} 
+        mobileGrid={buttonGrids.mobile}>
+        {_.map(question.choices, (c, idx) => choiceButton(c, idx, question.choices.length))}
+      </Choices>;
+
+      const interlude = <Interlude
+        factoidReady={() => this.setState({ factoidReady: true })}
+        mobile={mobile}
+        display={questionComplete}
+        word={get(question, 'word')}
+        level={get(question, 'level')}
+        factoids={this.props.factoids} 
+        imageKeys={this.props.imageKeys} />;
+
+      const isDisplayingFactoid = questionComplete && factoidReady;
+
+      const containerStyle = mobile && isDisplayingFactoid
+        ? { minHeight: '80%', width:'100%', display: 'flex', alignItems: 'center' }
+        : { height: '80%', width:'100%', textAlign: 'center' };
+
+      return <div style={containerStyle}>
+        {!isDisplayingFactoid && prompt}
+        {!isDisplayingFactoid && answer}
+        {!questionComplete && choices}
+        {interlude}
+      </div>;     
     })();
 
-    const levelInfo = (() => {
-      return <div style={{display:'flex',flexDirection:'column'}}>
-        <p style={{fontFamily:'BrandonGrotesqueBold',fontSize:'1.25em',margin:'0px 0px -5px 0px'}}>
-          {get(this.props.level, 'fullname')}
-        </p>
-        <div>
-          {_.has(this.props.level, 'progress') && _.map(_.range(1, this.props.level.progress[1] + 1), n => {
-            return <StageDot key={n} green={n <= this.props.level.progress[0]} />
-          })}
-        </div>
-      </div>      
-    })();
-
-    const helpButton = (() => {
-      return <HelpButton color={questionComplete ? color.green : color.red}
-          onClick={() => {
-            if (questionComplete) {
-              clearTimeout(this.continue);
-              this.reset(() => this.setQuestion());
-            } else {
-              this.setState({ hintCount: hintCount + 1 }, this.checkHint);
-            }
-          }}>
-          <p>
-            {questionComplete ? 'Continue' : 'Hint'}
-            <HelpSpan hide={questionComplete}>
-              (enter)
-            </HelpSpan>            
-          </p>
-      </HelpButton>
-    })();
-
-    const bottomInfo = (() => {
-      return <Bottom>
-        {levelInfo}
-        {helpButton}
-      </Bottom>
-    })();      
-
-    return (
+    const levelInfo = <div style={{display:'flex',flexDirection:'column'}}>
+      <p style={{fontFamily:'BrandonGrotesqueBold',fontSize:'1.25em',margin:'0px 0px -5px 0px'}}>
+        {get(this.props.level, 'fullname')}
+      </p>
       <div>
-        {
-          this.props.pauseMatch
-          ?
-          <Pause>
-            Waiting for admin to start game.
-          </Pause>
-          :
-          !this.state.questions || gameOver
-          ?
-          <LoadingSpinner />
-          :
-          <Content opacity={this.state.gameOpaqueness}>
-            {topInfo}
-            {questionComponents}
-            {bottomInfo}
-          </Content>
-        }
+        {_.has(this.props.level, 'progress') && _.map(_.range(1, this.props.level.progress[1] + 1), n => {
+          return <StageDot key={n} green={n <= this.props.level.progress[0]} />
+        })}
       </div>
+    </div>;
+
+    const helpButton = <HelpButton 
+      hide={hideContinue}
+      color={questionComplete ? color.green : color.red}
+      onClick={() => questionComplete
+        ? this.reset(() => this.setQuestion())
+        : this.setState({ hintCount: hintCount + 1 }, this.checkHint)}>
+      <p>
+        {questionComplete ? 'Continue' : 'Hint'}
+        <HelpSpan hide={questionComplete}>
+          (enter)
+        </HelpSpan>            
+      </p>
+    </HelpButton>;
+
+    if (this.props.notYetStarted) {
+      return <Pause>Waiting for admin to start game.</Pause>;      
+    }
+
+    if (!questions || gameOver) {
+      return <LoadingSpinner />;
+    }
+    
+    return (
+      <Content opacity={gameOpaqueness}>
+        <div style={{width:"100%",height:"100%"}}>
+          <Top>
+            <Link 
+              to={'/home'}
+              style={{height:mobile ? "35px" : "40px",width:mobile ? "35px" : "40px"}}>
+              <ExitOut src={exitPng} />
+            </Link>
+            {progressComponent(this.props.type)}
+            <Alert
+              data={alertTypes} />
+          </Top>
+
+          {questionComponents}
+
+          <Bottom>
+            {levelInfo}
+            {helpButton}
+          </Bottom>
+        </div>
+      </Content>
     );
   }
 }

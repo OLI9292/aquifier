@@ -10,7 +10,6 @@ import get from 'lodash/get';
 import { shouldRedirect, mobileCheck } from '../../Library/helpers';
 
 import {
-  fetchFactoidsAction,
   fetchQuestionsAction,
   fetchLevelsAction,
   removeEntityAction,
@@ -30,17 +29,16 @@ class GameManager extends Component {
   componentDidMount() {
     this.props.dispatch(removeEntityAction('questions'));    
 
-    const { user, factoids, levels } = this.props;
+    const { user, levels } = this.props;
     const settings = queryString.parse(this.props.settings);
-    const pauseMatch = settings.type === 'multiplayer';
+    const notYetStarted = settings.type === 'multiplayer';
 
     if (!levels.length) { this.props.dispatch(fetchLevelsAction()); }
-    if (!factoids.length) { this.props.dispatch(fetchFactoidsAction()); }
 
     this.setState({
       settings: settings,
       type: settings.type,
-      pauseMatch: pauseMatch 
+      notYetStarted: notYetStarted 
     }, () => {
       if (settings.type === 'demo') { this.setState({ loading: true }, () => { this.setupGame(); }); }
       else if (user)                { this.setState({ loading: true }, () => { this.setupGame(user); }); }        
@@ -206,7 +204,7 @@ class GameManager extends Component {
       if (kicked) {
         this.setState({ redirect: '/home' }); 
       } else if (gameStarted) {
-        this.setState({ pauseMatch: false, end: end });
+        this.setState({ notYetStarted: false, end: end });
       }
     });    
   }
@@ -215,25 +213,25 @@ class GameManager extends Component {
     if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }  
 
     return (
-      <div>
-        <Game
-          factoids={this.props.factoids}
-          gameOver={this.gameOver.bind(this)}
-          level={this.state.level}
-          end={this.state.end}
-          time={this.state.time}
-          type={this.state.type}
-          pauseMatch={this.state.pauseMatch}
-          questions={this.state.questions}
-          recordQuestion={this.recordQuestion.bind(this)}
-          originalQuestions={this.state.questions} />
-      </div>
+      <Game
+        factoids={this.props.factoids}
+        gameOver={this.gameOver.bind(this)}
+        imageKeys={this.props.imageKeys}
+        level={this.state.level}
+        end={this.state.end}
+        time={this.state.time}
+        type={this.state.type}
+        notYetStarted={this.state.notYetStarted}
+        questions={this.state.questions}
+        recordQuestion={this.recordQuestion.bind(this)}
+        originalQuestions={this.state.questions} />
     );
   }
 }
 
 const mapStateToProps = (state, ownProps) => ({
   session: state.entities.session,
+  imageKeys: _.values(state.entities.imageKey),
   user: _.first(_.values(state.entities.user)),
   questions: _.values(state.entities.questions),
   factoids: _.values(state.entities.factoids),
