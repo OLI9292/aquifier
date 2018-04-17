@@ -5,7 +5,7 @@ import CONFIG from '../Config/main';
 const API_ROOT = {
   main: process.env.NODE_ENV === 'production'
     ? CONFIG.PRODUCTION_API_ROOT
-    : CONFIG.STAGING_API_ROOT
+    : CONFIG.PRODUCTION_API_ROOT
 }
 
 const formatSession = session => session ? {

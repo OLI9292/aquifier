@@ -121,7 +121,7 @@ class Leaderboards extends Component {
     const loadMore = direction => {
       const hide = isClass || (direction === "prev"
         ? _.contains(_.pluck(selectedRanks, 'rank'), 1)
-        : selectedRanks.length < 20);
+        : get(selectedRanks, "length") < 20);
 
       return !_.isEmpty(selectedRanks) && <LoadMoreButton 
         onClick={() => this.loadMore(selectedRanks, isWeekly, direction)}
