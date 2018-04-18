@@ -46,7 +46,8 @@ class Form extends Component {
     const headerText = {
       email: 'what\'s your email?',
       account: 'create your account',
-      other: 'tell us about you'
+      other: 'tell us about you',
+      individual: 'create your account'
     }[type];
 
     const input = (key, placeholder, autocapitalize, long) => {
@@ -67,57 +68,78 @@ class Form extends Component {
 
     const emailContent = input('email', 'you@yourschool.edu', false, true);
 
-    const accountContent = (() => {
-      return <div style={{width:'380px',margin:'0 auto'}}>
-        <div style={{display:'flex',justifyContent:'space-between',marginBottom:'25px'}}>
-          <div style={{position:'relative'}}>
-            {inputTitle('firstName', 'first name')}
-            {input('firstName', 'First Name', true, false)}
-          </div>
-
-          <div style={{position:'relative'}}>
-            {inputTitle('lastName', 'last name')}
-            {input('lastName', 'Last Name', true, false)}
-          </div>          
+    const accountContent = <div style={{width:'380px',margin:'0 auto'}}>
+      <div style={{display:'flex',justifyContent:'space-between',marginBottom:'25px'}}>
+        <div style={{position:'relative'}}>
+          {inputTitle('firstName', 'first name')}
+          {input('firstName', 'First Name', true, false)}
         </div>
 
         <div style={{position:'relative'}}>
-          {inputTitle('password', 'password')}
-          {input('password', 'set password (at least 8 characters)', false, true)}
-        </div>
-      </div>
-    })();
-
-    const otherContent = (() => {
-      return <div style={{width:'380px',margin:'0 auto'}}>
-        <div style={{display:'flex',marginBottom:'25px',position:'relative'}}>
-          {inputTitle('role', 'role', true)}
-          <select
-            style={{width:'100%'}}
-            onChange={e => this.props.updated('role', e.target.value)}
-            value={data['role']}>
-            {_.map(ROLES, role => <option key={role}>{role}</option>)}
-          </select>
-        </div>
-
-        <div style={{display:'flex',justifyContent:'space-between',marginBottom:'25px'}}>
-          <div style={{position:'relative'}}>
-            {inputTitle('schoolName', 'school name')}
-            {input('schoolName', 'school name', true, false)}
-          </div>
-
-          <div style={{position:'relative'}}>
-            {inputTitle('schoolZip', 'school zip')}
-            {input('schoolZip', '#####', true, false)}
-          </div>          
+          {inputTitle('lastName', 'last name')}
+          {input('lastName', 'Last Name', true, false)}
         </div>          
       </div>
-    })();    
+
+      <div style={{position:'relative'}}>
+        {inputTitle('password', 'password')}
+        {input('password', 'set password (at least 8 characters)', false, true)}
+      </div>
+    </div>;
+
+    const otherContent = <div style={{width:'380px',margin:'0 auto'}}>
+      <div style={{display:'flex',marginBottom:'25px',position:'relative'}}>
+        {inputTitle('role', 'role', true)}
+        <select
+          style={{width:'100%'}}
+          onChange={e => this.props.updated('role', e.target.value)}
+          value={data['role']}>
+          {_.map(ROLES, role => <option key={role}>{role}</option>)}
+        </select>
+      </div>
+
+      <div style={{display:'flex',justifyContent:'space-between',marginBottom:'25px'}}>
+        <div style={{position:'relative'}}>
+          {inputTitle('schoolName', 'school name')}
+          {input('schoolName', 'school name', true, false)}
+        </div>
+
+        <div style={{position:'relative'}}>
+          {inputTitle('schoolZip', 'school zip')}
+          {input('schoolZip', '#####', true, false)}
+        </div>          
+      </div>          
+    </div>;
+
+    const individualAccountContent = <div style={{width:'380px',margin:'0 auto'}}>
+      <div style={{display:'flex',justifyContent:'space-between',marginBottom:'25px'}}>
+        <div style={{position:'relative'}}>
+          {inputTitle('firstName', 'first name')}
+          {input('firstName', 'First Name', true, false)}
+        </div>
+
+        <div style={{position:'relative'}}>
+          {inputTitle('lastName', 'last name')}
+          {input('lastName', 'Last Name', true, false)}
+        </div>          
+      </div>
+
+      <div style={{position:'relative',marginBottom:'25px'}}>
+        {inputTitle('email', 'email')}
+        {input('email', 'you@email.com', false, true)}
+      </div>
+
+      <div style={{position:'relative'}}>
+        {inputTitle('password', 'password')}
+        {input('password', 'set password (at least 8 characters)', false, true)}
+      </div>
+    </div>;
 
     const content = {
       email: emailContent,
       account: accountContent,
-      other: otherContent
+      other: otherContent,
+      individual: individualAccountContent
     }[type];
 
     return (
