@@ -32,23 +32,6 @@ import {
 const START_DATE = "2018-5-1";
 const TIME_UNTIL_START = moment().to(START_DATE).replace("in ","");
 
-const seed = [
-  {
-    firstName: "ben",
-    lastName: "burn",
-    points: 0,
-    rank: 1,
-    school: "harvard"
-  },
-  {
-    firstName: "akiva",
-    lastName: "sauce",
-    points: 0,
-    rank: 1,
-    school: "brown"
-  },  
-]
-
 class Championships extends Component {
   constructor(props) {
     super(props);
