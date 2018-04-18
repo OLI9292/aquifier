@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
-import { media } from '../../Library/Styles/index';
+import { color, media } from '../../Library/Styles/index';
 import background from '../../Library/Images/header-bg.png';
 
 class Nav extends Component {
@@ -21,10 +21,12 @@ class Nav extends Component {
     } = this.props;
 
     const link = _path => {
-      return <Link key={_path} to={_path}>
-        <LinkText>
+      const highlight = _path === "/championships";
+      const style = highlight ? {backgroundColor:"white",borderRadius:"5px",padding:"5px 10px"} : {};
+      return <Link key={_path} to={_path} style={style}>
+        <LinkText highlight={highlight}>
           {_path.substring(1).replace('-',' ').toUpperCase()}
-          <Highlight show={path === _path} />
+          <Highlight show={path === _path} highlight={highlight} />
         </LinkText>
       </Link>
     }
@@ -123,7 +125,7 @@ const LinkText = styled.div`
   position: relative;
   cursor: pointer;
   display: inline-block;
-  color: black;
+  color: ${props => props.highlight ? color.green : "black"};
   text-transform: uppercase;
   font-size: 0.9em;
 `
@@ -132,7 +134,7 @@ const Highlight = styled.div`
   display: ${props => props.show ? '' : 'none'};
   width: 100%;
   height: 2px;
-  background-color: black;
+  background-color: ${props => props.highlight ? color.green : "black"};
   position: absolute;
   margin-top: -22px;
   border-radius: 1px;
