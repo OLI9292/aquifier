@@ -263,6 +263,19 @@ export const fetchUser = (id, session, updateState) => ({
   updateState: updateState
 })
 
+export const createUserAction = data => (dispatch, getState) => dispatch(createUser(data))
+
+export const createUser = data => ({
+  [CALL_API]: {
+    api: 'main',
+    data: data,
+    endpoint: 'user?login=true',
+    method: 'POST',
+    schema: Schemas.SESSION,
+    types: [ USER_REQUEST, USER_SUCCESS, USER_FAILURE ]    
+  }
+})
+
 export const loginUserAction = data => (dispatch, getState) => dispatch(loginUser(data))
 
 export const LOGIN_REQUEST = 'LOGIN_REQUEST'

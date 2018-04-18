@@ -17,7 +17,10 @@ import AddStudents from './addStudents';
 import { shouldRedirect } from '../../Library/helpers';
 import { color } from '../../Library/Styles/index';
 
-import { createClassAction } from '../../Actions/index';
+import {
+  createClassAction,
+  createUserAction
+} from '../../Actions/index';
 
 import {
   BackArrow,
@@ -27,6 +30,27 @@ import {
   UserTypeButton,
   UserTypeText
 } from './components';
+
+const USER_TYPES = [
+  { 
+    name: "Teacher",
+    color: color.warmYellow,
+    darkColor: "#c18602",
+    image: "teacher-icon.png"
+  },
+  { 
+    name: "Individual",
+    color: color.red,
+    darkColor: "#dd3737",
+    image: "individual-icon.png"
+  },
+  { 
+    name: "Administator",
+    color: color.babyBlue,
+    darkColor: "#3f81e6",
+    image: "administrator-icon.png"
+  }
+];
 
 class SignUp extends Component {
   constructor(props) {
@@ -73,10 +97,14 @@ class SignUp extends Component {
     return students.concat(teacher);
   }
 
-  slackMessage(data) {
-    return `${data.firstName} ${data.lastName} ` +
-    `(Role: ${get(data, 'role')}, School: ${get(data, 'schoolName')}) ` +
-    `signed up a class of ${data.students.length}.`;
+  slackMessage(data, teacher = true) {
+    return teacher
+      ? 
+      `${data.firstName} ${data.lastName} ` +
+      `(Role: ${get(data, 'role')}, School: ${get(data, 'schoolName')}) ` +
+      `signed up a class of ${data.students.length}.`
+      :
+      `${data.firstName} ${data.lastName} just signed up.`;
   }
 
   createClass = async data => {
@@ -91,7 +119,8 @@ class SignUp extends Component {
 
     // Set key in sessionStorage so success redirect goes to /welcome
     sessionStorage.setItem('justSignedUp', 'true');
-    const result = await this.props.dispatch(createClassAction(this.createClassParams(data)));
+    const params = this.createClassParams(data);
+    const result = await this.props.dispatch(createClassAction(params));
     this.setState({ isNetworking: false });
 
     if (result.error) {
@@ -103,10 +132,42 @@ class SignUp extends Component {
     }
   }
 
+  createIndividual = async data => {
+    const error = this.validate("individual", data);
+    if (error) { this.setState({ error }); return; }
+
+    Firebase.sendForm(_.extend({}, data, { message: this.slackMessage(data), date: Date.now() }), false);
+
+    this.setState({ isNetworking: true });
+
+    const fields = ["firstName", "lastName", "email", "password"];
+    const params = _.extend(_.pick(data, fields), { signUpMethod: "individualSignUp" });
+
+    const result = await this.props.dispatch(createUserAction(params));
+    this.setState({ isNetworking: false });
+
+    if (result.error) {
+      this.setState({ error: result.error.includes('email_1 dup key')
+        ? 'Email already exists.'
+        : 'Error creating user.' }); 
+    } else if (result.response.entities) {
+      LocalStorage.setSession(result.response.entities.session);
+    }
+  }
+
   next() {
-    const { currentStep, data, isNetworking } = this.state;
+    const { 
+      currentStep,
+      data,
+      isNetworking
+    } = this.state;
+
     if (currentStep === 4 && !isNetworking) {
+      if (isNetworking) { return; }
       this.createClass(data);
+    } else if (currentStep === "individual") {
+      if (isNetworking) { return; }
+      this.createIndividual(data);
     } else {
       const error = this.validate(currentStep, data);
       const state = error ? { error: error } : { currentStep: currentStep + 1, error: undefined };
@@ -118,7 +179,7 @@ class SignUp extends Component {
     if (role === "Teacher") {
       this.setState({ currentStep: 1 });
     } else if (role === "Individual") {
-
+      this.setState({ currentStep: "individual" });
     } else if (role === "Administator") {
       this.setState({ redirect: "/start-free-trial"});
     }
@@ -127,11 +188,11 @@ class SignUp extends Component {
   validate(step, data) {
     const { email, firstName, lastName, password, students } = data;
     
-    if (step === 1 && (/\S+@\S+\.\S+/.test(email) === false)) {
+    if ([1, "individual"].includes(step) && (/\S+@\S+\.\S+/.test(email) === false)) {
       return 'Please enter a valid email.';
     }
 
-    if (step === 2) {
+    if ([2, "individual"].includes(step)) {
       if (!firstName)             { return 'Please enter a first name.'; }
       if (!lastName)              { return 'Please enter a last name.'; }
       if (password.length < 8 ||
@@ -166,30 +227,24 @@ class SignUp extends Component {
       key={name}
       onClick={() => this.signUpAs(name)}>
       <img
-        style={{width:"65%",height:"auto",marginTop:"40px"}}
+        style={{width:"80%",height:"auto",marginTop:"35px"}}
         src={require(`../../Library/Images/${image}`)} />
       <UserTypeText color={darkColor}>
         {name}
       </UserTypeText>
     </UserTypeButton>;
 
-    const userTypes = [
-      { name: "Teacher", color: color.warmYellow, darkColor: "#c18602", image: "teacher-icon.png" },
-      { name: "Individual", color: color.red, darkColor: "#dd3737", image: "individual-icon.png" },
-      { name: "Administator", color: color.babyBlue, darkColor: "#3f81e6", image: "administrator-icon.png" }
-    ];
-
     const userTypeComponent = <div>
       <Header.small>
         wordcraft
       </Header.small>
 
-      <p style={{fontSize:"1.2em"}}>
+      <p style={{fontSize:"1.3em"}}>
         Sign up for Wordcraft as a...
       </p>
 
       <div style={{display:"flex",justifyContent:"space-around",width:"95%",margin:"0 auto"}}>
-        {_.map(userTypes, data => userTypeButton(..._.values(data)))}
+        {_.map(USER_TYPES, data => userTypeButton(..._.values(data)))}
       </div>
     </div>;
 
@@ -207,7 +262,8 @@ class SignUp extends Component {
         0: 'userType',
         1: 'email',
         2: 'account',
-        3: 'other'
+        3: 'other',
+        individual: "individual"
       }[currentStep];
 
       return <Form
@@ -227,7 +283,7 @@ class SignUp extends Component {
         
       <ModalContainer style={{textAlign:'center'}}>
         <BackArrow
-          hide={isImporting || currentStep === 0}
+          hide={isImporting || [0, "individual"].includes(currentStep)}
           onClick={this.back.bind(this)}
           src={require('../../Library/Images/icon-back-arrow.png')} />        
 
@@ -235,7 +291,7 @@ class SignUp extends Component {
           src={require('../../Library/Images/exit-gray.png')}
           onClick={() => this.props.displaySignUp(false)}/>            
 
-        <StepsContainer hide={isImporting || currentStep === 0}>
+        <StepsContainer hide={isImporting || [0, "individual"].includes(currentStep)}>
           {_.map([1,2,3,4], step)}
         </StepsContainer>
 
@@ -244,7 +300,7 @@ class SignUp extends Component {
         <Button.medium
           style={{display:(isImporting || currentStep === 0) ? 'none' : 'inline-block',margin:'20px 0px 20px 0px'}} 
           onClick={this.next.bind(this)}>
-          {currentStep === 4 ? 'finish' : 'next'}
+          {[4, "individual"].includes(currentStep) ? 'finish' : 'next'}
         </Button.medium>
 
         {
