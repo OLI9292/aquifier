@@ -8,6 +8,7 @@ import styled from 'styled-components';
 import About from '../About/index';
 import Admin from '../Admin/index';
 import Footer from '../Footer/index';
+import Championships from '../Championships/index';
 import GameManager from '../Game/gameManager';
 import GameSelect from '../GameSelect/index';
 import GameSetup from '../GameSetup/index';
@@ -62,6 +63,7 @@ class App extends Component {
             <Route exact path='/admin'            component={contained('admin')} />
             <Route exact path='/team'             component={contained('about')} />            
             <Route exact path='/terms'            component={contained('terms')} />
+            <Route exact path='/championships'    component={contained('championships')} />            
             <Route exact path='/contact'          component={contained('about')} />            
             <Route exact path='/leaderboard/:id'  component={contained('leaderboard')} />
             <Route exact path='/leaderboards'     component={contained('leaderboards')} />
@@ -96,20 +98,21 @@ class Container extends Component {
   render() {
     const Component = () => {
       switch (this.props.component) {
-        case 'about':        return <About />
-        case 'admin':        return <Admin />
-        case 'gameSelect':   return <GameSelect />
-        case 'gameSetup':    return <GameSetup />
-        case 'infoForm':     return <InfoForm />
-        case 'leaderboard':  return <Leaderboard />
-        case 'leaderboards': return <Leaderboards />
-        case 'myClass':      return <MyClass />
-        case 'privacy':      return <Text />
-        case 'profile':      return <Profile />
-        case 'terms':        return <Text />
-        case 'notFound':     return <NotFound />
-        case 'welcome':      return <Welcome />
-        default:             return <Home />
+        case 'about':         return <About />
+        case 'admin':         return <Admin />
+        case 'championships': return <Championships />
+        case 'gameSelect':    return <GameSelect />
+        case 'gameSetup':     return <GameSetup />
+        case 'infoForm':      return <InfoForm />
+        case 'leaderboard':   return <Leaderboard />
+        case 'leaderboards':  return <Leaderboards />
+        case 'myClass':       return <MyClass />
+        case 'privacy':       return <Text />
+        case 'profile':       return <Profile />
+        case 'terms':         return <Text />
+        case 'notFound':      return <NotFound />
+        case 'welcome':       return <Welcome />
+        default:              return <Home />
       }
     }
 

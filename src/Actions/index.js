@@ -263,6 +263,22 @@ export const fetchUser = (id, session, updateState) => ({
   updateState: updateState
 })
 
+export const COMPETITOR_REQUEST = 'COMPETITOR_REQUEST'
+export const COMPETITOR_SUCCESS = 'COMPETITOR_SUCCESS'
+export const COMPETITOR_FAILURE = 'COMPETITOR_FAILURE'
+
+export const fetchCompetitionAction = () => (dispatch, getState) => dispatch(fetchCompetition())
+
+export const fetchCompetition = () => ({
+  [CALL_API]: {
+    api: 'main',
+    endpoint: 'auth/user?inSpringCompetition=true',
+    method: 'GET',
+    schema: Schemas.COMPETITOR_ARRAY,
+    types: [ COMPETITOR_REQUEST, COMPETITOR_SUCCESS, COMPETITOR_FAILURE ]    
+  }
+})
+
 export const createUserAction = data => (dispatch, getState) => dispatch(createUser(data))
 
 export const createUser = data => ({

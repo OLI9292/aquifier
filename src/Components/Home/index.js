@@ -35,6 +35,9 @@ class Home extends Component {
     this.redirectIfLoggedIn(this.props);
     window.addEventListener('resize', throttle(this.checkWindowSize, 1000));
     this.checkWindowSize();
+    if (window.location.search.includes("?r=")) {
+      this.displaySignUp();
+    }
   }
 
   componentWillUnmount() {
