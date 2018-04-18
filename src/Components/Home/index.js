@@ -32,12 +32,12 @@ class Home extends Component {
   }
 
   componentDidMount() {
-    if (window.location.search.includes("?r=")) {
-      this.displaySignUp();
-    }
     this.redirectIfLoggedIn(this.props);
     window.addEventListener('resize', throttle(this.checkWindowSize, 1000));
     this.checkWindowSize();
+    if (window.location.search.includes("?r=")) {
+      this.displaySignUp();
+    }
   }
 
   componentWillUnmount() {
