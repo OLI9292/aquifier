@@ -54,6 +54,7 @@ const successSchema = new schema.Entity('Success')
 const wordSchema = new schema.Entity('words', {}, { idAttribute: '_id' })
 const testSchema = new schema.Entity('test', {})
 const imageScheme = new schema.Entity('image')
+const competitorSchema = new schema.Entity('competitors', {}, { idAttribute: '_id' })
 const imageKeySchema = new schema.Entity('imageKey')
 
 // Schemas for API responses.
@@ -68,6 +69,8 @@ export const Schemas = {
   STUDENT_ARRAY: studentsSchema,
   SUCCESS: successSchema,
   USER: userSchema,
+  COMPETITOR: competitorSchema,
+  COMPETITOR_ARRAY: [competitorSchema],
   WORD_ARRAY: [wordSchema],
   TEST: testSchema,
   IMAGE: imageScheme,

@@ -136,12 +136,15 @@ class SignUp extends Component {
     const error = this.validate("individual", data);
     if (error) { this.setState({ error }); return; }
 
+    return
+
     Firebase.sendForm(_.extend({}, data, { message: this.slackMessage(data, false), date: Date.now() }));
 
     this.setState({ isNetworking: true });
 
-    const fields = ["firstName", "lastName", "email", "password"];
-    const params = _.extend(_.pick(data, fields), { signUpMethod: "individualSignUp" });
+    const params = _.extend(_.pick(data, ["firstName", "lastName", "email", "password"]), { signUpMethod: "individualSignUp" });
+
+    if (window.location.search.includes("?r=")) { params.referrer = window.location.search.replace("?r=",""); }
 
     const result = await this.props.dispatch(createUserAction(params));
     this.setState({ isNetworking: false });
@@ -202,6 +205,15 @@ class SignUp extends Component {
     if (step === 4) {
       if (students.length < 2)    { return 'At least 2 students are required to create a class.'; }
       if (students.length > 35)   { return 'Max class size is 35.'; }
+    }
+
+    if (step === "individual" && window.location.search.includes("?r=")) {
+      // For hackerz
+      const referrer = window.location.search.replace("?r=","");
+      const loggedOutUser = LocalStorage.getUserId();
+      if (referrer === loggedOutUser) {
+        return 'Please use the referral link to sign up a new user.';
+      }
     }
   }
 

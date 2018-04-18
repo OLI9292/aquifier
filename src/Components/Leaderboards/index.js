@@ -10,6 +10,7 @@ import { fetchLeaderboardsAction } from '../../Actions/index';
 import star from '../../Library/Images/star-yellow.png';
 import { Container } from '../Common/container';
 import Header from '../Common/header';
+import { initials } from '../../Library/helpers'
 
 import {
   DropdownContainer,
@@ -67,11 +68,7 @@ class Leaderboards extends Component {
       : (get(this.props.session, "user") === userId);
   }
 
-  initials(f, l) {
-    return (l ? `${f.charAt(0)}${l.charAt(0)}` : f.charAt(0)).toUpperCase();
-  }
-
-  render() {
+  render() {    
     const {
       isWeekly,
       isClass,
@@ -99,7 +96,7 @@ class Leaderboards extends Component {
       </td>
       <td style={{textAlign:'left',fontFamily:'BrandonGrotesque',color:color.gray2}}>
         <h3>
-          {isClass ? `${rank.firstName} ${rank.lastName}` : this.initials(rank.firstName, rank.lastName)}
+          {isClass ? `${rank.firstName} ${rank.lastName}` : initials(rank.firstName, rank.lastName)}
         </h3>
       </td>
       <td style={{textAlign:'left',fontFamily:'BrandonGrotesque',color:color.gray2}}>

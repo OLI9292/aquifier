@@ -78,3 +78,5 @@ export const getOrdinalPosition = int => {
   const v = int % 100;
   return int+(s[(v-20)%10]||s[v]||s[0]);
 }
+
+export const initials = (f, l) => (l ? `${f.charAt(0)}${l.charAt(0)}` : f.charAt(0)).toUpperCase()

@@ -33,7 +33,7 @@ class Nav extends Component {
       ? ['/my-district','/leaderboards']
         : isTeacher
           ? ['/setup-game','/my-class','/leaderboards']
-          : ['/home','/profile','/leaderboards'];
+          : ['/home','/profile','/leaderboards', '/championships'];
 
     const links = (() => {
       return <LinksContainer loggedIn={loggedIn}>
@@ -106,7 +106,7 @@ const LeftLinksContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 300px;
+  width: 400px;
   margin-left: 25px;
 `
 
