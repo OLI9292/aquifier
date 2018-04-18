@@ -136,7 +136,7 @@ class SignUp extends Component {
     const error = this.validate("individual", data);
     if (error) { this.setState({ error }); return; }
 
-    Firebase.sendForm(_.extend({}, data, { message: this.slackMessage(data), date: Date.now() }), false);
+    Firebase.sendForm(_.extend({}, data, { message: this.slackMessage(data), date: Date.now() }, false));
 
     this.setState({ isNetworking: true });
 
