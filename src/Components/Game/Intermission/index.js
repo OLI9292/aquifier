@@ -2,12 +2,14 @@ import _ from 'underscore';
 import { connect } from 'react-redux'
 import React, { Component } from 'react';
 import CircularProgressbar from 'react-circular-progressbar';
+import { Redirect } from 'react-router';
 import { Link } from 'react-router-dom';
 import 'react-circular-progressbar/dist/styles.css';
 import styled from 'styled-components';
-import { color, media } from '../../../Library/Styles/index';
 import get from 'lodash/get';
 
+import { shouldRedirect } from '../../../Library/helpers';
+import { color, media } from '../../../Library/Styles/index';
 import yellowStar from '../../../Library/Images/icon-star-yellow.png';
 import grayStar from '../../../Library/Images/icon-star-gray.png';
 import exitPng from '../../../Library/Images/exit-gray.png';
@@ -34,35 +36,23 @@ import {
 
 const TABLE_FILTERS = {
   Discovered: stat => stat.level === 1,
-  Improved: stat => stat.level > 1 && stat.level < 10,
-  Mastered: stat => stat.level === 10,
+  Improved: stat => stat.level > 1 && stat.level < 9,
+  Mastered: stat => stat.level === 9,
 };
 
 class Intermission extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      stats: [],
       rankUpdates: {}
     }
   }
 
   componentDidMount() {
     this.loadLeaderboard(this.props);
-
-    let {
-      stats,
-      progress
-    } = this.props;
-
-    stats = _.filter(stats, stat => stat.correct);
-
-    progress = {
-      percentage: 100 * progress[0] / progress[1],
-      text: progress[0] + "/" + progress[1]
-    }
-
-    this.setState({ stats: stats, progress: progress });
+    const [p1, p2] = get(this.props.level, "progress") || [0,1];
+    const progress = { p1: p1, p2: p2, percentage: 100 * p1 / p2, text: p1 + "/" + p2 };
+    this.setState({ progress });
   }
 
   componentWillReceiveProps(nextProps) {
@@ -100,16 +90,37 @@ class Intermission extends Component {
   loadLeaderboard(props) {
     const userId = get(props.user, "_id");
     const classId = get(_.first(get(props.user, "classes")), "id");
-    if (!userId || !classId || !props.session) { return; }
-    const query = `userId=${userId}&classId=${classId}&onlyUser=true`;
+    if (!userId || !props.session || this.state.loadedLeaderboard) { return; }
+    this.setState({ loadedLeaderboard: true, isInClass: _.isString(classId) });
+    let query = `userId=${userId}&onlyUser=true`;
+    if (classId) { query += `&classId=${classId}`; }
     this.props.dispatch(fetchLeaderboardsAction(query, props.session));    
   }
 
+  nextRound() {
+    const { level, levels } = this.props;
+    const { p1, p2 } = this.state.progress;
+
+    let redirect, query
+
+    if (p1 < p2) {
+      redirect = window.location.pathname.replace(`stage=${p1}`,`stage=${p1+1}`);
+      query = redirect.replace('/play/','')
+    } else {
+      const nextLevel = _.find(levels, l => l.type === 'train' && l.ladder === (level.ladder + 1));
+      query = nextLevel && `id=${nextLevel._id}&stage=1&type=train`;
+      redirect = nextLevel ? `/play/${query}` : '/home';
+    }
+
+    this.setState({ redirect }, () => { if (query) { this.props.loadAllData(query); } });
+  }
+
   render() {
+    if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }  
+
     const {
-      stats,
       rankUpdates,
-      mobile
+      progress
     } = this.state;
 
     const row = stat => <tr key={stat.word} style={{display:"flex",alignItems:"center"}}>
@@ -126,7 +137,7 @@ class Intermission extends Component {
     </tr>;
 
     const tables = _.compact(_.values(_.mapObject(TABLE_FILTERS, (filter, name) => {
-      const filtered = _.sortBy(_.filter(stats, filter), stat => stat.word);
+      const filtered = _.sortBy(_.filter(this.props.stats, filter), stat => stat.word);
       return filtered.length && <div key={name}>
         <TableHeader>
           {`${filtered.length} Word${filtered.length === 1 ? "" : "s"} ${name}`}
@@ -158,27 +169,30 @@ class Intermission extends Component {
               <CircularProgressbar
                 strokeWidth={10}
                 styles={{path: { stroke: color.green }}}
-                percentage={50}
-                textForPercentage={() => "1/2"}
+                percentage={get(progress, "percentage")}
+                textForPercentage={() => get(progress, "text")}
                 classForPercentage={() => "circularProgressbarPercentage"} />
             </CircularProgressbarContainer>
             <LevelProgressHeader>
               round complete!
             </LevelProgressHeader>
           </LevelProgressContainer>
-          <LeaderboardProgressContainer>
-            <LeaderboardText>
+
+          {rankUpdates.class || rankUpdates.earth && <LeaderboardProgressContainer>
+            {rankUpdates.class && <LeaderboardText>
               <img
                 style={{height:"35px",width:"35px",marginRight:"10px"}}
                 src={require("../../../Library/Images/icon-house.png")} />
-              {rankUpdates.class && rankText(rankUpdates.class, color.red)}
-            </LeaderboardText>
-            <LeaderboardText>
+              {rankText(rankUpdates.class, color.red)}
+            </LeaderboardText>}
+
+            {rankUpdates.earth && <LeaderboardText>
               <img
                 style={{height:"35px",width:"35px",marginRight:"10px"}}
                 src={require("../../../Library/Images/icon-earth.png")} />
               {rankUpdates.earth && rankText(rankUpdates.earth, color.blue)}
-            </LeaderboardText>
+            </LeaderboardText>}
+
             <CTA>
               Ready to compete internationally and win prizes? <Link
                 to={'/championships'}
@@ -186,7 +200,7 @@ class Intermission extends Component {
                 Click here
               </Link> 
             </CTA>
-          </LeaderboardProgressContainer>
+          </LeaderboardProgressContainer>}
         </TopContainer>
 
         <TablesContainer>
@@ -194,7 +208,7 @@ class Intermission extends Component {
         </TablesContainer>
 
         <Button
-          onClick={() => this.setState({ redirect: "/home" })}>
+          onClick={this.nextRound.bind(this)}>
           next round
         </Button>
       </Container>

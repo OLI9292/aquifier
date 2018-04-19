@@ -150,7 +150,7 @@ class Interlude extends Component {
       if (this.props.mobile) { imgStyle.margin = "20px 0px"; }
 
       return <div style={{height:"100%",display:"flex",alignItems:"center"}}>
-        <FactoidContainer hide={!this.props.display} mobile={this.props.mobile} id="factoidContainer">
+        <FactoidContainer hide={!this.props.display} isobile={this.props.mobile} id="factoidContainer">
           {
             hasImage && 
             <img
@@ -176,7 +176,6 @@ class Interlude extends Component {
     const imageContent = <ImageContainer>
       <img
         alt={"word"}
-        mobile={this.props.mobile}
         style={{height:"auto",width:"auto",maxWidth:"100%",maxHeight:"100%"}}
         src={imageSource} />
     </ImageContainer>;

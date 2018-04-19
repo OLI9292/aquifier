@@ -95,6 +95,7 @@ export const Bottom = styled.div`
   align-items: center;
   max-width: 1100px;
   justify-content: space-between;
+  margin: 0 auto;
   ${media.phone`
     font-size: 1.25em;
   `}   

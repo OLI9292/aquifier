@@ -36,7 +36,7 @@ class Game extends Component {
     super(props);
 
     this.state = {
-      questionIndex: 0,
+      questionIndex: 6,
       hintCount: 0,
       guessed: {},
       prompt: 'normal',

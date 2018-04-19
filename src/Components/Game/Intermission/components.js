@@ -13,16 +13,17 @@ export const ExitImg = styled.img`
 `
 
 export const Container = styled.div`
-  max-width: 900px;
+  max-width: 1100px;
   margin: 0 auto;
   text-align: center;
+  position: relative;
   ${media.phone`
     font-size: 0.85em;
   `};    
 `
 
 export const TopContainer = styled.div`
-  margin: 0px 50px;
+  margin: 0px 150px;
   display: flex;
   justify-content: space-between;
   ${media.phone`
@@ -63,15 +64,12 @@ export const CircularProgressbarContainer = styled.div`
 `
 
 export const LeaderboardProgressContainer = styled.div`
-  background-color: ${color.lightestGray};
   font-family: BrandonGrotesqueBold;
   border-radius: 0px 0px 20px 20px;
   color: ${color.gray2};
   font-size: 1.2em;
   width: 425px;
-  height: 175px;
   ${media.phone`
-    height: 125px;
     width: 100%;
     border-radius: 0;
   `};   
@@ -80,9 +78,11 @@ export const LeaderboardProgressContainer = styled.div`
 export const LeaderboardText = styled.div`
   display: flex;
   align-items: center;
-  margin-left: 75px;
+  padding-left: 75px;
+  background-color: ${color.lightestGray};
   ${media.phone`
     margin: 0 0 0 -10px;
+    padding: 0;
     height: 50px;
     justify-content: center;
   `};   
@@ -106,7 +106,7 @@ export const CTA = styled.p`
 export const TablesContainer = styled.div`
   display: flex;
   justify-content: space-around;
-  margin: 30px 0px 60px 0px;
+  margin: 20px 0px 60px 0px;
   ${media.phone`
     width: 90%;
     margin: 0 auto;

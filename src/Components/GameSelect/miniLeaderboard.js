@@ -46,9 +46,10 @@ class MiniLeaderboard extends Component {
   loadLeaderboard(props) {
     const userId = get(props.user, "_id");
     const classId = get(_.first(get(props.user, "classes")), "id");
-    if (!userId || !classId || !props.session || this.state.loadedLeaderboard) { return; }
-    this.setState({ loadedLeaderboard: true });
-    const query = `userId=${userId}&classId=${classId}&onlyUser=true`;
+    if (!userId || !props.session || this.state.loadedLeaderboard) { return; }
+    this.setState({ loadedLeaderboard: true, isInClass: _.isString(classId) });
+    let query = `userId=${userId}&onlyUser=true`;
+    if (classId) { query += `&classId=${classId}`; }
     this.props.dispatch(fetchLeaderboardsAction(query, props.session));    
   }
 
@@ -80,7 +81,8 @@ class MiniLeaderboard extends Component {
           Leaderboards
         </Header>
         <ul style={{listStyle:'none',margin:'0 auto',width:'50%',padding:'0px 0px 10px 0px'}}>
-          {_.map(STATS, stat)}
+          {this.state.isInClass && stat(STATS[0])}
+          {stat(STATS[1])}
         </ul>
       </SidebarContainer>
     );

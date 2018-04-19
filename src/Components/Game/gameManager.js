@@ -29,10 +29,14 @@ class GameManager extends Component {
 
   componentDidMount() {
     this.setState({ mobile: mobileCheck() });
+    this.loadAllData(this.props.settings);
+  }
+
+  loadAllData(settingsQuery) {
     this.props.dispatch(removeEntityAction('questions'));    
 
     const { user, levels } = this.props;
-    const settings = queryString.parse(this.props.settings);
+    const settings = queryString.parse(settingsQuery);
     const notYetStarted = settings.type === 'multiplayer';
 
     if (!levels.length) { this.props.dispatch(fetchLevelsAction()); }
@@ -40,29 +44,17 @@ class GameManager extends Component {
     this.setState({
       settings: settings,
       type: settings.type,
-      notYetStarted: notYetStarted 
+      notYetStarted: notYetStarted,
+      intermission: false,
+      stats: null,
+      questions: null,
+      loadingQuestions: false,
+      level: null
     }, () => {
       if (settings.type === 'demo') { this.setState({ loading: true }, () => { this.setupGame(); }); }
       else if (user)                { this.setState({ loading: true }, () => { this.setupGame(user); }); }        
     })
   } 
-
-  componentWillUnmount() {
-    const { settings, gameOver, stats } = this.state;
-    const { session, user } = this.props;
-
-    if (settings.type === 'multiplayer' && !gameOver) {
-      this.exitMultiplayerGame(settings.id, user);
-    }
-
-    if (settings.type !== 'demo' && !gameOver) {
-      this.saveStats(session, stats);
-    }
-  }  
-
-  exitMultiplayerGame(accessCode, user) {
-    Firebase.refs.games.child(accessCode).child('players').child(this.username(user)).remove();
-  }
 
   componentWillReceiveProps(nextProps) {
     const {
@@ -81,6 +73,23 @@ class GameManager extends Component {
     if (nextProps.levels.length && !level && settings) {
       this.setLevelName(nextProps, settings);
     }
+  }  
+
+  componentWillUnmount() {
+    const { settings, gameOver, stats } = this.state;
+    const { session, user } = this.props;
+
+    if (settings.type === 'multiplayer' && !gameOver) {
+      this.exitMultiplayerGame(settings.id, user);
+    }
+
+    if (settings.type !== 'demo' && !gameOver) {
+      this.saveStats(session, stats);
+    }
+  }  
+
+  exitMultiplayerGame(accessCode, user) {
+    Firebase.refs.games.child(accessCode).child('players').child(this.username(user)).remove();
   }
 
   recordQuestion(question, correct, timeSpent, gameState) {
@@ -185,6 +194,7 @@ class GameManager extends Component {
     if (params && !this.state.loadingQuestions) {
       this.setState({ loadingQuestions: true }, () => {
         const query = queryString.stringify(params);
+        console.log(query)
         this.props.dispatch(fetchQuestionsAction(query));      
       });
     }
@@ -222,9 +232,10 @@ class GameManager extends Component {
     return this.state.intermission
       ?
       <Intermission
-        mobile={this.state.mobile}
-        progress={get(this.state.level, "progress")}
-        stats={this.state.stats} />
+        loadAllData={settings => this.loadAllData(settings)}
+        level={this.state.level}
+        levels={this.props.levels}
+        stats={_.filter(this.state.stats, stat => stat.correct)} />
       :
       <Game
         factoids={this.props.factoids}
