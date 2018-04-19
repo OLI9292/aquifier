@@ -93,10 +93,11 @@ class Profile extends Component {
   loadLeaderboard(props) {
     const userId = get(props.user, "_id");
     const classId = get(_.first(get(props.user, "classes")), "id");
-    if (!userId || !classId || !props.session || this.state.loadedLeaderboard) { return; }
-    this.setState({ loadedLeaderboard: true });
-    const query = `userId=${userId}&classId=${classId}&onlyUser=true`;
-    this.props.dispatch(fetchLeaderboardsAction(query, props.session));  
+    if (!userId || !props.session || this.state.loadedLeaderboard) { return; }
+    this.setState({ loadedLeaderboard: true, isInClass: _.isString(classId) });
+    let query = `userId=${userId}&onlyUser=true`;
+    if (classId) { query += `&classId=${classId}`; }
+    this.props.dispatch(fetchLeaderboardsAction(query, props.session));    
   }
 
   getPosition(ranks, attr) {
@@ -135,7 +136,7 @@ class Profile extends Component {
     const {
       school,
       words,
-      ranks
+      userRanks
     } = this.props;
 
     const definition = value => {
@@ -233,7 +234,8 @@ class Profile extends Component {
             src={largeBook}
             style={{width:'100%',height:'auto'}} />
           <BookStats id={'book'}>
-            <div style={{marginRight:'10px'}}>
+
+            {this.state.isInClass && <div style={{marginRight:'10px'}}>
               <img
                 alt={'school icon'}
                 src={iconSchool}
@@ -242,9 +244,9 @@ class Profile extends Component {
                 SCHOOL RANK
               </h3>                    
               <h1 style={{fontFamily:'EBGaramondSemiBold',color:color.red,fontSize:'2.25em',lineHeight:'10px'}}>
-                {this.getPosition(ranks, "allTimeClass")}
+                {this.getPosition(userRanks, "allTimeClass")}
               </h1>            
-            </div>
+            </div>}
 
             <div style={{marginRight:'10px'}}>
               <img
@@ -255,7 +257,7 @@ class Profile extends Component {
                 WORLD RANK
               </h3>                    
               <h1 style={{fontFamily:'EBGaramondSemiBold',color:color.mainBlue,fontSize:'2.25em',lineHeight:'10px'}}>
-                {this.getPosition(ranks, "allTimeEarth")}
+                {this.getPosition(userRanks, "allTimeEarth")}
               </h1>
             </div>
 
@@ -292,7 +294,7 @@ class Profile extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => ({
-  ranks: state.entities.ranks,
+  userRanks: state.entities.userRanks,
   school: _.first(_.values(state.entities.school)),
   session: state.entities.session,
   students: _.values(state.entities.students),

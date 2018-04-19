@@ -59,3 +59,14 @@ html, body, #root {
 .zopim {
   z-index: 100 !important;
 }
+
+.CircularProgressbar-path {
+  stroke-linecap: square !important;
+}
+
+.CircularProgressbar-text {
+  font-family: BrandonGrotesqueBold;
+  fill: #58595B !important;
+  dominant-baseline: central !important;
+  letter-spacing: 1px;
+}

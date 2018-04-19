@@ -27,7 +27,8 @@ class Leaderboards extends Component {
 
     this.state = {
       isWeekly: true,
-      isClass: true
+      isClass: true,
+      hideClass: false
     }
   }
 
@@ -42,11 +43,23 @@ class Leaderboards extends Component {
   loadInitialLeaderboard(user) {
     const userId = get(user, "_id");
     const classId = get(_.first(get(user, "classes")), "id");
-    if (!userId || !classId || this.state.loadedLeaderboard) { return; }
-    const isTeacher = user.isTeacher === true;
-    this.setState({ loadedLeaderboard: true });
-    const query = isTeacher ? `classId=${classId}` : `userId=${userId}&classId=${classId}`;
-    this.loadLeaderboard(query);
+    const isTeacher = get(user, "isTeacher") === true;
+    
+    let query
+
+    if (isTeacher && classId) {
+      query = `classId=${classId}`;
+    } else if (userId && !this.state.loadedLeaderboard) {
+      query = `userId=${userId}${classId ? `&classId=${classId}` : ''}`
+    }
+
+    if (query) {
+      this.setState({
+        loadedLeaderboard: true,
+        hideClass: !_.isString(classId),
+        isClass: _.isString(classId)
+      }, () => this.loadLeaderboard(query));  
+    }    
   }
 
   loadLeaderboard(query) {
@@ -72,7 +85,8 @@ class Leaderboards extends Component {
     const {
       isWeekly,
       isClass,
-      loadingMore
+      loadingMore,
+      hideClass
     } = this.state;
 
     const {
@@ -142,7 +156,7 @@ class Leaderboards extends Component {
 
         <DropdownContainer>
           <Dropdown 
-            choices={["My Class","Earth"]} 
+            choices={hideClass ? ["Earth"] : ["My Class","Earth"]} 
             handleSelect={group => this.setState({ isClass: group === "My Class" })}
             selected={isClass ? "My Class" : "Earth"} />
           <Dropdown

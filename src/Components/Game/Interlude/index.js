@@ -176,7 +176,6 @@ class Interlude extends Component {
     const imageContent = <ImageContainer>
       <img
         alt={"word"}
-        mobile={this.props.mobile}
         style={{height:"auto",width:"auto",maxWidth:"100%",maxHeight:"100%"}}
         src={imageSource} />
     </ImageContainer>;

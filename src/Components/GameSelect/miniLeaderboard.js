@@ -46,9 +46,10 @@ class MiniLeaderboard extends Component {
   loadLeaderboard(props) {
     const userId = get(props.user, "_id");
     const classId = get(_.first(get(props.user, "classes")), "id");
-    if (!userId || !classId || !props.session || this.state.loadedLeaderboard) { return; }
-    this.setState({ loadedLeaderboard: true });
-    const query = `userId=${userId}&classId=${classId}&onlyUser=true`;
+    if (!userId || !props.session || this.state.loadedLeaderboard) { return; }
+    this.setState({ loadedLeaderboard: true, isInClass: _.isString(classId) });
+    let query = `userId=${userId}&onlyUser=true`;
+    if (classId) { query += `&classId=${classId}`; }
     this.props.dispatch(fetchLeaderboardsAction(query, props.session));    
   }
 
@@ -59,7 +60,7 @@ class MiniLeaderboard extends Component {
 
   render() {
     const { 
-      ranks
+      userRanks
     } = this.props;
 
     const stat = data => <LeaderboardListItem key={data.slug}>
@@ -70,7 +71,7 @@ class MiniLeaderboard extends Component {
       <Stat 
         color={data.color}
         forLeaderboards={true}>
-        {this.getPosition(ranks, data.slug)}
+        {this.getPosition(userRanks, data.slug)}
       </Stat>
     </LeaderboardListItem>;
 
@@ -80,7 +81,8 @@ class MiniLeaderboard extends Component {
           Leaderboards
         </Header>
         <ul style={{listStyle:'none',margin:'0 auto',width:'50%',padding:'0px 0px 10px 0px'}}>
-          {_.map(STATS, stat)}
+          {this.state.isInClass && stat(STATS[0])}
+          {stat(STATS[1])}
         </ul>
       </SidebarContainer>
     );
@@ -88,7 +90,7 @@ class MiniLeaderboard extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => ({
-  ranks: state.entities.ranks,
+  userRanks: state.entities.userRanks,
   user: _.first(_.values(state.entities.user))
 })
 
