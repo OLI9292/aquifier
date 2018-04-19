@@ -135,7 +135,7 @@ class Profile extends Component {
     const {
       school,
       words,
-      ranks
+      userRanks
     } = this.props;
 
     const definition = value => {
@@ -242,7 +242,7 @@ class Profile extends Component {
                 SCHOOL RANK
               </h3>                    
               <h1 style={{fontFamily:'EBGaramondSemiBold',color:color.red,fontSize:'2.25em',lineHeight:'10px'}}>
-                {this.getPosition(ranks, "allTimeClass")}
+                {this.getPosition(userRanks, "allTimeClass")}
               </h1>            
             </div>
 
@@ -255,7 +255,7 @@ class Profile extends Component {
                 WORLD RANK
               </h3>                    
               <h1 style={{fontFamily:'EBGaramondSemiBold',color:color.mainBlue,fontSize:'2.25em',lineHeight:'10px'}}>
-                {this.getPosition(ranks, "allTimeEarth")}
+                {this.getPosition(userRanks, "allTimeEarth")}
               </h1>
             </div>
 
@@ -292,7 +292,7 @@ class Profile extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => ({
-  ranks: state.entities.ranks,
+  userRanks: state.entities.userRanks,
   school: _.first(_.values(state.entities.school)),
   session: state.entities.session,
   students: _.values(state.entities.students),

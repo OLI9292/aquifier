@@ -59,7 +59,7 @@ class MiniLeaderboard extends Component {
 
   render() {
     const { 
-      ranks
+      userRanks
     } = this.props;
 
     const stat = data => <LeaderboardListItem key={data.slug}>
@@ -70,7 +70,7 @@ class MiniLeaderboard extends Component {
       <Stat 
         color={data.color}
         forLeaderboards={true}>
-        {this.getPosition(ranks, data.slug)}
+        {this.getPosition(userRanks, data.slug)}
       </Stat>
     </LeaderboardListItem>;
 
@@ -88,7 +88,7 @@ class MiniLeaderboard extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => ({
-  ranks: state.entities.ranks,
+  userRanks: state.entities.userRanks,
   user: _.first(_.values(state.entities.user))
 })
 

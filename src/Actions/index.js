@@ -216,7 +216,7 @@ export const fetchLeaderboards = (query, session) => ({
     endpoint: `auth/leaderboard?${query}`,
     method: 'GET',    
     types: [ LEADERBOARDS_REQUEST, LEADERBOARDS_SUCCESS, LEADERBOARDS_FAILURE ],
-    schema: Schemas.LEADERBOARDS,
+    schema: Schemas[query.includes("onlyUser") ? "USER_RANKS" : "LEADERBOARDS"],
     session: session
   }
 })

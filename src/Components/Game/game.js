@@ -6,7 +6,7 @@ import get from 'lodash/get'
 import { Link } from 'react-router-dom';
 
 import { color } from '../../Library/Styles/index';
-import { caseInsEq, shouldRedirect, mobileCheck } from '../../Library/helpers';
+import { caseInsEq, shouldRedirect } from '../../Library/helpers';
 import LoadingSpinner from '../Common/loadingSpinner';
 
 import exitPng from '../../Library/Images/exit-gray.png';
@@ -49,7 +49,6 @@ class Game extends Component {
   }
 
   componentDidMount() {
-    this.setState({ mobile: mobileCheck() });    
     document.body.addEventListener('keydown', this.handleKeydown);
   }
 
@@ -246,9 +245,12 @@ class Game extends Component {
       questionIndex,
       question,
       questions,
-      glowIdx,
-      mobile
+      glowIdx
     } = this.state;
+
+    const {
+      mobile
+    } = this.props;
 
     const progressComponent = type => {
       switch (type) {

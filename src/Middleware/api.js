@@ -44,7 +44,10 @@ const callApi = (api, endpoint, schema, method, data, session) => {
 const factoidSchema = new schema.Entity('factoids', {}, { idAttribute: '_id' })
 const levelSchema = new schema.Entity('levels', {}, { idAttribute: '_id' })
 const questionSchema = new schema.Entity('questions')
+
 const rankSchema = new schema.Entity('ranks', {})
+const userRankSchema = new schema.Entity('userRanks', {})
+
 const rootSchema = new schema.Entity('roots', {}, { idAttribute: '_id' })
 const schoolSchema = new schema.Entity('school', {}, { idAttribute: '_id' })
 const userSchema = new schema.Entity('user', {}, { idAttribute: '_id' })
@@ -61,6 +64,7 @@ const imageKeySchema = new schema.Entity('imageKey')
 export const Schemas = {
   FACTOID_ARRAY: [factoidSchema],
   LEADERBOARDS: [rankSchema],
+  USER_RANKS: [userRankSchema],
   LEVEL_ARRAY: [levelSchema],
   QUESTION_ARRAY: questionSchema,
   ROOT_ARRAY: [rootSchema],

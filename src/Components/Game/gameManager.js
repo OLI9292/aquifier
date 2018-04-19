@@ -19,6 +19,7 @@ import {
 } from '../../Actions/index';
 
 import Game from './game';
+import Intermission from './Intermission/index';
 
 class GameManager extends Component {
   constructor(props) {
@@ -27,6 +28,7 @@ class GameManager extends Component {
   }
 
   componentDidMount() {
+    this.setState({ mobile: mobileCheck() });
     this.props.dispatch(removeEntityAction('questions'));    
 
     const { user, levels } = this.props;
@@ -53,7 +55,7 @@ class GameManager extends Component {
       this.exitMultiplayerGame(settings.id, user);
     }
 
-    if (settings.type !== 'demo') {
+    if (settings.type !== 'demo' && !gameOver) {
       this.saveStats(session, stats);
     }
   }  
@@ -85,26 +87,30 @@ class GameManager extends Component {
     if (this.state.type === 'demo') { return; }
     
     const answeredAt = moment().format();
-    const mobile = mobileCheck();
     const { hintCount, incorrectGuesses } = gameState;
-    const { word, type } = question;    
+    const { word, type, level } = question;    
     const userId = get(this.props.session, 'user');
     const sessionId = get(this.props.session, 'sessionId');
 
     const data = { answered_at: answeredAt, answers: null, choices: null, correct: correct,
-      mobile: mobile, hints_used: hintCount, incorrect_guesses: incorrectGuesses,
+      mobile: this.state.mobile, hints_used: hintCount, incorrect_guesses: incorrectGuesses,
       session_id: sessionId, time_spent: timeSpent, type: type, user_id: userId, word: word };
 
     this.props.dispatch(saveQuestionAction(data));
 
-    const stat = { word: word, correct: correct, difficulty: type, time: timeSpent };
-    const stats = (this.state.stats || []).concat(stat);
+    const stats = (this.state.stats || []).concat({
+      word: word,
+      correct: correct,
+      difficulty: type,
+      time: timeSpent,
+      level: level
+    });
     this.setState({ stats });
   }
 
-  saveStats(session, stats) {
+  saveStats = async (session, stats) => {
     const params = { id: get(session, 'user'), stats: stats, platform: 'web' };
-    this.props.dispatch(saveStatsAction(params, session));
+    return await this.props.dispatch(saveStatsAction(params, session));
   }
 
   setLevelName(props, settings) {
@@ -114,7 +120,7 @@ class GameManager extends Component {
 
     if (settings.type === 'train') {
       level.fullname = level.name.toUpperCase() + ' ' + settings.stage;
-      level.progress = [settings.stage, level.progressBars];      
+      level.progress = [parseInt(settings.stage, 10) || 1, level.progressBars];      
     } else if (_.contains(['explore', 'speed'], settings.type)) {
       level.fullname = level.slug.replace('-', ' ').toUpperCase();
       time = parseInt(get(level.speed, 'time') || 3, 10);
@@ -124,11 +130,11 @@ class GameManager extends Component {
   }
 
   gameOver = async (accuracy, score, time) => {
-    const { settings, type } = this.state;
+    const { settings, type, stats } = this.state;
 
     // Return to home screen if demo
     if (type === 'demo') {
-      this.setState({ redirect: '/' });
+      this.setState({ redirect: '/home' });      
       return;
     }
 
@@ -146,10 +152,11 @@ class GameManager extends Component {
         stage: stage,
         time: time,
         type: type
-      };    
+      }; 
 
       await this.props.dispatch(saveLevelAction(data, userId));
-      this.setState({ redirect: '/home' });      
+      await this.saveStats(this.props.session, stats);
+      this.setState({ intermission: true });       
     }
 
     // Save score and redirect to leaderboard if multiplayer
@@ -212,12 +219,19 @@ class GameManager extends Component {
   render() {
     if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }  
 
-    return (
+    return this.state.intermission
+      ?
+      <Intermission
+        mobile={this.state.mobile}
+        progress={get(this.state.level, "progress")}
+        stats={this.state.stats} />
+      :
       <Game
         factoids={this.props.factoids}
         gameOver={this.gameOver.bind(this)}
         imageKeys={this.props.imageKeys}
         level={this.state.level}
+        mobile={this.state.mobile}
         end={this.state.end}
         time={this.state.time}
         type={this.state.type}
@@ -225,7 +239,6 @@ class GameManager extends Component {
         questions={this.state.questions}
         recordQuestion={this.recordQuestion.bind(this)}
         originalQuestions={this.state.questions} />
-    );
   }
 }
 
