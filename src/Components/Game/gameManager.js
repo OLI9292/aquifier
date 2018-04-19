@@ -143,7 +143,7 @@ class GameManager extends Component {
 
     // Return to home screen if demo
     if (type === 'demo') {
-      this.setState({ redirect: '/home' });      
+      this.setState({ redirect: '/' });      
       return;
     }
 
@@ -194,7 +194,6 @@ class GameManager extends Component {
     if (params && !this.state.loadingQuestions) {
       this.setState({ loadingQuestions: true }, () => {
         const query = queryString.stringify(params);
-        console.log(query)
         this.props.dispatch(fetchQuestionsAction(query));      
       });
     }
