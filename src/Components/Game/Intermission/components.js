@@ -160,4 +160,5 @@ export const Button = styled.div`
   font-size: 1.1em;
   text-align: center;
   font-family: BrandonGrotesqueBold;
+  margin-bottom: 20px;
 `
