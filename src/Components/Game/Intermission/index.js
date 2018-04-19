@@ -178,7 +178,7 @@ class Intermission extends Component {
             </LevelProgressHeader>
           </LevelProgressContainer>
 
-          {rankUpdates.class || rankUpdates.earth && <LeaderboardProgressContainer>
+          {(rankUpdates.class || rankUpdates.earth) && <LeaderboardProgressContainer>
             {rankUpdates.class && <LeaderboardText>
               <img
                 style={{height:"35px",width:"35px",marginRight:"10px"}}
@@ -190,7 +190,7 @@ class Intermission extends Component {
               <img
                 style={{height:"35px",width:"35px",marginRight:"10px"}}
                 src={require("../../../Library/Images/icon-earth.png")} />
-              {rankUpdates.earth && rankText(rankUpdates.earth, color.blue)}
+              {rankText(rankUpdates.earth, color.blue)}
             </LeaderboardText>}
 
             <CTA>
