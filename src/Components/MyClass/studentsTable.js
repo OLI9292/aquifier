@@ -71,8 +71,8 @@ class StudentsTable extends Component {
       name: data.firstName + ' ' + data.lastName.charAt(0),
       school: data.school || "Middle School",
       grade: data.grade || "4th",
-      wordsLearned: data.words.length,
-      timePlayed: Math.ceil(sum(data.words, 'timeSpent')/60)
+      wordsLearned: data.totalWordsLearned,
+      timePlayed: data.totalTimeSpent
     }));
 
     let [grades, schools] = _.map(["grade", "school"], attr => _.uniq(_.pluck(students, attr)));    
