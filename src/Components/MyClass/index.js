@@ -173,7 +173,7 @@ class MyClass extends Component {
 
 const mapStateToProps = (state, ownProps) => ({
   session: state.entities.session,
-  students: state.entities.students,
+  students: _.values(state.entities.students),
   user: _.first(_.values(state.entities.user))
 })
 
