@@ -8,14 +8,13 @@ const Default = styled.button`
   background-color: ${props => props.bColor || color.mainBlue};
   text-align: center;
   border-radius: 40px;
-  padding: 0px 15px;
+  padding: 0px 25px;
   border-width: 0px;
   color: ${props => props.fColor || 'white'};
   font-family: BrandonGrotesqueBold;
   cursor: pointer;
   height: 60px;
   line-height: 60px;
-  width: 180px;
   font-size: 1em;
   text-transform: uppercase;
   letter-spacing: 2px;

@@ -9,7 +9,7 @@ import MiniProgress from './miniProgress';
 import MiniProgressMobile from './miniProgressMobile';
 import Train from './Train/index';
 import JoinGame from './JoinGame/index';
-import Explore from './Explore/index';
+import Battle from './Battle/index';
 
 import { fetchLevelsAction } from '../../Actions/index';
 
@@ -23,7 +23,7 @@ import {
   Sidebar
 } from './components';
 
-const GAME_TYPES = ['train', 'join game'];
+const GAME_TYPES = ['battle', 'train', 'join'];
 
 class GameSelect extends Component {
   constructor(props) {
@@ -65,18 +65,17 @@ class GameSelect extends Component {
     } = this.props;
 
     const mainComponent = {
+      battle: <Battle user={user} />,
       train: <Train 
         user={user} 
         levels={_.filter(levels, l => _.contains(['train', 'speed'], l.type))} />,
-      explore: <Explore
-        levels={_.filter(levels, l => l.type === 'topic')} />,
-      'join game': <JoinGame />,
+      join: <JoinGame />,
     }[this.state.gameType];
 
     const tabs = (() => {
       return <TabContainer>
         {_.map(GAME_TYPES, (gameType, i) => {
-          const margin = i === 0 ? '0px 10px 0px 0px' : '0px 0px 0px 10px';
+          const margin = i === 1 ? '0px 5px' : '0';
           return <Tab
             key={i}
             onClick={() => this.setState({ gameType })}
@@ -98,9 +97,6 @@ class GameSelect extends Component {
           {tabs}
           <Content>
             <GrayLine />
-            <MiniProgressMobileContainer>
-              {user && <MiniProgressMobile user={user} />}
-            </MiniProgressMobileContainer>
             {mainComponent}
           </Content>
         </Main>

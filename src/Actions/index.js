@@ -84,6 +84,26 @@ export const updateClass = (id, data, session) => ({
 })
 
 //
+// GAME
+//
+
+export const joinGameAction = userId => (dispatch, getState) => dispatch(joinGame(userId))
+
+export const GAME_REQUEST = 'GAME_REQUEST'
+export const GAME_SUCCESS = 'GAME_SUCCESS'
+export const GAME_FAILURE = 'GAME_FAILURE'
+
+export const joinGame = userId => ({
+  [CALL_API]: {
+    api: 'main',
+    endpoint: `auth/game/join?userId=${userId}`,
+    method: 'GET',
+    types: [ GAME_REQUEST, GAME_SUCCESS, GAME_FAILURE ],
+    schema: Schemas.TEST
+  }
+})
+
+//
 // QUESTION
 //
 

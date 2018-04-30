@@ -5,7 +5,7 @@ import CONFIG from '../Config/main';
 const API_ROOT = {
   main: process.env.NODE_ENV === 'production'
     ? CONFIG.PRODUCTION_API_ROOT
-    : CONFIG.STAGING_API_ROOT
+    : "http://localhost:3002/api/v2/"/*CONFIG.STAGING_API_ROOT*/
 }
 
 const formatSession = session => session ? {
@@ -28,6 +28,11 @@ const callApi = (api, endpoint, schema, method, data, session) => {
   return fetch(fullUrl, body)
     .then(response =>
       response.json().then(json => {
+        
+        if (fullUrl.includes("join")) {
+          console.log(json);
+        }
+
         if (!response.ok) { return Promise.reject(json) }
         const normalized = Object.assign({},normalize(json, schema))
         // Removes undefined keys
