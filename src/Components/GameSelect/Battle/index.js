@@ -89,7 +89,7 @@ class Battle extends Component {
   setupSocket(query) {
     console.log(`${query.includes("&player2") ? "Joining" : "Creating"} game room.`);
 
-    const socket = io.connect("https://dry-ocean-39738.herokuapp.com:8080", { query: query });
+    const socket = io.connect("https://dry-ocean-39738.herokuapp.com", { query: query });
 
     socket.on("joined", id => { 
       if (!this.props.opponent) { this.props.dispatch(fetchUserAction(id, true)); }

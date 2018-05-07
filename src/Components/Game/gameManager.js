@@ -207,7 +207,7 @@ class GameManager extends Component {
 
       this.loadQuestions({ type: 'battle', user_id: user._id });
 
-      socket = io.connect("https://dry-ocean-39738.herokuapp.com:8080", { query: `player1=${settings.id}` });
+      socket = io.connect("https://dry-ocean-39738.herokuapp.com", { query: `player1=${settings.id}` });
 
       socket.on("score", msg => { 
         if (msg.user !== user._id) {
