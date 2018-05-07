@@ -35,7 +35,7 @@ class Nav extends Component {
       ? ['/my-district','/leaderboards']
         : isTeacher
           ? ['/setup-game','/my-class','/leaderboards']
-          : ['/home','/profile','/leaderboards', '/championships'];
+          : ['/home','/profile','/leaderboards'];
 
     const links = (() => {
       return <LinksContainer loggedIn={loggedIn}>
