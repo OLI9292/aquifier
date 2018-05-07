@@ -69,18 +69,20 @@ class Battle extends Component {
   }
 
   startGame(countdown, gameId) {
-    this.setState({ countdown });
+    this.setState({ countdown }, () => setTimeout(() => {
 
-    this.interval = setInterval(() => {
-      let countdown = this.state.countdown;
-      countdown--;
-      if (countdown === 0) {
-        clearInterval(this.interval);
-        this.setState({ redirect: `/play/type=battle&id=${gameId}`})
-      } else {
-        this.setState({ countdown });
-      }
-    }, 1000);
+      this.interval = setInterval(() => {
+        let countdown = this.state.countdown;
+        countdown--;
+        if (countdown === 0) {
+          clearInterval(this.interval);
+          this.setState({ redirect: `/play/type=battle&id=${gameId}`})
+        } else {
+          this.setState({ countdown });
+        }
+      }, 1000);
+
+    }, 200));
   }
 
   setupSocket(query) {
@@ -89,8 +91,7 @@ class Battle extends Component {
 
     socket.on("joined", id => { 
       if (!this.props.opponent) { this.props.dispatch(fetchUserAction(id, true)); }
-      const gameId = !this.props.opponent ? this.props.userId : id;
-      this.startGame(COUNTDOWN_DELAY, gameId);
+      this.startGame(COUNTDOWN_DELAY, id);
     }); 
   }
 

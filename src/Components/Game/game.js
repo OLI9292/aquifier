@@ -257,6 +257,17 @@ class Game extends Component {
         case 'train': case 'explore': case 'demo':
           return <ProgressBar
             progress={Math.max(questionIndex) / get(questions, 'length', 1)} />;
+        case 'battle':
+          return <div>
+            <ProgressBar
+              progress={Math.max(questionIndex) / get(questions, 'length', 1)} />
+            <br />
+            <div>
+              <ProgressBar
+                opponent={true}
+                progress={this.props.opponentProgress} />
+            </div>
+          </div>;
         case 'speed': case 'multiplayer':
           return <SpeedRound
             time={this.props.time}

@@ -34,6 +34,7 @@ class ProgressBar extends Component {
         <BackgroundBar
           width={`${progressBarWidth * 100}%`} />
         <Progress
+          opp={this.props.opponent}
           complete={this.props.progress === 1}
           progress={progress} />
       </Container>
@@ -53,7 +54,11 @@ const Container = styled.div`
 const Progress = styled.div`
   width: ${props => props.progress};
   height: 13px;
-  background: linear-gradient(to right, ${color.brightYellow}, ${color.warmYellow});
+  background: linear-gradient(
+    to right,
+    ${props => props.opp ? color.blue : color.brightYellow},
+    ${props => props.opp ? color.blue : color.warmYellow}
+  );
   border-radius: ${props => props.complete ? "8px" : "8px 0 0 8px"};
   z-index: 1000;
   transition: 0.2s;

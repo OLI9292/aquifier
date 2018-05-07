@@ -27,7 +27,9 @@ let socket
 class GameManager extends Component {
   constructor(props) {
     super(props);
-    this.state = {}
+    this.state = {
+      questionsAnswered: 0
+    }
   }
 
   componentDidMount() {
@@ -96,8 +98,13 @@ class GameManager extends Component {
   }
 
   recordQuestion(question, correct, timeSpent, gameState) {
-    socket.emit("score", {msg: "hi!"})
-
+    this.setState({ questionsAnswered: this.state.questionsAnswered + 1 }, () => {      
+      socket.emit("score",  {
+        score: this.state.questionsAnswered,
+        room: this.state.settings.id,
+        user: this.props.session.user
+      });
+    });
 
     if (this.state.type === 'demo') { return; }
     
@@ -198,10 +205,13 @@ class GameManager extends Component {
 
       this.loadQuestions({ type: 'battle', user_id: user._id });
 
-      socket = io.connect("http://localhost:3002", { query: settings.id });
+      socket = io.connect("http://localhost:3002", { query: `player1=${settings.id}` });
 
-      socket.on("score", str => { 
-        console.log(str)
+      socket.on("score", msg => { 
+        if (msg.user !== user._id) {
+          console.log(msg)
+          this.setState({ opponentScore: Math.max(0, msg.score) });
+        }
       });       
 
     } else {
@@ -266,6 +276,7 @@ class GameManager extends Component {
         end={this.state.end}
         time={this.state.time}
         type={this.state.type}
+        opponentProgress={(this.state.opponentScore || 0) / (this.state.questions || []).length}
         notYetStarted={this.state.notYetStarted}
         questions={this.state.questions}
         recordQuestion={this.recordQuestion.bind(this)}

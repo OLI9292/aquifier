@@ -3,9 +3,9 @@ import _ from 'underscore';
 import CONFIG from '../Config/main';
 
 const API_ROOT = {
-  main: process.env.NODE_ENV === 'production'
-    ? CONFIG.PRODUCTION_API_ROOT
-    : "http://localhost:3002/api/v2/"/*CONFIG.STAGING_API_ROOT*/
+  main: CONFIG.IS_STAGING === "true"
+    ? CONFIG.STAGING_API_ROOT
+    : CONFIG.PRODUCTION_API_ROOT
 }
 
 const formatSession = session => session ? {
