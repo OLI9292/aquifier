@@ -6,6 +6,7 @@ import React, { Component } from 'react';
 import { Redirect } from 'react-router';
 import _ from 'underscore';
 import get from 'lodash/get';
+import io from 'socket.io-client';
 
 import { shouldRedirect, mobileCheck } from '../../Library/helpers';
 
@@ -20,6 +21,8 @@ import {
 
 import Game from './game';
 import Intermission from './Intermission/index';
+
+let socket
 
 class GameManager extends Component {
   constructor(props) {
@@ -93,6 +96,9 @@ class GameManager extends Component {
   }
 
   recordQuestion(question, correct, timeSpent, gameState) {
+    socket.emit("score", {msg: "hi!"})
+
+
     if (this.state.type === 'demo') { return; }
     
     const answeredAt = moment().format();
@@ -181,12 +187,27 @@ class GameManager extends Component {
     const { settings } = this.state;
 
     if (settings.type === 'multiplayer') {
+      
       this.joinGame(settings, user);
+
     } else if (settings.type === 'demo') {
+
       this.loadQuestions({ type: settings.type });
+
+    } else if (settings.type === 'battle') {
+
+      this.loadQuestions({ type: 'battle', user_id: user._id });
+
+      socket = io.connect("http://localhost:3002", { query: settings.id });
+
+      socket.on("score", str => { 
+        console.log(str)
+      });       
+
     } else {
-      const params = _.extend({}, settings, { user_id: user._id });
-      this.loadQuestions(params);
+
+      this.loadQuestions(_.extend({}, settings, { user_id: user._id }));
+
     }
   }
 

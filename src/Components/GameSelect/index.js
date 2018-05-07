@@ -3,6 +3,7 @@ import _ from 'underscore';
 import { connect } from 'react-redux'
 import React, { Component } from 'react';
 
+import Header from '../Common/header';
 import { shouldRedirect } from '../../Library/helpers'
 import MiniLeaderboard from './miniLeaderboard';
 import MiniProgress from './miniProgress';
@@ -14,8 +15,8 @@ import Battle from './Battle/index';
 import { fetchLevelsAction } from '../../Actions/index';
 
 import {
+  Container,
   Content,
-  GrayLine,
   Main,
   MiniProgressMobileContainer,
   Tab,
@@ -39,7 +40,8 @@ class GameSelect extends Component {
 
   componentDidMount() {
     if (!this.props.session) { this.setState({ redirect: '/' }); }
-    window.addEventListener('scroll', this.checkScroll);    
+    // TODO: - uncomment
+    //window.addEventListener('scroll', this.checkScroll);    
     if (_.isEmpty(this.props.levels)) { this.props.dispatch(fetchLevelsAction()); }
   }
 
@@ -72,34 +74,35 @@ class GameSelect extends Component {
       join: <JoinGame />,
     }[this.state.gameType];
 
-    const tabs = (() => {
-      return <TabContainer>
-        {_.map(GAME_TYPES, (gameType, i) => {
-          const margin = i === 1 ? '0px 5px' : '0';
-          return <Tab
-            key={i}
-            onClick={() => this.setState({ gameType })}
-            selected={this.state.gameType === gameType}
-            margin={margin}>
-            {gameType.toUpperCase()}
-          </Tab>
-        })}
-      </TabContainer>
-    })();
+    const tab = (gameType, idx) => <Tab
+      key={idx}
+      onClick={() => this.setState({ gameType })}
+      selected={this.state.gameType === gameType}
+      margin={idx === 1 ? '0px 3px' : '0'}>
+      {gameType}
+    </Tab>;
 
     const sidebarStyles = this.state.gameType === 'train'
       ? { position: 'fixed', width: '250px', bottom: this.state.fixedSidebar ? '' : '120px' }
       : { width: '250px' };
 
     return (
-      <div style={{display:'flex',paddingTop:'40px'}} ref={container => this.container = container}>
+      <Container ref={container => this.container = container}>
+
+        <Header.medium style={{textAlign:"center"}}>
+          play
+        </Header.medium>
+
         <Main>
-          {tabs}
+          <TabContainer>
+            {_.map(GAME_TYPES, (gameType, idx) => tab(gameType, idx))}
+          </TabContainer>
+
           <Content>
-            <GrayLine />
             {mainComponent}
           </Content>
         </Main>
+
         <Sidebar>
           <div
             style={sidebarStyles} 
@@ -109,7 +112,7 @@ class GameSelect extends Component {
             {user && <MiniProgress user={user} />}
           </div>
         </Sidebar>
-      </div>
+      </Container>
     );
   }
 }

@@ -99,7 +99,7 @@ export const joinGame = userId => ({
     endpoint: `auth/game/join?userId=${userId}`,
     method: 'GET',
     types: [ GAME_REQUEST, GAME_SUCCESS, GAME_FAILURE ],
-    schema: Schemas.TEST
+    schema: Schemas.OPPONENT
   }
 })
 
@@ -265,22 +265,20 @@ export const fetchSchool = id => ({
 // USER
 //
 
-export const fetchUserAction = (id, session, updateState = true) => (dispatch, getState) => dispatch(fetchUser(id, session, updateState))
+export const fetchUserAction = (id, isOpponent = false) => (dispatch, getState) => dispatch(fetchUser(id, isOpponent))
 
 export const USER_REQUEST = 'USER_REQUEST'
 export const USER_SUCCESS = 'USER_SUCCESS'
 export const USER_FAILURE = 'USER_FAILURE'
 
-export const fetchUser = (id, session, updateState) => ({
+export const fetchUser = (id, isOpponent) => ({
   [CALL_API]: {
     api: 'main',
     endpoint: `auth/user/${id}`,
     method: 'GET',
-    session: session,
-    schema: Schemas.USER,
+    schema: Schemas[isOpponent ? "OPPONENT" : "USER"],
     types: [ USER_REQUEST, USER_SUCCESS, USER_FAILURE ]    
-  },
-  updateState: updateState
+  }
 })
 
 export const COMPETITOR_REQUEST = 'COMPETITOR_REQUEST'

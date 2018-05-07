@@ -29,14 +29,11 @@ const callApi = (api, endpoint, schema, method, data, session) => {
     .then(response =>
       response.json().then(json => {
         
-        if (fullUrl.includes("join")) {
-          console.log(json);
-        }
-
-        if (!response.ok) { return Promise.reject(json) }
+        if (!response.ok) { console.log(json); return Promise.reject(json) }
         const normalized = Object.assign({},normalize(json, schema))
         // Removes undefined keys
         normalized.entities = _.mapObject(normalized.entities, (v, k) => v.undefined ? v.undefined : v);
+
         return normalized
       })
     )
@@ -56,6 +53,7 @@ const userRankSchema = new schema.Entity('userRanks', {})
 const rootSchema = new schema.Entity('roots', {}, { idAttribute: '_id' })
 const schoolSchema = new schema.Entity('school', {}, { idAttribute: '_id' })
 const userSchema = new schema.Entity('user', {}, { idAttribute: '_id' })
+const opponentSchema = new schema.Entity('opponent', {}, { idAttribute: '_id' })
 const sessionSchema = new schema.Entity('session', { user: userSchema })
 const studentsSchema = new schema.Entity('students', { students: [userSchema] })
 const successSchema = new schema.Entity('Success')
@@ -78,6 +76,7 @@ export const Schemas = {
   STUDENT_ARRAY: studentsSchema,
   SUCCESS: successSchema,
   USER: userSchema,
+  OPPONENT: opponentSchema,
   COMPETITOR: competitorSchema,
   COMPETITOR_ARRAY: [competitorSchema],
   WORD_ARRAY: [wordSchema],

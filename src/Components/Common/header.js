@@ -1,12 +1,11 @@
 import styled from 'styled-components';
 import { color } from '../../Library/Styles/index';
 
-const Default = styled.p`
-  font-size: 1.4em;
+const Default = styled.h1`
+  font-size: 1.2em;
   font-family: ${props => props.thin ? 'BrandonGrotesque' : 'BrandonGrotesqueBold'};
   letter-spacing: 2px;  
   text-transform: ${props => props.noUpcase ? '' : 'uppercase'};
-  color: ${color.gray2};
 `
 
 const Large = Default.extend`
