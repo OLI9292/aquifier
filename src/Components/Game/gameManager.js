@@ -19,6 +19,8 @@ import {
   saveQuestionAction
 } from '../../Actions/index';
 
+import CONFIG from '../../Config/main';
+
 import Game from './game';
 import Intermission from './Intermission/index';
 
@@ -205,7 +207,7 @@ class GameManager extends Component {
 
       this.loadQuestions({ type: 'battle', user_id: user._id });
 
-      socket = io.connect("http://localhost:3002", { query: `player1=${settings.id}` });
+      socket = io.connect(CONFIG.STAGING_API_ROOT, { query: `player1=${settings.id}` });
 
       socket.on("score", msg => { 
         if (msg.user !== user._id) {

@@ -7,6 +7,7 @@ import _ from 'underscore';
 
 import io from 'socket.io-client';
 
+import CONFIG from '../../../Config/main';
 import Button from '../../Common/button';
 import { shouldRedirect } from '../../../Library/helpers';
 import { color, media } from '../../../Library/Styles/index';
@@ -87,7 +88,7 @@ class Battle extends Component {
 
   setupSocket(query) {
     console.log(`${query.includes("&player2") ? "Joining" : "Creating"} game room.`);
-    const socket = io.connect("http://localhost:3002", { query: query });
+    const socket = io.connect(CONFIG.STAGING_API_ROOT, { query: query });
 
     socket.on("joined", id => { 
       if (!this.props.opponent) { this.props.dispatch(fetchUserAction(id, true)); }
