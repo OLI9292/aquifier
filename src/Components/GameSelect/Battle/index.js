@@ -88,7 +88,8 @@ class Battle extends Component {
 
   setupSocket(query) {
     console.log(`${query.includes("&player2") ? "Joining" : "Creating"} game room.`);
-    const socket = io.connect(CONFIG.STAGING_API_ROOT, { query: query });
+
+    const socket = io.connect("http://dry-ocean-39738.herokuapp.com", { query: query });
 
     socket.on("joined", id => { 
       if (!this.props.opponent) { this.props.dispatch(fetchUserAction(id, true)); }
@@ -128,7 +129,7 @@ class Battle extends Component {
                   strokeColor={BUTTON_DATA[status].color}
                   cx="40" cy="40" r="30">
                 </Circle>
-                <text x="50%" y="50%" text-anchor="middle" stroke={color.red} stroke-width="2px" dy=".3em">
+                <text x="50%" y="50%" textAnchor="middle" stroke={color.red} strokeWidth="2px" dy=".3em">
                   {status === "matched" ? countdown : ""}
                 </text>
               </g>
