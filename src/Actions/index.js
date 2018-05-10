@@ -87,19 +87,19 @@ export const updateClass = (id, data, session) => ({
 // GAME
 //
 
-export const joinGameAction = userId => (dispatch, getState) => dispatch(joinGame(userId))
+export const findGameAction = userId => (dispatch, getState) => dispatch(findGame(userId))
 
 export const GAME_REQUEST = 'GAME_REQUEST'
 export const GAME_SUCCESS = 'GAME_SUCCESS'
 export const GAME_FAILURE = 'GAME_FAILURE'
 
-export const joinGame = userId => ({
+export const findGame = userId => ({
   [CALL_API]: {
     api: 'main',
-    endpoint: `auth/game/join?userId=${userId}`,
+    endpoint: `auth/game?userId=${userId}`,
     method: 'GET',
     types: [ GAME_REQUEST, GAME_SUCCESS, GAME_FAILURE ],
-    schema: Schemas.OPPONENT
+    schema: Schemas.GAME
   }
 })
 
@@ -389,8 +389,16 @@ export const resetErrorMessage = () => ({
 
 export const REMOVE_ENTITY = 'REMOVE_ENTITY'
 
-// Resets the currently visible error message.
+// Removes an entity from the state object.
 export const removeEntityAction = entity => ({
   type: REMOVE_ENTITY,
   response: { remove: entity }
+})
+
+export const UPDATE_ENTITY = 'UPDATE_ENTITY'
+
+// Updates an entity in the state object.
+export const updateEntityAction = entity => ({
+  type: UPDATE_ENTITY,
+  response: { update: entity }
 })

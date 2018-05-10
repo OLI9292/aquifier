@@ -52,7 +52,7 @@ class Interlude extends Component {
     );
   }
 
-  getContent(word, questionDifficulty, factoids, imageKeys) {
+  getContent(word, questionDifficulty, factoids, imageKeys) {    
     const factoid = _.find(_.shuffle(factoids), f => f.words.includes(word));
     const imageKey = _.find(imageKeys, key => key.replace(".jpg","") === word);
 

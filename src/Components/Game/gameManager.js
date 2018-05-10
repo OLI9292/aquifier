@@ -8,6 +8,7 @@ import _ from 'underscore';
 import get from 'lodash/get';
 import io from 'socket.io-client';
 
+import EloRating from 'elo-rating';
 import { shouldRedirect, mobileCheck } from '../../Library/helpers';
 
 import {
@@ -23,6 +24,7 @@ import CONFIG from '../../Config/main';
 
 import Game from './game';
 import Intermission from './Intermission/index';
+import Bot from '../../Models/Bot';
 
 let socket
 
@@ -58,8 +60,14 @@ class GameManager extends Component {
       loadingQuestions: false,
       level: null
     }, () => {
-      if (settings.type === 'demo') { this.setState({ loading: true }, () => { this.setupGame(); }); }
-      else if (user)                { this.setState({ loading: true }, () => { this.setupGame(user); }); }        
+      if (settings.type === 'demo') {
+        this.setupGame();
+      } else if (user) {
+        this.setupGame(user);
+      } else {
+        // TODO: - remove
+        this.setupGame();
+      }
     })
   } 
 
@@ -71,18 +79,18 @@ class GameManager extends Component {
       settings
     } = this.state;
 
-    if (nextProps.user && !loading) {
-      this.setState({ loading: true }, () => this.setupGame(nextProps.user));  
-    }
     if (nextProps.questions.length && !questions) {
       this.setState({ questions: nextProps.questions });
     }
+
     if (nextProps.levels.length && !level && settings) {
       this.setLevelName(nextProps, settings);
     }
   }  
 
   componentWillUnmount() {
+    clearTimeout(this.timeout);
+    
     const { settings, gameOver, stats } = this.state;
     const { session, user } = this.props;
 
@@ -99,16 +107,19 @@ class GameManager extends Component {
     Firebase.refs.games.child(accessCode).child('players').child(this.username(user)).remove();
   }
 
-  recordQuestion(question, correct, timeSpent, gameState) {
-    this.setState({ questionsAnswered: this.state.questionsAnswered + 1 }, () => {      
-      socket.emit("score",  {
-        score: this.state.questionsAnswered,
-        room: this.state.settings.id,
-        user: this.props.session.user
+  emitScore(correct, progress) {
+    if (socket && correct) {
+      socket.emit("score", {
+        progress: progress,
+        room: this.props.game.id,
+        userId: this.props.session.user
       });
-    });
+    }    
+  }
 
+  recordQuestion(question, progress, correct, timeSpent, gameState) {
     if (this.state.type === 'demo') { return; }
+    this.emitScore(correct, progress);
     
     const answeredAt = moment().format();
     const { hintCount, incorrectGuesses } = gameState;
@@ -132,8 +143,9 @@ class GameManager extends Component {
     this.setState({ stats });
   }
 
-  saveStats = async (session, stats) => {
-    const params = { id: get(session, 'user'), stats: stats, platform: 'web' };
+  saveStats = async (session, stats, elo) => {
+    const params = { id: get(session, 'user'), stats: stats, platform: 'web', elo: elo };
+    console.log(params);
     return await this.props.dispatch(saveStatsAction(params, session));
   }
 
@@ -154,12 +166,22 @@ class GameManager extends Component {
   }
 
   gameOver = async (accuracy, score, time) => {
-    const { settings, type, stats } = this.state;
+    const { settings, type, stats, opponentProgress } = this.state;
 
     // Return to home screen if demo
     if (type === 'demo') {
       this.setState({ redirect: '/' });      
       return;
+    }
+
+    if (type === 'battle') {
+      const userWon = opponentProgress !== 1;
+      const userElo = this.props.user.elo;
+      const opponentElo = this.props.game.opponentElo;
+      const { playerRating } = EloRating.calculate(userElo, opponentElo, userWon);
+      const battleResults = { userWon: userWon, userElo: userElo, newUserElo: playerRating };
+      this.saveStats(this.props.session, stats, playerRating);
+      this.setState({ intermission: true, battleResults: battleResults });
     }
 
     this.setState({ gameOver: true });
@@ -196,37 +218,81 @@ class GameManager extends Component {
     const { settings } = this.state;
 
     if (settings.type === 'multiplayer') {
-      
       this.joinGame(settings, user);
-
     } else if (settings.type === 'demo') {
-
       this.loadQuestions({ type: settings.type });
-
     } else if (settings.type === 'battle') {
-
-      this.loadQuestions({ type: 'battle', user_id: user._id });
-
-      socket = io.connect("https://dry-ocean-39738.herokuapp.com", { query: `player1=${settings.id}` });
-
-      socket.on("score", msg => { 
-        if (msg.user !== user._id) {
-          console.log(msg)
-          this.setState({ opponentScore: Math.max(0, msg.score) });
-        }
-      });       
-
+      this.setupBattleGame(this.props.game, user);
     } else {
-
       this.loadQuestions(_.extend({}, settings, { user_id: user._id }));
-
     }
+  }
+
+  setupBattleGame(game, user) {
+    /*game = {
+      id: "e9c3e551-b85f-3c55-1171-5bfa14e11755",
+      opponentElo: 2652,
+      opponentUsername: "melonpinkie",
+      playAgainstBot: true,
+      questionsCount: 3
+    };
+
+    user = { _id: "5ae8471de88f09731dacf8b5" };*/
+    
+    if (!game) { return; }
+
+    const {
+      id,
+      opponentUsername,
+      questionsCount,
+      playAgainstBot,
+      opponentElo
+    } = game;    
+
+    this.loadQuestions({ type: 'battle', user_id: user._id, questions_count: questionsCount });
+    
+    if (playAgainstBot) {
+      const bot = new Bot(questionsCount, opponentUsername, opponentElo);
+      this.playBot(bot);
+    } else {
+      this.setupSocket(id, user);
+    }
+  }
+
+  playBot(bot) {
+    const duration = bot.randomSpeed();
+    
+    this.timeout = setTimeout(() => {
+      bot.nextQuestion();
+      const opponentProgress = Math.min(bot.progress(), 1);
+      this.setState({ opponentProgress });
+      if (opponentProgress === 1) {
+        setTimeout(() => this.gameOver(), 500);
+      } else {
+        this.playBot(bot);
+      }
+    }, duration);
+  }
+
+  setupSocket(id, user) {
+    console.log("setupSocket")
+
+    socket = io.connect("https://dry-ocean-39738.herokuapp.com", { query: `gameId=${id}` });
+
+    socket.on("score", msg => {
+      if (msg.userId === user._id) { return; }
+      const opponentProgress = msg.progress;
+      this.setState(
+        { opponentProgress }, 
+        () => { if (opponentProgress === 1) { this.gameOver(true); } });
+    });
   }
 
   loadQuestions(params) {
     if (params && !this.state.loadingQuestions) {
       this.setState({ loadingQuestions: true }, () => {
         const query = queryString.stringify(params);
+        console.log(query)
         this.props.dispatch(fetchQuestionsAction(query));      
       });
     }
@@ -264,6 +330,7 @@ class GameManager extends Component {
     return this.state.intermission
       ?
       <Intermission
+        battleResults={this.state.battleResults}
         loadAllData={settings => this.loadAllData(settings)}
         level={this.state.level}
         levels={this.props.levels}
@@ -278,7 +345,7 @@ class GameManager extends Component {
         end={this.state.end}
         time={this.state.time}
         type={this.state.type}
-        opponentProgress={(this.state.opponentScore || 0) / (this.state.questions || []).length}
+        opponentProgress={this.state.opponentProgress || 0}
         notYetStarted={this.state.notYetStarted}
         questions={this.state.questions}
         recordQuestion={this.recordQuestion.bind(this)}
@@ -292,7 +359,8 @@ const mapStateToProps = (state, ownProps) => ({
   user: _.first(_.values(state.entities.user)),
   questions: _.values(state.entities.questions),
   factoids: _.values(state.entities.factoids),
-  levels: _.values(state.entities.levels)  
+  levels: _.values(state.entities.levels),
+  game: _.first(_.values(state.entities.game))
 });
 
 export default connect(mapStateToProps)(GameManager)

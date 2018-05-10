@@ -39,6 +39,7 @@ class Game extends Component {
       questionIndex: 0,
       hintCount: 0,
       guessed: {},
+      progress: 0,
       prompt: 'normal',
       incorrectGuesses: 0,
       correctCounter: [0,0],
@@ -149,16 +150,18 @@ class Game extends Component {
     const seconds = Math.ceil(moment.duration(moment().diff(questionStartTime)).asSeconds());
     const isSpeedy = seconds < 4;
     const nextQuestionIndex = questionIndex + (isSpeedy && _.contains(['train','explore'], type) ? 2 : 1);
-
+    const progress = nextQuestionIndex / this.props.questions.length;
+    
     this.setState({
       questionComplete: true,
+      progress: progress,
       isSpeedy: isSpeedy,
       correctCounter: [correctCounter[0] + (correct ? 1 : 0), correctCounter[1] + 1],
       questionIndex: nextQuestionIndex,
       alertTypes: { correct: correct, speedy: isSpeedy }
      }, () => {
       if (factoidReady) { this.hideContinue(); }
-      this.props.recordQuestion(question, correct, seconds, this.state);        
+      this.props.recordQuestion(question, progress, correct, seconds, this.state);        
     });
   }
 
@@ -240,6 +243,7 @@ class Game extends Component {
       highlightPrompt,
       hintButtonsOn,
       hintCount,
+      progress,
       isSpellQuestion,
       questionComplete,
       questionIndex,
@@ -255,17 +259,15 @@ class Game extends Component {
     const progressComponent = type => {
       switch (type) {
         case 'train': case 'explore': case 'demo':
-          return <ProgressBar
-            progress={Math.max(questionIndex) / get(questions, 'length', 1)} />;
+          return <ProgressBar progress={progress} />;
         case 'battle':
           return <div>
-            <ProgressBar
-              progress={Math.max(questionIndex) / get(questions, 'length', 1)} />
+            <div>
+              <ProgressBar progress={progress} />
+            </div>
             <br />
             <div>
-              <ProgressBar
-                opponent={true}
-                progress={this.props.opponentProgress} />
+              <ProgressBar opponent={true} progress={this.props.opponentProgress} />
             </div>
           </div>;
         case 'speed': case 'multiplayer':
@@ -364,7 +366,8 @@ class Game extends Component {
         {_.map(question.choices, (c, idx) => choiceButton(c, idx, question.choices.length))}
       </Choices>;
 
-      const interlude = <Interlude
+      // TODO: - check all these conditions
+      const interlude = !_.contains(["battle", "speed"], this.props.type) && <Interlude
         factoidReady={() => this.setState({ factoidReady: true })}
         mobile={mobile}
         display={questionComplete}

@@ -2,24 +2,38 @@ import styled from 'styled-components';
 import { color, media } from '../../../Library/Styles/index';
 import Header from '../../Common/header';
 
-export const ExitImg = styled.img`
-  cursor: pointer;
-  height: 40px;
-  width: 40px;
-  ${media.phone`
-    height: 35px;
-    width: 35px;
-  `};   
-`
-
 export const Container = styled.div`
+  position: absolute;
+  top: 0;
+  width: 100%;
   max-width: 1100px;
   margin: 0 auto;
   text-align: center;
-  position: relative;
+  background-color: ${props => props.userWon ? "#3DB1FE" : "white"};
+  height: 90%;
   ${media.phone`
     font-size: 0.85em;
   `};    
+`
+
+export const BattleStatusHeader = styled.h1`
+  text-transform: uppercase;
+  font-size: 4em;
+  letter-spacing: 5px;
+  color: white;
+  height: 30%;
+  display: flex;
+  color: ${props => props.userWon ? "white" : "#4E4E4E"};
+  align-items: center;
+  justify-content: center;
+`
+
+export const UserUpdateContainer = styled.div`
+  display: flex;
+  color: white;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4em;
 `
 
 export const TopContainer = styled.div`
@@ -125,40 +139,43 @@ export const Table = styled.table`
 
 export const TableHeader = styled.p`
   letter-spacing: 1px;
-  font-family: BrandonGrotesqueBold;
-  font-size: 1.2em;
-  color: ${color.mainBlue};
+  font-family: BrandonGrotesque;
+  font-size: 2em;
+  color: ${props => props.userWon ? "white" : "#3DB1FE"};
 `
 
 export const WordCell = styled.td`
   letter-spacing: 1px;
+  font-size: 1.2em;
   fontFamily: BrandonGrotesque;
-  width: 125px;
+  width: 150px;
+  color: ${props => props.userWon ? "white" : "#3DB1FE"};
 `
 
 export const StarImage = styled.img`
-  height: 12px;
+  height: 18px;
   width: auto;
-  margin-right: 4px;
+  margin-right: 5px;
+  vertical-align: sub;
   ${media.phone`
-    height: 11px;
-    margin-right: 3px;
+    height: 16px;
+    margin-right: 4px;
   `};    
 `
 
 export const Button = styled.div`
-  width: 200px;
-  margin: 0 auto;
-  background-color: ${color.warmYellow};
-  height: 55px;
-  line-height: 55px;
-  border-radius: 30px;
   cursor: pointer;
-  color: ${color.brown};
+  color: ${props => props.userWon ? "white" : "#3DB1FE"};
   text-transform: uppercase;
+  height: 100px;
+  line-height: 100px;
   letter-spacing: 2px;
   font-size: 1.1em;
+`
+
+export const NavigationContainer = styled.div`
+  position: absolute;
+  bottom: 0;
+  width: 100%;
   text-align: center;
-  font-family: BrandonGrotesqueBold;
-  margin-bottom: 20px;
 `

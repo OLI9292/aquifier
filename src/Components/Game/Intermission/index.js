@@ -8,6 +8,7 @@ import 'react-circular-progressbar/dist/styles.css';
 import styled from 'styled-components';
 import get from 'lodash/get';
 
+import Header from '../../Header/index';
 import { shouldRedirect } from '../../../Library/helpers';
 import { color, media } from '../../../Library/Styles/index';
 import yellowStar from '../../../Library/Images/icon-star-yellow.png';
@@ -17,9 +18,10 @@ import exitPng from '../../../Library/Images/exit-gray.png';
 import { fetchLeaderboardsAction } from '../../../Actions/index';
 
 import {
-  ExitImg,
   Container,
+  BattleStatusHeader,
   LevelProgressContainer,
+  NavigationContainer,
   LeaderboardProgressContainer,
   CTA,
   TopContainer,
@@ -31,6 +33,7 @@ import {
   TablesContainer,
   TableHeader,
   Table,
+  UserUpdateContainer,
   WordCell
 } from './components';
 
@@ -44,15 +47,26 @@ class Intermission extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      page: 0,
       rankUpdates: {}
     }
   }
 
   componentDidMount() {
-    this.loadLeaderboard(this.props);
-    const [p1, p2] = get(this.props.level, "progress") || [0,1];
-    const progress = { p1: p1, p2: p2, percentage: 100 * p1 / p2, text: p1 + "/" + p2 };
-    this.setState({ progress });
+    const {
+      level,
+      battleResults
+    } = this.props;
+
+    this.loadLeaderboard();
+
+    if (battleResults) {
+      this.setState({ isBattle: true });
+    } else {
+      const [p1, p2] = get(level, "progress") || [0,1];
+      const progress = { p1: p1, p2: p2, percentage: 100 * p1 / p2, text: p1 + "/" + p2 };
+      this.setState({ progress });
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -87,14 +101,14 @@ class Intermission extends Component {
     return { difference: difference, direction: direction, newRank: newRank };
   }
 
-  loadLeaderboard(props) {
-    const userId = get(props.user, "_id");
-    const classId = get(_.first(get(props.user, "classes")), "id");
-    if (!userId || !props.session || this.state.loadedLeaderboard) { return; }
+  loadLeaderboard() {
+    const userId = get(this.props.user, "_id");
+    const classId = get(_.first(get(this.props.user, "classes")), "id");
+    if (!userId || this.state.loadedLeaderboard) { return; }
     this.setState({ loadedLeaderboard: true, isInClass: _.isString(classId) });
     let query = `userId=${userId}&onlyUser=true`;
     if (classId) { query += `&classId=${classId}`; }
-    this.props.dispatch(fetchLeaderboardsAction(query, props.session));    
+    this.props.dispatch(fetchLeaderboardsAction(query, this.props.session));    
   }
 
   nextRound() {
@@ -120,11 +134,17 @@ class Intermission extends Component {
 
     const {
       rankUpdates,
-      progress
+      page,
+      progress,
+      isBattle
     } = this.state;
 
+    const {
+      battleResults
+    } = this.props;
+
     const row = stat => <tr key={stat.word} style={{display:"flex",alignItems:"center"}}>
-      <WordCell>
+      <WordCell userWon={battleResults.userWon}>
         {stat.word}
       </WordCell>    
       <td>
@@ -139,7 +159,7 @@ class Intermission extends Component {
     const tables = _.compact(_.values(_.mapObject(TABLE_FILTERS, (filter, name) => {
       const filtered = _.sortBy(_.filter(this.props.stats, filter), stat => stat.word);
       return filtered.length && <div key={name}>
-        <TableHeader>
+        <TableHeader userWon={battleResults.userWon}>
           {`${filtered.length} Word${filtered.length === 1 ? "" : "s"} ${name}`}
         </TableHeader>
         <Table>
@@ -150,67 +170,71 @@ class Intermission extends Component {
       </div>  
     })));
 
-    const span = (_color, text) => <span style={{color:_color,fontSize:"1.1em"}}>{text}</span>;    
+    const span = (_color, text, bold = false) => <span 
+      style={{color:_color,fontFamily:bold ? "BrandonGrotesqueBold" : "BrandonGrotesque"}}>
+      {text}
+    </span>;    
 
     const rankText = (update, color) => <p>
       {`You ${update.direction}  `}
       {span(color, update.difference)}  spots to  {span(color, `#${update.newRank}`)}
     </p>;
 
-    return (
-      <Container>
-        <Link style={{position:"absolute",left:"10px",top:"10px"}} to={'/home'}>
-          <ExitImg src={exitPng} />
-        </Link>
+    const userUpdates = () => {
+      const eloDiff = `(${battleResults.userWon ? "+" : ""}${battleResults.newUserElo - battleResults.userElo})`;
+      
+      const [textColor1, textColor2, backgroundColor, textColor3] = battleResults.userWon
+        ? ["white", "#3F81E6", "white", "#3F81E6"]
+        : ["black", "white", "#3DB1FE", "white"];
 
-        <TopContainer>
-          <LevelProgressContainer>
-            <CircularProgressbarContainer>
-              <CircularProgressbar
-                strokeWidth={10}
-                styles={{path: { stroke: color.green }}}
-                percentage={get(progress, "percentage")}
-                textForPercentage={() => get(progress, "text")}
-                classForPercentage={() => "circularProgressbarPercentage"} />
-            </CircularProgressbarContainer>
-            <LevelProgressHeader>
-              round complete!
-            </LevelProgressHeader>
-          </LevelProgressContainer>
+      return <UserUpdateContainer>
+        <p style={{color:textColor1}}>Your new rating is</p>
+        <p style={{margin:"0px 10px",backgroundColor:backgroundColor,padding:"3px 12px",borderRadius:"20px"}}>
+          {span(textColor2, battleResults.newUserElo, true)} {span(textColor3, eloDiff)}
+        </p>
+      </UserUpdateContainer>;
+    }
 
-          {(rankUpdates.class || rankUpdates.earth) && <LeaderboardProgressContainer>
-            {rankUpdates.class && <LeaderboardText>
-              <img
-                style={{height:"35px",width:"35px",marginRight:"10px"}}
-                src={require("../../../Library/Images/icon-house.png")} />
-              {rankText(rankUpdates.class, color.red)}
-            </LeaderboardText>}
+    const battleComponents = () => <div>
+      <BattleStatusHeader userWon={battleResults.userWon}>
+        {`you ${battleResults.userWon ? "win!" : "lose"}`}
+      </BattleStatusHeader>
+      {page === 0 ? userUpdates() : <TablesContainer>{tables}</TablesContainer>}
+    </div>;
 
-            {rankUpdates.earth && <LeaderboardText>
-              <img
-                style={{height:"35px",width:"35px",marginRight:"10px"}}
-                src={require("../../../Library/Images/icon-earth.png")} />
-              {rankText(rankUpdates.earth, color.blue)}
-            </LeaderboardText>}
+    const navigation = () => {
+      const [page1color, page2color] = battleResults.userWon
+        ? (page === 0 ? ["white", "#A5D8FF"] : ["#A5D8FF", "white"])
+        : (page === 0 ? ["#3F81E6", "#A5D8FF"] : ["#A5D8FF", "#3F81E6"]);
 
-            <CTA>
-              Ready to compete internationally and win prizes? <Link
-                to={'/championships'}
-                style={{color:color.warmYellow,textDecoration:"underline",cursor:"pointer"}}>
-                Click here
-              </Link> 
-            </CTA>
-          </LeaderboardProgressContainer>}
-        </TopContainer>
-
-        <TablesContainer>
-          {tables}
-        </TablesContainer>
-
+      return <NavigationContainer>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"150px"}}>
+          <div style={{width:"50%",height:"100%",display:"flex",alignItems:"center",justifyContent:"flex-end"}}
+            onClick={() => this.setState({ page: 0 })}>
+            <div
+              style={{height:"15px",width:"15px",backgroundColor:page1color,borderRadius:"50%",marginRight:"8px"}} />
+          </div>
+          <div style={{width:"50%",height:"100%",display:"flex",alignItems:"center"}}
+            onClick={() => this.setState({ page: 1 })}>
+            <div
+              style={{height:"15px",width:"15px",backgroundColor:page2color,borderRadius:"50%",marginLeft:"8px"}} />
+          </div>
+        </div>    
         <Button
-          onClick={this.nextRound.bind(this)}>
-          next round
-        </Button>
+          userWon={battleResults.userWon}
+          onClick={() => this.setState({ redirect: "/home?searchImmediately=true"})/*this.nextRound.bind(this)*/}>
+          new game
+        </Button>      
+      </NavigationContainer>;
+    }
+
+    return (
+      <Container userWon={battleResults.userWon}>        
+        {isBattle && battleComponents()}
+        {navigation()}
+        <div style={{position:"absolute",left:"0"}}>
+          <Header />
+        </div>
       </Container>
     );
   }
@@ -223,3 +247,44 @@ const mapStateToProps = (state, ownProps) => ({
 });
 
 export default connect(mapStateToProps)(Intermission);
+/*
+<TopContainer>
+  <LevelProgressContainer>
+    <CircularProgressbarContainer>
+      <CircularProgressbar
+        strokeWidth={10}
+        styles={{path: { stroke: color.green }}}
+        percentage={get(progress, "percentage")}
+        textForPercentage={() => get(progress, "text")}
+        classForPercentage={() => "circularProgressbarPercentage"} />
+    </CircularProgressbarContainer>
+    <LevelProgressHeader>
+      round complete!
+    </LevelProgressHeader>
+  </LevelProgressContainer>
+
+  {(rankUpdates.class || rankUpdates.earth) && <LeaderboardProgressContainer>
+    {rankUpdates.class && <LeaderboardText>
+      <img
+        style={{height:"35px",width:"35px",marginRight:"10px"}}
+        src={require("../../../Library/Images/icon-house.png")} />
+      {rankText(rankUpdates.class, color.red)}
+    </LeaderboardText>}
+
+    {rankUpdates.earth && <LeaderboardText>
+      <img
+        style={{height:"35px",width:"35px",marginRight:"10px"}}
+        src={require("../../../Library/Images/icon-earth.png")} />
+      {rankText(rankUpdates.earth, color.blue)}
+    </LeaderboardText>}
+
+    <CTA>
+      Ready to compete internationally and win prizes? <Link
+        to={'/championships'}
+        style={{color:color.warmYellow,textDecoration:"underline",cursor:"pointer"}}>
+        Click here
+      </Link> 
+    </CTA>
+  </LeaderboardProgressContainer>}
+</TopContainer>
+*/
