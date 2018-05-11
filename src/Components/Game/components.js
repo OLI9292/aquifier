@@ -7,9 +7,11 @@ import { color, media } from '../../Library/Styles/index';
 
 export const AlertContainer = styled.div`
   right: 0;
-  height: 25px;
+  height: 35px;
   display: flex;
+  flex: 1;
   align-items: center;
+  justify-content: flex-end;
   transition: opacity 0.2s;
   display: ${props => props.display};
   opacity: ${props => props.hide ? 0 : 1};
@@ -20,7 +22,7 @@ export const AlertImage = styled.img`
   width: auto;
   margin-right: 5px;
   ${media.phone`
-    margin-right: 10px;
+    margin-right: 0px;
   `}    
 `
 
@@ -214,8 +216,8 @@ export const ChoiceButton = styled.div`
 //
 
 export const ExitOut = styled.img`
-  height: 100%;
-  width: 100%;
+  height: 35px;
+  width: 35px;
   cursor: pointer;
 `
 

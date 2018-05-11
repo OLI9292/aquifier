@@ -253,6 +253,7 @@ class Game extends Component {
     } = this.state;
 
     const {
+      battleUsernames,
       mobile
     } = this.props;
 
@@ -261,14 +262,16 @@ class Game extends Component {
         case 'train': case 'explore': case 'demo':
           return <ProgressBar progress={progress} />;
         case 'battle':
-          return <div>
-            <div>
-              <ProgressBar progress={progress} />
-            </div>
+          return <div style={{flex:8}}>
+            <p style={{margin:"0px 0px 15px 10px",width:"150px"}}>
+              {battleUsernames.user}
+            </p>
+            <ProgressBar progress={progress} />
             <br />
-            <div>
-              <ProgressBar opponent={true} progress={this.props.opponentProgress} />
-            </div>
+            <p style={{margin:"0px 0px 15px 10px",width:"150px"}}>
+              {battleUsernames.opponent}
+            </p>              
+            <ProgressBar opponent={true} progress={this.props.opponentProgress} />
           </div>;
         case 'speed': case 'multiplayer':
           return <SpeedRound
@@ -427,9 +430,7 @@ class Game extends Component {
       <Content opacity={gameOpaqueness}>
         <div style={{width:"100%",height:"100%"}}>
           <Top>
-            <Link 
-              to={'/home'}
-              style={{height:mobile ? "35px" : "40px",width:mobile ? "35px" : "40px"}}>
+            <Link to={'/home'} style={{flex:1,display:"flex",alignItems:"center"}}>
               <ExitOut src={exitPng} />
             </Link>
             {progressComponent(this.props.type)}

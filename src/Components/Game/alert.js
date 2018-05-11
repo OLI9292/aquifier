@@ -72,7 +72,7 @@ class Alert extends Component {
     const alert = alerts[this.state.type];
     
     if (!alert) {
-      return null;
+      return <AlertContainer />;
     }
 
     return (

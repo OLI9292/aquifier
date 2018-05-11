@@ -324,6 +324,7 @@ class GameManager extends Component {
     });    
   }
 
+
   render() {
     if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }  
 
@@ -343,6 +344,7 @@ class GameManager extends Component {
         level={this.state.level}
         mobile={this.state.mobile}
         end={this.state.end}
+        battleUsernames={{ user: get(this.props.user, "firstName"), opponent: get(this.props.game, "opponentUsername") }}
         time={this.state.time}
         type={this.state.type}
         opponentProgress={this.state.opponentProgress || 0}
