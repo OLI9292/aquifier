@@ -2,6 +2,7 @@ import { Redirect } from 'react-router';
 import _ from 'underscore';
 import { connect } from 'react-redux'
 import React, { Component } from 'react';
+import get from "lodash/get";
 
 import Header from '../Common/header';
 import { shouldRedirect } from '../../Library/helpers'
@@ -11,6 +12,7 @@ import MiniProgressMobile from './miniProgressMobile';
 import Train from './Train/index';
 import JoinGame from './JoinGame/index';
 import Battle from './Battle/index';
+import Socket from "../../Models/Socket";
 
 import { fetchLevelsAction } from '../../Actions/index';
 
@@ -39,14 +41,45 @@ class GameSelect extends Component {
   }
 
   componentDidMount() {
-    if (!this.props.session) { this.setState({ redirect: '/' }); }
     // TODO: - uncomment
     //window.addEventListener('scroll', this.checkScroll);    
     if (_.isEmpty(this.props.levels)) { this.props.dispatch(fetchLevelsAction()); }
+    console.log("mounting")
+    this.joinGameLobby(this.props);
   }
 
   componentWillUnmount() {
+    // socket.disconnect();
     window.removeEventListener('scroll', this.checkScroll);
+  }  
+
+  joinGameLobby(props) {
+    this.setState({ didJoinGameLobby: true }, this.setupSocket);      
+  }
+
+  setupSocket() {
+    const query = { userId: get(this.props.session, "user") };
+    this.socket = new Socket({ query: query }, true);
+    this.socket.registerHandler(this.onMessageReceived.bind(this));    
+  }
+
+  onMessageReceived(message) {
+    switch (message.type) {
+      case this.socket.MESSAGE_TYPES.ONLINE_CLIENTS: 
+        return this.setState({ onlineClientIds: message.data });
+      
+      case this.socket.MESSAGE_TYPES.CHALLENGE_REQUEST: 
+        return this.arena.receiveChallenge(message.data);
+    }
+  }
+
+  acceptChallenge(opponent) {
+    this.socket.acceptChallenge(this.props.user._id, opponent.id);
+  }
+
+  challengeFriend(opponent) {
+    this.arena.submitChallenge(opponent);
+    this.socket.submitChallenge(this.props.user, opponent._id);
   }
 
   checkScroll() {
@@ -67,7 +100,12 @@ class GameSelect extends Component {
     } = this.props;
 
     const mainComponent = {
-      battle: <Battle user={user} />,
+      battle: <Battle
+        onRef={ref => (this.arena = ref)}
+        acceptChallenge={this.acceptChallenge.bind(this)}
+        challengeFriend={this.challengeFriend.bind(this)}
+        onlineClientIds={this.state.onlineClientIds}
+        user={user} />,
       train: <Train 
         user={user} 
         levels={_.filter(levels, l => _.contains(['train', 'speed'], l.type))} />,

@@ -265,35 +265,31 @@ export const fetchSchool = id => ({
 // USER
 //
 
-export const fetchUserAction = (id, isOpponent = false) => (dispatch, getState) => dispatch(fetchUser(id, isOpponent))
+export const fetchUserAction = id => (dispatch, getState) => dispatch(fetchUser(id))
 
 export const USER_REQUEST = 'USER_REQUEST'
 export const USER_SUCCESS = 'USER_SUCCESS'
 export const USER_FAILURE = 'USER_FAILURE'
 
-export const fetchUser = (id, isOpponent) => ({
+export const fetchUser = id => ({
   [CALL_API]: {
     api: 'main',
     endpoint: `auth/user/${id}`,
     method: 'GET',
-    schema: Schemas[isOpponent ? "OPPONENT" : "USER"],
+    schema: Schemas.USER,
     types: [ USER_REQUEST, USER_SUCCESS, USER_FAILURE ]    
   }
 })
 
-export const COMPETITOR_REQUEST = 'COMPETITOR_REQUEST'
-export const COMPETITOR_SUCCESS = 'COMPETITOR_SUCCESS'
-export const COMPETITOR_FAILURE = 'COMPETITOR_FAILURE'
+export const fetchUsersAction = ids => (dispatch, getState) => dispatch(fetchUsers(ids))
 
-export const fetchCompetitionAction = () => (dispatch, getState) => dispatch(fetchCompetition())
-
-export const fetchCompetition = () => ({
+export const fetchUsers = ids => ({
   [CALL_API]: {
     api: 'main',
-    endpoint: 'auth/user?inSpringCompetition=true',
+    endpoint: `auth/user/?notRequestingUser=true&ids=${ids.join(',')}`,
     method: 'GET',
-    schema: Schemas.COMPETITOR_ARRAY,
-    types: [ COMPETITOR_REQUEST, COMPETITOR_SUCCESS, COMPETITOR_FAILURE ]    
+    schema: Schemas.OPPONENT_ARRAY,
+    types: [ USER_REQUEST, USER_SUCCESS, USER_FAILURE ]    
   }
 })
 

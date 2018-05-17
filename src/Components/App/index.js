@@ -8,7 +8,6 @@ import styled from 'styled-components';
 import About from '../About/index';
 import Admin from '../Admin/index';
 import Footer from '../Footer/index';
-import Championships from '../Championships/index';
 import GameManager from '../Game/gameManager';
 import GameSelect from '../GameSelect/index';
 import GameSetup from '../GameSetup/index';
@@ -42,6 +41,8 @@ import configureStore from '../../Store/configureStore';
 const store = configureStore();
 // store.subscribe(() => console.log(store.getState()))
 
+const contained = component => () => <Container component={component} />
+
 class App extends Component {
   componentDidMount() {
     const session = LocalStorage.getSession();
@@ -63,7 +64,6 @@ class App extends Component {
             <Route exact path='/admin'            component={contained('admin')} />
             <Route exact path='/team'             component={contained('about')} />            
             <Route exact path='/terms'            component={contained('terms')} />
-            <Route exact path='/championships'    component={contained('championships')} />            
             <Route exact path='/contact'          component={contained('about')} />            
             <Route exact path='/leaderboard/:id'  component={contained('leaderboard')} />
             <Route exact path='/leaderboards'     component={contained('leaderboards')} />
@@ -88,19 +88,16 @@ class App extends Component {
   }
 }
 
-const contained = component => () => <Container component={component} />
-
 class Container extends Component {
   componentWillMount() {
     window.scrollTo(0, 0);
   }
 
   render() {
-    const Component = () => {
+    const component = () => {
       switch (this.props.component) {
         case 'about':         return <About />
         case 'admin':         return <Admin />
-        case 'championships': return <Championships />
         case 'gameSelect':    return <GameSelect />
         case 'gameSetup':     return <GameSetup />
         case 'infoForm':      return <InfoForm />
@@ -121,7 +118,7 @@ class Container extends Component {
         <Header path={window.location.pathname} />
         <InnerFrame>
           <ComponentFrame>
-            <Component />
+            {component()}
           </ComponentFrame>
           <Footer />
         </InnerFrame>
