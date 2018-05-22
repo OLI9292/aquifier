@@ -6,9 +6,9 @@ import get from "lodash/get";
 
 import Header from '../Common/header';
 import { shouldRedirect } from '../../Library/helpers'
-import MiniLeaderboard from './miniLeaderboard';
-import MiniProgress from './miniProgress';
-import MiniProgressMobile from './miniProgressMobile';
+// import MiniLeaderboard from './miniLeaderboard';
+// import MiniProgress from './miniProgress';
+// import MiniProgressMobile from './miniProgressMobile';
 import Train from './Train/index';
 import JoinGame from './JoinGame/index';
 import Battle from './Battle/index';
@@ -20,10 +20,8 @@ import {
   Container,
   Content,
   Main,
-  MiniProgressMobileContainer,
   Tab,
-  TabContainer,
-  Sidebar
+  TabContainer
 } from './components';
 
 const GAME_TYPES = ['battle', 'train', 'join'];
@@ -41,28 +39,28 @@ class GameSelect extends Component {
   }
 
   componentDidMount() {
-    // TODO: - uncomment
-    //window.addEventListener('scroll', this.checkScroll);    
-    if (_.isEmpty(this.props.levels)) { this.props.dispatch(fetchLevelsAction()); }
-    console.log("mounting")
-    this.joinGameLobby(this.props);
+    // window.addEventListener('scroll', this.checkScroll);    
+    // if (_.isEmpty(this.props.levels)) { this.props.dispatch(fetchLevelsAction()); }
+    this.setupSocket(this.props);
   }
 
   componentWillUnmount() {
-    // socket.disconnect();
-    window.removeEventListener('scroll', this.checkScroll);
+    // window.removeEventListener('scroll', this.checkScroll);
   }  
 
-  joinGameLobby(props) {
-    this.setState({ didJoinGameLobby: true }, this.setupSocket);      
+  componentWillReceiveProps(nextProps) {
+    this.setupSocket(nextProps);    
   }
 
-  setupSocket() {
-    const query = { userId: get(this.props.session, "user") };
-    this.socket = new Socket({ query: query }, true);
+  // Join game lobby
+  setupSocket(props) {
+    if (!props.session || this.state.socketSetup) { return; }
+    this.setState({ socketSetup: true });
+    this.socket = new Socket({ query: { userId: props.session.user } });
     this.socket.registerHandler(this.onMessageReceived.bind(this));    
   }
 
+  // Respond to web socket messages
   onMessageReceived(message) {
     switch (message.type) {
       case this.socket.MESSAGE_TYPES.ONLINE_CLIENTS: 
@@ -70,11 +68,21 @@ class GameSelect extends Component {
       
       case this.socket.MESSAGE_TYPES.CHALLENGE_REQUEST: 
         return this.arena.receiveChallenge(message.data);
+      
+      case this.socket.MESSAGE_TYPES.START_GAME: 
+        return this.arena.startGame(message.data.room, message.data.opponent);
+
+      default:
+        break
     }
   }
 
   acceptChallenge(opponent) {
-    this.socket.acceptChallenge(this.props.user._id, opponent.id);
+    this.socket.acceptChallenge(this.props.user._id, opponent._id);
+  }
+
+  initiateRandomGame(userId, opponentId) {
+    this.socket.initiateRandomGame(userId, opponentId); 
   }
 
   challengeFriend(opponent) {
@@ -95,13 +103,13 @@ class GameSelect extends Component {
 
     const {
       levels,
-      session,
       user
     } = this.props;
 
     const mainComponent = {
       battle: <Battle
         onRef={ref => (this.arena = ref)}
+        initiateRandomGame={this.initiateRandomGame.bind(this)}
         acceptChallenge={this.acceptChallenge.bind(this)}
         challengeFriend={this.challengeFriend.bind(this)}
         onlineClientIds={this.state.onlineClientIds}
@@ -120,10 +128,6 @@ class GameSelect extends Component {
       {gameType}
     </Tab>;
 
-    const sidebarStyles = this.state.gameType === 'train'
-      ? { position: 'fixed', width: '250px', bottom: this.state.fixedSidebar ? '' : '120px' }
-      : { width: '250px' };
-
     return (
       <Container ref={container => this.container = container}>
 
@@ -140,7 +144,11 @@ class GameSelect extends Component {
             {mainComponent}
           </Content>
         </Main>
-
+      </Container>
+    );
+  }
+}
+/*
         <Sidebar>
           <div
             style={sidebarStyles} 
@@ -150,11 +158,7 @@ class GameSelect extends Component {
             {user && <MiniProgress user={user} />}
           </div>
         </Sidebar>
-      </Container>
-    );
-  }
-}
-
+        */
 const mapStateToProps = (state, ownProps) => ({
   session: state.entities.session,
   user: _.first(_.values(state.entities.user)),

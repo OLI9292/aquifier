@@ -4,7 +4,7 @@ import CONFIG from '../Config/main';
 
 const API_ROOT = {
   main: CONFIG.IS_STAGING === "true"
-    ? "http://localhost:3002/api/v2/"/*CONFIG.STAGING_API_ROOT*/
+    ? CONFIG.STAGING_API_ROOT
     : CONFIG.PRODUCTION_API_ROOT
 }
 
@@ -51,6 +51,7 @@ const userRankSchema = new schema.Entity('userRanks', {})
 const rootSchema = new schema.Entity('roots', {}, { idAttribute: '_id' })
 const schoolSchema = new schema.Entity('school', {}, { idAttribute: '_id' })
 const userSchema = new schema.Entity('user', {}, { idAttribute: '_id' })
+const friendSchema = new schema.Entity('friends', {}, { idAttribute: '_id' })
 const opponentSchema = new schema.Entity('opponent', {}, { idAttribute: '_id' })
 const gameSchema = new schema.Entity('game', {})
 const sessionSchema = new schema.Entity('session', { user: userSchema })
@@ -70,6 +71,8 @@ export const Schemas = {
   QUESTION_ARRAY: questionSchema,
   ROOT_ARRAY: [rootSchema],
   SCHOOL: schoolSchema,
+  FRIEND: friendSchema,
+  FRIEND_ARRAY: [friendSchema],
   OPPONENT: opponentSchema,
   OPPONENT_ARRAY: [opponentSchema],
   SESSION: sessionSchema,

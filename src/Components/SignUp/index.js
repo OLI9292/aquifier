@@ -238,6 +238,7 @@ class SignUp extends Component {
       onClick={() => this.signUpAs(name)}>
       <img
         style={{width:"80%",height:"auto",marginTop:"35px"}}
+        alt={image}
         src={require(`../../Library/Images/${image}`)} />
       <UserTypeText color={darkColor}>
         {name}

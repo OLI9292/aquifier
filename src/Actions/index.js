@@ -87,19 +87,19 @@ export const updateClass = (id, data, session) => ({
 // GAME
 //
 
-export const findGameAction = userId => (dispatch, getState) => dispatch(findGame(userId))
+export const findGameAction = data => (dispatch, getState) => dispatch(findGame(data))
 
 export const GAME_REQUEST = 'GAME_REQUEST'
 export const GAME_SUCCESS = 'GAME_SUCCESS'
 export const GAME_FAILURE = 'GAME_FAILURE'
 
-export const findGame = userId => ({
+export const findGame = data => ({
   [CALL_API]: {
     api: 'main',
-    endpoint: `auth/game?userId=${userId}`,
+    endpoint: `auth/game?id=${data.id}&elo=${data.elo}&username=${data.username}`,
     method: 'GET',
     types: [ GAME_REQUEST, GAME_SUCCESS, GAME_FAILURE ],
-    schema: Schemas.GAME
+    schema: Schemas.OPPONENT
   }
 })
 
@@ -281,14 +281,14 @@ export const fetchUser = id => ({
   }
 })
 
-export const fetchUsersAction = ids => (dispatch, getState) => dispatch(fetchUsers(ids))
+export const fetchUsersAction = query => (dispatch, getState) => dispatch(fetchUsers(query))
 
-export const fetchUsers = ids => ({
+export const fetchUsers = query => ({
   [CALL_API]: {
     api: 'main',
-    endpoint: `auth/user/?notRequestingUser=true&ids=${ids.join(',')}`,
+    endpoint: `auth/user/?notRequestingUser=true&${query}`,
     method: 'GET',
-    schema: Schemas.OPPONENT_ARRAY,
+    schema: Schemas.FRIEND_ARRAY,
     types: [ USER_REQUEST, USER_SUCCESS, USER_FAILURE ]    
   }
 })
@@ -355,6 +355,31 @@ export const saveLevel = (data, userId) => ({
     method: 'PATCH',
     schema: Schemas.USER,
     types: [ SAVE_LEVEL_REQUEST, SAVE_LEVEL_SUCCESS, SAVE_LEVEL_FAILURE ]
+  }
+})
+
+export const addFriendAction = (userId, data) => (dispatch, getState) => dispatch(addFriend(userId, data))
+
+export const addFriend = (userId, data) => ({
+  [CALL_API]: {
+    api: 'main',
+    data: data,
+    endpoint: `auth/user/${userId}/friends`,
+    method: 'PATCH',
+    schema: Schemas.USER,
+    types: [ USER_REQUEST, USER_SUCCESS, USER_FAILURE ]    
+  }
+})
+
+export const removeFriendAction = (userId, friendId) => (dispatch, getState) => dispatch(removeFriend(userId, friendId))
+
+export const removeFriend = (userId, friendId) => ({
+  [CALL_API]: {
+    api: 'main',
+    endpoint: `auth/user/${userId}/friends?id=${friendId}`,
+    method: 'DELETE',
+    schema: Schemas.USER,
+    types: [ USER_REQUEST, USER_SUCCESS, USER_FAILURE ]    
   }
 })
 

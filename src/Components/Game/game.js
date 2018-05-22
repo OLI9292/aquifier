@@ -36,7 +36,7 @@ class Game extends Component {
     super(props);
 
     this.state = {
-      questionIndex: 0,
+      questionIndex: 6,
       hintCount: 0,
       guessed: {},
       progress: 0,
@@ -246,7 +246,6 @@ class Game extends Component {
       progress,
       isSpellQuestion,
       questionComplete,
-      questionIndex,
       question,
       questions,
       glowIdx
@@ -271,7 +270,7 @@ class Game extends Component {
             <p style={{margin:"0px 0px 15px 10px",width:"150px"}}>
               {battleUsernames.opponent}
             </p>              
-            <ProgressBar opponent={true} progress={this.props.opponentProgress} />
+            <ProgressBar opponent={true} progress={this.props.oppProgress} />
           </div>;
         case 'speed': case 'multiplayer':
           return <SpeedRound

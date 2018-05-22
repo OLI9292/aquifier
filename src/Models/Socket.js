@@ -2,7 +2,8 @@ import io from "socket.io-client";
 
 const MESSAGE_TYPES = {
   ONLINE_CLIENTS: "ONLINE_CLIENTS",
-  CHALLENGE_REQUEST: "CHALLENGE_REQUEST"
+  CHALLENGE_REQUEST: "CHALLENGE_REQUEST",
+  START_GAME: "START_GAME"
 }
 
 export default class Socket {
@@ -21,7 +22,7 @@ export default class Socket {
   }
 
   submitChallenge(user, opponentId) {
-    this.socket.emit("challenge", {
+    this.socket.emit("submitChallenge", {
       opponentId: opponentId,
       userId: user._id,
       username: user.username,
@@ -35,4 +36,19 @@ export default class Socket {
       opponentId: opponentId
     });        
   }
+
+  updateScore(progress, room, userId) {
+    this.socket.emit("updateScore", {
+      progress: progress,
+      room: room,
+      userId: userId
+    });    
+  }
+
+  initiateRandomGame(user, opponentId) {
+    this.socket.emit("initiateRandomGame", {
+      user: user,
+      opponentId: opponentId
+    });    
+  }  
 }

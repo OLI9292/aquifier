@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { color } from '../../Library/Styles/index';
 
 const Default = styled.h1`
   font-size: 1.2em;

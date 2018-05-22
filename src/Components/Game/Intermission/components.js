@@ -2,38 +2,24 @@ import styled from 'styled-components';
 import { color, media } from '../../../Library/Styles/index';
 import Header from '../../Common/header';
 
+export const ExitImg = styled.img`
+  cursor: pointer;
+  height: 40px;
+  width: 40px;
+  ${media.phone`
+    height: 35px;
+    width: 35px;
+  `};   
+`
+
 export const Container = styled.div`
-  position: absolute;
-  top: 0;
-  width: 100%;
   max-width: 1100px;
   margin: 0 auto;
   text-align: center;
-  background-color: ${props => props.userWon ? "#3DB1FE" : "white"};
-  height: 90%;
+  position: relative;
   ${media.phone`
     font-size: 0.85em;
   `};    
-`
-
-export const BattleStatusHeader = styled.h1`
-  text-transform: uppercase;
-  font-size: 4em;
-  letter-spacing: 5px;
-  color: white;
-  height: 30%;
-  display: flex;
-  color: ${props => props.userWon ? "white" : "#4E4E4E"};
-  align-items: center;
-  justify-content: center;
-`
-
-export const UserUpdateContainer = styled.div`
-  display: flex;
-  color: white;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.4em;
 `
 
 export const TopContainer = styled.div`
@@ -56,7 +42,7 @@ export const LevelProgressContainer = styled.div`
     width: 225px;
     height: 100px;
     margin: 0 auto;
-    display: flex;    
+    display: ${props => props.flex ? "flex" : ""};    
   `};    
 `
 
@@ -139,43 +125,40 @@ export const Table = styled.table`
 
 export const TableHeader = styled.p`
   letter-spacing: 1px;
-  font-family: BrandonGrotesque;
-  font-size: 2em;
-  color: ${props => props.userWon ? "white" : "#3DB1FE"};
+  font-family: BrandonGrotesqueBold;
+  font-size: 1.2em;
+  color: ${color.mainBlue};
 `
 
 export const WordCell = styled.td`
   letter-spacing: 1px;
-  font-size: 1.2em;
   fontFamily: BrandonGrotesque;
-  width: 150px;
-  color: ${props => props.userWon ? "white" : "#3DB1FE"};
+  width: 125px;
 `
 
 export const StarImage = styled.img`
-  height: 18px;
+  height: 12px;
   width: auto;
-  margin-right: 5px;
-  vertical-align: sub;
+  margin-right: 4px;
   ${media.phone`
-    height: 16px;
-    margin-right: 4px;
+    height: 11px;
+    margin-right: 3px;
   `};    
 `
 
 export const Button = styled.div`
+  width: 200px;
+  margin: 0 auto;
+  background-color: ${color.warmYellow};
+  height: 55px;
+  line-height: 55px;
+  border-radius: 30px;
   cursor: pointer;
-  color: ${props => props.userWon ? "white" : "#3DB1FE"};
+  color: ${color.brown};
   text-transform: uppercase;
-  height: 100px;
-  line-height: 100px;
   letter-spacing: 2px;
   font-size: 1.1em;
-`
-
-export const NavigationContainer = styled.div`
-  position: absolute;
-  bottom: 0;
-  width: 100%;
   text-align: center;
+  font-family: BrandonGrotesqueBold;
+  margin-bottom: 20px;
 `

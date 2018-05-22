@@ -6,7 +6,7 @@ import React, { Component } from 'react';
 import { Redirect } from 'react-router';
 import _ from 'underscore';
 import get from 'lodash/get';
-import io from 'socket.io-client';
+import Socket from "../../Models/Socket";
 
 import EloRating from 'elo-rating';
 import { shouldRedirect, mobileCheck } from '../../Library/helpers';
@@ -20,13 +20,9 @@ import {
   saveQuestionAction
 } from '../../Actions/index';
 
-import CONFIG from '../../Config/main';
-
 import Game from './game';
 import Intermission from './Intermission/index';
 import Bot from '../../Models/Bot';
-
-let socket
 
 class GameManager extends Component {
   constructor(props) {
@@ -74,7 +70,6 @@ class GameManager extends Component {
   componentWillReceiveProps(nextProps) {
     const {
       level,
-      loading,
       questions,
       settings
     } = this.state;
@@ -108,13 +103,8 @@ class GameManager extends Component {
   }
 
   emitScore(correct, progress) {
-    if (socket && correct) {
-      socket.emit("score", {
-        progress: progress,
-        room: this.props.game.id,
-        userId: this.props.session.user
-      });
-    }    
+    if (!correct || get(this.props.opponent, "isBot")) { return; }
+    this.socket.updateScore(progress, this.state.settings.id, this.props.session.user);
   }
 
   recordQuestion(question, progress, correct, timeSpent, gameState) {
@@ -145,7 +135,6 @@ class GameManager extends Component {
 
   saveStats = async (session, stats, elo) => {
     const params = { id: get(session, 'user'), stats: stats, platform: 'web', elo: elo };
-    console.log(params);
     return await this.props.dispatch(saveStatsAction(params, session));
   }
 
@@ -166,7 +155,7 @@ class GameManager extends Component {
   }
 
   gameOver = async (accuracy, score, time) => {
-    const { settings, type, stats, opponentProgress } = this.state;
+    const { settings, type, stats, oppProgress } = this.state;
 
     // Return to home screen if demo
     if (type === 'demo') {
@@ -175,11 +164,11 @@ class GameManager extends Component {
     }
 
     if (type === 'battle') {
-      const userWon = opponentProgress !== 1;
+      const userWon = oppProgress !== 1;
       const userElo = this.props.user.elo;
-      const opponentElo = this.props.game.opponentElo;
+      const opponentElo = this.props.opponent.elo;
       const { playerRating } = EloRating.calculate(userElo, opponentElo, userWon);
-      const battleResults = { userWon: userWon, userElo: userElo, newUserElo: playerRating };
+      const battleResults = { userWon: userWon, userElo: userElo, newUserElo: playerRating, eloDiff: Math.abs(userElo - playerRating) };
       this.saveStats(this.props.session, stats, playerRating);
       this.setState({ intermission: true, battleResults: battleResults });
     }
@@ -222,40 +211,20 @@ class GameManager extends Component {
     } else if (settings.type === 'demo') {
       this.loadQuestions({ type: settings.type });
     } else if (settings.type === 'battle') {
-      this.setupBattleGame(this.props.game, user);
+      this.setupBattleGame(user, settings.id);
     } else {
       this.loadQuestions(_.extend({}, settings, { user_id: user._id }));
     }
   }
 
-  setupBattleGame(game, user) {
-    /*game = {
-      id: "e9c3e551-b85f-3c55-1171-5bfa14e11755",
-      opponentElo: 2652,
-      opponentUsername: "melonpinkie",
-      playAgainstBot: true,
-      questionsCount: 3
-    };
-
-    user = { _id: "5ae8471de88f09731dacf8b5" };*/
+  setupBattleGame(user, room) {
+    this.loadQuestions({ type: 'battle', user_id: user._id, questions_count: 15 });
     
-    if (!game) { return; }
-
-    const {
-      id,
-      opponentUsername,
-      questionsCount,
-      playAgainstBot,
-      opponentElo
-    } = game;    
-
-    this.loadQuestions({ type: 'battle', user_id: user._id, questions_count: questionsCount });
-    
-    if (playAgainstBot) {
-      const bot = new Bot(questionsCount, opponentUsername, opponentElo);
+    if (get(this.props.opponent, "isBot")) {
+      const bot = new Bot(15, this.props.username, this.props.opponent.elo);
       this.playBot(bot);
     } else {
-      this.setupSocket(id, user);
+      this.setupSocket(room, user._id);
     }
   }
 
@@ -264,9 +233,9 @@ class GameManager extends Component {
     
     this.timeout = setTimeout(() => {
       bot.nextQuestion();
-      const opponentProgress = Math.min(bot.progress(), 1);
-      this.setState({ opponentProgress });
-      if (opponentProgress === 1) {
+      const oppProgress = Math.min(bot.progress(), 1);
+      this.setState({ oppProgress });
+      if (oppProgress === 1) {
         setTimeout(() => this.gameOver(), 500);
       } else {
         this.playBot(bot);
@@ -274,25 +243,22 @@ class GameManager extends Component {
     }, duration);
   }
 
-  setupSocket(id, user) {
-    console.log("setupSocket")
+  setupSocket(room, userId) {
+    this.socket = new Socket({ query: { userId: userId, room: room } });
+    this.socket.registerHandler(this.onMessageReceived.bind(this));    
+  }
 
-    socket = io.connect("https://dry-ocean-39738.herokuapp.com", { query: `gameId=${id}` });
-
-    socket.on("score", msg => {
-      if (msg.userId === user._id) { return; }
-      const opponentProgress = msg.progress;
-      this.setState(
-        { opponentProgress }, 
-        () => { if (opponentProgress === 1) { this.gameOver(true); } });
-    });
+  onMessageReceived(message) {
+    if (message.type !== this.socket.MESSAGE_TYPES.SCORE_UPDATE) { return; }
+    if (message.data.userId === this.props.session.user) { return; }
+    const oppProgress = message.data.progress;
+    this.setState({ oppProgress }, () => { if (oppProgress === 1) { this.gameOver(true); } });    
   }
 
   loadQuestions(params) {
     if (params && !this.state.loadingQuestions) {
       this.setState({ loadingQuestions: true }, () => {
         const query = queryString.stringify(params);
-        console.log(query)
         this.props.dispatch(fetchQuestionsAction(query));      
       });
     }
@@ -324,13 +290,13 @@ class GameManager extends Component {
     });    
   }
 
-
   render() {
     if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }  
 
     return this.state.intermission
       ?
       <Intermission
+        isBattle={this.state.battleResults !== undefined}
         battleResults={this.state.battleResults}
         loadAllData={settings => this.loadAllData(settings)}
         level={this.state.level}
@@ -344,10 +310,10 @@ class GameManager extends Component {
         level={this.state.level}
         mobile={this.state.mobile}
         end={this.state.end}
-        battleUsernames={{ user: get(this.props.user, "firstName"), opponent: get(this.props.game, "opponentUsername") }}
+        battleUsernames={{ user: get(this.props.user, "username"), opponent: get(this.props.opponent, "username") }}
         time={this.state.time}
         type={this.state.type}
-        opponentProgress={this.state.opponentProgress || 0}
+        oppProgress={this.state.oppProgress || 0}
         notYetStarted={this.state.notYetStarted}
         questions={this.state.questions}
         recordQuestion={this.recordQuestion.bind(this)}
@@ -359,10 +325,10 @@ const mapStateToProps = (state, ownProps) => ({
   session: state.entities.session,
   imageKeys: _.values(state.entities.imageKey),
   user: _.first(_.values(state.entities.user)),
+  opponent: state.entities.opponent,
   questions: _.values(state.entities.questions),
   factoids: _.values(state.entities.factoids),
-  levels: _.values(state.entities.levels),
-  game: _.first(_.values(state.entities.game))
+  levels: _.values(state.entities.levels)
 });
 
 export default connect(mapStateToProps)(GameManager)

@@ -2,30 +2,29 @@ import { Redirect } from 'react-router';
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import get from "lodash/get";
-import styled from 'styled-components';
 import _ from 'underscore';
 
-
 import Bot from '../../../Models/Bot';
-import AddFriends from './addFriends';
+import ChallengeFriends from './challengeFriends';
 import FriendSearch from './friendSearch';
-import CONFIG from '../../../Config/main';
 import Button from '../../Common/button';
 import Header from '../../Common/header';
 import { shouldRedirect } from '../../../Library/helpers';
-import { color, media } from '../../../Library/Styles/index';
+import { color } from '../../../Library/Styles/index';
 
 import {
   ArenaContainer,
   Circle,
-  Text
+  Text,
+  versus
 } from './components';
 
 import {
   findGameAction,
-  fetchUserAction,
+  addFriendAction,
   removeEntityAction,
-  updateEntityAction
+  updateEntityAction,
+  removeFriendAction
 } from '../../../Actions/index';
 
 const USER_ACTIONS = {
@@ -38,8 +37,6 @@ const USER_ACTIONS = {
   VIEWING_CHALLENGE: 7
 };
 
-const COUNTDOWN_DELAY = 3;
-
 class Battle extends Component {
   constructor(props) {
     super(props);
@@ -49,28 +46,12 @@ class Battle extends Component {
   }
 
   componentDidMount() {
+    this.props.dispatch(removeEntityAction("opponent"));
     this.props.onRef(this);
-    this.props.dispatch(removeEntityAction('game'));
 
     if (window.location.search.includes("searchImmediately=true")) {
       this.findGame();
     }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    /*const {
-      user,
-      game
-    } = this.props;
-
-    if (_.isEqual(game, nextProps.game) || !nextProps.game || !user) { return; }
-
-    if (nextProps.game.opponentId) {
-      const { firstName, _id, elo } = user;
-      this.setupSocket(`gameId=${nextProps.game.id}&username=${firstName}&userId=${_id}&userElo=${elo}`);
-    } else {
-      this.setupSocket(`gameId=${nextProps.game.id}`);
-    }*/
   }
 
   componentWillUnmount() {
@@ -79,90 +60,115 @@ class Battle extends Component {
     clearTimeout(this.botTimeout);
   }  
 
+  challengeFriend(data) {
+    this.setState({ currentUserAction: USER_ACTIONS.CHALLENGE_FRIEND });
+  }
+
+  addFriends() {
+    this.setState({ currentUserAction: USER_ACTIONS.ADD_FRIEND })
+  }
+
+  acceptChallenge() {
+    this.props.acceptChallenge(this.props.opponent);
+  }
+
+  declineChallenge() {
+    this.props.dispatch(removeEntityAction("opponent"));
+    this.setState({ currentUserAction: USER_ACTIONS.NONE });
+  }  
+
+  leaveGame() {
+    this.props.dispatch(removeEntityAction("opponent"));
+    this.setState({ currentUserAction: USER_ACTIONS.NONE });
+  }
+
   addFriend(data) {
-    console.log("add friend")
-    console.log(data)
+    const params = { id: data._id, username: data.username, wins: 0, losses: 0 };
+    this.props.dispatch(addFriendAction(this.props.userId, params));
+    this.setState({ currentUserAction: USER_ACTIONS.CHALLENGE_FRIEND });
   }
 
   removeFriend(id) {
-    console.log("remove friend")
-    console.log(id)
+    this.props.dispatch(removeFriendAction(this.props.userId, id));
   }  
 
+  // Start game after countdown
+  startGame(room, opponent, countdown = 3) {
+    clearTimeout(this.botTimeout);
+
+    if (opponent && !this.props.opponent.foundOpponent) {
+      this.props.dispatch(updateEntityAction({ opponent: opponent }));
+    }
+
+    this.setState({
+      currentUserAction: USER_ACTIONS.FOUND_GAME,
+      countdown: countdown
+    });    
+
+    const redirect = "/play/type=battle" + (room ? `&id=${room}` : "");
+
+    this.interval = setInterval(() => {
+      countdown--;
+      this.setState(countdown ? { countdown } : { redirect });
+    }, 1000);
+  }
+
   findGame = async () => {
-    if (!this.props.userId || this.state.matchmaking) { return; }
     this.setState({ currentUserAction: USER_ACTIONS.SEARCHING });
-    await this.props.dispatch(findGameAction(this.props.userId));
-    this.botTimeout = setTimeout(() => this.playBot(), 5000);
+
+    const params = {
+      id: this.props.userId,
+      elo: this.props.user.elo,
+      username: this.props.user.username
+    };
+
+    const result = await this.props.dispatch(findGameAction(params));
+    const foundOpponent = !result.error && get(result.response.entities.opponent, "foundOpponent");
+    
+    if (foundOpponent) {
+      const user = {
+        id: this.props.userId,
+        elo: this.props.user.elo,
+        username: this.props.user.username
+      };
+      const opponentId = result.response.entities.opponent.id;
+      this.props.initiateRandomGame(user, opponentId);
+    } else {
+      // Wait in queue for 5 seconds
+      this.botTimeout = setTimeout(() => this.playBot(), 5000);
+    }
   }   
 
+  // Show new challenge modal
   receiveChallenge(opponent) {
-    console.log("receiveChallenge")
-    console.log(opponent)
-    this.setState({
-      currentUserAction: USER_ACTIONS.VIEWING_CHALLENGE,
-      opponent: {
-        id: opponent.userId,
-        elo: opponent.userElo,
-        username: opponent.username,
-      }
-    });
+    opponent = {
+      _id: opponent.userId,
+      elo: opponent.userElo,
+      username: opponent.username,
+    };
+    this.props.dispatch(updateEntityAction({ opponent: opponent }));
+    this.setState({ currentUserAction: USER_ACTIONS.VIEWING_CHALLENGE });        
   }
 
+  // Show waiting for challenge modal
   submitChallenge(opponent) {
-    this.setState({
-      currentUserAction: USER_ACTIONS.WAITING_FOR_FRIEND,
-      opponent: {
-        id: opponent._id,
-        elo: opponent.elo,
-        username: opponent.username,
-      }
-    });    
+    this.setState({ currentUserAction: USER_ACTIONS.WAITING_FOR_FRIEND });    
+    this.props.dispatch(updateEntityAction({ opponent: opponent }));  
   }
-
-  /*setupSocket(query) {
-
-    return;
-
-    console.log(`${query.includes("&username") ? "Joining" : "Creating"} game room: ${query}.`);
-
-    const socket = io.connect("http://localhost:3002"/*"https://dry-ocean-39738.herokuapp.com", { query: query });
-
-    socket.on("joined", opponent => {
-      clearTimeout(this.botTimeout);
-      
-      if (!_.has(this.props.game, "opponentId")) {
-        const game = { game: _.extend(this.props.game, opponent) };
-        this.props.dispatch(updateEntityAction("game", game));
-      }
-
-      this.setState(
-        { currentUserAction: USER_ACTIONS.FOUND_GAME },
-        () => this.startGame(COUNTDOWN_DELAY)
-      );
-    }); 
-  }*/
 
   playBot() {
     const bot = new Bot(15);
-    const botParams = {
-      playAgainstBot: true,
-      opponentUsername: bot.username,
-      opponentElo: bot.elo
+    
+    const opponent = {
+      _id: "cool-id",
+      elo: bot.elo,
+      username: bot.username,
+      isBot: true 
     };
-    this.setState({ currentUserAction: USER_ACTIONS.FOUND_GAME });
-    const game = { game: _.extend(this.props.game, botParams) };
-    this.props.dispatch(updateEntityAction("game", game));    
-    this.startGame(COUNTDOWN_DELAY);
-  }
 
-  startGame(countdown) {
-    this.setState({ countdown }, () => {
-      this.interval = setInterval(() => {
-        countdown--;
-        this.setState(countdown === 0 ? { redirect: `/play/type=battle`} : { countdown });
-      }, 1000);
-    });
+    this.props.dispatch(updateEntityAction({ opponent: opponent }));  
+    this.setState({ currentUserAction: USER_ACTIONS.FOUND_GAME });
+    this.startGame();
   }
 
   render() {
@@ -170,141 +176,117 @@ class Battle extends Component {
 
     const {
       countdown,
-      currentUserAction,
-      opponent
+      currentUserAction
     } = this.state;
 
     const {
       user,
-      game
+      game,
+      opponent      
     } = this.props;
 
-    const playerInfo = (username, elo) => username && elo && <p>
-      {username} <span style={{color:color.red}}>{elo}</span>
-    </p>;
+    const headerText = {
+      5: "challenge sent!",
+      7: "new challenge!"
+    }[currentUserAction];
 
-    const versus = <svg height={"50"} width={"50"}>
-      <g>
-        <circle fill={color.red} cx={"25"} cy={"25"} r={"20"}>
-          <p>
-            vs
-          </p>
-        </circle>
-        <text x="50%" y="50%" textAnchor="middle" stroke={"white"} strokeWidth="1px" dy=".3em">
-          vs
-        </text>    
-      </g>
-    </svg>;
+    const button = (text, bColor, cb) => <Button.medium
+      style={{backgroundColor:bColor,width:"300px",color:bColor === "white" ? color.mediumLGray : "white",marginTop:"20px"}}
+      onClick={cb.bind(this)}>
+      {text}
+    </Button.medium>;
 
-    const component = () => {
-      if (currentUserAction === USER_ACTIONS.NONE) {
-
-        return <ArenaContainer>
-          {playerInfo(get(user, "username"), get(user, "elo"))}
-          {playerInfo(get(game, "opponentUsername"), get(game, "opponentElo"))}        
-          <Button.medium
-            style={{backgroundColor:color.blue,width:"300px"}}
-            onClick={this.findGame.bind(this)}>
-            find game
-          </Button.medium>
-          <Button.medium
-            style={{backgroundColor:color.green,width:"300px",marginTop:"20px"}}
-            onClick={() => this.setState({ currentUserAction: USER_ACTIONS.CHALLENGE_FRIEND })}>
-            challenge friend
-          </Button.medium>
-          <Button.medium
-            style={{backgroundColor:"white",color:color.mediumLGray,width:"300px"}}
-            onClick={() => this.setState({ currentUserAction: USER_ACTIONS.ADD_FRIEND })}>
-            add friends
-          </Button.medium>          
-        </ArenaContainer>;
-
-      } else if ([USER_ACTIONS.SEARCHING, USER_ACTIONS.FOUND_GAME].includes(currentUserAction)) {
-
-        const [coloring, t1, t2] = currentUserAction === USER_ACTIONS.SEARCHING
-          ? [color.warmYellow, "", "searching"]
-          : [color.red, countdown, "game found"];
-        
-        return <ArenaContainer>
-          {playerInfo(get(user, "firstName"), get(user, "elo"))}
-          {playerInfo(get(game, "opponentUsername"), get(game, "opponentElo"))}
-          <div style={{textAlign:"left",width:"300px"}}>
-            <svg height="80" width="80" style={{display:"inline-block"}}>
-              <g>
-                <Circle animate={currentUserAction === USER_ACTIONS.SEARCHING} strokeColor={coloring} cx="40" cy="40" r="30">
-                </Circle>
-                <text x="50%" y="50%" textAnchor="middle" stroke={color.red} strokeWidth="2px" dy=".3em">
-                  {t1}
-                </text>
-              </g>
-            </svg>
-            <Text color={coloring}>
-              {t2}
-            </Text>
-          </div>
-        </ArenaContainer>;
-
-      } else if (currentUserAction === USER_ACTIONS.CHALLENGE_FRIEND) {
-
-        return <AddFriends
-          challengeFriend={this.props.challengeFriend}
-          addFriends={() => this.setState({ currentUserAction: USER_ACTIONS.ADD_FRIEND })}
-          onlineClientIds={this.props.onlineClientIds || []}
-          friends={get(user, "friends") || []} />;
-
-      } else if (currentUserAction === USER_ACTIONS.ADD_FRIEND) {
-
-        return <FriendSearch
-          addFriend={this.addFriend.bind(this)} />;
-
-      } else if ([USER_ACTIONS.WAITING_FOR_FRIEND, USER_ACTIONS.VIEWING_CHALLENGE].includes(currentUserAction)) {
-        const isWaiting = currentUserAction === USER_ACTIONS.WAITING_FOR_FRIEND;
-
-        return <ArenaContainer>
-          <Header.medium>
-            {isWaiting ? 'challenge sent!' : 'new challenge!'}
-          </Header.medium>
-          {playerInfo(get(user, "username"), get(user, "elo"))}
-          {versus}
-          {playerInfo(get(opponent, "username"), get(opponent, "elo"))}
-          {
-            isWaiting
-              ? 
-              <div>
-                <Button.medium style={{color:color.gray2,backgroundColor:"white",width:"300px",pointerEvents:"none"}}>
-                  waiting...
-                </Button.medium>
-                <Button.medium
-                  onClick={() => {}/*TODO*/}
-                  style={{color:color.gray2,backgroundColor:"white",width:"300px"}}>
-                  leave
-                </Button.medium>                
-              </div>
-              :
-              <div>
-                <Button.medium
-                  onClick={() => this.props.acceptChallenge(opponent)}
-                  style={{backgroundColor:color.green,width:"300px"}}>
-                  accept
-                </Button.medium>
-                <Button.medium
-                  onClick={() => {}/*TODO*/}
-                  style={{color:color.gray2,backgroundColor:"white",width:"300px"}}>
-                  decline
-                </Button.medium>              
-              </div>
-          }
-        </ArenaContainer>;
-      }
+    const circleAndText = isSearching => {
+      const [coloring, t1, t2] = isSearching
+        ? [color.warmYellow, "", "searching"]
+        : [color.red, countdown, "game starting"];      
+      return <div style={{textAlign:"left",width:"300px"}}>
+        <svg height="80" width="80" style={{display:"inline-block"}}>
+          <g>
+            <Circle animate={isSearching} strokeColor={coloring} cx="40" cy="40" r="30">
+            </Circle>
+            <text x="50%" y="50%" textAnchor="middle" stroke={color.red} strokeWidth="2px" dy=".3em">
+              {t1}
+            </text>
+          </g>
+        </svg>
+        <Text color={coloring}>
+          {t2}
+        </Text>
+      </div>;     
     }
 
-    return component();
+    return (
+      <ArenaContainer>
+        <Header.medium style={{color:color.mediumLGray,fontFamily:"BrandonGrotesque",height:"50px",lineHeight:"50px"}}>
+          {headerText}
+        </Header.medium>
+
+        <div style={{height:"200px"}}>
+          <p>
+            {get(user, "username")} <span style={{color:color.red}}>{get(user, "elo")}</span>
+          </p>
+          {versus((user && opponent) ? "visible": "hidden")}
+          <p>
+            {get(opponent, "username")} <span style={{color:color.red}}>{get(opponent, "elo")}</span>
+          </p>      
+        </div>
+
+        <div>
+          {{
+            1: (
+              <div>
+                {button("find game", color.blue, this.findGame)}
+                {button("challenge friend", color.green, this.challengeFriend)}
+                {button("add friends", "white", this.addFriends)}
+              </div>
+            ),
+            2: (
+              <div>
+                {circleAndText(true)}
+              </div>          
+            ),
+            3: (
+              <div>
+                {circleAndText(false)}
+              </div>          
+            ),
+            4: (
+              <ChallengeFriends
+                removeFriend={this.removeFriend.bind(this)}
+                exitModal={() => this.setState({ currentUserAction: USER_ACTIONS.NONE })}
+                challengeFriend={this.props.challengeFriend}
+                addFriends={() => this.setState({ currentUserAction: USER_ACTIONS.ADD_FRIEND })}
+                onlineClientIds={this.props.onlineClientIds || []} />
+            ),
+            5: (
+              <div>
+                {button("leave", "white", this.leaveGame)}
+              </div>          
+            ),
+            6: (
+              <FriendSearch
+                exitModal={() => this.setState({ currentUserAction: USER_ACTIONS.NONE })}
+                addFriend={this.addFriend.bind(this)}
+                onlineClientIds={this.props.onlineClientIds || []}   />
+            ),
+            7: (
+              <div>
+                {button("accept", color.green, this.acceptChallenge)}
+                {button("decline", "white", this.declineChallenge)}
+              </div>          
+            )
+          }[currentUserAction]}
+        </div>
+      </ArenaContainer>
+    )
   }
 }
 
 const mapStateToProps = (state, ownProps) => ({
   user: _.first(_.values(state.entities.user)),
   userId: get(state.entities.session, "user"),
+  opponent: state.entities.opponent,
   game: _.first(_.values(state.entities.game))
 });
 

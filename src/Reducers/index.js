@@ -1,6 +1,5 @@
 import * as ActionTypes from '../Actions'
 import { combineReducers } from 'redux'
-import merge from 'lodash/merge'
 import _ from 'underscore';
 
 // Updates an entity cache in response to any action with response.entities.
@@ -27,13 +26,11 @@ const entities = (state = {}, action) => {
 
   } else if (update) {
 
-    console.log(state)
-    console.log(update)
-    return _.extend(state, update)
+    return _.extend({}, state, update)
 
   } else if (entities) {
 
-    return merge({}, state, entities)
+    return _.extend({}, state, entities)
 
   }
 

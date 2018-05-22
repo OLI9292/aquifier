@@ -2,16 +2,13 @@ import _ from 'underscore';
 
 const USERNAMES = [
   "flowerpotseptum",
-  "snowballrearend",
   "anviljowl",
   "furnaceabdomen",
-  "portalanus",
   "torcharmpit",
   "melonpinkie",
   "blazerodjoint",
   "sulphurankle",
   "potatocranium",
-  "lilypadurethra",
   "bonemealpituitary",
   "birchwoodgland",
   "dandelionfemur",
@@ -30,19 +27,13 @@ const USERNAMES = [
 const SPEEDS = {
   slow: {
     elo: 1000,
-    speed: 6
+    speed: 4.5
   },
   fast: {
     elo: 4000,
-    speed: 2
+    speed: 1.25
   }
 };
-
-const pointsForQuestion = () => _.sample(_.flatten([
-  Array(3).fill(0),
-  Array(14).fill(1),
-  Array(3).fill(2)
-]))
 
 const randomElo = () => {
   const random = Math.random();
@@ -64,7 +55,7 @@ const speedForElo = elo => {
   const { slow, fast } = SPEEDS;
   const eloDiff = fast.elo - slow.elo;
   const speedDiff = fast.speed - slow.speed;
-  return slow.speed + (((elo - slow.elo) / eloDiff) * (fast.speed - slow.speed));
+  return slow.speed + (((elo - slow.elo) / eloDiff) * speedDiff);
 };
 
 export default class Bot {
