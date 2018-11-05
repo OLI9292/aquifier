@@ -4,7 +4,7 @@ import CONFIG from '../Config/main';
 
 const API_ROOT = {
   main: CONFIG.IS_STAGING === "true"
-    ? CONFIG.STAGING_API_ROOT
+    ? "http://localhost:3002/api/v2/"/*CONFIG.STAGING_API_ROOT*/
     : CONFIG.PRODUCTION_API_ROOT
 }
 
@@ -24,6 +24,8 @@ const callApi = (api, endpoint, schema, method, data, session) => {
   if (process.env.NODE_ENV !== "production") {
     console.log(`method: ${method}\napi: ${api}\nendpoint: ${endpoint}\nheaders: ${JSON.stringify(headers)}`)    
   }
+
+  console.log(headers)
 
   return fetch(fullUrl, body)
     .then(response =>

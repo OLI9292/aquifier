@@ -1,24 +1,26 @@
 @font-face {
   font-family: BrandonGrotesque;
-  src: url('../../Library/Fonts/Brandon_reg.otf');
+  src: url("../../Library/Fonts/Brandon_reg.otf");
 }
 
 @font-face {
   font-family: BrandonGrotesqueBold;
-  src: url('../../Library/Fonts/Brandon_bld.otf');
+  src: url("../../Library/Fonts/Brandon_bld.otf");
 }
 
 @font-face {
   font-family: EBGaramond;
-  src: url('../../Library/Fonts/EBGaramond_reg.ttf');
+  src: url("../../Library/Fonts/EBGaramond_reg.ttf");
 }
 
 @font-face {
   font-family: EBGaramondSemiBold;
-  src: url('../../Library/Fonts/EBGaramond_semibld.ttf');
+  src: url("../../Library/Fonts/EBGaramond_semibld.ttf");
 }
 
-html, body, #root {
+html,
+body,
+#root {
   width: 100%;
   height: 100%;
   margin: 0;
@@ -27,21 +29,23 @@ html, body, #root {
 }
 
 ::-webkit-input-placeholder {
-   color: #d9d9d9;
+  color: #d9d9d9;
 }
 
-:-moz-placeholder { /* Firefox 18- */
-   color: #d9d9d9; 
-   opacity:  1;
+:-moz-placeholder {
+  /* Firefox 18- */
+  color: #d9d9d9;
+  opacity: 1;
 }
 
-::-moz-placeholder {  /* Firefox 19+ */
-   color: #d9d9d9;  
-   opacity:  1;
+::-moz-placeholder {
+  /* Firefox 19+ */
+  color: #d9d9d9;
+  opacity: 1;
 }
 
-:-ms-input-placeholder {  
-   color: #d9d9d9;  
+:-ms-input-placeholder {
+  color: #d9d9d9;
 }
 
 .enter {
@@ -66,7 +70,7 @@ html, body, #root {
 
 .CircularProgressbar-text {
   font-family: BrandonGrotesqueBold;
-  fill: #58595B !important;
+  fill: #58595b !important;
   dominant-baseline: central !important;
   letter-spacing: 1px;
 }
