@@ -26,13 +26,17 @@ class ProgressBar extends Component {
       return <Mast key={i} marginLeft={`${marginLeft}px`} float={last}>
         <Flag color={colors[i]} />
       </Mast>
-    })
+    });
 
     return (
       <Container ref={container => {this.container = container}}>
         {checkpoints}        
-        <BackgroundBar width={`${progressBarWidth * 100}%`} />
-        <Progress progress={progress} />
+        <BackgroundBar
+          width={`${progressBarWidth * 100}%`} />
+        <Progress
+          opp={this.props.opponent}
+          complete={this.props.progress === 1}
+          progress={progress} />
       </Container>
     );
   }
@@ -50,21 +54,25 @@ const Container = styled.div`
 const Progress = styled.div`
   width: ${props => props.progress};
   height: 13px;
-  margin-top: -2px;
-  background: linear-gradient(to right, ${color.brightYellow}, ${color.warmYellow});
-  border-radius: 8px;
+  background: linear-gradient(
+    to right,
+    ${props => props.opp ? color.blue : color.brightYellow},
+    ${props => props.opp ? color.blue : color.warmYellow}
+  );
+  border-radius: ${props => props.complete ? "8px" : "8px 0 0 8px"};
   z-index: 1000;
   transition: 0.2s;
   position: absolute;
+  box-sizing: border-box;
   left: 15%;
 `
 
 const BackgroundBar = styled.div`
   width: ${props => props.width};
-  height: 9px;
+  height: 13px;
   z-index: 5;
   background-color: ${color.lightGray};
-  border-radius: 5px;
+  border-radius: 8px;
   left: 15%;
   position: absolute;
 `

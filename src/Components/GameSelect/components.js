@@ -1,6 +1,23 @@
 import styled from 'styled-components';
 import { color, media } from '../../Library/Styles/index';
 
+export const Container = styled.div`
+  height: 90vh;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  background-color: white;
+`
+
+export const Main = styled.div`
+  flex: auto;
+  margin-right: 25px;
+  position: relative;
+  ${media.phone`
+    margin: 0;
+  `};
+`
+
 export const Content = styled.div`
   width: 100%;
   background-color: white;
@@ -11,18 +28,6 @@ export const Content = styled.div`
     border-radius: 0px;
     margin-top: 10px;
   `};      
-`
-
-export const GrayLine = styled.div`
-  position: absolute;
-  width: 100%;
-  height: 10px;
-  background-color: white;
-  border-top: 2px solid ${color.lightestGray};
-  ${media.phone`
-    border: 0;
-    margin-top: -5px;
-  `};  
 `
 
 export const Header = styled.p`
@@ -42,16 +47,6 @@ export const LeaderboardListItem = styled.li`
   display: flex;
   align-items: center;
   justify-content: start;
-`
-
-export const Main = styled.div`
-  flex: auto;
-  margin-right: 25px;
-  position: relative;
-  ${media.phone`
-    margin-right: 0;
-    padding-bottom: 120px;
-  `};
 `
 
 export const ProgressListItem = styled.li`
@@ -96,34 +91,27 @@ export const StatName = styled.div`
 
 export const Tab = styled.div`
   flex: 1;
-  font-size: 0.9em;
+  font-size: 1.3em;
+  text-transform: capitalize;
   cursor: pointer;
-  height: 50px;
-  line-height: 42px;
+  height: 60px;
+  line-height: 60px;
   text-align: center;
-  background-color: ${props => props.selected ? color.red : color.lightBlue};
-  color: white;
-  border-radius: 10px;
-  font-family: BrandonGrotesqueBold;
+  border-bottom: 6px solid ${props => props.selected ? color.warmYellow : color.lightGray};
+  box-sizing: border-box;
+  color: ${props => props.selected ? color.warmYellow : color.lightGray};
+  cursor: pointer;
+  font-family: BrandonGrotesque;
   margin: ${props => props.margin};
-  ${media.phone`
-    background-color: ${props => props.selected ? color.red : color.lightGray};
-    color: ${props => color[props.selected ? 'white' : 'gray']};
-  `};  
 `
 
 export const TabContainer = styled.div`
   box-sizing: border-box;
   padding: 0px 1px;
-  position: absolute;
   display: flex;
   justify-content: space-between;
   width: 100%;
-  margin-top: -40px;
-  background-color: transparent;
-  ${media.phone`
-    margin-top: -35px;
-  `};    
+  background-color: white;
 `
 
 export const MiniProgressMobileContainer = styled.div`

@@ -1,27 +1,30 @@
+import { Redirect } from 'react-router';
 import _ from 'underscore';
 import { connect } from 'react-redux'
 import React, { Component } from 'react';
+import get from "lodash/get";
 
-import MiniLeaderboard from './miniLeaderboard';
-import MiniProgress from './miniProgress';
-import MiniProgressMobile from './miniProgressMobile';
+import Header from '../Common/header';
+import { shouldRedirect } from '../../Library/helpers'
+// import MiniLeaderboard from './miniLeaderboard';
+// import MiniProgress from './miniProgress';
+// import MiniProgressMobile from './miniProgressMobile';
 import Train from './Train/index';
 import JoinGame from './JoinGame/index';
-import Explore from './Explore/index';
+import Battle from './Battle/index';
+import Socket from "../../Models/Socket";
 
 import { fetchLevelsAction } from '../../Actions/index';
 
 import {
+  Container,
   Content,
-  GrayLine,
   Main,
-  MiniProgressMobileContainer,
   Tab,
-  TabContainer,
-  Sidebar
+  TabContainer
 } from './components';
 
-const GAME_TYPES = ['train', 'explore', 'join game'];
+const GAME_TYPES = ['battle', 'train', 'join'];
 
 class GameSelect extends Component {
   constructor(props) {
@@ -36,12 +39,55 @@ class GameSelect extends Component {
   }
 
   componentDidMount() {
-    window.addEventListener('scroll', this.checkScroll);    
-    if (_.isEmpty(this.props.levels)) { this.props.dispatch(fetchLevelsAction()); }
+    // window.addEventListener('scroll', this.checkScroll);    
+    // if (_.isEmpty(this.props.levels)) { this.props.dispatch(fetchLevelsAction()); }
+    this.setupSocket(this.props);
   }
 
   componentWillUnmount() {
-    window.removeEventListener('scroll', this.checkScroll);
+    // window.removeEventListener('scroll', this.checkScroll);
+  }  
+
+  componentWillReceiveProps(nextProps) {
+    this.setupSocket(nextProps);    
+  }
+
+  // Join game lobby
+  setupSocket(props) {
+    if (!props.session || this.state.socketSetup) { return; }
+    this.setState({ socketSetup: true });
+    this.socket = new Socket({ query: { userId: props.session.user } });
+    this.socket.registerHandler(this.onMessageReceived.bind(this));    
+  }
+
+  // Respond to web socket messages
+  onMessageReceived(message) {
+    switch (message.type) {
+      case this.socket.MESSAGE_TYPES.ONLINE_CLIENTS: 
+        return this.setState({ onlineClientIds: message.data });
+      
+      case this.socket.MESSAGE_TYPES.CHALLENGE_REQUEST: 
+        return this.arena.receiveChallenge(message.data);
+      
+      case this.socket.MESSAGE_TYPES.START_GAME: 
+        return this.arena.startGame(message.data.room, message.data.opponent);
+
+      default:
+        break
+    }
+  }
+
+  acceptChallenge(opponent) {
+    this.socket.acceptChallenge(this.props.user._id, opponent._id);
+  }
+
+  initiateRandomGame(userId, opponentId) {
+    this.socket.initiateRandomGame(userId, opponentId); 
+  }
+
+  challengeFriend(opponent) {
+    this.arena.submitChallenge(opponent);
+    this.socket.submitChallenge(this.props.user, opponent._id);
   }
 
   checkScroll() {
@@ -53,52 +99,56 @@ class GameSelect extends Component {
   }
 
   render() {
+    if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }    
+
     const {
       levels,
-      session,
       user
     } = this.props;
 
     const mainComponent = {
+      battle: <Battle
+        onRef={ref => (this.arena = ref)}
+        initiateRandomGame={this.initiateRandomGame.bind(this)}
+        acceptChallenge={this.acceptChallenge.bind(this)}
+        challengeFriend={this.challengeFriend.bind(this)}
+        onlineClientIds={this.state.onlineClientIds}
+        user={user} />,
       train: <Train 
         user={user} 
         levels={_.filter(levels, l => _.contains(['train', 'speed'], l.type))} />,
-      explore: <Explore
-        levels={_.filter(levels, l => l.type === 'topic')} />,
-      'join game': <JoinGame />,
+      join: <JoinGame />,
     }[this.state.gameType];
 
-    const tabs = (() => {
-      return <TabContainer>
-        {_.map(GAME_TYPES, (gameType, i) => {
-          const margin = i === 1 ? '0px 20px 0px 20px' : '0';
-          return <Tab
-            key={i}
-            onClick={() => this.setState({ gameType })}
-            selected={this.state.gameType === gameType}
-            margin={margin}>
-            {gameType.toUpperCase()}
-          </Tab>
-        })}
-      </TabContainer>
-    })();
-
-    const sidebarStyles = this.state.gameType === 'train'
-      ? { position: 'fixed', width: '250px', bottom: this.state.fixedSidebar ? '' : '120px' }
-      : { width: '250px' };
+    const tab = (gameType, idx) => <Tab
+      key={idx}
+      onClick={() => this.setState({ gameType })}
+      selected={this.state.gameType === gameType}
+      margin={idx === 1 ? '0px 3px' : '0'}>
+      {gameType}
+    </Tab>;
 
     return (
-      <div style={{display:'flex',paddingTop:'40px'}} ref={container => this.container = container}>
+      <Container ref={container => this.container = container}>
+
+        <Header.medium style={{textAlign:"center"}}>
+          play
+        </Header.medium>
+
         <Main>
-          {tabs}
+          <TabContainer>
+            {_.map(GAME_TYPES, (gameType, idx) => tab(gameType, idx))}
+          </TabContainer>
+
           <Content>
-            <GrayLine />
-            <MiniProgressMobileContainer>
-              {user && <MiniProgressMobile user={user} />}
-            </MiniProgressMobileContainer>
             {mainComponent}
           </Content>
         </Main>
+      </Container>
+    );
+  }
+}
+/*
         <Sidebar>
           <div
             style={sidebarStyles} 
@@ -108,11 +158,7 @@ class GameSelect extends Component {
             {user && <MiniProgress user={user} />}
           </div>
         </Sidebar>
-      </div>
-    );
-  }
-}
-
+        */
 const mapStateToProps = (state, ownProps) => ({
   session: state.entities.session,
   user: _.first(_.values(state.entities.user)),

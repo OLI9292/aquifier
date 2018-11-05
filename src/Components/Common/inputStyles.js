@@ -2,7 +2,7 @@ import { color } from '../../Library/Styles/index';
 
 const Default = {
   border: `2px solid ${color.lightGray}`,
-  borderRadius: '5px',
+  borderRadius: '10px',
   fontFamily: 'BrandonGrotesque',
   fontSize: '1.25em',
   outline: 'none',

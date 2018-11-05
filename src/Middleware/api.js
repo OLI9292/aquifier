@@ -1,9 +1,11 @@
 import { normalize, schema } from 'normalizr'
 import _ from 'underscore';
+import CONFIG from '../Config/main';
 
 const API_ROOT = {
-  'accounts': 'https://desolate-plains-35942.herokuapp.com/api/v2/',
-  'curriculum': 'https://desolate-plains-35942.herokuapp.com/api/v2/'
+  main: CONFIG.IS_STAGING === "true"
+    ? "http://localhost:3002/api/v2/"/*CONFIG.STAGING_API_ROOT*/
+    : CONFIG.PRODUCTION_API_ROOT
 }
 
 const formatSession = session => session ? {
@@ -19,15 +21,19 @@ const callApi = (api, endpoint, schema, method, data, session) => {
   const headers = _.extend({}, { 'Content-Type': 'application/json' }, formatSession(session));
   const body = { method: method, body: JSON.stringify(data), headers: headers };
 
-  console.log(`method: ${method}\napi: ${api}\nendpoint: ${endpoint}\nheaders: ${JSON.stringify(headers)}`)
-  
+  if (process.env.NODE_ENV !== "production") {
+    console.log(`method: ${method}\napi: ${api}\nendpoint: ${endpoint}\nheaders: ${JSON.stringify(headers)}`)    
+  }
+
+  console.log(headers)
+
   return fetch(fullUrl, body)
     .then(response =>
       response.json().then(json => {
-        if (!response.ok) { return Promise.reject(json) }
+        if (!response.ok) { return Promise.reject(json); }
         const normalized = Object.assign({},normalize(json, schema))
         // Removes undefined keys
-        normalized.entities = _.mapObject(normalized.entities, (v, k) => v.undefined ? v.undefined : v)
+        normalized.entities = _.mapObject(normalized.entities, (v, k) => v.undefined ? v.undefined : v);
         return normalized
       })
     )
@@ -37,29 +43,49 @@ const callApi = (api, endpoint, schema, method, data, session) => {
 // to a flat form where models are placed in `entities`, and nested
 // JSON objects are replaced with their IDs
 
+const factoidSchema = new schema.Entity('factoids', {}, { idAttribute: '_id' })
 const levelSchema = new schema.Entity('levels', {}, { idAttribute: '_id' })
 const questionSchema = new schema.Entity('questions')
-const rankSchema = new schema.Entity('ranks')
+
+const rankSchema = new schema.Entity('ranks', {})
+const userRankSchema = new schema.Entity('userRanks', {})
+
 const rootSchema = new schema.Entity('roots', {}, { idAttribute: '_id' })
 const schoolSchema = new schema.Entity('school', {}, { idAttribute: '_id' })
 const userSchema = new schema.Entity('user', {}, { idAttribute: '_id' })
+const friendSchema = new schema.Entity('friends', {}, { idAttribute: '_id' })
+const opponentSchema = new schema.Entity('opponent', {}, { idAttribute: '_id' })
+const gameSchema = new schema.Entity('game', {})
 const sessionSchema = new schema.Entity('session', { user: userSchema })
 const studentsSchema = new schema.Entity('students', { students: [userSchema] })
 const successSchema = new schema.Entity('Success')
 const wordSchema = new schema.Entity('words', {}, { idAttribute: '_id' })
+const testSchema = new schema.Entity('test', {})
+const imageScheme = new schema.Entity('image')
+const imageKeySchema = new schema.Entity('imageKey')
 
 // Schemas for API responses.
 export const Schemas = {
+  FACTOID_ARRAY: [factoidSchema],
   LEADERBOARDS: [rankSchema],
+  USER_RANKS: [userRankSchema],
   LEVEL_ARRAY: [levelSchema],
   QUESTION_ARRAY: questionSchema,
   ROOT_ARRAY: [rootSchema],
   SCHOOL: schoolSchema,
+  FRIEND: friendSchema,
+  FRIEND_ARRAY: [friendSchema],
+  OPPONENT: opponentSchema,
+  OPPONENT_ARRAY: [opponentSchema],
   SESSION: sessionSchema,
   STUDENT_ARRAY: studentsSchema,
   SUCCESS: successSchema,
   USER: userSchema,
-  WORD_ARRAY: [wordSchema]
+  GAME: gameSchema,
+  WORD_ARRAY: [wordSchema],
+  TEST: testSchema,
+  IMAGE: imageScheme,
+  IMAGE_ARRAY: [imageKeySchema]
 }
 
 // Action key that carries API call info interpreted by this Redux middleware.

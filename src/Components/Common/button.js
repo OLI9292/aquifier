@@ -8,15 +8,14 @@ const Default = styled.button`
   background-color: ${props => props.bColor || color.mainBlue};
   text-align: center;
   border-radius: 40px;
-  padding: 0px 15px;
+  padding: 0px 25px;
   border-width: 0px;
   color: ${props => props.fColor || 'white'};
   font-family: BrandonGrotesqueBold;
   cursor: pointer;
   height: 60px;
   line-height: 60px;
-  width: 180px;
-  font-size: 1.2em;
+  font-size: 1em;
   text-transform: uppercase;
   letter-spacing: 2px;
 `
@@ -25,7 +24,7 @@ const Large = Default.extend`
   height: 70px;
   line-height: 70px;
   width: 180px;
-  font-size: 1.6em;
+  font-size: 1.4em;
 `
 
 const Small = Default.extend`
@@ -33,14 +32,14 @@ const Small = Default.extend`
   line-height: 45px;
   width: 150px;
   font-size: 1em;
-  letter-spacing: 1px;
+  letter-spacing: 0.85px;
 `
 
 const ExtraSmall = Default.extend`
   height: 40px;
   line-height: 40px;
   width: 120px;
-  font-size: 0.8em;
+  font-size: 0.7em;
   letter-spacing: 1px;
 `
 

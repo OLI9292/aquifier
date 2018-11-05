@@ -48,3 +48,11 @@ export const TableContainer = styled.div`
     margin-top: 100px;
   `};  
 `
+
+export const Table = styled.table`
+  padding: 5px 0px 20px 0px;
+  width: 100%;
+  margin: 0 auto;
+  border-collapse: separate;
+  border-spacing: 0;
+`

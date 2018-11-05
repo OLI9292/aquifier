@@ -3,11 +3,15 @@ import React, { Component } from 'react';
 import { Redirect } from 'react-router';
 import styled from 'styled-components';
 import _ from 'underscore';
+import get from 'lodash/get';
 
 import Textarea from '../Common/textarea';
 import { shouldRedirect } from '../../Library/helpers';
 import InputStyles from '../Common/inputStyles';
-import { color, media } from '../../Library/Styles/index';
+import { Container } from '../Common/container';
+import Header from '../Common/header';
+
+import { color } from '../../Library/Styles/index';
 
 class InfoForm extends Component {
   constructor(props) {
@@ -61,6 +65,9 @@ class InfoForm extends Component {
     this.state.inputs.forEach((i) => obj[i.name] = i.value );
     obj.comments = this.state.comments;
     obj.date = Date.now();
+    obj.message = get(obj, 'firstName') + ' ' + get(obj, 'lastName') +
+    ' (Email: ' + get(obj, 'email') + ', School: ' + get(obj, 'school') + ') submitted a form.';
+    if (obj.comments.length) { obj.message += ` - ${obj.comments}`; }
     return obj;
   }
 
@@ -137,15 +144,10 @@ class InfoForm extends Component {
     })()
 
     return (
-      <Container>
-        <MobileExit
-          onClick={() => this.setState({ redirect: '/' })}
-          src={require('../../Library/Images/exit-gray.png')}
-          display={this.props.smallScreen ? 'fixed' : 'none'} />
-
-        <h1 style={{height:'10px',lineHeight:'0px',letterSpacing:'1px'}}>
-          START FREE TRIAL
-        </h1>
+      <ContainerExt>
+        <Header.large style={{color:'black'}}>
+          start free trial
+        </Header.large>
 
         {description}
         
@@ -153,8 +155,8 @@ class InfoForm extends Component {
 
           {inputs}
 
-          <Textarea.default
-            style={{width:'100%',height:'200px',padding:'10px','fontSize':'1.25em'}}
+          <Textarea.medium
+            style={{height:'200px',fontSize:'1.25em',lineHeight:'35px',padding:'10px'}}
             name='comments'
             placeholder='comments'
             onChange={(e) => this.setState({ comments: e.target.value })} />
@@ -168,31 +170,18 @@ class InfoForm extends Component {
             {this.state.success ? 'Submitted.  We\'ll be in touch soon!' : this.state.errorMessage}
           </ErrorMessage>
         </form>
-      </Container>
+      </ContainerExt>
     );
   }
 }
 
-const MobileExit = styled.img`
-  height: 25px;
-  width: auto;
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  cursor: pointer;
+const ContainerExt = Container.extend`
+  box-sizing: border-box;
+  padding: 20px 5% 20px 5%;
+  text-align: left;
+  margin-top: 70px;
 `
 
-const Container = styled.div`
-  padding: 50px;
-  ${media.phone`
-    position: absolute;
-    z-index: 100000000;
-    background-color: white;
-    width: 100%;
-    padding: 100px 50px 50px 50px;
-    box-sizing: border-box;
-  `};
-`
 
 // TODO: - move to inputStyles.js
 const SubmitButton = styled.input`
@@ -214,9 +203,6 @@ const SubmitButton = styled.input`
 `
 
 const ErrorMessage = styled.p`
-  font-size: 1.25em;
-  position: relative;
-  padding-left: 10%;
   color: ${props => props.success ? color.green : color.red};
   visibility: ${props => props.show ? 'visible' : 'hidden'};
 `

@@ -46,22 +46,22 @@ class Train extends Component {
 
   formatLevels(allLevels, userLevels) {
     const completedLevels = _.filter(allLevels, level => {
-      const userLevel = _.find(userLevels, ul => ul.id === level._id);
-      return userLevel && userLevel.progress.length >= level.progressBars;
+      const uLvl = _.find(userLevels, ul => ul.id === level._id);
+      return uLvl && (level.type === 'speed' || (uLvl.progress.length >= level.progressBars));
     });
     
-    const completed = _.uniq(_.pluck(completedLevels, 'ladder')).sort();
+    const completed = _.uniq(_.pluck(completedLevels, 'ladder')).sort((a, b) => a > b);
     const open = completed.length ? completed.concat(_.last(completed) + 1) : [1];
     
     const furthest = _.last(open);
     const furthestLevel = _.find(allLevels, l => l.ladder === furthest);
-    
+        
     const groupedByLadder = _.groupBy(_.map(allLevels, level => {
       level.completed = _.contains(_.pluck(completedLevels, '_id'), level._id);
-      level.locked = false// !_.contains(open, level.ladder);
+      level.locked = !_.contains(open, level.ladder);
       return level;
     }), level => `${level.ladder}${level.type === 'speed' ? '-speed' : ''}`);
-
+    
     return {
       furthest: furthestLevel,
       groupedByLadder: groupedByLadder
@@ -94,6 +94,17 @@ class Train extends Component {
     return images[imgKey || 'default.png'];
   }
 
+  ladders() {
+    const ladders = _.uniq(_.pluck(_.flatten(_.values(this.state.levels)), 'ladder')).sort((a, b) => a - b);
+    _.forEach(_.clone(ladders), num => {
+      const speedKey = `${num}-speed`;
+      const index = ladders.indexOf(num) + 1;
+      const exists = _.contains(_.keys(this.state.levels), speedKey);
+      if (exists) { ladders.splice(index, 0, speedKey); }
+    })
+    return ladders;
+  }
+
   render() {
     if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }
 
@@ -101,12 +112,26 @@ class Train extends Component {
     const { expanded, furthestLevel, images } = this.state;
 
     const levelComponents = (() => {
-      return _.map(_.keys(this.state.levels).sort(), ladder => {
-        
+      const ladders = this.ladders();
+      return _.map(ladders, ladder => {
         const levels = _.map(this.state.levels[ladder].slice(0,2), level => {
           const userLevel = _.find(user.levels, l => l.id === level._id);
           const userStages = userLevel ? userLevel.progress : [];
-          const progress = userStages.length / level.progressBars;
+          const progress = level.type === 'speed'
+            ? level.completed ? 1 : 0
+            : userStages.length / level.progressBars;
+
+          level.avgAcc = level.completed && 
+            parseInt(
+              parseFloat(_.reduce(userLevel.progress, (acc, curr) => acc + curr.bestAccuracy, 0) * 100) /
+              parseFloat(Math.max(userLevel.progress.length, 0)), 10);
+          level.bestScore = level.type === 'speed' && level.completed && userLevel.progress[0].bestScore;
+          level.mastered = level.avgAcc === 100;
+          
+          if (level.type === 'speed') {
+            const index = parseInt(_.filter(ladders, l => String(l).includes('speed')).indexOf(ladder), 0) + 1;
+            level.name = 'speed ' + index;
+          }
 
           const isExpanded = level._id === expanded;
 

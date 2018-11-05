@@ -68,3 +68,15 @@ export const isHome = () => window.location.pathname === '/'
 export const shouldRedirect = (state, currentLocation) => state.redirect && !currentLocation.href.endsWith(state.redirect)
 
 export const mobileCheck = () => window.matchMedia("only screen and (max-width: 760px)").matches
+
+export const caseInsEq = (strA, strB) => _.isString(strA) && _.isString(strB) && (strA.toLowerCase() === strB.toLowerCase())
+
+// from https://ecommerce.shopify.com/c/ecommerce-design/t/ordinal-number-in-javascript-1st-2nd-3rd-4th-29259
+export const getOrdinalPosition = int => {
+  if (!_.isNumber(int)) { return 'N/A'; }
+  const s = ["th","st","nd","rd"]
+  const v = int % 100;
+  return int+(s[(v-20)%10]||s[v]||s[0]);
+}
+
+export const initials = (f, l) => (l ? `${f.charAt(0)}${l.charAt(0)}` : f.charAt(0)).toUpperCase()

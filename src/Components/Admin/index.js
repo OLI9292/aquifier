@@ -66,11 +66,10 @@ class Admin extends Component {
     const { players, accessCode } = this.state;
     if (!accessCode) { return; }
 
-    // TODO - uncomment
-    /*if (_.isEmpty(players)) {
+    if (_.isEmpty(players)) {
       this.setState({ error: 'Games require at least 1 player.' });
       return;
-    }*/
+    }
     
     const end = moment().add(this.state.settings.time, 'minutes');
     const update = { status: 1, end: end.unix() };
