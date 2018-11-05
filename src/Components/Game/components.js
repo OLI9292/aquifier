@@ -1,5 +1,5 @@
-import styled from 'styled-components';
-import { color, media } from '../../Library/Styles/index';
+import styled from "styled-components"
+import { color, media } from "../../Library/Styles/index"
 
 //
 // ALERT
@@ -12,24 +12,24 @@ export const AlertContainer = styled.div`
   align-items: center;
   transition: opacity 0.2s;
   display: ${props => props.display};
-  opacity: ${props => props.hide ? 0 : 1};
+  opacity: ${props => (props.hide ? 0 : 1)};
 `
 
-export const AlertImage = styled.img`  
+export const AlertImage = styled.img`
   height: 100%;
   width: auto;
   margin-right: 5px;
   ${media.phone`
     margin-right: 10px;
-  `}    
+  `};
 `
 
-export const AlertText = styled.p`    
+export const AlertText = styled.p`
   color: ${props => props.color};
   text-transform: uppercase;
   ${media.phone`
     display: none;
-  `}   
+  `};
 `
 
 //
@@ -40,12 +40,13 @@ export const Answer = styled.div`
   height: 25%;
   width: 100%;
   display: flex;
+  position: relative;
   justify-content: center;
   align-items: center;
   ${media.phone`
     width: 80%;
     margin: 0 auto;
-  `}   
+  `};
 `
 
 export const AnswerSpace = styled.div`
@@ -56,7 +57,7 @@ export const AnswerSpace = styled.div`
 export const AnswerValue = styled.p`
   text-align: center;
   font-size: 2.25em;
-  visibility: ${props => props.missing ? 'hidden' : 'visible'};
+  visibility: ${props => (props.missing ? "hidden" : "visible")};
   text-transform: uppercase;
   height: 0px;
   line-height: 0px;
@@ -98,7 +99,7 @@ export const Bottom = styled.div`
   margin: 0 auto;
   ${media.phone`
     font-size: 1.25em;
-  `}   
+  `};
 `
 
 //
@@ -119,7 +120,7 @@ export const ButtonHint = styled.span`
   display: block;
   font-size: ${props => props.fontSize};
   opacity: ${props => props.opacity};
-  transition: opacity 200ms;  
+  transition: opacity 200ms;
 `
 
 export const ButtonValue = styled.span`
@@ -171,42 +172,31 @@ export const Choices = styled.div`
   ${media.phone`
     grid-template-columns: ${props => props.mobileGrid.column};
     grid-template-rows: ${props => props.mobileGrid.row};
-  `}    
+  `};
 `
 
 export const ChoiceButton = styled.div`
   background-color: ${props => props.bColor};
-  height: ${props => props.long ? '80%' : '100px'};
-  font-size: ${props => props.long ? '0.75em' : '1em'};
+  height: ${props => (props.long ? "80%" : "100px")};
+  font-size: ${props => (props.long ? "0.75em" : "1em")};
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: ${props => props.square
-    ? '100px'
-    : props.long
-      ? '80%'
-      : '250px'};
+  width: ${props => (props.square ? "100px" : props.long ? "80%" : "250px")};
   border-radius: 20px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.25);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
   transition-duration: 0.15s;
   ${media.phone`
     height: 60px;
-    width: ${props => props.square
-      ? '60px'
-      : props.long
-        ? '80%'
-        : '150px'};    
+    width: ${props =>
+      props.square ? "60px" : props.long ? "80%" : "150px"};    
     border-radius: 15px;
-  `}
-  ${media.smallComp`
+  `} ${media.smallComp`
     height: 80px;
-    width: ${props => props.square
-      ? '80px'
-      : props.long
-        ? '80%'
-        : '180px'};       
-  `}
+    width: ${props =>
+      props.square ? "80px" : props.long ? "80%" : "180px"};       
+  `};
 `
 
 //
@@ -214,9 +204,13 @@ export const ChoiceButton = styled.div`
 //
 
 export const ExitOut = styled.img`
-  height: 100%;
-  width: 100%;
+  height: 40px;
+  width: 40px;
   cursor: pointer;
+  ${media.phone`
+    width: 30px;
+    height: 30px;
+`};
 `
 
 //
@@ -229,28 +223,28 @@ export const HelpButton = styled.div`
   background-color: ${props => props.color};
   color: white;
   border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.25);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
   z-index: 9999;
   cursor: pointer;
   display: flex;
-  opacity: ${props => props.hide ? "0" : "1"};
+  opacity: ${props => (props.hide ? "0" : "1")};
   align-items: center;
   text-align: center;
   font-size: 1.15em;
-  justify-content: center;  
-  transition: opacity ${props => props.hide ? "0s" : "0.5s"};
+  justify-content: center;
+  transition: opacity ${props => (props.hide ? "0s" : "0.5s")};
   ${media.phone`
     width: 100px;
     height: 40px;
-  `}    
+  `};
 `
 
 export const HelpSpan = styled.span`
   font-size: 0.65em;
-  display: ${props => props.hide ? 'block' : 'none'};
+  display: ${props => (props.hide ? "block" : "none")};
   ${media.phone`
     display: none;
-  `}
+  `};
 `
 
 //
@@ -258,7 +252,7 @@ export const HelpSpan = styled.span`
 //
 
 export const Prompt = styled.div`
-  position: absolute; 
+  position: absolute;
   display: table;
   width: 100%;
   height: 100%;
@@ -286,7 +280,7 @@ export const PromptValue = styled.p`
 export const StageDot = styled.div`
   width: 15px;
   height: 7px;
-  background-color: ${props => props.green ? color.green : color.lightGray};
+  background-color: ${props => (props.green ? color.green : color.lightGray)};
   border-radius: 4px;
   display: inline-block;
   margin-right: 5px;
