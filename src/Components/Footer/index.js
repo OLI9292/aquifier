@@ -8,17 +8,18 @@ class Footer extends Component {
     const link = (text, path) => {
       return <Link
         to={path}
-        style={{textDecoration:'none',color:'black',fontFamily:'BrandonGrotesque',fontSize:'0.9em'}}>
+        style={{textTransform:'uppercase',textDecoration:'none',color:color.gray2,fontSize:'0.75em',letterSpacing:'1px'}}>
         {text}
       </Link>
     }
 
     return (
       <Container hide={this.props.smallScreen}>
-        {link('About', '/about')}
-        {link('Methodology', '/methodology')}
-        {link('Partners', '/partners')}
-        {link('support@playwordcraft.com', 'mailto:support@playwordcraft.com')}
+        {link('about', '/team')}
+        {link('research', '/research')}
+        {link('contact', '/contact')}
+        {link('privacy policy', '/privacy')}
+        {link('terms of service', '/terms')}
       </Container>
     );
   }
@@ -26,12 +27,12 @@ class Footer extends Component {
 
 const Container = styled.div`
   align-items: center;
-  color: ${color.mediumGray};
   display: ${props => props.hide ? 'none' : 'flex'};
   font-family: BrandonGrotesqueBold;
   height: 120px;
   justify-content: space-evenly;
-  width: 100%;
+  width: 80%;
+  margin: 0 auto;
   ${media.phone`
     display: none;
   `};  

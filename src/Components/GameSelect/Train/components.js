@@ -14,11 +14,12 @@ export const InfoIconContainer = styled.div`
   position: absolute;
   top: 0;
   right: 0;
-  z-index: 40;
+  z-index: 1;
   margin-top: -5px;
   margin-right: -5px;
-  height: 30px;
-  width: 30px;
+  height: ${props => props.large ? '35px' : '25px'};
+  width: ${props => props.large ? '35px' : '25px'};
+  font-size: ${props => props.large ? '0.9em' : '0.8em'};
   border-radius: 20px;
   transition: 100ms;
   font-family: BrandonGrotesqueBold;
@@ -29,7 +30,7 @@ export const InfoIconContainer = styled.div`
 `
 
 export const InfoIcon = styled.img`
-  width: 13px;
+  width: ${props => props.large ? '16px' : '13px'};
   height: auto;
 `
 

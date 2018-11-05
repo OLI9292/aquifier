@@ -1,6 +1,38 @@
 import { CALL_API, Schemas } from '../Middleware/api'
 
 //
+// IMAGE
+//
+
+export const fetchImageAction = query => (dispatch, getState) => dispatch(fetchImage(query))
+
+export const IMAGE_REQUEST = 'IMAGE_REQUEST'
+export const IMAGE_SUCCESS = 'IMAGE_SUCCESS'
+export const IMAGE_FAILURE = 'IMAGE_FAILURE'
+
+export const fetchImage = query => ({
+  [CALL_API]: {
+    api: 'main',
+    endpoint: `auth/image?${query}`,
+    method: 'GET',
+    types: [ IMAGE_REQUEST, IMAGE_SUCCESS, IMAGE_FAILURE ],
+    schema: Schemas.IMAGE
+  }
+})
+
+export const fetchImageKeysAction = () => (dispatch, getState) => dispatch(fetchImageKeys())
+
+export const fetchImageKeys = query => ({
+  [CALL_API]: {
+    api: 'main',
+    endpoint: 'auth/image',
+    method: 'GET',
+    types: [ IMAGE_REQUEST, IMAGE_SUCCESS, IMAGE_FAILURE ],
+    schema: Schemas.IMAGE_ARRAY
+  }
+})
+
+//
 // CLASS
 //
 
@@ -12,11 +44,42 @@ export const STUDENTS_FAILURE = 'STUDENTS_FAILURE'
 
 export const fetchStudents = classId => ({
   [CALL_API]: {
-    api: 'accounts',
+    api: 'main',
     endpoint: `auth/class/${classId}/students`,
     method: 'GET',
     types: [ STUDENTS_REQUEST, STUDENTS_SUCCESS, STUDENTS_FAILURE ],
     schema: Schemas.STUDENT_ARRAY
+  }
+})
+
+export const createClassAction = users => (dispatch, getState) => dispatch(createClass(users))
+
+export const CLASS_REQUEST = 'CLASS_REQUEST'
+export const CLASS_SUCCESS = 'CLASS_SUCCESS'
+export const CLASS_FAILURE = 'CLASS_FAILURE'
+
+export const createClass = users => ({
+  [CALL_API]: {
+    api: 'main',
+    data: users,
+    endpoint: 'auth/class?login=true',
+    method: 'POST',
+    types: [ CLASS_REQUEST, CLASS_SUCCESS, CLASS_FAILURE ],
+    schema: Schemas.SESSION
+  }
+})
+
+export const updateClassAction = (id, data, session) => (dispatch, getState) => dispatch(updateClass(id, data, session))
+
+export const updateClass = (id, data, session) => ({
+  [CALL_API]: {
+    api: 'main',
+    data: data,
+    endpoint: `auth/class/${id}`,
+    method: 'PATCH',
+    types: [ CLASS_REQUEST, CLASS_SUCCESS, CLASS_FAILURE ],
+    schema: Schemas.TEST,
+    session: session
   }
 })
 
@@ -32,7 +95,7 @@ export const QUESTIONS_FAILURE = 'QUESTIONS_FAILURE'
 
 export const saveQuestion = data => ({
   [CALL_API]: {
-    api: 'accounts',
+    api: 'main',
     data: data,
     endpoint: 'auth/question',
     method: 'POST',
@@ -49,7 +112,7 @@ export const FETCH_QUESTIONS_FAILURE = 'FETCH_QUESTIONS_FAILURE'
 
 export const fetchQuestions = params => ({
   [CALL_API]: {
-    api: 'accounts',
+    api: 'main',
     endpoint: 'question?' + params,
     method: 'GET',
     types: [ FETCH_QUESTIONS_REQUEST, FETCH_QUESTIONS_SUCCESS, FETCH_QUESTIONS_FAILURE ],
@@ -69,7 +132,7 @@ export const LEVEL_FAILURE = 'LEVEL_FAILURE'
 
 export const fetchLevels = () => ({
   [CALL_API]: {
-    api: 'accounts',
+    api: 'main',
     endpoint: 'level',
     method: 'GET',
     schema: Schemas.LEVEL_ARRAY,
@@ -89,11 +152,31 @@ export const ROOTS_FAILURE = 'ROOTS_FAILURE'
 
 export const fetchRoots = () => ({
   [CALL_API]: {
-    api: 'curriculum',
+    api: 'main',
     endpoint: 'roots',
     method: 'GET',    
     types: [ ROOTS_REQUEST, ROOTS_SUCCESS, ROOTS_FAILURE ],
     schema: Schemas.ROOT_ARRAY
+  }
+})
+
+//
+// FACTOIDS
+//
+
+export const fetchFactoidsAction = () => (dispatch, getState) => dispatch(fetchFactoids())
+
+export const FACTOIDS_REQUEST = 'FACTOIDS_REQUEST'
+export const FACTOIDS_SUCCESS = 'FACTOIDS_SUCCESS'
+export const FACTOIDS_FAILURE = 'FACTOIDS_FAILURE'
+
+export const fetchFactoids = () => ({
+  [CALL_API]: {
+    api: 'main',
+    endpoint: 'factoids',
+    method: 'GET',    
+    types: [ FACTOIDS_REQUEST, FACTOIDS_SUCCESS, FACTOIDS_FAILURE ],
+    schema: Schemas.FACTOID_ARRAY
   }
 })
 
@@ -109,7 +192,7 @@ export const WORDS_FAILURE = 'WORDS_FAILURE'
 
 export const fetchWords = () => ({
   [CALL_API]: {
-    api: 'curriculum',
+    api: 'main',
     endpoint: 'words',
     method: 'GET',    
     types: [ WORDS_REQUEST, WORDS_SUCCESS, WORDS_FAILURE ],
@@ -129,11 +212,11 @@ export const LEADERBOARDS_FAILURE = 'LEADERBOARDS_FAILURE'
 
 export const fetchLeaderboards = (query, session) => ({
   [CALL_API]: {
-    api: 'accounts',
+    api: 'main',
     endpoint: `auth/leaderboard?${query}`,
     method: 'GET',    
     types: [ LEADERBOARDS_REQUEST, LEADERBOARDS_SUCCESS, LEADERBOARDS_FAILURE ],
-    schema: Schemas.LEADERBOARDS,
+    schema: Schemas[query.includes("onlyUser") ? "USER_RANKS" : "LEADERBOARDS"],
     session: session
   }
 })
@@ -150,7 +233,7 @@ export const SCHOOL_FAILURE = 'SCHOOL_FAILURE'
 
 export const fetchSchool = id => ({
   [CALL_API]: {
-    api: 'accounts',
+    api: 'main',
     endpoint: `auth/school/${id}`,
     method: 'GET',
     schema: Schemas.SCHOOL,
@@ -170,7 +253,7 @@ export const USER_FAILURE = 'USER_FAILURE'
 
 export const fetchUser = (id, session, updateState) => ({
   [CALL_API]: {
-    api: 'accounts',
+    api: 'main',
     endpoint: `auth/user/${id}`,
     method: 'GET',
     session: session,
@@ -178,6 +261,35 @@ export const fetchUser = (id, session, updateState) => ({
     types: [ USER_REQUEST, USER_SUCCESS, USER_FAILURE ]    
   },
   updateState: updateState
+})
+
+export const COMPETITOR_REQUEST = 'COMPETITOR_REQUEST'
+export const COMPETITOR_SUCCESS = 'COMPETITOR_SUCCESS'
+export const COMPETITOR_FAILURE = 'COMPETITOR_FAILURE'
+
+export const fetchCompetitionAction = () => (dispatch, getState) => dispatch(fetchCompetition())
+
+export const fetchCompetition = () => ({
+  [CALL_API]: {
+    api: 'main',
+    endpoint: 'auth/user?inSpringCompetition=true',
+    method: 'GET',
+    schema: Schemas.COMPETITOR_ARRAY,
+    types: [ COMPETITOR_REQUEST, COMPETITOR_SUCCESS, COMPETITOR_FAILURE ]    
+  }
+})
+
+export const createUserAction = data => (dispatch, getState) => dispatch(createUser(data))
+
+export const createUser = data => ({
+  [CALL_API]: {
+    api: 'main',
+    data: data,
+    endpoint: 'user?login=true',
+    method: 'POST',
+    schema: Schemas.SESSION,
+    types: [ USER_REQUEST, USER_SUCCESS, USER_FAILURE ]    
+  }
 })
 
 export const loginUserAction = data => (dispatch, getState) => dispatch(loginUser(data))
@@ -188,7 +300,7 @@ export const LOGIN_FAILURE = 'LOGIN_FAILURE'
 
 export const loginUser = data => ({
   [CALL_API]: {
-    api: 'accounts',
+    api: 'main',
     data: data,
     endpoint: 'login',
     method: 'POST',
@@ -205,7 +317,7 @@ export const SAVE_STATS_FAILURE = 'SAVE_STATS_FAILURE'
 
 export const saveStats = (data, session) => ({
   [CALL_API]: {
-    api: 'accounts',
+    api: 'main',
     data: data,
     endpoint: 'auth/user/stats',
     method: 'PATCH',
@@ -223,7 +335,7 @@ export const SAVE_LEVEL_FAILURE = 'SAVE_LEVEL_FAILURE'
 
 export const saveLevel = (data, userId) => ({
   [CALL_API]: {
-    api: 'accounts',
+    api: 'main',
     data: data,
     endpoint: `auth/user/${userId}/completedLevel`,
     method: 'PATCH',

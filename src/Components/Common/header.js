@@ -3,11 +3,10 @@ import { color } from '../../Library/Styles/index';
 
 const Default = styled.p`
   font-size: 1.4em;
-  font-family: BrandonGrotesqueBold;
+  font-family: ${props => props.thin ? 'BrandonGrotesque' : 'BrandonGrotesqueBold'};
   letter-spacing: 2px;  
-  text-transform: uppercase;
+  text-transform: ${props => props.noUpcase ? '' : 'uppercase'};
   color: ${color.gray2};
-  text-transform: uppercase;
 `
 
 const Large = Default.extend`
@@ -19,7 +18,7 @@ const ExtraLarge = Default.extend`
 `
 
 const Small = Default.extend`
-  font-size: 1em;
+  font-size: 1.2em;
   letter-spacing: 1px;
 `
 

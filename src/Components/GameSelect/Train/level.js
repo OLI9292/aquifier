@@ -6,6 +6,7 @@ import 'react-circular-progressbar/dist/styles.css';
 import { color } from '../../../Library/Styles/index';
 import get from 'lodash/get'
 
+import badgeIcon from '../../../Library/Images/icon-badge-yellow.png';
 import lockIcon from '../../../Library/Images/icon-lock.png';
 import archer from '../../../Library/Images/archer-green.png';
 
@@ -26,8 +27,8 @@ class Level extends Component {
   }
 
   formatAccuracy(stage) {
-    const acc = get(stage, 'bestAccuracy')
-    return acc ? `${Math.round(acc * 100)}%` : '100%';
+    const acc = get(stage, 'bestAccuracy') || 0
+    return `${Math.round(acc * 100)}%`;
   }
 
   render() {
@@ -39,13 +40,21 @@ class Level extends Component {
       progress
     } = this.props;
 
-    const infoIcon = (type, data, completed) => {
+    const infoIcon = (type, data, completed, large = true) => {
       const bColor = {
+        'avgAcc': color.green,
         'index': completed ? color.green : color.lightGray,
-        'lock': color.lightGray
+        'lock': color.lightGray,
+        'badge': color.green,
+        'bestScore': color.red
       }[type];
-      return <InfoIconContainer color={bColor}>
+      return <InfoIconContainer large={large} color={bColor}>
         {{
+          'avgAcc': (
+            <p style={{color:'white'}}>
+              {data + '%'}
+            </p>
+          ),
           'index': (
             <p style={{color:color[completed ? 'white' : 'gray'],transition:'100ms'}}>
               {data}
@@ -53,8 +62,20 @@ class Level extends Component {
           ),
           'lock': (
             <InfoIcon
+              large={large}
               alt={'lock icon'}
               src={lockIcon} />
+          ),
+          'badge': (
+            <InfoIcon
+              large={large}
+              alt={'badge icon'}
+              src={badgeIcon} />
+          ),
+          'bestScore': (
+            <p style={{color:'white'}}>
+              {data}
+            </p>
           )
         }[type]}
       </InfoIconContainer>
@@ -81,7 +102,7 @@ class Level extends Component {
                 bColor={completed ? 'green' : 'lightGray'}
                 onClick={() => { if (!isLocked) { this.props.clickedLevelStage('train', level._id, n) }}}>
                 
-                {infoIcon(isLocked ? 'lock' : 'index', n, completed)}
+                {infoIcon(isLocked ? 'lock' : 'index', n, completed, false)}
                 
                 <Img alt={level.name} src={imgSrc} />
               </LevelButton>
@@ -103,8 +124,11 @@ class Level extends Component {
     }
 
     const withProgress = img => {
-      const percentage = this.props.progress ? (this.props.progress * 100) : 0;
-      const stroke = percentage === 100 ? color.green : color.mainBlue;
+      const { progress, level } = this.props;
+      const percentage = progress ? (progress * 100) : 0;
+      const stroke = level.type === 'speed'
+        ? color.red
+        : percentage === 100 ? color.green : color.mainBlue;
       return <RadialProgressContainer>
         {img}
         <div style={{position:'absolute',width:'100px',height:'100px'}}>
@@ -120,16 +144,19 @@ class Level extends Component {
 
     const levelOverview = () => {
       const img = <Img src={imgSrc} opaque={level.locked} />
+
       return <div style={{margin:'50px 0px',height:'120px'}}>
         <LevelButton
           progress={progress}
           id={level._id}
           isLocked={level.locked}
+          isCompleted={level.completed}
           bColor={level.locked ? 'lightGray' : (level.completed || isExpanded) ? 'green' : 'lightGray'}
           onClick={() => this.props.clickedLevelOverview(level, isExpanded)}>
 
           {level.locked && infoIcon('lock')}
-
+          {level.type === 'train' && level.completed && (level.mastered ? infoIcon('badge') : infoIcon('avgAcc', level.avgAcc))}
+          {level.type === 'speed' && level.completed && infoIcon('bestScore', level.bestScore)}
           {withProgress(img)}
         </LevelButton>
 

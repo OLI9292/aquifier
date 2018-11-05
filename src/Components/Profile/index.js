@@ -1,23 +1,28 @@
+import { Redirect } from 'react-router';
 import { connect } from 'react-redux'
 import React, { Component } from 'react';
 import _ from 'underscore';
-import queryString from 'query-string';
-import get from 'lodash/get';
+import { get, throttle } from 'lodash';
 
 import starIcon from '../../Library/Images/icon-stars.png';
-import bookIcon from '../../Library/Images/icon-book.png';
+import bookIcon from '../../Library/Images/icon-book-green.png';
+import largeBook from '../../Library/Images/Book.png';
 import yellowStar from '../../Library/Images/icon-star-yellow.png';
-import orangeBadge from '../../Library/Images/icon-badge-orange.png';
-import redBadge from '../../Library/Images/icon-badge-red.png';
+import iconSchool from '../../Library/Images/icon-house.png';
+import iconEarth from '../../Library/Images/icon-earth.png';
 import archer from '../../Library/Images/icon-archer-purple.png';
 import grayStar from '../../Library/Images/icon-star-gray.png';
-import book from '../../Library/Images/Book.png';
 
+import { shouldRedirect, getOrdinalPosition } from '../../Library/helpers';
 import { color, } from '../../Library/Styles/index';
 import { Container } from '../Common/container';
 import Header from '../Common/header';
 
-import { fetchSchoolAction, fetchWordsAction, fetchLeaderboardsAction } from '../../Actions/index';
+import {
+  fetchSchoolAction,
+  fetchWordsAction,
+  fetchLeaderboardsAction
+} from '../../Actions/index';
 
 import {
   BlankRow,
@@ -33,7 +38,17 @@ import {
 class Profile extends Component {
   constructor(props) {
     super(props);
-    this.state = {}
+
+    const path = window.location.pathname;
+    const studentId = path.includes('profile/') && path.replace('/profile/','');
+    const student = studentId && _.find(this.props.students, s => s._id === studentId);
+    const user = student || this.props.user;
+    const redirect = studentId && !student && '/my-class';
+
+    this.state = {
+      redirect: redirect,
+      user: user
+    };
 
     this.checkScroll = this.checkScroll.bind(this);
   }
@@ -52,42 +67,46 @@ class Profile extends Component {
   }
 
   componentDidMount() {
-    window.addEventListener('scroll', this.checkScroll);
-
+    window.addEventListener('scroll', throttle(this.checkScroll, 1000));
     if (_.isEmpty(this.props.words)) { this.props.dispatch(fetchWordsAction()); }
     this.loadSchool();
-    this.loadLeaderboards();
+    this.loadLeaderboard(this.props);
   }
 
   componentWillReceiveProps(nextProps) {
     if (!this.state.loadingSchool) { this.loadSchool(); }
-    if (!this.state.loadingLeaderboards) { this.loadLeaderboards(); }
+    this.loadLeaderboard(nextProps);
   }
 
   componentWillUnmount() {
-    window.removeEventListener('scroll', this.checkScroll);
+    window.removeEventListener('scroll', throttle(this.checkScroll, 1000));
   }
 
   loadSchool() {
-    const id = get(this.props.user, 'school')
+    const id = get(this.state.user, 'school')
     if (id) {
       this.setState({ loadingSchool: true });
       this.props.dispatch(fetchSchoolAction(id));
     }
   }
 
-  loadLeaderboards() {
-    const id = get(this.props.user, '_id');
-    const session = this.props.session;
-    if (id && session) {
-      const query = queryString.stringify({ user: id });
-      this.setState({ loadingLeaderboards: true });
-      this.props.dispatch(fetchLeaderboardsAction(query, session));
-    }
-  }  
+  loadLeaderboard(props) {
+    const userId = get(props.user, "_id");
+    const classId = get(_.first(get(props.user, "classes")), "id");
+    if (!userId || !props.session || this.state.loadedLeaderboard) { return; }
+    this.setState({ loadedLeaderboard: true, isInClass: _.isString(classId) });
+    let query = `userId=${userId}&onlyUser=true`;
+    if (classId) { query += `&classId=${classId}`; }
+    this.props.dispatch(fetchLeaderboardsAction(query, props.session));    
+  }
+
+  getPosition(ranks, attr) {
+    const rank = get(ranks, attr);
+    return rank ? getOrdinalPosition(rank) : 'N/A';
+  }
 
   stat(type) {
-    const words = get(this.props.user, 'words');
+    const words = get(this.state.user, 'words');
     if (!words) { return; }
 
     switch (type) {
@@ -111,19 +130,13 @@ class Profile extends Component {
     return text.toUpperCase();
   }
 
-  ranks(ranks, userId) {
-    if (_.isEmpty(ranks) || !userId) { return ['-','-']; }
-    const myAllTimeRanks = _.filter(ranks, r => r.id.includes(userId) && r.period === 'all');
-    return _.map(_.partition(myAllTimeRanks, r => r.group === 'Earth'), ranks => get(_.first(ranks), 'position'));
-  }  
-
   render() {
+    if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }
+
     const {
-      ranks,
       school,
-      session,
-      user,
-      words
+      words,
+      userRanks
     } = this.props;
 
     const definition = value => {
@@ -141,7 +154,7 @@ class Profile extends Component {
           {get(school, 'name')}
         </Header.small>
         <Header.large style={{color:color.green,margin:'5px 0px'}}>
-          {this.headerText(user)}
+          {this.headerText(this.state.user)}
         </Header.large>
       </div>
     };
@@ -203,15 +216,13 @@ class Profile extends Component {
         </BookContainer>
         <table style={{borderCollapse:'collapse'}}>
           <tbody>
-            {_.map(_.sortBy(user.words, 'name'), (word, idx) => tableRow(word, idx))}
+            {_.map(_.sortBy(this.state.user.words, 'name'), (word, idx) => tableRow(word, idx))}
           </tbody>
         </table>
       </div>
     };
 
-    const sidebarStats = () => {
-      const [schoolRank, worldRank] = this.ranks(ranks, session.user);
-      
+    const sidebarStats = () => {      
       const [outerStyles, innerStyles] = this.state.fixedStats
         ? [ { position:'absolute', right:'225px' }, { position:'fixed', top:'15%', width:'225px' } ]
         : [ {}, { position:'absolute', width:'225px', right:'0' } ];
@@ -220,33 +231,36 @@ class Profile extends Component {
         <div ref={book => this.book = book} style={innerStyles}>
           <img
             alt={'book icon'}
-            src={book}
+            src={largeBook}
             style={{width:'100%',height:'auto'}} />
           <BookStats id={'book'}>
-            <div style={{marginRight:'10px'}}>
+
+            {this.state.isInClass && <div style={{marginRight:'10px'}}>
               <img
-                alt={'badge icon'}
-                src={redBadge}
-                style={{height:'45px',width:'auto'}} />
+                alt={'school icon'}
+                src={iconSchool}
+                style={{height:'45px',width:'auto'}} />          
               <h3 style={{height:'0',lineHeight:'0',fontSize:'0.7em',fontFamily:'BrandonGrotesque'}}>
                 SCHOOL RANK
               </h3>                    
               <h1 style={{fontFamily:'EBGaramondSemiBold',color:color.red,fontSize:'2.25em',lineHeight:'10px'}}>
-                {schoolRank}
-              </h1>
-            </div>
+                {this.getPosition(userRanks, "allTimeClass")}
+              </h1>            
+            </div>}
+
             <div style={{marginRight:'10px'}}>
               <img
-                alt={'book icon'}
-                src={orangeBadge}
-                style={{height:'45px',width:'auto'}} />          
+                alt={'earth icon'}
+                src={iconEarth}
+                style={{height:'45px',width:'auto'}} />
               <h3 style={{height:'0',lineHeight:'0',fontSize:'0.7em',fontFamily:'BrandonGrotesque'}}>
                 WORLD RANK
               </h3>                    
-              <h1 style={{fontFamily:'EBGaramondSemiBold',color:color.orange,fontSize:'2.25em',lineHeight:'10px'}}>
-                {worldRank}
-              </h1>            
+              <h1 style={{fontFamily:'EBGaramondSemiBold',color:color.mainBlue,fontSize:'2.25em',lineHeight:'10px'}}>
+                {this.getPosition(userRanks, "allTimeEarth")}
+              </h1>
             </div>
+
             <div style={{marginRight:'10px'}}>
               <img
                 alt={'archer icon'}
@@ -267,7 +281,7 @@ class Profile extends Component {
     return (
       <Container>
         {
-          user && 
+          this.state.user && 
           <div>
             {header()}
             {headerStats()}
@@ -280,11 +294,12 @@ class Profile extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => ({
-  words: _.values(state.entities.words),
-  session: state.entities.session,
-  user: _.first(_.values(state.entities.user)),
+  userRanks: state.entities.userRanks,
   school: _.first(_.values(state.entities.school)),
-  ranks: _.values(state.entities.ranks)  
+  session: state.entities.session,
+  students: _.values(state.entities.students),
+  user: _.first(_.values(state.entities.user)),
+  words: _.values(state.entities.words)
 })
 
 export default connect(mapStateToProps)(Profile)

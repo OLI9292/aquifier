@@ -12,7 +12,4 @@ export const HIERARCHY = {
 }
 
 export const DESCRIPTIONS = {
-  astronomy: 'Astronomy is the study of the stars. Lorem ipsum ...',
-  biology: 'Biology is the study of life. Lorem ipsum ...',
-  mathematics: 'Mathematics is the study of numbers. Lorem ipsum ...'
 }

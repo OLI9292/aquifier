@@ -1,11 +1,11 @@
 import _ from 'underscore';
 import { connect } from 'react-redux'
-import queryString from 'query-string';
 import React, { Component } from 'react';
 import get from 'lodash/get';
 
 import { color } from '../../Library/Styles/index';
 import { fetchLeaderboardsAction } from '../../Actions/index';
+import { getOrdinalPosition } from '../../Library/helpers';
 
 import {
   Icon,
@@ -18,12 +18,12 @@ import {
 
 const STATS = [
   {
-    slug: 'schoolAllTime',
+    slug: 'allTimeClass',
     image: require('../../Library/Images/icon-house.png'),
     color: color.red
   },
   {
-    slug: 'earthAllTime',
+    slug: 'allTimeEarth',
     image: require('../../Library/Images/icon-earth.png'),
     color: color.mainBlue
   }
@@ -36,80 +36,61 @@ class MiniLeaderboard extends Component {
   }
 
   componentDidMount() {
-    const {
-      ranks,
-      session,
-      user
-    } = this.props
-
-    if (_.isEmpty(ranks)) {
-      const query = queryString.stringify(user.isTeacher ? { school: user.school } : { user: user._id });      
-      this.props.dispatch(fetchLeaderboardsAction(query, session));
-    } else {
-      this.formatData(ranks);
-    }
+    this.loadLeaderboard(this.props);
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.state.ranks || _.isEmpty(nextProps.ranks)) { return; }
-    this.formatData(nextProps.ranks);
+    this.loadLeaderboard(nextProps);
   }
 
-  // from https://ecommerce.shopify.com/c/ecommerce-design/t/ordinal-number-in-javascript-1st-2nd-3rd-4th-29259
-  getOrdinal(rank) {
-    const position = get(rank, 'position');
-    if (!position) { return 'N/A'; }
-    const s = ["th","st","nd","rd"]
-    const v = position % 100;
-    return position+(s[(v-20)%10]||s[v]||s[0]);
+  loadLeaderboard(props) {
+    const userId = get(props.user, "_id");
+    const classId = get(_.first(get(props.user, "classes")), "id");
+    if (!userId || !props.session || this.state.loadedLeaderboard) { return; }
+    this.setState({ loadedLeaderboard: true, isInClass: _.isString(classId) });
+    let query = `userId=${userId}&onlyUser=true`;
+    if (classId) { query += `&classId=${classId}`; }
+    this.props.dispatch(fetchLeaderboardsAction(query, props.session));    
   }
 
-  formatData(ranks) {
-    const myRanks = _.filter(ranks, r => r.id.includes(this.props.session.user));
-    const [weekly, allTime] = _.partition(myRanks, r => r.period === 'weekly');
-    const [earthWeekly, schoolWeekly] = _.partition(weekly, r => r.group === 'Earth');
-    const [earthAllTime, schoolAllTime] = _.partition(allTime, r => r.group === 'Earth');
-    
-    this.setState({
-      ranks: {
-        earthWeekly: this.getOrdinal(earthWeekly[0]),
-        earthAllTime: this.getOrdinal(earthAllTime[0]),
-        schoolWeekly: this.getOrdinal(schoolWeekly[0]),
-        schoolAllTime: this.getOrdinal(schoolAllTime[0])
-      }
-    });
+  getPosition(ranks, attr) {
+    const rank = get(ranks, attr);
+    return rank ? getOrdinalPosition(rank) : 'N/A';
   }
 
   render() {
-    const ranks = this.state.ranks;
+    const { 
+      userRanks
+    } = this.props;
+
+    const stat = data => <LeaderboardListItem key={data.slug}>
+      <Icon src={data.image} />
+      <StatName>
+        {data.name}
+      </StatName>
+      <Stat 
+        color={data.color}
+        forLeaderboards={true}>
+        {this.getPosition(userRanks, data.slug)}
+      </Stat>
+    </LeaderboardListItem>;
 
     return (
       <SidebarContainer>
         <Header>
           Leaderboards
         </Header>
-        {ranks &&
-          <ul style={{listStyle:'none',margin:'0 auto',width:'50%',padding:'0px 0px 10px 0px'}}>
-            {_.map(STATS,  data => {
-              return <LeaderboardListItem key={data.slug}>
-                <Icon src={data.image} />
-                <StatName>
-                  {data.name}
-                </StatName>
-                <Stat color={data.color} forLeaderboards={true}>
-                  {ranks[data.slug]}
-                </Stat>
-              </LeaderboardListItem>
-            })}
-          </ul>
-        }
+        <ul style={{listStyle:'none',margin:'0 auto',width:'50%',padding:'0px 0px 10px 0px'}}>
+          {this.state.isInClass && stat(STATS[0])}
+          {stat(STATS[1])}
+        </ul>
       </SidebarContainer>
     );
   }
 }
 
 const mapStateToProps = (state, ownProps) => ({
-  ranks: _.values(state.entities.ranks),
+  userRanks: state.entities.userRanks,
   user: _.first(_.values(state.entities.user))
 })
 

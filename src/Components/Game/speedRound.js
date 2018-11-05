@@ -72,6 +72,7 @@ const InnerContainer = styled.div`
   height: 60px;
   display: flex;
   justify-content: space-between;  
+  width: 300px;
   ${media.phone`
     width: 150px;
     margin-left: -75px;

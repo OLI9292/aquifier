@@ -45,6 +45,7 @@ const Container = styled.div`
   margin: 0 auto;
   padding: 5px 0px;
   border-radius: 20px;
+  max-width: 500px;
   margin-top: 10px;
   background: radial-gradient(at top,#65BCEE,#3F80E6);
   display: flex;

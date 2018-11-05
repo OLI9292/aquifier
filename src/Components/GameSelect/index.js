@@ -1,7 +1,9 @@
+import { Redirect } from 'react-router';
 import _ from 'underscore';
 import { connect } from 'react-redux'
 import React, { Component } from 'react';
 
+import { shouldRedirect } from '../../Library/helpers'
 import MiniLeaderboard from './miniLeaderboard';
 import MiniProgress from './miniProgress';
 import MiniProgressMobile from './miniProgressMobile';
@@ -21,7 +23,7 @@ import {
   Sidebar
 } from './components';
 
-const GAME_TYPES = ['train', 'explore', 'join game'];
+const GAME_TYPES = ['train', 'join game'];
 
 class GameSelect extends Component {
   constructor(props) {
@@ -36,6 +38,7 @@ class GameSelect extends Component {
   }
 
   componentDidMount() {
+    if (!this.props.session) { this.setState({ redirect: '/' }); }
     window.addEventListener('scroll', this.checkScroll);    
     if (_.isEmpty(this.props.levels)) { this.props.dispatch(fetchLevelsAction()); }
   }
@@ -53,6 +56,8 @@ class GameSelect extends Component {
   }
 
   render() {
+    if (shouldRedirect(this.state, window.location)) { return <Redirect push to={this.state.redirect} />; }    
+
     const {
       levels,
       session,
@@ -71,7 +76,7 @@ class GameSelect extends Component {
     const tabs = (() => {
       return <TabContainer>
         {_.map(GAME_TYPES, (gameType, i) => {
-          const margin = i === 1 ? '0px 20px 0px 20px' : '0';
+          const margin = i === 0 ? '0px 10px 0px 0px' : '0px 0px 0px 10px';
           return <Tab
             key={i}
             onClick={() => this.setState({ gameType })}
