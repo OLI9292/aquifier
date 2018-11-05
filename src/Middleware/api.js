@@ -4,9 +4,9 @@ import CONFIG from "../Config/main"
 
 const API_ROOT = {
   main:
-    /*process.env.NODE_ENV === "production"
+    process.env.NODE_ENV === "production"
       ? CONFIG.PRODUCTION_API_ROOT
-      : CONFIG.STAGING_API_ROOT*/ "http://localhost:3002/api/v2/"
+      : CONFIG.STAGING_API_ROOT
 }
 
 const formatSession = session =>
