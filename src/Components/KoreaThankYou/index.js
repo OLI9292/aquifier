@@ -24,27 +24,41 @@ class KoreaThankYou extends Component {
 
     return (
       <Container>
-        <p style={{ fontSize: "2em" }}>
-          기술 영어의 90 %는 라틴어와 그리스어입니다.
+        <WhiteBg>
+          <p style={{ fontSize: "2em" }}>
+            기술 영어의 90 %는 라틴어와 그리스어입니다.
+            <br />
+            <br />
+            Wordcraft는 배우는 가장 빠른 방법입니다.
+            <br />
+            <br />
+            <a
+              href={"mailto:hello@playwordcraft.com"}
+              style={{ color: color.blue, textDecoration: "none" }}
+            >
+              {" "}
+              hello@playwordcraft.com
+            </a>
+          </p>
           <br />
           <br />
-          Wordcraft는 배우는 가장 빠른 방법입니다.
-          <br />
-          <br />
-          hello@playwordcraft.com
-        </p>
-        <br />
-        <br />
-        <Button.medium
-          style={{ width: "200px" }}
-          onClick={() => this.setState({ redirect: "/" })}
-        >
-          Home
-        </Button.medium>
+          <Button.medium
+            style={{ width: "200px" }}
+            onClick={() => this.setState({ redirect: "/" })}
+          >
+            Home
+          </Button.medium>
+        </WhiteBg>
       </Container>
     )
   }
 }
+
+const WhiteBg = styled.div`
+  border-radius: 10px;
+  padding: 30px 15px;
+  background-color: rgba(255, 255, 255, 0.75);
+`
 
 const Container = styled.div`
   width: 100vw;

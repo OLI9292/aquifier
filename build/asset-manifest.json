@@ -1,8 +1,8 @@
 {
   "main.css": "static/css/main.4cbbc9f5.css",
   "main.css.map": "static/css/main.4cbbc9f5.css.map",
-  "main.js": "static/js/main.2b175932.js",
-  "main.js.map": "static/js/main.2b175932.js.map",
+  "main.js": "static/js/main.9bcaf6ca.js",
+  "main.js.map": "static/js/main.9bcaf6ca.js.map",
   "static/media/Book.png": "static/media/Book.a0836e8a.png",
   "static/media/Brandon_bld.otf": "static/media/Brandon_bld.fa11c3ca.otf",
   "static/media/Brandon_reg.otf": "static/media/Brandon_reg.1f55925e.otf",
@@ -29,6 +29,7 @@
   "static/media/bicycle.mp3": "static/media/bicycle.29f0de79.mp3",
   "static/media/bilateral.mp3": "static/media/bilateral.f286810a.mp3",
   "static/media/biped.mp3": "static/media/biped.f80ea0e7.mp3",
+  "static/media/carnivore.mp3": "static/media/carnivore.b319811d.mp3",
   "static/media/categories.png": "static/media/categories.bfe51981.png",
   "static/media/centipede.mp3": "static/media/centipede.4ddce612.mp3",
   "static/media/century.mp3": "static/media/century.8df0bc1f.mp3",

@@ -109,7 +109,8 @@ class Game extends Component {
         { question: question, isSpellQuestion: isSpellQuestion },
         this.checkHint
       )
-      setTimeout(this.autohint.bind(this), 2500)
+      clearTimeout(this.timeout)
+      this.timeout = setTimeout(this.autohint.bind(this), 3500)
     } else {
       // Reset questions in multiplayer and speed rounds
       if (_.contains(["multiplayer", "speed"], this.props.type)) {
@@ -478,7 +479,9 @@ class Game extends Component {
       const answer = (
         <Answer>
           {showKoreanWord && (
-            <p style={{ position: "absolute", bottom: "100px" }}>
+            <p
+              style={{ position: "absolute", bottom: "75px", fontSize: "2em" }}
+            >
               {question.koreanWord}
             </p>
           )}

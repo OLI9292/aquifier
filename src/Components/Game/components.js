@@ -270,7 +270,10 @@ export const PromptValue = styled.p`
   display: table-cell;
   vertical-align: middle;
   text-align: center;
-  font-size: 1.75em;
+  font-size: 2.25em;
+  ${media.phone`
+    font-size: 1.75em;
+`};
 `
 
 //
