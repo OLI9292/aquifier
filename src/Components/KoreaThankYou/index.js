@@ -21,17 +21,18 @@ class KoreaThankYou extends Component {
     if (shouldRedirect(this.state, window.location)) {
       return <Redirect push to={this.state.redirect} />
     }
-
     return (
       <Container>
         <WhiteBg>
           <p style={{ fontSize: "2em" }}>
-            기술 영어의 90 %는 라틴어와 그리스어입니다.
+            In English, 90% of academic and technical vocabulary is based on
+            Latin and Greek root words.
             <br />
             <br />
-            Wordcraft는 배우는 가장 빠른 방법입니다.
+            Wordcraft is the only language training system dedicated exclusively
+            to academic and technical English. <br />
             <br />
-            <br />
+            contact:{" "}
             <a
               href={"mailto:hello@playwordcraft.com"}
               style={{ color: color.blue, textDecoration: "none" }}
