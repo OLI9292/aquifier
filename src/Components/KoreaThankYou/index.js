@@ -29,8 +29,8 @@ class KoreaThankYou extends Component {
             Latin and Greek root words.
             <br />
             <br />
-            Wordcraft is the only language training system dedicated exclusively
-            to academic and technical English. <br />
+            Wordcraft is the only rapid-feedback language training system
+            devoted exclusively to academic and technical English. <br />
             <br />
             contact:{" "}
             <a
@@ -58,7 +58,8 @@ class KoreaThankYou extends Component {
 const WhiteBg = styled.div`
   border-radius: 10px;
   padding: 30px 15px;
-  background-color: rgba(255, 255, 255, 0.75);
+  background-color: rgba(255, 255, 255, 0.9);
+  max-width: 800px;
 `
 
 const Container = styled.div`
