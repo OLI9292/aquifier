@@ -25,12 +25,13 @@ class KoreaThankYou extends Component {
       <Container>
         <WhiteBg>
           <p style={{ fontSize: "2em" }}>
-            In English, 90% of academic and technical vocabulary is based on
-            Latin and Greek root words.
+            영어에 있어서 학업 용어와 기술적 용어의 90%는 라틴어와 헬라어
+            어원에서 비롯된 것입니다.
             <br />
             <br />
-            Wordcraft is the only rapid-feedback language training system
-            devoted exclusively to academic and technical English. <br />
+            Wordcraft 는 학업 용어 와 기술적 용어를 가르치는 유일한 교육 시스템
+            입니다.
+            <br />
             <br />
             contact:{" "}
             <a

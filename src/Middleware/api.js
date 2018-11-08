@@ -4,9 +4,9 @@ import CONFIG from "../Config/main"
 
 const API_ROOT = {
   main:
-    process.env.NODE_ENV === "production"
+    /*process.env.NODE_ENV === "production"
       ? CONFIG.PRODUCTION_API_ROOT
-      : CONFIG.STAGING_API_ROOT
+      : CONFIG.STAGING_API_ROOT*/ "http://localhost:3000/api/v2/"
 }
 
 const formatSession = session =>
@@ -28,6 +28,7 @@ const callApi = (api, endpoint, schema, method, data, session) => {
     formatSession(session)
   )
   const body = { method: method, body: JSON.stringify(data), headers: headers }
+  console.log(fullUrl)
 
   if (process.env.NODE_ENV !== "production") {
     console.log(
@@ -39,14 +40,14 @@ const callApi = (api, endpoint, schema, method, data, session) => {
 
   return fetch(fullUrl, body).then(response =>
     response.json().then(json => {
+      console.log(json)
       if (!response.ok) {
         return Promise.reject(json)
       }
       const normalized = Object.assign({}, normalize(json, schema))
       // Removes undefined keys
-      normalized.entities = _.mapObject(
-        normalized.entities,
-        (v, k) => (v.undefined ? v.undefined : v)
+      normalized.entities = _.mapObject(normalized.entities, (v, k) =>
+        v.undefined ? v.undefined : v
       )
       return normalized
     })

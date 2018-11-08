@@ -396,8 +396,8 @@ class Game extends Component {
               questionComplete
                 ? color.warmYellow
                 : missing
-                  ? "black"
-                  : color.green
+                ? "black"
+                : color.green
             }
           />
         </AnswerSpace>
@@ -412,8 +412,8 @@ class Game extends Component {
             ? color.green
             : color.red
           : glowIdx === idx
-            ? color.green
-            : color.blue
+          ? color.green
+          : color.blue
       const fontSize =
         value.length > 14 ? "0.65em" : value.length > 10 ? "0.75em" : "0.85em"
       const hintFontSize = get(hint, "length") > 12 ? "0.65em" : "0.75em"
@@ -453,11 +453,11 @@ class Game extends Component {
             regular: twoByX
           }
         : count === 4
-          ? { mobile: xByOne, regular: xByOne }
-          : {
-              mobile: { column: twoByX.row, row: twoByX.column },
-              regular: twoByX
-            }
+        ? { mobile: xByOne, regular: xByOne }
+        : {
+            mobile: { column: twoByX.row, row: twoByX.column },
+            regular: twoByX
+          }
     }
 
     const questionComponents = (() => {
@@ -573,8 +573,10 @@ class Game extends Component {
         <p>
           {questionComplete
             ? this.props.type === "korea-demo"
-              ? "다음 것"
+              ? "Enter"
               : "Continue"
+            : this.props.type === "korea-demo"
+            ? "힌트"
             : "Hint"}
           <HelpSpan hide={questionComplete}>
             ({this.props.type === "korea-demo" ? "들어가다" : "enter"})
