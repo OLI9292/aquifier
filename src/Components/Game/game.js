@@ -574,7 +574,7 @@ class Game extends Component {
           {questionComplete
             ? "Continue"
             : this.props.type === "korea-demo"
-            ? "들어가다"
+            ? "힌트"
             : "Hint"}
           <HelpSpan hide={questionComplete}>(enter)</HelpSpan>
         </p>
