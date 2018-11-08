@@ -572,7 +572,9 @@ class Game extends Component {
       >
         <p>
           {questionComplete
-            ? "Continue"
+            ? this.props.type === "korea-demo"
+              ? "다음"
+              : "Continue"
             : this.props.type === "korea-demo"
             ? "힌트"
             : "Hint"}
