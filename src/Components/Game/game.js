@@ -109,7 +109,8 @@ class Game extends Component {
         { question: question, isSpellQuestion: isSpellQuestion },
         this.checkHint
       )
-      setTimeout(this.autohint.bind(this), 2500)
+      clearTimeout(this.timeout)
+      this.timeout = setTimeout(this.autohint.bind(this), 3500)
     } else {
       // Reset questions in multiplayer and speed rounds
       if (_.contains(["multiplayer", "speed"], this.props.type)) {
@@ -395,8 +396,8 @@ class Game extends Component {
               questionComplete
                 ? color.warmYellow
                 : missing
-                  ? "black"
-                  : color.green
+                ? "black"
+                : color.green
             }
           />
         </AnswerSpace>
@@ -411,8 +412,8 @@ class Game extends Component {
             ? color.green
             : color.red
           : glowIdx === idx
-            ? color.green
-            : color.blue
+          ? color.green
+          : color.blue
       const fontSize =
         value.length > 14 ? "0.65em" : value.length > 10 ? "0.75em" : "0.85em"
       const hintFontSize = get(hint, "length") > 12 ? "0.65em" : "0.75em"
@@ -452,11 +453,11 @@ class Game extends Component {
             regular: twoByX
           }
         : count === 4
-          ? { mobile: xByOne, regular: xByOne }
-          : {
-              mobile: { column: twoByX.row, row: twoByX.column },
-              regular: twoByX
-            }
+        ? { mobile: xByOne, regular: xByOne }
+        : {
+            mobile: { column: twoByX.row, row: twoByX.column },
+            regular: twoByX
+          }
     }
 
     const questionComponents = (() => {
@@ -478,7 +479,9 @@ class Game extends Component {
       const answer = (
         <Answer>
           {showKoreanWord && (
-            <p style={{ position: "absolute", bottom: "100px" }}>
+            <p
+              style={{ position: "absolute", bottom: "75px", fontSize: "2em" }}
+            >
               {question.koreanWord}
             </p>
           )}
@@ -570,12 +573,12 @@ class Game extends Component {
         <p>
           {questionComplete
             ? this.props.type === "korea-demo"
-              ? "다음 것"
+              ? "다음"
               : "Continue"
+            : this.props.type === "korea-demo"
+            ? "힌트"
             : "Hint"}
-          <HelpSpan hide={questionComplete}>
-            ({this.props.type === "korea-demo" ? "들어가다" : "enter"})
-          </HelpSpan>
+          <HelpSpan hide={questionComplete}>(enter)</HelpSpan>
         </p>
       </HelpButton>
     )

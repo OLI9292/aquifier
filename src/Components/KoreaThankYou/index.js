@@ -21,30 +21,47 @@ class KoreaThankYou extends Component {
     if (shouldRedirect(this.state, window.location)) {
       return <Redirect push to={this.state.redirect} />
     }
-
     return (
       <Container>
-        <p style={{ fontSize: "2em" }}>
-          기술 영어의 90 %는 라틴어와 그리스어입니다.
+        <WhiteBg>
+          <p style={{ fontSize: "2em" }}>
+            영어에 있어서 학업 용어와 기술적 용어의 90%는 라틴어와 헬라어
+            어원에서 비롯된 것입니다.
+            <br />
+            <br />
+            Wordcraft 는 학업 용어 와 기술적 용어를 가르치는 유일한 교육 시스템
+            입니다.
+            <br />
+            <br />
+            contact:{" "}
+            <a
+              href={"mailto:hello@playwordcraft.com"}
+              style={{ color: color.blue, textDecoration: "none" }}
+            >
+              {" "}
+              hello@playwordcraft.com
+            </a>
+          </p>
           <br />
           <br />
-          Wordcraft는 배우는 가장 빠른 방법입니다.
-          <br />
-          <br />
-          hello@playwordcraft.com
-        </p>
-        <br />
-        <br />
-        <Button.medium
-          style={{ width: "200px" }}
-          onClick={() => this.setState({ redirect: "/" })}
-        >
-          Home
-        </Button.medium>
+          <Button.medium
+            style={{ width: "200px" }}
+            onClick={() => this.setState({ redirect: "/" })}
+          >
+            Home
+          </Button.medium>
+        </WhiteBg>
       </Container>
     )
   }
 }
+
+const WhiteBg = styled.div`
+  border-radius: 10px;
+  padding: 30px 15px;
+  background-color: rgba(255, 255, 255, 0.9);
+  max-width: 800px;
+`
 
 const Container = styled.div`
   width: 100vw;
