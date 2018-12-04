@@ -1,8 +1,8 @@
-import styled from 'styled-components';
-import { media } from '../../Library/Styles/index';
+import styled from "styled-components"
+import { media } from "../../Library/Styles/index"
 
 export const ModalContainer = styled.div`
-  position: absolute;
+  position: fixed;
   background-color: white;
   left: 50%;
   width: 500px;
@@ -18,5 +18,5 @@ export const ModalContainer = styled.div`
     top: 0;
     height: 100vh;
     width: 100%;
-  `};   
+  `};
 `

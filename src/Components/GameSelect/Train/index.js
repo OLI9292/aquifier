@@ -70,6 +70,9 @@ class Train extends Component {
     const furthest = _.last(open)
     const furthestLevel = _.find(allLevels, l => l.ladder === furthest)
 
+    console.log(completed.sort((a, b) => a - b))
+    console.log(open.sort((a, b) => a - b))
+
     const groupedByLadder = _.groupBy(
       _.map(allLevels, level => {
         level.completed = _.contains(_.pluck(completedLevels, "_id"), level._id)
